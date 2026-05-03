@@ -1,6 +1,6 @@
 // Shared QED primitives — logo, buttons, chips, badges, venue placeholder
 
-// Brand logo — uses the official JPG asset; falls back gracefully
+// Brand logo — uses the official PNG asset
 function QEDLogo({ size = 56, mono = false }) {
   if (mono) {
     return (
@@ -12,16 +12,23 @@ function QEDLogo({ size = 56, mono = false }) {
       }}>QED</div>
     );
   }
+  // Crop: 30% off top+bottom each, 15% off left+right each.
+  // Render the image tall enough that the center 40% fills `size` px.
+  const fullH = Math.round(size / 0.40);
+  const cropV = Math.round(fullH * 0.30);
+  const cropH = Math.round(fullH * 0.15);
   return (
-    <img
-      src="assets/qed-logo.jpg"
-      alt="Quiz Eat Drink"
-      style={{
-        height: size, width: 'auto', display: 'block',
-        mixBlendMode: 'multiply', // melts cream bg into the page
-        userSelect: 'none', pointerEvents: 'none',
-      }}
-    />
+    <div style={{ height: size, overflow: 'hidden', display: 'inline-block', lineHeight: 0, flexShrink: 0 }}>
+      <img
+        src="Logo -Quiz-02.png"
+        alt="Quiz Eat Drink"
+        style={{
+          display: 'block', height: fullH, width: 'auto', maxWidth: 'none',
+          marginTop: -cropV, marginLeft: -cropH, marginRight: -cropH,
+          userSelect: 'none', pointerEvents: 'none',
+        }}
+      />
+    </div>
   );
 }
 
@@ -135,6 +142,12 @@ const Icon = {
       <path d="M12 16c-2-2-4-2-5-1" stroke={c} strokeWidth="1.5" strokeLinecap="round"/>
       <path d="M12 16c2-2 4-2 5-1" stroke={c} strokeWidth="1.5" strokeLinecap="round"/>
       <path d="M12 8c0-2 1-4 2-5" stroke={c} strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  ),
+  person: (s = 14, c = QED.ink) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="3.5" stroke={c} strokeWidth="2"/>
+      <path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke={c} strokeWidth="2" strokeLinecap="round"/>
     </svg>
   ),
   paw: (s = 14, c = QED.ink) => (

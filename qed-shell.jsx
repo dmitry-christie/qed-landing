@@ -1,57 +1,347 @@
-// QED app header (mobile) — minimal top utility bar: logo + lang + menu only
-function QEDHeader({ lang = 'EN', onMenu, scrolled = false, dark = false, onLogo }) {
-  return (
-    <div style={{
-      position: 'sticky', top: 0, zIndex: 30,
-      background: dark ? 'rgba(31,26,20,0.92)' : 'rgba(251,246,234,0.92)',
-      backdropFilter: 'saturate(180%) blur(14px)',
-      WebkitBackdropFilter: 'saturate(180%) blur(14px)',
-      borderBottom: scrolled ? `1px solid ${QED.hairline}` : '1px solid transparent',
-      padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10
-    }}>
-      {onLogo ? (
-        <button onClick={onLogo} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-          <QEDLogo size={44} />
-        </button>
-      ) : (
-        <QEDLogo size={44} />
-      )}
-      <div style={{ flex: 1 }} />
-      <button style={{
-        height: 32, padding: '0 12px', borderRadius: 999,
-        border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : QED.hairlineStrong}`,
-        background: dark ? 'rgba(255,255,255,0.08)' : 'transparent',
-        display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-        color: dark ? '#fff' : QED.ink, fontFamily: QED.sans, fontSize: 12, fontWeight: 800, letterSpacing: '0.04em'
-      }}>
-        {Icon.globe(12, dark ? '#fff' : QED.ink)} {lang}
-      </button>
-      <button onClick={onMenu} style={{
-        height: 32, width: 32, borderRadius: 999, border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : QED.hairlineStrong}`,
-        background: dark ? 'rgba(255,255,255,0.08)' : 'transparent', cursor: 'pointer',
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
-      }}>
-        <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 1h12M1 5h12M1 9h12" stroke={dark ? '#fff' : QED.ink} strokeWidth="2" strokeLinecap="round" /></svg>
-      </button>
-    </div>);
+// Slide-up navigation menu — dark ink panel
+function MenuSheet({ onClose, onNavEvents }) {
+  const [howOpen, setHowOpen] = React.useState(false);
 
+  const NAV = [
+    {
+      label: 'Browse events', sub: 'Find a quiz near you', accent: true,
+      action: () => { onNavEvents && onNavEvents(); onClose(); },
+    },
+    {
+      label: 'How it works', sub: 'New to QED?',
+      action: () => setHowOpen(true),
+    },
+    {
+      label: 'About QED', sub: 'The people behind the mic',
+      action: onClose,
+    },
+  ];
+
+  return (
+    <>
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 200,
+          background: 'rgba(31,26,20,0.55)', backdropFilter: 'blur(3px)',
+          display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+        }}
+      >
+        <style>{`@keyframes qed-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{
+            background: QED.ink,
+            borderRadius: `${QED.rXl}px ${QED.rXl}px 0 0`,
+            maxHeight: '88%', display: 'flex', flexDirection: 'column',
+            animation: 'qed-sheet-up 240ms cubic-bezier(.2,.8,.2,1)',
+          }}
+        >
+          {/* Drag handle */}
+          <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 10, flexShrink: 0 }}>
+            <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.12)' }} />
+          </div>
+
+          {/* Header row */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '12px 16px 16px', flexShrink: 0,
+            borderBottom: '1px solid rgba(255,255,255,0.07)',
+          }}>
+            <QEDLogo size={42} mono />
+            <button onClick={onClose} aria-label="Close" style={{
+              width: 32, height: 32, borderRadius: 999,
+              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'rgba(255,255,255,0.06)', cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              {Icon.close(15, 'rgba(255,255,255,0.6)')}
+            </button>
+          </div>
+
+          {/* Nav items */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 0' }}>
+            {NAV.map((item, i) => (
+              <button
+                key={i}
+                onClick={item.action}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '17px 0', background: 'none', border: 'none', cursor: 'pointer',
+                  borderBottom: '1px solid rgba(255,255,255,0.07)', textAlign: 'left',
+                }}
+              >
+                <div>
+                  <div style={{
+                    fontFamily: QED.sans, fontSize: 24, fontWeight: 900, letterSpacing: '-0.025em', lineHeight: 1.1,
+                    color: item.accent ? QED.orange : '#fff',
+                  }}>{item.label}</div>
+                  <div style={{ fontFamily: QED.sans, fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>{item.sub}</div>
+                </div>
+                {Icon.chevR(15, item.accent ? QED.orange : 'rgba(255,255,255,0.2)')}
+              </button>
+            ))}
+
+            {/* Secondary links */}
+            <div style={{ marginTop: 28 }}>
+              {[
+                { label: 'Instagram', handle: '@qedvalencia' },
+                { label: 'Contact', handle: 'hello@qed.es' },
+              ].map((l, i, arr) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '11px 0',
+                  borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                }}>
+                  <span style={{ fontFamily: QED.sans, fontSize: 14, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>{l.label}</span>
+                  <span style={{ fontFamily: QED.mono, fontSize: 11, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.03em' }}>{l.handle}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer tag */}
+            <div style={{
+              padding: '28px 0 48px',
+              fontFamily: QED.mono, fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.15)',
+            }}>
+              Pub Quiz · Valencia · Est. 2023
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <HowItWorksModal open={howOpen} onClose={() => setHowOpen(false)} />
+    </>
+  );
 }
 
-// City selector — used below the header in the page hero
-function CitySelector({ city = 'Valencia', dark = false }) {
+// QED app header — logo · [spacer] · lang · profile · menu
+function QEDHeader({ lang = 'EN', scrolled = false, dark = false, onLogo, onProfile, onNavEvents }) {
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const btnStyle = {
+    height: 32, width: 32, borderRadius: 999,
+    border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : QED.hairlineStrong}`,
+    background: dark ? 'rgba(255,255,255,0.08)' : 'transparent', cursor: 'pointer',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+  };
   return (
-    <button style={{
-      height: 36, padding: '0 14px', display: 'inline-flex', alignItems: 'center', gap: 8,
-      background: dark ? 'rgba(255,255,255,0.08)' : QED.paper, color: dark ? '#fff' : QED.ink,
-      border: `1.5px solid ${dark ? 'rgba(255,255,255,0.2)' : QED.ink}`, borderRadius: 999,
-      fontFamily: QED.sans, fontSize: 13, fontWeight: 700, cursor: 'pointer',
-      boxShadow: dark ? 'none' : `2px 2px 0 0 ${QED.ink}`,
-    }}>
-      {Icon.pin(13, dark ? '#fff' : QED.ink)}
-      <span>{city}</span>
-      <span style={{ color: dark ? 'rgba(255,255,255,0.6)' : QED.inkMute, fontWeight: 500 }}>· change</span>
-      {Icon.chevD(12, dark ? '#fff' : QED.ink)}
-    </button>
+    <>
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 30,
+        background: dark ? 'rgba(31,26,20,0.92)' : 'rgba(251,246,234,0.92)',
+        backdropFilter: 'saturate(180%) blur(14px)',
+        WebkitBackdropFilter: 'saturate(180%) blur(14px)',
+        borderBottom: scrolled ? `1px solid ${QED.hairline}` : '1px solid transparent',
+        padding: '7px 16px', display: 'flex', alignItems: 'center', gap: 8,
+      }}>
+        {onLogo ? (
+          <button onClick={onLogo} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <QEDLogo size={42} />
+          </button>
+        ) : (
+          <QEDLogo size={42} />
+        )}
+        <div style={{ flex: 1 }} />
+        <button style={{
+          height: 32, padding: '0 12px', borderRadius: 999,
+          border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : QED.hairlineStrong}`,
+          background: dark ? 'rgba(255,255,255,0.08)' : 'transparent',
+          display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+          color: dark ? '#fff' : QED.ink, fontFamily: QED.sans, fontSize: 12, fontWeight: 800, letterSpacing: '0.04em',
+        }}>
+          {Icon.globe(12, dark ? '#fff' : QED.ink)} {lang}
+        </button>
+        <button aria-label="Profile" onClick={onProfile} style={btnStyle}>
+          {Icon.person(15, dark ? '#fff' : QED.ink)}
+        </button>
+        <button onClick={() => setMenuOpen(true)} aria-label="Menu" style={btnStyle}>
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 1h12M1 5h12M1 9h12" stroke={dark ? '#fff' : QED.ink} strokeWidth="2" strokeLinecap="round" /></svg>
+        </button>
+      </div>
+
+      {menuOpen && <MenuSheet onClose={() => setMenuOpen(false)} onNavEvents={onNavEvents} />}
+    </>
+  );
+}
+
+// City picker — regional breakdown
+const QED_CITIES = [
+  { region: 'Valencia Community', cities: ['Valencia', 'La Cañada'],                          defaultOpen: true  },
+  { region: 'Catalonia',          cities: ['Barcelona'],                                       defaultOpen: false },
+  { region: 'Galicia',            cities: ['Padrón', 'Santiago'],                             defaultOpen: false },
+  { region: 'Murcia',             cities: ['Murcia'],                                         defaultOpen: false },
+  { region: 'Madrid',             cities: ['Madrid'],                                          defaultOpen: false },
+];
+
+function CitySheet({ city, onSelect, onClose }) {
+  const cityInRegion = (r) => r.cities.some(c =>
+    typeof c === 'string' ? c === city : c.name === city || (c.areas && c.areas.includes(city))
+  );
+  const [openRegions, setOpenRegions] = React.useState(() => {
+    const s = {};
+    QED_CITIES.forEach(r => { s[r.region] = r.defaultOpen || cityInRegion(r); });
+    return s;
+  });
+
+  const toggle = (region) => setOpenRegions(s => ({ ...s, [region]: !s[region] }));
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: 'rgba(31,26,20,0.5)', backdropFilter: 'blur(3px)',
+        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+      }}
+    >
+      <style>{`@keyframes qed-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: QED.cream,
+          borderRadius: `${QED.rXl}px ${QED.rXl}px 0 0`,
+          border: `1.5px solid ${QED.ink}`, borderBottom: 'none',
+          maxHeight: '78%', display: 'flex', flexDirection: 'column',
+          animation: 'qed-sheet-up 230ms cubic-bezier(.2,.8,.2,1)',
+        }}
+      >
+        {/* Drag handle */}
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 10, flexShrink: 0 }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: QED.hairlineStrong }} />
+        </div>
+
+        {/* Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '10px 16px 12px', flexShrink: 0,
+          borderBottom: `1px solid ${QED.hairline}`,
+        }}>
+          <span style={{ fontFamily: QED.sans, fontSize: 16, fontWeight: 800, color: QED.ink, letterSpacing: '-0.01em' }}>Choose your city</span>
+          <button onClick={onClose} aria-label="Close" style={{
+            width: 30, height: 30, borderRadius: 999, border: 'none', background: 'transparent',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {Icon.close(16, QED.inkSoft)}
+          </button>
+        </div>
+
+        {/* Spain */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '12px 16px', flexShrink: 0,
+          borderBottom: `1.5px solid ${QED.hairlineStrong}`,
+        }}>
+          <span style={{ fontSize: 18, lineHeight: 1 }}>🇪🇸</span>
+          <span style={{ fontFamily: QED.sans, fontSize: 14, fontWeight: 800, color: QED.ink }}>Spain</span>
+        </div>
+
+        {/* Region list */}
+        <div style={{ overflowY: 'auto', flex: 1, padding: '4px 16px 40px' }}>
+          {QED_CITIES.map(r => (
+            <div key={r.region}>
+              <button
+                onClick={() => toggle(r.region)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '13px 0', background: 'none', border: 'none', cursor: 'pointer',
+                  borderBottom: `1px solid ${QED.hairline}`,
+                }}
+              >
+                <span style={{ fontFamily: QED.sans, fontSize: 14, fontWeight: 700, color: QED.ink }}>{r.region}</span>
+                <span style={{
+                  display: 'flex', transition: 'transform 0.15s',
+                  transform: openRegions[r.region] ? 'rotate(0deg)' : 'rotate(-90deg)',
+                }}>
+                  {Icon.chevD(13, QED.inkSoft)}
+                </span>
+              </button>
+
+              {openRegions[r.region] && (
+                <div style={{ paddingBottom: 6 }}>
+                  {r.cities.map(c => {
+                    if (typeof c === 'string') {
+                      const active = c === city;
+                      return (
+                        <button
+                          key={c}
+                          onClick={() => { onSelect(c); onClose(); }}
+                          style={{
+                            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '9px 10px', marginTop: 3,
+                            background: active ? QED.orangeSoft : 'transparent',
+                            border: active ? `1px solid rgba(232,99,26,0.35)` : '1px solid transparent',
+                            borderRadius: QED.rSm, cursor: 'pointer',
+                          }}
+                        >
+                          <span style={{ fontFamily: QED.sans, fontSize: 14, color: active ? QED.orangeDeep : QED.ink, fontWeight: active ? 700 : 500 }}>{c}</span>
+                          {active && Icon.check(14, QED.orangeDeep)}
+                        </button>
+                      );
+                    }
+                    // City with neighbourhoods
+                    return (
+                      <div key={c.name}>
+                        <div style={{
+                          fontFamily: QED.mono, fontSize: 10, fontWeight: 700, letterSpacing: '0.07em',
+                          textTransform: 'uppercase', color: QED.inkMute,
+                          padding: '10px 10px 4px',
+                        }}>{c.name}</div>
+                        {c.areas && c.areas.map(area => {
+                          const active = area === city;
+                          return (
+                            <button
+                              key={area}
+                              onClick={() => { onSelect(area); onClose(); }}
+                              style={{
+                                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                padding: '9px 10px 9px 18px', marginTop: 2,
+                                background: active ? QED.orangeSoft : 'transparent',
+                                border: active ? `1px solid rgba(232,99,26,0.35)` : '1px solid transparent',
+                                borderRadius: QED.rSm, cursor: 'pointer',
+                              }}
+                            >
+                              <span style={{ fontFamily: QED.sans, fontSize: 14, color: active ? QED.orangeDeep : QED.ink, fontWeight: active ? 700 : 500 }}>{area}</span>
+                              {active && Icon.check(14, QED.orangeDeep)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CitySelector({ city = 'Valencia', onCityChange, dark = false }) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <>
+      <button onClick={() => setOpen(true)} style={{
+        height: 36, padding: '0 14px', display: 'inline-flex', alignItems: 'center', gap: 8,
+        background: dark ? 'rgba(255,255,255,0.08)' : QED.paper, color: dark ? '#fff' : QED.ink,
+        border: `1.5px solid ${dark ? 'rgba(255,255,255,0.2)' : QED.ink}`, borderRadius: 999,
+        fontFamily: QED.sans, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+        boxShadow: dark ? 'none' : `2px 2px 0 0 ${QED.ink}`,
+      }}>
+        {Icon.pin(13, dark ? '#fff' : QED.ink)}
+        <span>{city}</span>
+        {Icon.chevD(12, dark ? '#fff' : QED.ink)}
+      </button>
+      {open && (
+        <CitySheet
+          city={city}
+          onSelect={c => onCityChange && onCityChange(c)}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
   );
 }
 
@@ -111,19 +401,19 @@ const HOW_IT_WORKS_POINTS = [
 
 
 function HowItWorksPoints() {
-  const iconFor = (i) => [Icon.brain(20, QED.ink), Icon.users(20, QED.ink), Icon.trophy(20, QED.ink)][i];
-  const bgFor = (t) => t === 'yellow' ? QED.yellowSoft : t === 'orange' ? QED.orangeSoft : QED.greenSoft;
+  const iconFor = (i) => [Icon.brain(17, QED.ink), Icon.users(17, QED.ink), Icon.trophy(17, QED.ink)][i];
+  const kickerColor = (t) => t === 'yellow' ? QED.orange : t === 'orange' ? QED.orangeDeep : QED.greenInk;
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {HOW_IT_WORKS_POINTS.map((p, i) =>
-      <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-          <div style={{
-          width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-          background: bgFor(p.tone), display: 'flex', alignItems: 'center', justifyContent: 'center',
-          border: `1.5px solid ${QED.ink}`
-        }}>{iconFor(i)}</div>
+        <div key={i} style={{
+          display: 'flex', gap: 14, alignItems: 'flex-start',
+          padding: '12px 0',
+          borderBottom: i < HOW_IT_WORKS_POINTS.length - 1 ? `1px solid ${QED.hairline}` : 'none',
+        }}>
+          <div style={{ width: 20, flexShrink: 0, paddingTop: 3, opacity: 0.5 }}>{iconFor(i)}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: QED.sans, fontSize: 10.5, fontWeight: 800, letterSpacing: '0.08em', color: QED.inkSoft }}>{p.kicker}</div>
+            <div style={{ fontFamily: QED.sans, fontSize: 10.5, fontWeight: 800, letterSpacing: '0.08em', color: kickerColor(p.tone) }}>{p.kicker}</div>
             <div style={{ fontFamily: QED.sans, fontSize: 15, fontWeight: 700, color: QED.ink, letterSpacing: '-0.01em', marginTop: 1 }}>{p.title}</div>
             <div style={{ fontFamily: QED.sans, fontSize: 13, color: QED.inkSoft, lineHeight: 1.4, marginTop: 2 }}>{p.body}</div>
           </div>
@@ -167,11 +457,30 @@ function HowItWorksModal({ open, onClose, header = 'How QED works' }) {
         </div>
         <div style={{ padding: '8px 16px 4px' }}>
           <div style={{ fontFamily: QED.sans, fontSize: 22, fontWeight: 900, color: QED.ink, letterSpacing: '-0.025em', lineHeight: 1.1 }}>
-            From "what's QED?"<br/>to your first prize.
+            A night out where<br/>knowing stuff pays off.
           </div>
+          <p style={{ fontFamily: QED.sans, fontSize: 13, color: QED.inkSoft, lineHeight: 1.55, margin: '10px 0 0', textWrap: 'pretty' }}>
+            A live trivia night at a pub where teams answer questions across themed rounds, hosted live, no screens allowed. Think pop culture, history, sport, and music. Whoever scores most wins a bar tab. It's a proper night out, not just a quiz.
+          </p>
         </div>
-        <div style={{ padding: '14px 16px 4px' }}>
-          <HowItWorksPoints />
+        <div style={{ padding: '12px 16px 4px', display: 'flex', flexDirection: 'column' }}>
+          {[
+            { n: '01', t: 'Pick a night & bring your crew', s: 'Find a venue near you and reserve in 30 seconds. No card needed.' },
+            { n: '02', t: 'Play, eat, win', s: '4 rounds, 40 questions, 90 minutes. Bar credit and bragging rights every week.' },
+            { n: '03', t: 'Come back next week', s: 'Regulars get priority booking and climb the city-wide leaderboard.' },
+          ].map((x, i) => (
+            <div key={i} style={{
+              display: 'flex', gap: 14, alignItems: 'flex-start',
+              padding: '10px 0',
+              borderBottom: i < 2 ? `1px solid ${QED.hairline}` : 'none',
+            }}>
+              <span style={{ fontFamily: QED.mono, fontSize: 18, fontWeight: 700, color: QED.orange, lineHeight: 1, width: 30, flexShrink: 0, paddingTop: 1 }}>{x.n}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: QED.sans, fontSize: 14, fontWeight: 800, color: QED.ink, letterSpacing: '-0.01em', lineHeight: 1.2 }}>{x.t}</div>
+                <div style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, marginTop: 3, lineHeight: 1.4 }}>{x.s}</div>
+              </div>
+            </div>
+          ))}
         </div>
         <div style={{ padding: '14px 16px 0', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button onClick={() => setVideoOpen(true)} style={{
@@ -270,4 +579,4 @@ function FilterBar({ filters, onChange, onMore }) {
 
 }
 
-Object.assign(window, { QEDHeader, CitySelector, ExplainerCard, HowItWorksModal, VideoModal, FilterBar });
+Object.assign(window, { QEDHeader, MenuSheet, CitySelector, CitySheet, QED_CITIES, ExplainerCard, HowItWorksModal, VideoModal, FilterBar });

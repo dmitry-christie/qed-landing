@@ -2,11 +2,8 @@
 
 function DetailRow({ icon, label, value, accent, onClick }) {
   return (
-    <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: `1px solid ${QED.hairline}`, cursor: onClick ? 'pointer' : 'default' }}>
-      <div style={{
-        width: 32, height: 32, borderRadius: 10, flexShrink: 0,
-        background: QED.creamSoft, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>{icon}</div>
+    <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: `1px solid ${QED.hairline}`, cursor: onClick ? 'pointer' : 'default' }}>
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', opacity: 0.45 }}>{icon}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontFamily: QED.sans, fontSize: 11, fontWeight: 700, color: QED.inkSoft, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</div>
         <div style={{ fontFamily: QED.sans, fontSize: 14, fontWeight: 600, color: QED.ink, marginTop: 1 }}>{value}</div>
@@ -53,7 +50,7 @@ function MapPlaceholder() {
   );
 }
 
-function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm }) {
+function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm, onProfile }) {
   const baseEvent = event || QED_EVENTS[0];
   const [demoPayment, setDemoPayment] = React.useState(null); // 'optional' | 'required' | null
   const e = demoPayment === 'required'
@@ -67,6 +64,7 @@ function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm }) {
   const [agreed, setAgreed] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
   const [showStickyBar, setShowStickyBar] = React.useState(true);
+  const [inlineCTAEntered, setInlineCTAEntered] = React.useState(false);
   const formRef = React.useRef(null);
   const inlineCTARef = React.useRef(null);
   const scrollContainerRef = React.useRef(null);
@@ -85,11 +83,19 @@ function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm }) {
   };
 
   const onScroll = (e_) => {
-    if (inlineCTARef.current && scrollContainerRef.current) {
-      const containerRect = scrollContainerRef.current.getBoundingClientRect();
+    if (!scrollContainerRef.current) return;
+    const containerRect = scrollContainerRef.current.getBoundingClientRect();
+    // Hide sticky bar as soon as the form section enters view
+    if (formRef.current) {
+      const formRect = formRef.current.getBoundingClientRect();
+      setShowStickyBar(formRect.top >= containerRect.bottom - 40);
+    }
+    // Fire the inline CTA entrance animation once it's actually visible
+    if (inlineCTARef.current) {
       const btnRect = inlineCTARef.current.getBoundingClientRect();
-      const visible = btnRect.bottom > containerRect.top + 40 && btnRect.top < containerRect.bottom - 40;
-      setShowStickyBar(!visible);
+      if (btnRect.top < containerRect.bottom - 40 && btnRect.bottom > containerRect.top + 40) {
+        setInlineCTAEntered(true);
+      }
     }
   };
 
@@ -106,6 +112,15 @@ function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm }) {
         }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke={QED.ink} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>
+        {onProfile && (
+          <button onClick={onProfile} aria-label="Profile" style={{
+            position: 'absolute', top: 56, right: 14, width: 40, height: 40, borderRadius: 999,
+            background: 'rgba(255,255,255,0.95)', border: `1.5px solid ${QED.ink}`, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {Icon.person(15, QED.ink)}
+          </button>
+        )}
 
         {/* badge stack — bottom of hero */}
         <div style={{ position: 'absolute', bottom: 12, left: 14, display: 'flex', gap: 6, flexWrap: 'wrap', zIndex: 3 }}>
@@ -204,17 +219,26 @@ function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm }) {
 
       {/* What you get */}
       <div style={{ padding: '20px 16px 8px' }}>
-        <div style={{ fontFamily: QED.sans, fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: QED.inkSoft }}>What's included</div>
-        <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <div style={{ fontFamily: QED.sans, fontSize: 15, fontWeight: 800, color: QED.ink, letterSpacing: '-0.01em' }}>What's included</div>
+        <div style={{ marginTop: 8 }}>
           {[
-            { t: '40 questions', s: '4 themed rounds' },
-            { t: 'Real prizes', s: 'Bar credit + merch' },
-            { t: 'Pens & sheets', s: 'On the house' },
-            { t: 'Pay at venue', s: 'Cash or card' },
-          ].map((x, i) => (
-            <div key={i} style={{ background: QED.paper, border: `1.5px solid ${QED.ink}`, borderRadius: QED.rMd, padding: 12 }}>
-              <div style={{ fontFamily: QED.sans, fontSize: 14, fontWeight: 800, color: QED.ink, letterSpacing: '-0.01em' }}>{x.t}</div>
-              <div style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, marginTop: 2 }}>{x.s}</div>
+            ['40 questions', '4 themed rounds'],
+            ['Real prizes', 'Bar credit + merch'],
+            ['Pens & sheets', 'On the house'],
+            ['Pay at venue', 'Cash or card'],
+          ].map(([t, s], i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8,
+              padding: '9px 0',
+              borderBottom: i < 3 ? `1px solid ${QED.hairline}` : 'none',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 16, height: 16, borderRadius: 999, background: QED.green, border: `1.5px solid ${QED.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {Icon.check(9, '#fff')}
+                </div>
+                <span style={{ fontFamily: QED.sans, fontSize: 14, fontWeight: 700, color: QED.ink }}>{t}</span>
+              </div>
+              <span style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, whiteSpace: 'nowrap' }}>{s}</span>
             </div>
           ))}
         </div>
@@ -312,17 +336,24 @@ function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm }) {
           </span>
         </label>
 
-        {/* Sticky-ish CTA + fine print */}
-        <div ref={inlineCTARef} style={{ marginTop: 10, opacity: agreed ? 1 : 0.45, transition: 'opacity 0.15s' }}>
-          <QEDButton size="lg" icon={e.paymentRequired ? Icon.euro(15, '#fff') : Icon.check(15)}
-            onClick={() => agreed && onReserve && onReserve({ event: e, guests })}
-            style={{ pointerEvents: agreed ? 'auto' : 'none' }}>
-            {e.paymentRequired ? `Pay €${(guests * e.price).toFixed(2)} & Reserve` : `Reserve ${guests} ${guests === 1 ? 'spot' : 'spots'}`}
-          </QEDButton>
-          <div style={{ fontFamily: QED.sans, fontSize: 11, color: QED.inkMute, textAlign: 'center', marginTop: 8 }}>
-            {e.paymentRequired
-              ? 'Early-bird price secured instantly · Free cancellation 24h before'
-              : 'Free cancellation up to 24 hours before · No card needed today'}
+        {/* Sticky-ish CTA + fine print — entrance animation fires once when scrolled into view */}
+        <div ref={inlineCTARef} style={{
+          marginTop: 10,
+          transform: inlineCTAEntered ? 'translateY(0)' : 'translateY(20px)',
+          opacity: inlineCTAEntered ? 1 : 0,
+          transition: 'transform 0.42s cubic-bezier(0.22,1,0.36,1) 0.08s, opacity 0.38s ease 0.08s',
+        }}>
+          <div style={{ opacity: agreed ? 1 : 0.45, transition: 'opacity 0.15s' }}>
+            <QEDButton size="lg" icon={e.paymentRequired ? Icon.euro(15, '#fff') : Icon.check(15)}
+              onClick={() => agreed && onReserve && onReserve({ event: e, guests })}
+              style={{ pointerEvents: agreed ? 'auto' : 'none' }}>
+              {e.paymentRequired ? `Pay €${(guests * e.price).toFixed(2)} & Reserve` : `Reserve ${guests} ${guests === 1 ? 'spot' : 'spots'}`}
+            </QEDButton>
+            <div style={{ fontFamily: QED.sans, fontSize: 11, color: QED.inkMute, textAlign: 'center', marginTop: 8 }}>
+              {e.paymentRequired
+                ? 'Early-bird price secured instantly · Free cancellation 24h before'
+                : 'Free cancellation up to 24 hours before · No card needed today'}
+            </div>
           </div>
         </div>
 
@@ -343,35 +374,39 @@ function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm }) {
         </div>
       </div>
 
-      {/* Spacer for sticky bar */}
-      {showStickyBar && <div style={{ height: 96 }}/>}
+      {/* Spacer so content doesn't hide behind sticky bar */}
+      <div style={{ height: 96 }}/>
 
-      {/* Sticky bottom CTA — hides when inline CTA is visible */}
-      {showStickyBar && (
+      {/* Sticky outer — positioning only, no transform (transforms break sticky in some engines) */}
+      <div style={{ position: 'sticky', bottom: 0, left: 0, right: 0, zIndex: 30 }}>
+        {/* Animated inner — slide + fade without touching the sticky element itself */}
+      <div style={{
+        padding: '10px 14px 28px',
+        background: 'linear-gradient(180deg, rgba(251,246,234,0) 0%, rgba(251,246,234,0.98) 30%)',
+        transform: showStickyBar ? 'translateY(0)' : 'translateY(110%)',
+        opacity: showStickyBar ? 1 : 0,
+        pointerEvents: showStickyBar ? 'auto' : 'none',
+        transition: 'transform 0.35s cubic-bezier(0.25,1,0.5,1), opacity 0.28s ease',
+      }}>
         <div style={{
-          position: 'sticky', bottom: 0, left: 0, right: 0, zIndex: 30,
-          padding: '10px 14px 28px',
-          background: 'linear-gradient(180deg, rgba(251,246,234,0) 0%, rgba(251,246,234,0.98) 30%)',
+          background: QED.paper, border: `1.5px solid ${QED.ink}`, borderRadius: QED.rXl,
+          boxShadow: `2px 3px 0 0 ${QED.ink}`,
+          padding: '8px 8px 8px 14px', display: 'flex', alignItems: 'center', gap: 10,
         }}>
-          <div style={{
-            background: QED.paper, border: `1.5px solid ${QED.ink}`, borderRadius: QED.rXl,
-            boxShadow: `2px 3px 0 0 ${QED.ink}`,
-            padding: '8px 8px 8px 14px', display: 'flex', alignItems: 'center', gap: 10,
-          }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, fontWeight: 700 }}>From <span style={{ textDecoration: 'line-through', color: QED.inkMute }}>€{e.full.toFixed(2)}</span></div>
-              <div style={{ fontFamily: QED.sans, fontSize: 18, fontWeight: 900, color: QED.ink, letterSpacing: '-0.02em' }}>€{e.price.toFixed(2)} <span style={{ fontSize: 12, color: QED.inkSoft, fontWeight: 600 }}>/ person</span></div>
-            </div>
-            <QEDButton full={false} size="md" icon={Icon.chevR(13, '#fff')}
-              onClick={() => {
-                if (agreed) { onReserve && onReserve({ event: e, guests }); }
-                else { formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-              }}>
-              Reserve now
-            </QEDButton>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, fontWeight: 700 }}>From <span style={{ textDecoration: 'line-through', color: QED.inkMute }}>€{e.full.toFixed(2)}</span></div>
+            <div style={{ fontFamily: QED.sans, fontSize: 18, fontWeight: 900, color: QED.ink, letterSpacing: '-0.02em' }}>€{e.price.toFixed(2)} <span style={{ fontSize: 12, color: QED.inkSoft, fontWeight: 600 }}>/ person</span></div>
           </div>
+          <QEDButton full={false} size="md" icon={Icon.chevR(13, '#fff')}
+            onClick={() => {
+              if (agreed) { onReserve && onReserve({ event: e, guests }); }
+              else { formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            }}>
+            Reserve now
+          </QEDButton>
         </div>
-      )}
+      </div>
+      </div>
     </div>
   );
 }

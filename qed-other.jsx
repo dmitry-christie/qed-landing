@@ -1,13 +1,13 @@
 // Home / location landing screen — the page ad traffic hits first sometimes
-function HomeScreen({ tweaks, onSeeEvents, explainerSeen }) {
+function HomeScreen({ tweaks, onSeeEvents, explainerSeen, city = 'Valencia', onCityChange, onProfile }) {
   const [howOpen, setHowOpen] = React.useState(false);
   return (
     <div style={{ height: '100%', overflow: 'auto', background: QED.cream }}>
-      <QEDHeader />
+      <QEDHeader onProfile={onProfile} onNavEvents={onSeeEvents} />
 
       {/* City selector + Hero */}
       <div style={{ padding: '12px 16px 0' }}>
-        <CitySelector city="Valencia" />
+        <CitySelector city={city} onCityChange={onCityChange} />
       </div>
 
       {/* Hero */}
@@ -64,25 +64,24 @@ function HomeScreen({ tweaks, onSeeEvents, explainerSeen }) {
         <p style={{ fontFamily: QED.sans, fontSize: 14, color: QED.inkSoft, lineHeight: 1.55, margin: '10px 0 14px', textWrap: 'pretty' }}>
           A live trivia night is an evening at a pub where teams of friends answer questions across themed rounds — hosted live, no screens allowed. Think pop culture, history, sport, and music. Whoever scores most wins a bar tab. It's a proper night out, not just a quiz.
         </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {[
-            { n: '01', t: 'Pick a night & bring your crew', s: 'Find a venue near you and reserve a table in 30 seconds. Grab 2–5 friends — no card needed today.' },
-            { n: '02', t: 'Play, eat, win', s: '4 rounds, 40 questions, 90 minutes. Bar credit, merch, and bragging rights up for grabs every week.' },
-            { n: '03', t: 'Come back next week', s: 'Regulars get priority booking and climb the leaderboard. The more you show up, the better it gets.' },
+            { n: '01', t: 'Pick a night & bring your crew', s: 'Find a venue near you and reserve in 30 seconds. No card needed.' },
+            { n: '02', t: 'Play, eat, win', s: '4 rounds, 40 questions, 90 minutes. Bar credit and bragging rights every week.' },
+            { n: '03', t: 'Come back next week', s: 'Regulars get priority booking and climb the city-wide leaderboard.' },
           ].map((x, i) => (
             <div key={i} style={{
-              background: QED.paper, border: `1.5px solid ${QED.ink}`, borderRadius: QED.rLg,
-              padding: 14, display: 'flex', gap: 12, alignItems: 'flex-start',
+              display: 'flex', gap: 16, alignItems: 'flex-start',
+              padding: '14px 0',
+              borderBottom: i < 2 ? `1px solid ${QED.hairline}` : 'none',
             }}>
               <div style={{
-                fontFamily: QED.mono, fontSize: 13, fontWeight: 700, color: QED.orangeDeep,
-                background: QED.orangeSoft, border: `1.5px solid ${QED.ink}`,
-                width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: QED.mono, fontSize: 22, fontWeight: 700, color: QED.orange,
+                lineHeight: 1, width: 34, flexShrink: 0, paddingTop: 2,
               }}>{x.n}</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: QED.sans, fontSize: 16, fontWeight: 800, color: QED.ink, letterSpacing: '-0.01em' }}>{x.t}</div>
-                <div style={{ fontFamily: QED.sans, fontSize: 13, color: QED.inkSoft, marginTop: 2, lineHeight: 1.4 }}>{x.s}</div>
+                <div style={{ fontFamily: QED.sans, fontSize: 16, fontWeight: 800, color: QED.ink, letterSpacing: '-0.01em', lineHeight: 1.2 }}>{x.t}</div>
+                <div style={{ fontFamily: QED.sans, fontSize: 13, color: QED.inkSoft, marginTop: 4, lineHeight: 1.45 }}>{x.s}</div>
               </div>
             </div>
           ))}
@@ -150,7 +149,7 @@ function HomeScreen({ tweaks, onSeeEvents, explainerSeen }) {
 }
 
 // Booking success screen
-function SuccessScreen({ tweaks, event, guests = 4, onSelectEvent, onHome }) {
+function SuccessScreen({ tweaks, event, guests = 4, onSelectEvent, onHome, onProfile }) {
   const e = event || QED_EVENTS[0];
   const total = (guests * e.price).toFixed(2);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
@@ -159,7 +158,7 @@ function SuccessScreen({ tweaks, event, guests = 4, onSelectEvent, onHome }) {
   const [emailDraft, setEmailDraft] = React.useState(email);
   return (
     <div style={{ height: '100%', overflow: 'auto', background: QED.cream }}>
-      <QEDHeader onLogo={onHome} />
+      <QEDHeader onLogo={onHome} onProfile={onProfile} onNavEvents={onHome} />
       <div style={{ padding: '20px 16px 0' }}>
         {/* Receipt-like card */}
         <div style={{
@@ -236,52 +235,61 @@ function SuccessScreen({ tweaks, event, guests = 4, onSelectEvent, onHome }) {
           {Icon.cal(14, QED.ink)} <span style={{ marginLeft: 6 }}>Add to calendar</span>
         </button>
 
-        {/* Invite friends — social icons */}
+        {/* Invite friends */}
         <div style={{ marginTop: 10, background: QED.paper, border: `1.5px solid ${QED.hairlineStrong}`, borderRadius: QED.rMd, padding: '12px 14px' }}>
           <div style={{ fontFamily: QED.sans, fontSize: 12, fontWeight: 700, color: QED.inkSoft, marginBottom: 10 }}>Invite friends</div>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            {[
-              { label: 'WhatsApp', bg: '#25D366', path: 'M17.47 14.38c-.3-.15-1.66-.82-1.92-.92-.26-.09-.44-.14-.63.15-.18.28-.72.91-.9 1.09-.17.19-.34.21-.62.07-1.67-.83-2.76-1.48-3.86-3.36-.29-.5.3-.47.83-1.55.09-.18.05-.35-.03-.49-.07-.14-.63-1.51-.86-2.07-.23-.54-.47-.46-.63-.47-.17 0-.35-.01-.54-.01s-.49.07-.74.35c-.26.28-.98.96-.98 2.33s1 2.7 1.14 2.9c.14.18 1.97 2.98 4.75 4.19 1.76.76 2.45.82 3.33.69.54-.08 1.66-.68 1.89-1.33.24-.65.24-1.21.17-1.33-.07-.13-.26-.2-.54-.34z M12 2A10 10 0 0 0 2 12c0 1.76.46 3.41 1.26 4.85L2 22l5.27-1.22A10 10 0 1 0 12 2z' },
-              { label: 'Telegram', bg: '#229ED9', path: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.69 7.94c-.12.57-.46.71-.93.44l-2.58-1.9-1.24 1.2c-.14.14-.26.26-.51.26l.18-2.62 4.72-4.27c.2-.18-.05-.28-.32-.1L7.38 14.4l-2.54-.8c-.55-.17-.56-.55.12-.81l9.91-3.82c.46-.17.86.11.77.82z' },
-              { label: 'iMessage', bg: '#3DD68C', path: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 9H7V9h10v2zm-4 4H7v-2h6v2z' },
-              { label: 'Copy link', bg: QED.ink, isLink: true },
-            ].map(({ label, bg, path, isLink }) => (
-              <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, flex: 1 }}>
-                <button style={{
-                  width: 44, height: 44, borderRadius: 999, background: bg,
-                  border: `1.5px solid ${QED.ink}`, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: `2px 2px 0 0 ${QED.ink}`,
-                }}>
-                  {isLink ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="#fff" strokeWidth="2" strokeLinecap="round"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
-                  ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d={path}/></svg>
-                  )}
-                </button>
-                <span style={{ fontFamily: QED.sans, fontSize: 10, fontWeight: 600, color: QED.inkSoft }}>{label}</span>
-              </div>
-            ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <button style={{
+              width: '100%', height: 40, background: '#25D366', color: '#fff',
+              border: `1.5px solid ${QED.ink}`, borderRadius: 999,
+              fontFamily: QED.sans, fontSize: 14, fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              boxShadow: `2px 2px 0 0 ${QED.ink}`,
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#fff" d="M17.47 14.38c-.3-.15-1.66-.82-1.92-.92-.26-.09-.44-.14-.63.15-.18.28-.72.91-.9 1.09-.17.19-.34.21-.62.07-1.67-.83-2.76-1.48-3.86-3.36-.29-.5.3-.47.83-1.55.09-.18.05-.35-.03-.49-.07-.14-.63-1.51-.86-2.07-.23-.54-.47-.46-.63-.47-.17 0-.35-.01-.54-.01s-.49.07-.74.35c-.26.28-.98.96-.98 2.33s1 2.7 1.14 2.9c.14.18 1.97 2.98 4.75 4.19 1.76.76 2.45.82 3.33.69.54-.08 1.66-.68 1.89-1.33.24-.65.24-1.21.17-1.33-.07-.13-.26-.2-.54-.34z M12 2A10 10 0 0 0 2 12c0 1.76.46 3.41 1.26 4.85L2 22l5.27-1.22A10 10 0 1 0 12 2z"/></svg>
+              Share on WhatsApp
+            </button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button style={{
+                flex: 1, height: 36, background: '#229ED9', color: '#fff',
+                border: `1.5px solid ${QED.ink}`, borderRadius: 999,
+                fontFamily: QED.sans, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.69 7.94c-.12.57-.46.71-.93.44l-2.58-1.9-1.24 1.2c-.14.14-.26.26-.51.26l.18-2.62 4.72-4.27c.2-.18-.05-.28-.32-.1L7.38 14.4l-2.54-.8c-.55-.17-.56-.55.12-.81l9.91-3.82c.46-.17.86.11.77.82z"/></svg>
+                Telegram
+              </button>
+              <button style={{
+                flex: 1, height: 36, background: QED.paper, color: QED.inkSoft,
+                border: `1px solid ${QED.hairlineStrong}`, borderRadius: 999,
+                fontFamily: QED.sans, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke={QED.inkSoft} strokeWidth="2" strokeLinecap="round"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke={QED.inkSoft} strokeWidth="2" strokeLinecap="round"/></svg>
+                Copy link
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Pre-game tips */}
-        <div style={{ marginTop: 18 }}>
-          <div style={{ fontFamily: QED.sans, fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: QED.inkSoft }}>Before the quiz</div>
-          <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ marginTop: 20 }}>
+          <div style={{ fontFamily: QED.sans, fontSize: 14, fontWeight: 800, color: QED.ink, letterSpacing: '-0.01em', marginBottom: 4 }}>Before the quiz</div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {[
-              ['Show up by 7:50', 'Doors open 8:00, kick‑off 8:30 sharp'],
+              ['Show up by 7:50', 'Doors open 8:00, kick-off 8:30 sharp'],
               ['Sharpen your pop culture', 'Round 3 has been brutal lately'],
               ['No phones at the table', 'Ironclad. We will boo.'],
             ].map((x, i) => (
               <div key={i} style={{
-                background: QED.paper, border: `1.5px solid ${QED.hairlineStrong}`, borderRadius: QED.rMd,
-                padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10,
+                display: 'flex', gap: 14, alignItems: 'flex-start',
+                padding: '10px 0',
+                borderBottom: i < 2 ? `1px solid ${QED.hairline}` : 'none',
               }}>
-                <span style={{ fontFamily: QED.mono, fontSize: 11, color: QED.orange, fontWeight: 700 }}>{String(i + 1).padStart(2, '0')}</span>
+                <span style={{ fontFamily: QED.mono, fontSize: 13, color: QED.orange, fontWeight: 700, lineHeight: 1, paddingTop: 2, width: 20, flexShrink: 0 }}>{String(i + 1).padStart(2, '0')}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontFamily: QED.sans, fontSize: 14, fontWeight: 700, color: QED.ink }}>{x[0]}</div>
-                  <div style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, marginTop: 1 }}>{x[1]}</div>
+                  <div style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, marginTop: 2 }}>{x[1]}</div>
                 </div>
               </div>
             ))}

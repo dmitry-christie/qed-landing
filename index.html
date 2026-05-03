@@ -10,8 +10,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="QED">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="icon" href="assets/qed-logo.jpg">
-<link rel="apple-touch-icon" href="assets/qed-logo.jpg">
+<link rel="icon" href="Logo -Quiz-02.png">
+<link rel="apple-touch-icon" href="Logo -Quiz-02.png">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,17 +99,19 @@
 <script type="text/babel" src="qed-listing.jsx"></script>
 <script type="text/babel" src="qed-detail.jsx"></script>
 <script type="text/babel" src="qed-other.jsx"></script>
+<script type="text/babel" src="qed-profile.jsx"></script>
 
 <script type="text/babel" data-presets="react">
   const FRAME_W = 402;
   const FRAME_H = 874;
 
-  const SCREENS = ['home', 'listing', 'detail', 'success'];
+  const SCREENS = ['home', 'listing', 'detail', 'success', 'profile'];
   const SCREEN_LABEL = {
     home: '01 · Home',
     listing: '02 · Events',
     detail: '03 · Booking',
     success: '04 · Confirmed',
+    profile: '05 · Profile',
   };
 
   function App() {
@@ -118,6 +120,7 @@
     const [guests, setGuests] = React.useState(4);
     const [scrollToForm, setScrollToForm] = React.useState(false);
     const [explainerSeen, setExplainerSeen] = React.useState(false);
+    const [city, setCity] = React.useState('Valencia');
     const isMobile = window.innerWidth < 500;
 
     // Hide boot loader once mounted
@@ -163,6 +166,7 @@
     const goListing = () => setScreen('listing');
     const goDetail  = (ev, opts = {}) => { if (ev) setEvent(ev); setScrollToForm(!!opts.scrollToForm); setScreen('detail'); };
     const goDetailForm = (ev) => goDetail(ev, { scrollToForm: true });
+    const goProfile = () => setScreen('profile');
     const goSuccess = ({ event: ev, guests: g } = {}) => {
       if (ev) setEvent(ev);
       if (typeof g === 'number') setGuests(g);
@@ -172,13 +176,15 @@
     const renderScreen = () => {
       switch (screen) {
         case 'home':
-          return <HomeScreen onSeeEvents={goListing} explainerSeen={explainerSeen} />;
+          return <HomeScreen city={city} onCityChange={setCity} onSeeEvents={goListing} explainerSeen={explainerSeen} onProfile={goProfile} />;
         case 'listing':
-          return <ListingScreen tweaks={{ showExplainer: true }} onSelectEvent={goDetail} onReserve={goDetailForm} onHome={goHome} onExplainerDismiss={() => setExplainerSeen(true)} />;
+          return <ListingScreen city={city} onCityChange={setCity} tweaks={{ showExplainer: true }} onSelectEvent={goDetail} onReserve={goDetailForm} onHome={goHome} onExplainerDismiss={() => setExplainerSeen(true)} onProfile={goProfile} />;
         case 'detail':
-          return <DetailScreen event={event} onBack={goListing} onReserve={goSuccess} scrollToForm={scrollToForm} />;
+          return <DetailScreen event={event} onBack={goListing} onReserve={goSuccess} scrollToForm={scrollToForm} onProfile={goProfile} />;
         case 'success':
-          return <SuccessScreen event={event} guests={guests} onSelectEvent={goDetail} onHome={goListing} />;
+          return <SuccessScreen event={event} guests={guests} onSelectEvent={goDetail} onHome={goListing} onProfile={goProfile} />;
+        case 'profile':
+          return <ProfileScreen onHome={goHome} />;
         default:
           return null;
       }

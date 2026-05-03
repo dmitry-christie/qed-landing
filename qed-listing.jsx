@@ -69,6 +69,7 @@ function CountdownPill({ hours, color = 'red' }) {
 
 function EventCard({ event, onClick, onReserve, layout = 'rich' }) {
   const lowSpots = event.spots <= 10;
+  const heroH = event.special ? 168 : 140;
   return (
     <div onClick={onClick} style={{
       background: QED.paper, borderRadius: QED.rLg,
@@ -79,29 +80,28 @@ function EventCard({ event, onClick, onReserve, layout = 'rich' }) {
     }}>
       {/* Photo */}
       <div style={{ position: 'relative' }}>
-        <VenuePlaceholder height={140} label={event.title} tone={event.tone} />
-        {/* Top row badges */}
-        <div style={{ position: 'absolute', top: 10, left: 10, right: 10, display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+        <VenuePlaceholder height={heroH} label={event.title} tone={event.tone} />
+        {/* Top row — area pill only */}
+        <div style={{ position: 'absolute', top: 10, left: 10 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.95)', padding: '5px 10px', borderRadius: 999, border: `1px solid ${QED.ink}` }}>
             {Icon.pin(11, QED.ink)}
             <span style={{ fontFamily: QED.sans, fontSize: 12, fontWeight: 700, color: QED.ink }}>{event.area}</span>
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {event.discount > 0 && <Badge color="orange">{event.discount}% off</Badge>}
-          </div>
         </div>
-        <div style={{ position: 'absolute', bottom: 10, left: 10, display: 'flex', gap: 6 }}>
+        {/* Bottom badges — centered, wraps gracefully for 4+ */}
+        <div style={{ position: 'absolute', bottom: 10, left: 10, right: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          {event.discount > 0 && <Badge color="orange">{event.discount}% off</Badge>}
           {event.special && <Badge color="ink"><span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>⭐ {event.special.name}</span></Badge>}
-          {event.hot && !event.special && <Badge color="red"><span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>{Icon.flame(10, '#fff')} Almost full</span></Badge>}
+          {event.hot && <Badge color="red"><span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>{Icon.flame(10, '#fff')} Almost full</span></Badge>}
         </div>
       </div>
       {/* Body */}
       <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div>
-          <div style={{ fontFamily: QED.sans, fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: QED.inkSoft }}>
-            Pub Quiz · {event.dateLabel}
+          <div style={{ fontFamily: QED.mono, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: QED.inkMute }}>
+            {event.dateLabel} · {event.time}
           </div>
-          <div style={{ fontFamily: QED.sans, fontSize: 19, fontWeight: 800, color: QED.ink, letterSpacing: '-0.02em', marginTop: 2, lineHeight: 1.15 }}>
+          <div style={{ fontFamily: QED.sans, fontSize: 19, fontWeight: 800, color: QED.ink, letterSpacing: '-0.02em', marginTop: 3, lineHeight: 1.15 }}>
             {event.title}
           </div>
         </div>
@@ -109,12 +109,10 @@ function EventCard({ event, onClick, onReserve, layout = 'rich' }) {
         {/* Meta row */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: QED.sans, fontSize: 13, color: QED.ink, fontWeight: 600 }}>
-            {Icon.clock(13, QED.inkSoft)} {event.time}
-          </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: QED.sans, fontSize: 13, color: QED.ink, fontWeight: 600 }}>
             {Icon.users(13, QED.inkSoft)} {event.spots} spots left
           </span>
           <Badge color="ink">{event.lang}</Badge>
+          {event.host && <span style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft }}>Host: {event.host}</span>}
         </div>
 
         {/* Venue amenities */}
@@ -166,7 +164,7 @@ function EventCard({ event, onClick, onReserve, layout = 'rich' }) {
   );
 }
 
-function ListingScreen({ tweaks, onSelectEvent, onReserve, onHome, onExplainerDismiss }) {
+function ListingScreen({ tweaks, onSelectEvent, onReserve, onHome, onExplainerDismiss, city = 'Valencia', onCityChange, onProfile }) {
   const [explainerOpen, setExplainerOpen] = React.useState(true);
   const [filters, setFilters] = React.useState({ day: 'Any', area: 'Any', lang: 'Any', discount: false });
   const [scrolled, setScrolled] = React.useState(false);
@@ -184,11 +182,11 @@ function ListingScreen({ tweaks, onSelectEvent, onReserve, onHome, onExplainerDi
 
   return (
     <div onScroll={onScroll} style={{ height: '100%', overflow: 'auto', background: QED.cream }}>
-      <QEDHeader scrolled={scrolled} onLogo={onHome} />
+      <QEDHeader scrolled={scrolled} onLogo={onHome} onProfile={onProfile} />
 
       {/* Title row */}
       <div style={{ padding: '14px 16px 4px' }}>
-        <CitySelector city="Valencia" />
+        <CitySelector city={city} onCityChange={onCityChange} />
         <div style={{ fontFamily: QED.sans, fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: QED.inkSoft, marginTop: 14 }}>
           Pub Quiz · This week
         </div>
