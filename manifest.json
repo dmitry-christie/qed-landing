@@ -1,0 +1,18 @@
+{
+  "name": "QED Valencia",
+  "short_name": "QED",
+  "description": "Pub quiz nights in Valencia",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E8E2D2",
+  "theme_color": "#1F1A14",
+  "icons": [
+    {
+      "src": "assets/qed-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

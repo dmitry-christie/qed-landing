@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>QED Valencia · Pub Quiz Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E8E2D2">
+<meta name="description" content="Interactive prototype for QED — pub quiz nights in Valencia.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="QED">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="assets/qed-logo.jpg">
+<link rel="apple-touch-icon" href="assets/qed-logo.jpg">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; min-height: 100%; background: #E8E2D2; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #1F1A14; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .ios-scroll { -webkit-overflow-scrolling: touch; }
+
+  .stage {
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 32px 16px 40px; gap: 18px;
+    background:
+      radial-gradient(1200px 600px at 20% -10%, rgba(245,197,24,0.18), transparent 60%),
+      radial-gradient(900px 500px at 100% 100%, rgba(232,99,26,0.15), transparent 55%),
+      #E8E2D2;
+  }
+  .caption { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: rgba(31,26,20,0.55); letter-spacing: 0.06em; text-transform: uppercase; text-align: center; }
+  .caption strong { color: #1F1A14; font-weight: 700; }
+  .footer-note { font-size: 11px; color: rgba(31,26,20,0.45); text-align: center; max-width: 360px; line-height: 1.5; }
+
+  /* Frame wrapper — fixed phone size, scaled down on narrow viewports.
+     The inner .frame is exactly 402×874; the wrapper uses CSS variables set
+     by JS so it reserves the right scaled height (no clipping at the bottom). */
+  .frame-wrap { position: relative; display: flex; justify-content: center; }
+  .frame-scaler {
+    width: 402px; height: 874px; transform-origin: top left;
+    transform: scale(var(--qed-scale, 1));
+    will-change: transform;
+  }
+  .frame-outer {
+    width: calc(402px * var(--qed-scale, 1));
+    height: calc(874px * var(--qed-scale, 1));
+    position: relative;
+  }
+
+  /* Mobile full-screen: no frame, no stage padding */
+  @media (max-width: 499px) {
+    .stage { padding: 0; gap: 0; background: #FBF6EA; min-height: 100dvh; }
+    .caption, .footer-note { display: none; }
+  }
+
+  /* Loader while Babel compiles JSX (~1-3s on first load) */
+  .boot {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: #E8E2D2; z-index: 9999; transition: opacity .25s ease; pointer-events: none;
+  }
+  .boot.hidden { opacity: 0; }
+  .boot-card { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px; }
+  .boot-logo { width: 96px; height: 96px; border-radius: 24px; background: #1F1A14; color: #F5C518; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 30px; letter-spacing: -0.04em; box-shadow: 4px 4px 0 0 #E8631A; }
+  .boot-text { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: rgba(31,26,20,0.6); letter-spacing: 0.08em; text-transform: uppercase; }
+  .dot { display: inline-block; width: 6px; height: 6px; margin: 0 2px; border-radius: 999px; background: #1F1A14; opacity: .25; animation: pulse 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: .15s; }
+  .dot:nth-child(3) { animation-delay: .3s; }
+  @keyframes pulse { 0%, 100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+
+  /* Crossfade between screens for nicer transitions */
+  @keyframes screen-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .screen-anim { animation: screen-in 220ms cubic-bezier(.2,.7,.2,1); }
+</style>
+</head>
+<body>
+
+<div id="boot" class="boot">
+  <div class="boot-card">
+    <div class="boot-logo">QED</div>
+    <div class="boot-text">Loading prototype<span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  </div>
+</div>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="qed-tokens.jsx"></script>
+<script type="text/babel" src="qed-ui.jsx"></script>
+<script type="text/babel" src="qed-shell.jsx"></script>
+<script type="text/babel" src="qed-listing.jsx"></script>
+<script type="text/babel" src="qed-detail.jsx"></script>
+<script type="text/babel" src="qed-other.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+  const FRAME_W = 402;
+  const FRAME_H = 874;
+
+  const SCREENS = ['home', 'listing', 'detail', 'success'];
+  const SCREEN_LABEL = {
+    home: '01 · Home',
+    listing: '02 · Events',
+    detail: '03 · Booking',
+    success: '04 · Confirmed',
+  };
+
+  function App() {
+    const [screen, setScreen] = React.useState('home');
+    const [event, setEvent]   = React.useState(QED_EVENTS[0]);
+    const [guests, setGuests] = React.useState(4);
+    const [scrollToForm, setScrollToForm] = React.useState(false);
+    const [explainerSeen, setExplainerSeen] = React.useState(false);
+    const isMobile = window.innerWidth < 500;
+
+    // Hide boot loader once mounted
+    React.useEffect(() => {
+      const b = document.getElementById('boot');
+      if (b) {
+        b.classList.add('hidden');
+        setTimeout(() => b && b.parentNode && b.parentNode.removeChild(b), 280);
+      }
+    }, []);
+
+    // Reset scroll inside the iOS frame whenever the screen changes
+    const scrollHostRef = React.useRef(null);
+    React.useEffect(() => {
+      const host = scrollHostRef.current;
+      if (!host) return;
+      const scroller = host.querySelector('[data-screen-root]');
+      if (scroller) scroller.scrollTop = 0;
+    }, [screen]);
+
+    // Auto-scale the phone frame to fit the viewport width. Measure the
+    // PARENT (stage) so the wrap's own children don't force it open.
+    React.useEffect(() => {
+      const update = () => {
+        const wrap = scrollHostRef.current;
+        if (!wrap) return;
+        const parent = wrap.parentElement;
+        if (!parent) return;
+        const cs = getComputedStyle(parent);
+        const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+        const available = parent.clientWidth - padX;
+        const scale = Math.min(1, available / FRAME_W);
+        wrap.style.setProperty('--qed-scale', scale.toFixed(4));
+      };
+      update();
+      const ro = new ResizeObserver(update);
+      if (scrollHostRef.current?.parentElement) ro.observe(scrollHostRef.current.parentElement);
+      window.addEventListener('resize', update);
+      return () => { ro.disconnect(); window.removeEventListener('resize', update); };
+    }, []);
+
+    const goHome    = () => setScreen('home');
+    const goListing = () => setScreen('listing');
+    const goDetail  = (ev, opts = {}) => { if (ev) setEvent(ev); setScrollToForm(!!opts.scrollToForm); setScreen('detail'); };
+    const goDetailForm = (ev) => goDetail(ev, { scrollToForm: true });
+    const goSuccess = ({ event: ev, guests: g } = {}) => {
+      if (ev) setEvent(ev);
+      if (typeof g === 'number') setGuests(g);
+      setScreen('success');
+    };
+
+    const renderScreen = () => {
+      switch (screen) {
+        case 'home':
+          return <HomeScreen onSeeEvents={goListing} explainerSeen={explainerSeen} />;
+        case 'listing':
+          return <ListingScreen tweaks={{ showExplainer: true }} onSelectEvent={goDetail} onReserve={goDetailForm} onHome={goHome} onExplainerDismiss={() => setExplainerSeen(true)} />;
+        case 'detail':
+          return <DetailScreen event={event} onBack={goListing} onReserve={goSuccess} scrollToForm={scrollToForm} />;
+        case 'success':
+          return <SuccessScreen event={event} guests={guests} onSelectEvent={goDetail} onHome={goListing} />;
+        default:
+          return null;
+      }
+    };
+
+    if (isMobile) {
+      return (
+        <div className="stage" style={{ padding: 0, justifyContent: 'flex-start' }}>
+          <div ref={scrollHostRef} style={{ width: '100%', height: '100dvh', position: 'relative', overflow: 'hidden' }}>
+            <div data-screen-root key={screen} className="screen-anim" style={{ height: '100%', overflow: 'hidden' }}>
+              {renderScreen()}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="stage">
+        <div className="caption">
+          <strong>QED Valencia</strong> · interactive prototype · {SCREEN_LABEL[screen]}
+        </div>
+
+        <div className="frame-wrap" ref={scrollHostRef}>
+          <div className="frame-outer">
+            <div className="frame-scaler">
+              <IOSDevice width={FRAME_W} height={FRAME_H}>
+                <div data-screen-root key={screen} className="screen-anim" style={{ height: '100%', overflow: 'hidden' }}>
+                  {renderScreen()}
+                </div>
+              </IOSDevice>
+            </div>
+          </div>
+        </div>
+
+        <div className="footer-note">
+          Tap through the flow: pick a quiz → reserve → confirmation. Events &amp; pricing are illustrative.
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
