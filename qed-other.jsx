@@ -143,7 +143,7 @@ function HomeScreen({ tweaks, onSeeEvents, explainerSeen, city = 'Valencia', onC
         <QEDButton size="lg" onClick={onSeeEvents}>Reserve this week →</QEDButton>
       </div>
 
-      <HowItWorksModal open={howOpen} onClose={() => setHowOpen(false)} header="How QED works" />
+      <HowItWorksModal open={howOpen} onClose={() => setHowOpen(false)} onSeeEvents={onSeeEvents} header="How QED works" />
     </div>
   );
 }
@@ -227,6 +227,17 @@ function SuccessScreen({ tweaks, event, guests = 4, onSelectEvent, onHome, onPro
               label={e.paymentRequired ? 'Paid online' : 'Pay at venue'}
               value={e.paymentRequired ? `€${total} · payment confirmed ✓` : `€${total} · cash or card`}
             />
+          </div>
+
+          {/* QR entry code */}
+          <div style={{ padding: '14px 18px 16px', borderTop: `1.5px dashed ${QED.ink}`, display: 'flex', gap: 14, alignItems: 'center' }}>
+            <div style={{ padding: 6, background: '#fff', border: `1.5px solid ${QED.ink}`, borderRadius: QED.rSm, boxShadow: `2px 2px 0 0 ${QED.ink}`, flexShrink: 0 }}>
+              <QRCodePlaceholder size={90} value="QED-4421" />
+            </div>
+            <div>
+              <div style={{ fontFamily: QED.mono, fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', color: QED.ink }}>QED-4421</div>
+              <div style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, marginTop: 4, lineHeight: 1.45 }}>Show this at the venue — also sent to your email.</div>
+            </div>
           </div>
         </div>
 
@@ -330,7 +341,10 @@ function SuccessScreen({ tweaks, event, guests = 4, onSelectEvent, onHome, onPro
             {/* Stats grid */}
             <div>
               <div style={{ fontFamily: QED.sans, fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: QED.inkSoft }}>Your stats</div>
-              <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div style={{ marginTop: 8 }}>
+                <LoyaltyCard />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 {[
                   { label: 'Average score', value: '10.16', bg: QED.yellowSoft },
                   { label: 'Attended events', value: '6', bg: QED.greenSoft },

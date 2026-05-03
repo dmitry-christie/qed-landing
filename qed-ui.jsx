@@ -160,6 +160,22 @@ const Icon = {
       <path d="M8 16.5c0-2.5 1.7-4 4-4s4 1.5 4 4c0 2-1.5 3.5-4 3.5S8 18.5 8 16.5z"/>
     </svg>
   ),
+  qr: (s = 14, c = QED.ink) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+      <rect x="2" y="2" width="8" height="8" rx="1" stroke={c} strokeWidth="2"/>
+      <rect x="14" y="2" width="8" height="8" rx="1" stroke={c} strokeWidth="2"/>
+      <rect x="2" y="14" width="8" height="8" rx="1" stroke={c} strokeWidth="2"/>
+      <rect x="5" y="5" width="2" height="2" fill={c}/>
+      <rect x="17" y="5" width="2" height="2" fill={c}/>
+      <rect x="5" y="17" width="2" height="2" fill={c}/>
+      <rect x="14" y="14" width="2" height="2" fill={c}/>
+      <rect x="18" y="14" width="2" height="2" fill={c}/>
+      <rect x="16" y="16" width="2" height="2" fill={c}/>
+      <rect x="20" y="16" width="2" height="2" fill={c}/>
+      <rect x="14" y="18" width="2" height="2" fill={c}/>
+      <rect x="18" y="18" width="2" height="2" fill={c}/>
+    </svg>
+  ),
 };
 
 // Venue photo placeholder — uses brand palette as comic-poster tones
@@ -275,3 +291,63 @@ function ComicBurst({ size = 48, color = '#F5C518', stroke = '#1F1A14', children
   );
 }
 window.ComicBurst = ComicBurst;
+
+// Fake-but-convincing QR code placeholder — proper finder patterns + timing + hashed data cells
+function QRCodePlaceholder({ size = 120, value = 'QED' }) {
+  const N = 21; // QR v1 grid
+  const cs = size / N;
+
+  const finderAt = (r0, c0, r, c) => {
+    const lr = r - r0, lc = c - c0;
+    if (lr < 0 || lr > 6 || lc < 0 || lc > 6) return null;
+    if (lr === 0 || lr === 6 || lc === 0 || lc === 6) return true;
+    if (lr === 1 || lr === 5 || lc === 1 || lc === 5) return false;
+    return true;
+  };
+
+  const isSep = (r, c) =>
+    (r === 7 && c <= 7) || (r === 7 && c >= N - 8) ||
+    (r === N - 8 && c <= 7) ||
+    (c === 7 && r <= 7) || (c === N - 8 && r <= 7) ||
+    (c === 7 && r >= N - 8);
+
+  const timingAt = (r, c) => {
+    if (r === 6 && c > 7 && c < N - 8) return c % 2 === 0;
+    if (c === 6 && r > 7 && r < N - 8) return r % 2 === 0;
+    return null;
+  };
+
+  const dataAt = (r, c) => {
+    let h = 5381;
+    const key = `${value}|${r}|${c}`;
+    for (let i = 0; i < key.length; i++) h = (((h << 5) + h) ^ key.charCodeAt(i)) >>> 0;
+    return h % 3 !== 0;
+  };
+
+  const darks = [];
+  for (let r = 0; r < N; r++) {
+    for (let c = 0; c < N; c++) {
+      const tl = finderAt(0, 0, r, c);
+      const tr = finderAt(0, N - 7, r, c);
+      const bl = finderAt(N - 7, 0, r, c);
+      let dark;
+      if (tl !== null) dark = tl;
+      else if (tr !== null) dark = tr;
+      else if (bl !== null) dark = bl;
+      else if (isSep(r, c)) dark = false;
+      else { const t = timingAt(r, c); dark = t !== null ? t : dataAt(r, c); }
+      if (dark) darks.push(r * N + c);
+    }
+  }
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+      <rect width={size} height={size} fill="#fff"/>
+      {darks.map(idx => {
+        const r = Math.floor(idx / N), c = idx % N;
+        return <rect key={idx} x={c * cs} y={r * cs} width={cs} height={cs} fill="#1F1A14"/>;
+      })}
+    </svg>
+  );
+}
+window.QRCodePlaceholder = QRCodePlaceholder;

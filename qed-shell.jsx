@@ -111,7 +111,7 @@ function MenuSheet({ onClose, onNavEvents }) {
         </div>
       </div>
 
-      <HowItWorksModal open={howOpen} onClose={() => setHowOpen(false)} />
+      <HowItWorksModal open={howOpen} onClose={() => setHowOpen(false)} onSeeEvents={() => { onNavEvents && onNavEvents(); onClose(); }} />
     </>
   );
 }
@@ -424,7 +424,7 @@ function HowItWorksPoints() {
 }
 
 // Reusable "How it works" modal — used by listing dismissable card AND home button
-function HowItWorksModal({ open, onClose, header = 'How QED works' }) {
+function HowItWorksModal({ open, onClose, onSeeEvents, header = 'How QED works' }) {
   if (!open) return null;
   const [videoOpen, setVideoOpen] = React.useState(false);
   return (
@@ -492,9 +492,9 @@ function HowItWorksModal({ open, onClose, header = 'How QED works' }) {
             <svg width="11" height="12" viewBox="0 0 11 12"><path d="M1 1v10l9-5L1 1z" fill="#fff" /></svg>
             Watch 30s video
           </button>
-          <button onClick={onClose} style={{
+          <button onClick={() => { onSeeEvents && onSeeEvents(); onClose(); }} style={{
             flex: 1, height: 40, padding: '0 16px',
-            background: QED.orange, color: '#fff', border: 'none', borderRadius: 999,
+            background: QED.red, color: '#fff', border: 'none', borderRadius: 999,
             fontFamily: QED.sans, fontSize: 14, fontWeight: 800, cursor: 'pointer'
           }}>Got it — see events</button>
         </div>

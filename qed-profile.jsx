@@ -159,6 +159,60 @@ function ProfileCommsSection({ comms, setComms }) {
   );
 }
 
+// ── Loyalty Card ─────────────────────────────────────────────────────────
+function LoyaltyCard() {
+  const VISITS = 6;
+  const TO_GO = 9 - VISITS;
+  const stamps = Array.from({ length: 10 }, (_, i) => ({ earned: i < VISITS, isFree: i === 9 }));
+
+  return (
+    <div style={{
+      background: QED.yellowSoft, border: `1.5px solid ${QED.ink}`,
+      borderRadius: QED.rLg, boxShadow: `3px 3px 0 0 ${QED.ink}`,
+      padding: '14px 14px 16px', marginBottom: 14,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+        <div>
+          <div style={{ fontFamily: QED.mono, fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: QED.inkMute, marginBottom: 3 }}>
+            QED Loyalty Card
+          </div>
+          <div style={{ fontFamily: QED.sans, fontSize: 17, fontWeight: 900, color: QED.ink, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            Every 10th quiz on us
+          </div>
+        </div>
+        <Badge color="yellow">{VISITS}/9</Badge>
+      </div>
+
+      {/* 5×2 stamp grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+        {stamps.map(({ earned, isFree }, i) => (
+          <div key={i} style={{
+            aspectRatio: '1 / 1', borderRadius: 999,
+            background: earned ? QED.orange : isFree ? QED.yellow : 'transparent',
+            border: `2px ${earned || isFree ? 'solid' : 'dashed'} ${earned || isFree ? QED.ink : QED.hairlineStrong}`,
+            boxShadow: earned || isFree ? `2px 2px 0 0 ${QED.ink}` : 'none',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1,
+          }}>
+            {earned && !isFree && Icon.check(13, '#fff')}
+            {isFree && (
+              <>
+                {Icon.sparkle(12, QED.orange)}
+                <span style={{ fontFamily: QED.sans, fontSize: 7, fontWeight: 900, color: QED.ink, letterSpacing: '0.04em', textTransform: 'uppercase', lineHeight: 1 }}>FREE</span>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, marginTop: 10 }}>
+        {TO_GO > 0
+          ? `${TO_GO} more ${TO_GO === 1 ? 'visit' : 'visits'} to unlock your free quiz night`
+          : 'Your next visit is free — just show up! 🎉'}
+      </div>
+    </div>
+  );
+}
+
 // ── My Reservations ───────────────────────────────────────────────────────
 function ProfileReservationsSection({ onSheet }) {
   const statusBadge = (s) =>
@@ -167,7 +221,9 @@ function ProfileReservationsSection({ onSheet }) {
                         <Badge color="red">Cancelled</Badge>;
 
   return (
-    <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div style={{ paddingTop: 12 }}>
+      <LoyaltyCard />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       {PROFILE_RESERVATIONS.map(r => {
         const ev = QED_EVENTS[r.eventIdx];
         return (
@@ -201,16 +257,20 @@ function ProfileReservationsSection({ onSheet }) {
           </div>
         );
       })}
+      </div>
     </div>
   );
 }
 
 function ReservationActionSheet({ res, onClose }) {
+  const [view, setView] = React.useState('actions');
   const ev = QED_EVENTS[res.eventIdx];
   const ACTIONS = [
-    { label: 'Add to calendar',    icon: Icon.cal(16, QED.ink)   },
-    { label: 'Share reservation',  icon: Icon.globe(16, QED.ink) },
-    { label: 'Cancel reservation', icon: Icon.close(16, QED.red), danger: true },
+    ...(res.status === 'active' ? [{ label: 'Show QR code', icon: Icon.qr(16, QED.ink), onAction: () => setView('qr') }] : []),
+    { label: 'Modify reservation',  icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 20h4l10.5-10.5a2.83 2.83 0 0 0-4-4L4 16v4z" stroke={QED.ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.5 6.5l4 4" stroke={QED.ink} strokeWidth="2" strokeLinecap="round"/></svg> },
+    { label: 'Add to calendar',     icon: Icon.cal(16, QED.ink)   },
+    { label: 'Share reservation',   icon: Icon.globe(16, QED.ink) },
+    { label: 'Cancel reservation',  icon: Icon.close(16, QED.red), danger: true },
   ];
   return (
     <div onClick={onClose} style={{
@@ -231,32 +291,57 @@ function ReservationActionSheet({ res, onClose }) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '10px 16px 12px', borderBottom: `1px solid ${QED.hairline}`,
         }}>
-          <div>
-            <div style={{ fontFamily: QED.sans, fontSize: 15, fontWeight: 800, color: QED.ink }}>{ev.title}</div>
-            <div style={{ fontFamily: QED.mono, fontSize: 10, color: QED.inkMute, fontWeight: 700, marginTop: 2, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-              Edition #{res.edition} · {res.date}
+          {view === 'qr' ? (
+            <button onClick={() => setView('actions')} style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontFamily: QED.sans, fontSize: 14, fontWeight: 700, color: QED.ink,
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke={QED.ink} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              Back
+            </button>
+          ) : (
+            <div>
+              <div style={{ fontFamily: QED.sans, fontSize: 15, fontWeight: 800, color: QED.ink }}>{ev.title}</div>
+              <div style={{ fontFamily: QED.mono, fontSize: 10, color: QED.inkMute, fontWeight: 700, marginTop: 2, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                Edition #{res.edition} · {res.date}
+              </div>
             </div>
-          </div>
+          )}
           <button onClick={onClose} aria-label="Close" style={{
             width: 30, height: 30, borderRadius: 999, border: 'none', background: 'transparent',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           }}>{Icon.close(16, QED.inkSoft)}</button>
         </div>
-        <div style={{ padding: '6px 16px 44px', display: 'flex', flexDirection: 'column' }}>
-          {ACTIONS.map((a, i) => (
-            <button key={i} onClick={onClose} style={{
-              width: '100%', display: 'flex', alignItems: 'center', gap: 14,
-              padding: '15px 4px', background: 'none', border: 'none', cursor: 'pointer',
-              borderBottom: i < ACTIONS.length - 1 ? `1px solid ${QED.hairline}` : 'none',
-              textAlign: 'left',
-            }}>
-              <div style={{ opacity: a.danger ? 1 : 0.55 }}>{a.icon}</div>
-              <span style={{ fontFamily: QED.sans, fontSize: 15, fontWeight: 600, color: a.danger ? QED.red : QED.ink }}>
-                {a.label}
-              </span>
-            </button>
-          ))}
-        </div>
+
+        {view === 'actions' ? (
+          <div style={{ padding: '6px 16px 44px', display: 'flex', flexDirection: 'column' }}>
+            {ACTIONS.map((a, i) => (
+              <button key={i} onClick={() => a.onAction ? a.onAction() : onClose()} style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+                padding: '15px 4px', background: 'none', border: 'none', cursor: 'pointer',
+                borderBottom: i < ACTIONS.length - 1 ? `1px solid ${QED.hairline}` : 'none',
+                textAlign: 'left',
+              }}>
+                <div style={{ opacity: a.danger ? 1 : 0.55 }}>{a.icon}</div>
+                <span style={{ fontFamily: QED.sans, fontSize: 15, fontWeight: 600, color: a.danger ? QED.red : QED.ink }}>
+                  {a.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div style={{ padding: '24px 16px 44px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+            <div style={{ padding: 8, background: '#fff', border: `1.5px solid ${QED.ink}`, borderRadius: QED.rMd, boxShadow: `3px 3px 0 0 ${QED.ink}` }}>
+              <QRCodePlaceholder size={180} value={`QED-${res.edition}`} />
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: QED.mono, fontSize: 14, fontWeight: 700, color: QED.ink, letterSpacing: '0.06em' }}>QED-{res.edition}</div>
+              <div style={{ fontFamily: QED.sans, fontSize: 13, color: QED.inkSoft, marginTop: 4 }}>{ev.title} · {res.date}</div>
+              <div style={{ fontFamily: QED.sans, fontSize: 11, color: QED.inkMute, marginTop: 3 }}>Show at the venue · also sent to your email</div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -319,6 +404,15 @@ function ProfileAchievementsSection() {
 }
 
 // ── Personal Stats ────────────────────────────────────────────────────────
+const EDITION_HISTORY = [
+  { edition: 195, eventIdx: 0, date: 'Apr 14', score: 11, rank: 2 },
+  { edition: 191, eventIdx: 1, date: 'Mar 31', score: 9,  rank: 4 },
+  { edition: 188, eventIdx: 3, date: 'Mar 20', score: 13, rank: 1 },
+  { edition: 183, eventIdx: 0, date: 'Mar 3',  score: 8,  rank: 3 },
+  { edition: 179, eventIdx: 2, date: 'Feb 19', score: 12, rank: 2 },
+  { edition: 175, eventIdx: 1, date: 'Feb 3',  score: 8,  rank: 5 },
+];
+
 function ProfileStatsSection() {
   const CARDS = [
     { label: 'Average score',   value: '10.16', bg: QED.yellowSoft },
@@ -380,6 +474,55 @@ function ProfileStatsSection() {
             </g>
           ))}
         </svg>
+      </div>
+
+      {/* Edition history */}
+      <div style={{
+        marginTop: 12, background: QED.paper, border: `1.5px solid ${QED.ink}`,
+        borderRadius: QED.rMd, boxShadow: `2px 2px 0 0 ${QED.ink}`, overflow: 'hidden',
+      }}>
+        <div style={{
+          padding: '10px 14px', borderBottom: `1px solid ${QED.hairline}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <span style={{ fontFamily: QED.sans, fontSize: 13, fontWeight: 800, color: QED.ink }}>Edition history</span>
+          <span style={{ fontFamily: QED.mono, fontSize: 10, fontWeight: 700, color: QED.inkMute, letterSpacing: '0.05em' }}>
+            {EDITION_HISTORY.length} ATTENDED
+          </span>
+        </div>
+        {EDITION_HISTORY.map((e, i) => {
+          const ev = QED_EVENTS[e.eventIdx];
+          const best = e.score === Math.max(...EDITION_HISTORY.map(x => x.score));
+          const rankLabel = e.rank === 1 ? '1st 🏆' : e.rank === 2 ? '2nd' : e.rank === 3 ? '3rd' : `${e.rank}th`;
+          return (
+            <div key={e.edition} style={{
+              display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
+              borderBottom: i < EDITION_HISTORY.length - 1 ? `1px solid ${QED.hairline}` : 'none',
+              background: best ? QED.yellowSoft : 'transparent',
+            }}>
+              <span style={{
+                fontFamily: QED.mono, fontSize: 11, fontWeight: 700, color: QED.orange,
+                letterSpacing: '0.02em', flexShrink: 0, width: 32,
+              }}>#{e.edition}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: QED.sans, fontSize: 13, fontWeight: 700, color: QED.ink, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {ev.title}
+                </div>
+                <div style={{ fontFamily: QED.mono, fontSize: 10, color: QED.inkMute, fontWeight: 700, marginTop: 2, letterSpacing: '0.03em' }}>
+                  {e.date} · {ev.area}
+                </div>
+              </div>
+              <div style={{ flexShrink: 0, textAlign: 'right' }}>
+                <div style={{ fontFamily: QED.sans, fontSize: 18, fontWeight: 900, color: QED.ink, letterSpacing: '-0.03em', lineHeight: 1 }}>
+                  {e.score}
+                </div>
+                <div style={{ fontFamily: QED.mono, fontSize: 9, fontWeight: 700, color: QED.inkMute, marginTop: 2, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                  {rankLabel}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

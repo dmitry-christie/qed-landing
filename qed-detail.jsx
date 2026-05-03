@@ -386,7 +386,9 @@ function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm, onProfil
         transform: showStickyBar ? 'translateY(0)' : 'translateY(110%)',
         opacity: showStickyBar ? 1 : 0,
         pointerEvents: showStickyBar ? 'auto' : 'none',
-        transition: 'transform 0.35s cubic-bezier(0.25,1,0.5,1), opacity 0.28s ease',
+        transition: showStickyBar
+          ? 'transform 0.38s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease'
+          : 'transform 0.28s cubic-bezier(0.4,0,1,1), opacity 0.2s ease-in',
       }}>
         <div style={{
           background: QED.paper, border: `1.5px solid ${QED.ink}`, borderRadius: QED.rXl,

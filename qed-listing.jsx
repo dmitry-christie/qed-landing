@@ -166,6 +166,8 @@ function EventCard({ event, onClick, onReserve, layout = 'rich' }) {
 
 function ListingScreen({ tweaks, onSelectEvent, onReserve, onHome, onExplainerDismiss, city = 'Valencia', onCityChange, onProfile }) {
   const [explainerOpen, setExplainerOpen] = React.useState(true);
+  const [explainerExpanded, setExplainerExpanded] = React.useState(false);
+  const [videoOpen, setVideoOpen] = React.useState(false);
   const [filters, setFilters] = React.useState({ day: 'Any', area: 'Any', lang: 'Any', discount: false });
   const [scrolled, setScrolled] = React.useState(false);
 
@@ -188,20 +190,86 @@ function ListingScreen({ tweaks, onSelectEvent, onReserve, onHome, onExplainerDi
       <div style={{ padding: '14px 16px 4px' }}>
         <CitySelector city={city} onCityChange={onCityChange} />
         <div style={{ fontFamily: QED.sans, fontSize: 11, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: QED.inkSoft, marginTop: 14 }}>
-          Pub Quiz · This week
+          Pub Quiz · Upcoming
         </div>
         <div style={{ fontFamily: QED.sans, fontSize: 28, fontWeight: 900, color: QED.ink, letterSpacing: '-0.03em', marginTop: 2, lineHeight: 1.05 }}>
-          Tonight's quizzes,<br/>open for booking.
+          Upcoming quizzes,<br/>open for booking.
         </div>
       </div>
 
       {/* Filters */}
       <FilterBar filters={filters} onChange={onChangeFilter} onMore={() => {}} />
 
-      {/* Explainer */}
-      {explainerOpen && tweaks.showExplainer && (
-        <ExplainerCard onDismiss={() => { setExplainerOpen(false); onExplainerDismiss && onExplainerDismiss(); }} />
-      )}
+      {/* New here? */}
+      {explainerOpen && tweaks.showExplainer && (() => {
+        const dismiss = () => { setExplainerOpen(false); onExplainerDismiss && onExplainerDismiss(); };
+        return (
+          <div style={{ margin: '10px 16px 4px', borderRadius: QED.rLg, background: QED.paper, border: `1.5px solid ${QED.ink}`, boxShadow: `4px 4px 0 0 ${QED.yellow}`, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px 8px' }}>
+              <span style={{ fontFamily: QED.sans, fontSize: 12, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: QED.ink }}>
+                New here? 30‑second read
+              </span>
+              <button onClick={dismiss} aria-label="Dismiss" style={{ background: 'none', border: 'none', padding: 4, cursor: 'pointer', display: 'flex', lineHeight: 0 }}>
+                {Icon.close(15, QED.inkSoft)}
+              </button>
+            </div>
+            <div style={{ padding: '0 14px 14px' }}>
+              <div style={{ fontFamily: QED.sans, fontSize: 18, fontWeight: 900, color: QED.ink, letterSpacing: '-0.02em', lineHeight: 1.15, marginBottom: 10 }}>
+                A night out where knowing<br/>stuff pays off.
+              </div>
+              {explainerExpanded && (
+                <p style={{ fontFamily: QED.sans, fontSize: 13, color: QED.inkSoft, lineHeight: 1.55, margin: '0 0 10px', textWrap: 'pretty' }}>
+                  A live trivia night is an evening at a pub where teams of friends answer questions across themed rounds — hosted live, no screens allowed. Think pop culture, history, sport, and music. Whoever scores most wins a bar tab.
+                </p>
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {[
+                  { n: '01', t: 'Pick a night & bring your crew', s: 'Find a venue near you and reserve in 30 seconds. No card needed.' },
+                  { n: '02', t: 'Play, eat, win', s: '4 rounds, 40 questions, 90 minutes. Bar credit and bragging rights every week.' },
+                  { n: '03', t: 'Come back next week', s: 'Regulars get priority booking and climb the city-wide leaderboard.' },
+                ].map((x, i) => (
+                  <div key={i} style={{
+                    display: 'flex', gap: 12, alignItems: 'flex-start',
+                    padding: '8px 0',
+                    borderBottom: i < 2 ? `1px solid ${QED.hairline}` : 'none',
+                  }}>
+                    <span style={{ fontFamily: QED.mono, fontSize: 15, fontWeight: 700, color: QED.orange, lineHeight: 1, width: 26, flexShrink: 0, paddingTop: 1 }}>{x.n}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontFamily: QED.sans, fontSize: 13, fontWeight: 700, color: QED.ink, lineHeight: 1.3 }}>{x.t}</div>
+                      {explainerExpanded && (
+                        <div style={{ fontFamily: QED.sans, fontSize: 12, color: QED.inkSoft, marginTop: 2, lineHeight: 1.4 }}>{x.s}</div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setExplainerExpanded(e => !e)}
+                style={{ background: 'none', border: 'none', padding: '8px 0 0', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+              >
+                <span style={{ fontFamily: QED.sans, fontSize: 12, fontWeight: 700, color: QED.inkSoft }}>
+                  {explainerExpanded ? 'Read less' : 'Read more'}
+                </span>
+                <span style={{ display: 'flex', transition: 'transform 0.15s', transform: explainerExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                  {Icon.chevD(12, QED.inkSoft)}
+                </span>
+              </button>
+              <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
+                <button onClick={() => setVideoOpen(true)} style={{
+                  height: 36, padding: '0 14px', flexShrink: 0,
+                  background: QED.ink, color: '#fff', border: 'none', borderRadius: 999,
+                  fontFamily: QED.sans, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                  display: 'inline-flex', alignItems: 'center', gap: 7,
+                }}>
+                  <svg width="10" height="11" viewBox="0 0 11 12"><path d="M1 1v10l9-5L1 1z" fill="#fff"/></svg>
+                  Watch 30s video
+                </button>
+                <QEDButton size="sm" variant="ghost" full={false} onClick={dismiss} style={{ height: 36 }}>Got it</QEDButton>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Result count */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px 6px' }}>
@@ -222,6 +290,8 @@ function ListingScreen({ tweaks, onSelectEvent, onReserve, onHome, onExplainerDi
       <div style={{ padding: '8px 16px 60px', textAlign: 'center', fontFamily: QED.sans, fontSize: 12, color: QED.inkMute }}>
         Limited tables. Book ahead — pay at the venue or online.
       </div>
+
+      <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
     </div>
   );
 }
