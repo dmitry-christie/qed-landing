@@ -63,6 +63,7 @@ function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm, onProfil
   const [guests, setGuests] = React.useState(4);
   const [agreed, setAgreed] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
+  const [showMore, setShowMore] = React.useState(false);
   const [showStickyBar, setShowStickyBar] = React.useState(true);
   const [inlineCTAEntered, setInlineCTAEntered] = React.useState(false);
   const formRef = React.useRef(null);
@@ -165,14 +166,21 @@ function DetailScreen({ tweaks, onBack, onReserve, event, scrollToForm, onProfil
           </div>
           <p style={{ fontFamily: QED.sans, fontSize: 14, color: QED.ink, lineHeight: 1.5, margin: '6px 0 0', textWrap: 'pretty' }}>
             {showSpecial && e.special
-              ? e.special.description
-              : <>A proper Monday night out in Mestalla. <strong>El Garaje</strong> is a buzzy gastrobar tucked behind the stadium — wood-fired pizza, sharing plates, and a long taplist. Quiz kicks off at 20:30 sharp with our host <strong>Liam</strong>: 4 themed rounds, 40 questions, plus a picture round and a music finale. Winners take home a €60 bar tab, runners-up get free dessert, and last place gets a hug.</>}
+              ? 'One night only. All 4 rounds go full galaxy brain — sci-fi, film lore, Star Wars deep cuts, and a picture round that will make your team question everything. Costumes welcome. Lightsabers at the door.'
+              : 'A live trivia night is an evening at a pub where teams of friends answer questions across themed rounds — hosted live, no screens allowed. Think pop culture, history, sport, and music. Whoever scores most wins a bar tab.'}
           </p>
-          <button style={{
-            marginTop: 8, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-            fontFamily: QED.sans, fontSize: 13, fontWeight: 700, color: QED.orangeDeep,
-            display: 'inline-flex', alignItems: 'center', gap: 4,
-          }}>Read more {Icon.chevR(11, QED.orangeDeep)}</button>
+          {!showSpecial && showMore && (
+            <p style={{ fontFamily: QED.sans, fontSize: 14, color: QED.ink, lineHeight: 1.5, margin: '6px 0 0', textWrap: 'pretty' }}>
+              <strong>El Garaje</strong> is a buzzy gastrobar tucked behind the stadium — wood-fired pizza, sharing plates, and a long taplist. Quiz kicks off at 20:30 sharp with our host <strong>Liam</strong>: 4 themed rounds, 40 questions, plus a picture round and a music finale. Winners take home a €60 bar tab, runners-up get free dessert, and last place gets a hug.
+            </p>
+          )}
+          {!showSpecial && (
+            <button onClick={() => setShowMore(m => !m)} style={{
+              marginTop: 8, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+              fontFamily: QED.sans, fontSize: 13, fontWeight: 700, color: QED.orangeDeep,
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+            }}>{showMore ? 'Show less' : 'Read more'} {Icon.chevR(11, QED.orangeDeep)}</button>
+          )}
         </div>
 
         {/* Quick details */}

@@ -81,22 +81,24 @@ function EventCard({ event, onClick, onReserve, layout = 'rich' }) {
       {/* Photo */}
       <div style={{ position: 'relative' }}>
         <VenuePlaceholder height={heroH} label={event.title} tone={event.tone} />
-        {/* Top row — area pill only */}
+        {/* Area pill — top left of image */}
         <div style={{ position: 'absolute', top: 10, left: 10 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.95)', padding: '5px 10px', borderRadius: 999, border: `1px solid ${QED.ink}` }}>
             {Icon.pin(11, QED.ink)}
             <span style={{ fontFamily: QED.sans, fontSize: 12, fontWeight: 700, color: QED.ink }}>{event.area}</span>
           </div>
         </div>
-        {/* Bottom badges — centered, wraps gracefully for 4+ */}
-        <div style={{ position: 'absolute', bottom: 10, left: 10, right: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-          {event.discount > 0 && <Badge color="orange">{event.discount}% off</Badge>}
-          {event.special && <Badge color="ink"><span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>⭐ {event.special.name}</span></Badge>}
-          {event.hot && <Badge color="red"><span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>{Icon.flame(10, '#fff')} Almost full</span></Badge>}
-        </div>
       </div>
       {/* Body */}
       <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {/* Badges row — lives in body so any number can wrap without covering the image */}
+        {(event.discount > 0 || event.special || event.hot) && (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {event.discount > 0 && <Badge color="orange">{event.discount}% off</Badge>}
+            {event.special && <Badge color="ink"><span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>⭐ {event.special.name}</span></Badge>}
+            {event.hot && <Badge color="red"><span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>{Icon.flame(10, '#fff')} Almost full</span></Badge>}
+          </div>
+        )}
         <div>
           <div style={{ fontFamily: QED.mono, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: QED.inkMute }}>
             {event.dateLabel} · {event.time}
