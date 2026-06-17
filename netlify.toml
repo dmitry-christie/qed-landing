@@ -1,5 +1,10 @@
 [build]
   publish = "."
+  command = "node build.mjs"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 [[headers]]
   for = "/*.jsx"

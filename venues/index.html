@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="v.title">QED for Venues · Fill your venue every week with trivia</title>
+<meta name="description" data-i18n-content="v.metadesc" content="We bring the quiz, you bring the drinks. A weekly trivia night that fills your venue, 0% commission on bar and food, no contracts.">
+<meta name="theme-color" content="#FBF6EA">
+<meta property="og:title" data-i18n-content="v.title" content="QED for Venues · Fill your venue every week with trivia">
+<meta property="og:description" data-i18n-content="v.ogdesc" content="A weekly quiz night that packs your room. 0% commission, cancel anytime.">
+<link rel="icon" href="/shared/qed-logo.png">
+<link rel="apple-touch-icon" href="/shared/qed-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/qed.css">
+<script>window.QED_SITE = "venues";</script>
+<script src="/config.js"></script>
+</head>
+<body class="theme-green">
+
+<header class="nav">
+  <div class="nav__in">
+    <a class="brand" href="/" data-i18n-aria="ui.home" aria-label="QED home">
+      <span class="brand__en"><img src="/shared/qed-logo.png" alt="Quiz Eat Drink"></span>
+      <img class="brand__es" src="/shared/tardeo-logo.svg" alt="Tardeo de Trivia">
+    </a>
+    <button class="nav__toggle" data-i18n-aria="ui.menu" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav__links">
+      <a href="#plans" data-i18n="v.nav.plans">Plans</a>
+      <a href="#calc" data-i18n="v.nav.numbers">Why it works</a>
+      <a href="#get" data-i18n="v.nav.get">What you get</a>
+      <a class="btn btn--sm btn--cta" href="#start" data-i18n="v.cta.start">Get started</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap split" style="--split:1.1fr 0.9fr">
+      <div class="reveal">
+        <span class="tag tag--accent tag--shadow" data-i18n="v.hero.tag">No contracts · Cancel anytime</span>
+        <h1 class="h-display" style="margin-top:20px;max-width:14ch"><span data-i18n="v.hero.h1a">Fill your venue every week with </span><span class="accent" data-i18n="v.hero.h1b">trivia.</span></h1>
+        <p class="lead" style="margin:20px 0 0;max-width:46ch" data-i18n="v.hero.sub">We bring the quiz. You bring the drinks. A weekly night that turns your quiet table-for-two evenings into a room full of regulars, and keeps every cent of the bar.</p>
+        <div class="row" style="gap:12px;margin-top:26px">
+          <a class="btn btn--cta btn--lg" href="#start"><span data-i18n="v.cta.start">Get started</span> <span class="arr">&rarr;</span></a>
+          <a class="btn btn--lg" href="#calc" data-i18n="v.cta.numbers">See why it works</a>
+        </div>
+      </div>
+
+      <div class="reveal deco-hide" data-d="2" aria-hidden="true" style="position:relative;min-height:300px">
+        <div class="scorecard rot-2" style="max-width:300px;margin-left:auto">
+          <div class="scorecard__hd">Thursday · Quiz night <span>Live</span></div>
+          <div class="scorecard__row"><span>Tables booked</span><b style="color:var(--green-ink)">11</b></div>
+          <div class="scorecard__row"><span>Players in</span><b>42</b></div>
+          <div class="scorecard__row"><span>Bar tab</span><b style="color:var(--orange)">climbing ↑</b></div>
+        </div>
+        <div class="stamp rot-3" style="position:absolute;left:-2%;top:-10%;background:var(--paper)">
+          <b style="font-size:15px;color:var(--green-ink)">0%</b><span data-i18n="v.hero.stamp">commission</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
+      <div class="card card--flat reveal statbar4" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)">0%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="v.stat.commission">commission</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff">40+</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="v.stat.players">players a night</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff">100%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="v.stat.weekly">your brand</div></div>
+        <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--orange)">No</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="v.stat.contracts">contracts</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PLANS ============ -->
+  <section id="plans" class="section">
+    <div class="wrap">
+      <div class="reveal" style="max-width:60ch">
+        <span class="eyebrow" data-i18n="v.plans.eyebrow">Two ways to run it</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="v.plans.h2">Pick your format. Keep your bar.</h2>
+        <p class="lead" style="margin-top:12px" data-i18n="v.plans.lead">Both are weekly, both are branded as your venue, both take 0% of food and drink. The difference is who holds the mic.</p>
+      </div>
+
+      <div class="formats reveal" style="margin-top:30px">
+        <div class="card fmt fmt--soon theme-green">
+          <div class="fmt__hd" style="background:var(--accent)">
+            <h3 data-i18n="v.plan.express">QED Express</h3>
+            <span class="tag soon-tag" data-i18n="v.plan.soon">Coming soon</span>
+          </div>
+          <div class="fmt__price">
+            <span class="price-sm" data-i18n="v.plan.expsoon">App-based, you host. Launching soon.</span>
+          </div>
+          <div class="fmt__body">
+            <p class="muted" style="margin:0;line-height:1.5" data-i18n="v.plan.expdesc">Lean and quick. You'll run it off the app with one of your own staff on the mic.</p>
+            <ul class="ticks">
+              <li data-i18n="v.plan.expf1">Around one hour, start to finish</li>
+              <li data-i18n="v.plan.expf2">App-based, multiple-choice rounds</li>
+              <li data-i18n="v.plan.expf3">Your venue provides the host</li>
+              <li data-i18n="v.plan.expf4">Fresh content every week</li>
+            </ul>
+            <span class="btn btn--soon btn--block" data-i18n="v.plan.soon">Coming soon</span>
+          </div>
+        </div>
+
+        <div class="card fmt">
+          <div class="fmt__hd" style="background:var(--ink)">
+            <h3 data-i18n="v.plan.classic">QED Classic</h3>
+            <span class="tag" style="background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.45);color:#fff" data-i18n="v.plan.clastag">We host</span>
+          </div>
+          <div class="fmt__price">
+            <span class="price" style="font-size:26px;color:var(--orange)" data-i18n="v.plan.clasnow">Available now</span>
+            <span class="price-sm" data-i18n="v.plan.clasprice">we host, weekly</span>
+          </div>
+          <div class="fmt__body">
+            <p class="muted" style="margin:0;line-height:1.5" data-i18n="v.plan.clasdesc">The full pub-quiz experience, run by a QED host so your team can work the bar.</p>
+            <ul class="ticks ticks--ink">
+              <li data-i18n="v.plan.clasf1">Four rounds, 40 questions each</li>
+              <li data-i18n="v.plan.clasf2">Classic paper answer sheets</li>
+              <li data-i18n="v.plan.clasf3">A QED host runs the whole night</li>
+              <li data-i18n="v.plan.clasf4">Fresh content every week</li>
+            </ul>
+            <a class="btn btn--dark btn--block" href="#start" style="margin-top:auto" data-i18n="v.cta.classtart">Start with Classic</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card--flat reveal" style="background:var(--green-soft);border-radius:var(--r-md);margin-top:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding:16px 22px">
+        <span style="font-weight:700;display:flex;align-items:center;gap:11px;line-height:1.4"><span class="tag tag--solid" data-i18n="v.plans.addontag">Add-on</span> <span data-i18n="v.plans.addon">Add Social Media Management: event announcements, leaderboard highlights, reels and story templates.</span></span>
+        <a class="btn btn--sm" href="#start" data-i18n="v.plans.addonlink">Add it on</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHY IT WORKS ============ -->
+  <section id="calc" class="section section--tight">
+    <div class="wrap">
+      <div class="reveal" style="max-width:60ch">
+        <span class="eyebrow" data-i18n="v.calc.eyebrow">Why it works</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="v.calc.h2">What a weekly night does for your venue.</h2>
+        <p class="lead" style="margin-top:12px" data-i18n="v.calc.lead">A reason to come in on your quietest night, and a reason to stay for one more round.</p>
+      </div>
+
+      <div class="grid g-3 reveal" style="margin-top:30px">
+        <div class="card pad lift">
+          <h3 class="h3" data-i18n="v.calc.c1t">A fuller room</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.calc.c1d">Teams book ahead and turn up early for a good table. Your quietest weeknight starts to fill.</p>
+        </div>
+        <div class="card pad lift" style="background:var(--cream-soft)">
+          <h3 class="h3" data-i18n="v.calc.c2t">A busier bar</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.calc.c2d">People stay for the whole quiz, eating and drinking as they play. Every cent of the bar stays yours.</p>
+        </div>
+        <div class="card pad lift">
+          <h3 class="h3" data-i18n="v.calc.c3t">Regulars who return</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.calc.c3d">Fresh questions weekly and a live leaderboard turn one-off visitors into a crowd that plans their week around you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHAT YOU GET (bento) ============ -->
+  <section id="get" class="section section--tight">
+    <div class="wrap">
+      <div class="reveal" style="max-width:60ch">
+        <span class="eyebrow" data-i18n="v.get.eyebrow">What you get</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="v.get.h2">A night that runs itself, branded as yours.</h2>
+      </div>
+      <div class="bento reveal" style="margin-top:30px">
+        <div class="card b-feature pad theme-green" style="background:var(--accent);color:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:240px">
+          <span class="tag" style="align-self:flex-start;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);color:#fff" data-i18n="v.get.f0tag">Your brand</span>
+          <div>
+            <h3 class="h3" style="color:#fff;font-size:clamp(22px,2.4vw,28px)" data-i18n="v.get.f0t">Branded as your venue</h3>
+            <p style="margin-top:10px;color:rgba(255,255,255,.9);line-height:1.55" data-i18n="v.get.f0d">Your logo on the screens, not ours. Regulars remember it as your night, because it is.</p>
+          </div>
+        </div>
+        <div class="card b-half pad lift">
+          <h3 class="h3" data-i18n="v.get.f1t">Weekly fresh content</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.get.f1d">A new quiz every week, so your regulars never get a repeat and always come back.</p>
+        </div>
+        <div class="card b-half pad lift" style="background:var(--cream-soft)">
+          <h3 class="h3" data-i18n="v.get.f2t">Leaderboard on your screens</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.get.f2d">A live digital leaderboard up on the venue TVs, driving that one-more-round energy.</p>
+        </div>
+        <div class="card b-half pad lift">
+          <h3 class="h3" data-i18n="v.get.f3t">Promotion assets</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.get.f3d">Posters, table talkers and Instagram templates, ready to fill the room before doors.</p>
+        </div>
+        <div class="card b-half pad lift" style="background:var(--green-soft)">
+          <h3 class="h3" data-i18n="v.get.f4t">Analytics dashboard</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.get.f4d">See attendance and trends night to night, so you know exactly what's working.</p>
+        </div>
+      </div>
+
+      <div class="card card--flat reveal" style="background:var(--ink);color:#fff;border-radius:var(--r-md);margin-top:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding:18px 24px">
+        <span style="font-weight:800;font-size:clamp(16px,2vw,20px);display:flex;align-items:center;gap:12px"><span class="tag" style="background:var(--yellow);border-color:var(--yellow)">0%</span> <span data-i18n="v.get.commission">No commission on bar or food. No contracts. Cancel anytime.</span></span>
+        <a class="btn btn--soft" href="#start" data-i18n="v.cta.start">Get started</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ START FORM ============ -->
+  <section id="start" class="section section--tight">
+    <div class="wrap">
+      <div class="card reveal split split--flush" style="--split:0.85fr 1.15fr;overflow:hidden">
+        <div class="pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
+          <span class="eyebrow eyebrow--plain" style="color:var(--green)" data-i18n="v.cta.start">Get started</span>
+          <h2 class="h2" style="color:#fff" data-i18n="v.form.h2">Let's fill your room.</h2>
+          <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="v.form.sub">Tell us about your venue. We'll line up your first night, no contract to sign.</p>
+          <div class="scorecard rot-1" style="max-width:240px;margin-top:6px">
+            <div class="scorecard__hd"><span data-i18n="v.form.setup">Setup</span> <span data-i18n="v.form.fast">Fast</span></div>
+            <div class="scorecard__row"><span data-i18n="v.form.nocontracts">No contracts</span><b style="color:var(--green)" data-i18n="v.form.cancel">cancel anytime</b></div>
+            <div class="scorecard__row"><span data-i18n="sc.email">Email</span><b>hello@qed.es</b></div>
+          </div>
+        </div>
+        <div class="pad">
+          <form id="venue-form" name="venue-signup" novalidate data-action="/.netlify/functions/venue-apply">
+            <input type="hidden" name="page" value="venues">
+            <p class="hp"><label>Leave this empty <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
+            <div class="form-body">
+              <div data-step="1">
+                <div class="form-grid">
+                  <div class="full">
+                    <label class="label" for="v-venue"><span data-i18n="v.form.venueName">Venue name</span> <span class="req">*</span></label>
+                    <input class="input" id="v-venue" name="venueName" required data-i18n-ph="v.ph.venueName" placeholder="The name above the door">
+                  </div>
+                  <div>
+                    <label class="label" for="v-first"><span data-i18n="v.form.first">First name</span> <span class="req">*</span></label>
+                    <input class="input" id="v-first" name="firstName" required>
+                  </div>
+                  <div>
+                    <label class="label" for="v-last"><span data-i18n="v.form.last">Last name</span> <span class="req">*</span></label>
+                    <input class="input" id="v-last" name="lastName" required>
+                  </div>
+                  <div class="full">
+                    <label class="label" for="v-email"><span data-i18n="form.email">Email</span> <span class="req">*</span></label>
+                    <input class="input" id="v-email" type="email" name="email" required>
+                  </div>
+                  <div class="full">
+                    <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="v.form.continue">Continue</span> <span class="arr">&rarr;</span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-step2" data-step="2">
+                <div class="form-step2__in">
+                  <div class="form-grid">
+                    <div>
+                      <label class="label" for="v-city" data-i18n="form.city">City</label>
+                      <input class="input" id="v-city" name="city" data-i18n-ph="v.ph.city" placeholder="e.g. Valencia">
+                    </div>
+                    <div>
+                      <label class="label" for="v-format" data-i18n="v.form.format">Format</label>
+                      <select class="input" id="v-format" name="format">
+                        <option data-i18n="v.form.fmt1">QED Express — coming soon</option>
+                        <option data-i18n="v.form.fmt2">QED Classic — hosted</option>
+                        <option data-i18n="v.form.fmt3">Not sure yet</option>
+                      </select>
+                    </div>
+                    <div class="full">
+                      <label class="label" for="v-nights" data-i18n="v.form.nights">Nights per week you could host</label>
+                      <input class="input" id="v-nights" type="number" min="1" name="nights" data-i18n-ph="v.ph.nights" placeholder="e.g. 1">
+                    </div>
+                    <div class="full">
+                      <label class="label" for="v-msg" data-i18n="v.form.else">Anything else?</label>
+                      <textarea class="input" id="v-msg" name="message" data-i18n-ph="v.ph.else" placeholder="Capacity, quiet nights you'd like to fill, the crowd you get…"></textarea>
+                    </div>
+                    <div class="full">
+                      <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="v.form.submit">Sign my venue up</span> <span class="arr">&rarr;</span></button>
+                      <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="form.note">We reply by email, usually same day. No spam, ever.</p>
+                      <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:12px 0 0;text-align:center" data-i18n="form.generr">Something went wrong. Please email hello@qed.es.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-success" tabindex="-1">
+              <div style="text-align:center;padding:24px 8px">
+                <span class="stamp" style="background:var(--accent);color:#fff"><b style="color:#fff">✓</b><span style="color:#fff" data-i18n="v.form.sent">sent</span></span>
+                <h3 class="h2" style="margin-top:18px" data-i18n="v.form.successh">Let's get you booked.</h3>
+                <p class="lead" style="margin-top:10px" data-i18n="v.form.successp">Thanks. We've got your venue details and you'll hear from a real person at QED, usually within the day.</p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer__in">
+    <div class="footer__cols">
+      <div>
+        <a class="brand" href="/" data-i18n-aria="ui.home" aria-label="QED home">
+          <span class="brand__en"><img src="/shared/qed-logo.png" alt="Quiz Eat Drink"></span>
+          <img class="brand__es" src="/shared/tardeo-logo.svg" alt="Tardeo de Trivia">
+        </a>
+        <p style="color:rgba(255,255,255,.66);max-width:34ch;margin:16px 0 0;line-height:1.6" data-i18n="v.foot.tagline">We bring the quiz. You bring the drinks. A weekly trivia night that fills your venue, commission-free.</p>
+      </div>
+      <div>
+        <p class="footer__lab" data-i18n="foot.tagPlan">Plan a night</p>
+        <div class="footer__links">
+          <a href="/corporate/" data-i18n="foot.corporate">Corporate</a><a href="/celebrations/" data-i18n="foot.celebrations">Celebrations</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer__lab" data-i18n="foot.tagWork">Work with us</p>
+        <div class="footer__links">
+          <a href="/partners/" data-i18n="foot.partner">Become a partner</a><a href="/venues/" data-i18n="foot.venue">Host venue</a><a href="mailto:hello@qed.es">hello@qed.es</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__base">
+      <span>© <span data-year>2026</span> QED · Quiz. Eat. Drink.</span>
+      <span><a href="https://instagram.com/qedvalencia">@qedvalencia</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="/shared/i18n.js"></script>
+<script src="/shared/i18n-common.js"></script>
+<script src="/shared/i18n-venues.js"></script>
+<script src="/shared/qed.js"></script>
+</body>
+</html>

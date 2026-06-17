@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="cel.title">QED for Celebrations · The party game that steals the show</title>
+<meta name="description" data-i18n-content="cel.metadesc" content="A pub quiz written about the guest of honour. Birthdays, weddings & anniversaries hosted across Valencia, Madrid, Murcia & Santiago de Compostela.">
+<meta name="theme-color" content="#FBF6EA">
+<meta property="og:title" data-i18n-content="cel.ogtitle" content="QED for Celebrations · The party game that steals the show">
+<meta property="og:description" data-i18n-content="cel.ogdesc" content="Personalised trivia about the birthday girl, the happy couple, or the milestone. Not a generic quiz.">
+<link rel="icon" href="/shared/qed-logo.png">
+<link rel="apple-touch-icon" href="/shared/qed-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/qed.css">
+<script>window.QED_SITE = "celebrations";</script>
+<script src="/config.js"></script>
+</head>
+<body class="theme-party">
+
+<header class="nav">
+  <div class="nav__in">
+    <a class="brand" href="/" data-i18n-aria="ui.home" aria-label="QED home">
+      <span class="brand__en"><img src="/shared/qed-logo.png" alt="Quiz Eat Drink"></span>
+      <img class="brand__es" src="/shared/tardeo-logo.svg" alt="Tardeo de Trivia">
+    </a>
+    <button class="nav__toggle" data-i18n-aria="ui.menu" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav__links">
+      <a href="#formats" data-i18n="cel.nav.formats">Formats</a>
+      <a href="#how" data-i18n="cel.nav.how">How it works</a>
+      <a href="#faq" data-i18n="cel.nav.faq">FAQ</a>
+      <a class="btn btn--sm btn--cta" href="#plan" data-i18n="cel.cta.plan">Plan my event</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap split" style="--split:1.1fr 0.9fr">
+      <div class="reveal">
+        <span class="tag tag--accent tag--shadow" data-i18n="cel.hero.tag">Birthdays · Weddings · Anniversaries</span>
+        <h1 class="h-display" style="margin-top:20px;max-width:13ch"><span data-i18n="cel.hero.h1a">The party game that </span><span class="accent" data-i18n="cel.hero.h1b">steals the show.</span></h1>
+        <p class="lead" style="margin:20px 0 0;max-width:46ch" data-i18n="cel.hero.sub">A pub quiz written about the guest of honour. Your people, your inside jokes, your most incriminating photos, turned into the round everyone remembers.</p>
+        <div class="row" style="gap:12px;margin-top:26px">
+          <a class="btn btn--cta btn--lg" href="#plan"><span data-i18n="cel.cta.plan">Plan my event</span> <span class="arr">&rarr;</span></a>
+          <a class="btn btn--lg" href="#how" data-i18n="cel.cta.how">See how it works</a>
+        </div>
+      </div>
+
+      <div class="reveal deco-hide" data-d="2" aria-hidden="true" style="position:relative;min-height:300px">
+        <div class="scorecard rot-2" style="max-width:300px;margin-left:auto">
+          <div class="scorecard__hd">How well do you know them? <span>R4</span></div>
+          <div class="scorecard__row"><b>★ Team Bride</b><b style="color:var(--accent)">18</b></div>
+          <div class="scorecard__row"><span>Team Groom</span><span>16</span></div>
+          <div class="scorecard__row"><span>The In-Laws</span><span>14</span></div>
+          <div class="scorecard__row"><span>Uni Mates</span><span>11</span></div>
+        </div>
+        <div class="stamp rot-3" style="position:absolute;left:-2%;top:-10%;background:var(--yellow)">
+          <b style="font-size:15px">100%</b><span data-i18n="cel.hero.stamp">about you</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- stat strip -->
+    <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
+      <div class="card card--flat reveal statbar4" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)">100%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.custom">about them</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff">4</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.cities">host cities</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff">90<span style="font-size:.5em">min</span></div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.run">of carnage</div></div>
+        <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--accent)">2–200</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.guests">guests</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EVENT TYPES ============ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="reveal" style="max-width:60ch">
+        <span class="eyebrow" data-i18n="cel.ev.eyebrow">What we celebrate</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="cel.ev.h2">Three occasions, one unforgettable round.</h2>
+      </div>
+      <ol class="cases reveal" style="margin-top:30px">
+        <li>
+          <span class="case-n">01</span>
+          <div>
+            <h3 class="h3" data-i18n="cel.ev.1t">Birthdays</h3>
+            <p class="muted" style="margin:8px 0 0;line-height:1.55;max-width:60ch" data-i18n="cel.ev.1d">Personalised questions about the guest of honour. Their first car, that haircut, the holiday nobody's allowed to mention. Friends find out who really knows them.</p>
+          </div>
+          <span class="case-side stamp rot-1" style="background:var(--yellow-soft)"><b style="font-size:13px">Their</b><span data-i18n="cel.ev.1s">life, quizzed</span></span>
+        </li>
+        <li>
+          <span class="case-n">02</span>
+          <div>
+            <h3 class="h3" data-i18n="cel.ev.2t">Weddings</h3>
+            <p class="muted" style="margin:8px 0 0;line-height:1.55;max-width:60ch" data-i18n="cel.ev.2d">"How well do you know the couple?" Team Bride versus Team Groom, the story of how they met, and the photo evidence. The icebreaker that actually mixes both sides.</p>
+          </div>
+          <span class="case-side stamp rot-3" style="background:var(--red-soft)"><b style="font-size:13px">Bride</b><span data-i18n="cel.ev.2s">vs groom</span></span>
+        </li>
+        <li>
+          <span class="case-n">03</span>
+          <div>
+            <h3 class="h3" data-i18n="cel.ev.3t">Anniversaries</h3>
+            <p class="muted" style="margin:8px 0 0;line-height:1.55;max-width:60ch" data-i18n="cel.ev.3d">Nostalgic, themed rounds set in the year it all began. The number-one song, the price of a pint, the headlines. A toast disguised as a trivia night.</p>
+          </div>
+          <span class="case-side stamp rot-2" style="background:var(--green-soft)"><b style="font-size:13px">The</b><span data-i18n="cel.ev.3s">year of</span></span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ FORMATS ============ -->
+  <section id="formats" class="section section--tight">
+    <div class="wrap">
+      <div class="reveal" style="max-width:60ch">
+        <span class="eyebrow" data-i18n="cel.fmt.eyebrow">Two ways to play</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="cel.fmt.h2">We host it, or you do.</h2>
+        <p class="lead" style="margin-top:12px" data-i18n="cel.fmt.lead">Same personalised quiz. Pick how hands-on you want to be on the day.</p>
+      </div>
+
+      <div class="formats reveal" style="margin-top:30px">
+        <div class="card fmt theme-party">
+          <div class="fmt__hd" style="background:var(--accent)">
+            <h3 data-i18n="cel.fmt.full">Full Experience</h3>
+            <span class="tag" style="background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);color:#fff" data-i18n="cel.fmt.hosted">Hosted</span>
+          </div>
+          <div class="fmt__price">
+            <span class="price" style="font-size:26px" data-i18n="cel.fmt.byquote">By quote</span>
+            <span class="price-sm" data-i18n="cel.fmt.fulltag">· hosted, all in</span>
+          </div>
+          <div class="fmt__body">
+            <p class="muted" style="margin:0;line-height:1.5"><span data-i18n="cel.fmt.fulldesc">A professional host runs the whole party. We sort the room, the tech and the content. </span><strong style="color:var(--ink)" data-i18n="cel.fmt.cities">Valencia, Madrid, Murcia & Santiago de Compostela.</strong></p>
+            <ul class="ticks">
+              <li data-i18n="cel.fmt.f1">Professional quiz host who works the room</li>
+              <li data-i18n="cel.fmt.f2">Venue recommendations &amp; coordination</li>
+              <li data-i18n="cel.fmt.f3">Custom content &amp; full AV setup</li>
+              <li data-i18n="cel.fmt.f4">On-site support start to finish</li>
+            </ul>
+            <a class="btn btn--cta btn--block" href="#plan" style="margin-top:auto" data-i18n="cel.cta.planhosted">Plan a hosted event</a>
+          </div>
+        </div>
+
+        <div class="card fmt fmt--soon">
+          <div class="fmt__hd" style="background:var(--ink)">
+            <h3 data-i18n="cel.fmt.express">Express</h3>
+            <span class="tag soon-tag" data-i18n="cel.fmt.soon">Coming soon</span>
+          </div>
+          <div class="fmt__price">
+            <span class="price-sm" data-i18n="cel.fmt.expsoon">Run it yourself, anywhere. Launching soon.</span>
+          </div>
+          <div class="fmt__body">
+            <p class="muted" style="margin:0;line-height:1.5" data-i18n="cel.fmt.expdesc">Everything you'll need to run it yourself, wherever the party is. One of your own makes a surprisingly good host.</p>
+            <ul class="ticks ticks--ink">
+              <li data-i18n="cel.fmt.e1">Platform access with live digital scoring</li>
+              <li data-i18n="cel.fmt.e2">Curated, personalised question packs</li>
+              <li data-i18n="cel.fmt.e3">Automated leaderboards &amp; tie-breakers</li>
+              <li data-i18n="cel.fmt.e4">Step-by-step host guide</li>
+            </ul>
+            <span class="btn btn--soon btn--block" data-i18n="cel.fmt.soon">Coming soon</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card--flat reveal" style="background:var(--yellow-soft);border-radius:var(--r-md);margin-top:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding:16px 22px">
+        <span style="font-weight:700;display:flex;align-items:center;gap:11px"><span class="tag tag--solid">100%</span> <span data-i18n="cel.fmt.flatnote">Every quiz is written from scratch about the guest of honour.</span></span>
+        <a class="btn btn--sm" href="#plan" data-i18n="cel.fmt.flatlink">Plan my event</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section id="how" class="section">
+    <div class="wrap">
+      <div class="reveal" style="max-width:60ch">
+        <span class="eyebrow" data-i18n="cel.how.eyebrow">How it works</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="cel.how.h2">From group chat to game night in three steps.</h2>
+      </div>
+      <div class="steps reveal" style="margin-top:34px">
+        <div>
+          <div class="step__n">01</div><div class="step__bar"></div>
+          <h3 class="h3" data-i18n="cel.how.1t">Tell us who we're celebrating</h3>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="cel.how.1d">A few details, a few stories, the embarrassing photos. The more you share, the harder we laugh.</p>
+        </div>
+        <div>
+          <div class="step__n">02</div><div class="step__bar"></div>
+          <h3 class="h3" data-i18n="cel.how.2t">We write the questions</h3>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="cel.how.2d">Custom rounds about the guest of honour or the couple, mixed with crowd-pleasers so nobody's left out.</p>
+        </div>
+        <div>
+          <div class="step__n">03</div><div class="step__bar"></div>
+          <h3 class="h3" data-i18n="cel.how.3t">Game on</h3>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="cel.how.3d">We host it, start to finish. You get the chaos, the photos and a deeply smug winner.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES (bento) ============ -->
+  <section id="features" class="section section--tight">
+    <div class="wrap">
+      <div class="reveal" style="max-width:60ch">
+        <span class="eyebrow" data-i18n="cel.feat.eyebrow">What's in the box</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="cel.feat.h2">More than a list of questions.</h2>
+      </div>
+      <div class="bento reveal" style="margin-top:30px">
+        <div class="card b-feature pad theme-party" style="background:var(--accent);color:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:240px">
+          <span class="tag" style="align-self:flex-start;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);color:#fff" data-i18n="cel.feat.f0tag">Custom packs</span>
+          <div>
+            <h3 class="h3" style="color:#fff;font-size:clamp(22px,2.4vw,28px)" data-i18n="cel.feat.f0t">Rounds written about them</h3>
+            <p style="margin-top:10px;color:rgba(255,255,255,.9);line-height:1.55" data-i18n="cel.feat.f0d">The guest of honour, the couple, the milestone. Personal questions only your crowd could answer, never a recycled pub pack.</p>
+          </div>
+        </div>
+        <div class="card b-half pad lift">
+          <h3 class="h3" data-i18n="cel.feat.f1t">Digital platform</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f1d">Live scoring, instant leaderboards and automatic tie-breakers. No paper, no fights at the bar.</p>
+        </div>
+        <div class="card b-half pad lift" style="background:var(--cream-soft)">
+          <h3 class="h3" data-i18n="cel.feat.f2t">A real host</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f2d">A pro who reads the room and keeps the energy up. Full Experience only.</p>
+        </div>
+        <div class="card b-half pad lift">
+          <h3 class="h3" data-i18n="cel.feat.f3t">Branded slides</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f3d">Their name, their photos, their colours on the big screen. Looks like the night was made for them.</p>
+        </div>
+        <div class="card b-half pad lift" style="background:var(--yellow-soft)">
+          <h3 class="h3" data-i18n="cel.feat.f4t">Venue recs &amp; coordination</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f4d">We know the rooms. We'll suggest and book the right one, or run it at home.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section id="faq" class="section">
+    <div class="wrap wrap--narrow">
+      <div class="reveal">
+        <span class="eyebrow" data-i18n="cel.faq.eyebrow">Questions</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="cel.faq.h2">The stuff people ask.</h2>
+      </div>
+      <div class="faq reveal" style="margin-top:26px">
+        <details open>
+          <summary><span data-i18n="cel.faq.q1">How personalised does it get?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="cel.faq.a1">Very. We build a whole round (or more) from the details and photos you send about the guest of honour or the couple, then balance it with general questions so everyone can join in.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="cel.faq.q2">How many guests can play?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="cel.faq.a2">From an intimate 2-table dinner up to a 200-guest party. Small groups play in pairs, big ones split into teams with a live leaderboard.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="cel.faq.q3">Do you travel to us?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="cel.faq.a3">The hosted Full Experience runs in person across Valencia, Madrid, Murcia and Santiago de Compostela. A self-run Express version, for everywhere else, is coming soon.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="cel.faq.q4">Is it family-friendly?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="cel.faq.a4">It can be. Tell us the crowd and we'll pitch it accordingly, all-ages for a family birthday, or a little spicier for a stag-adjacent night.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="cel.faq.q5">English or Spanish?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="cel.faq.a5">Both, and we mix them for international guest lists. Perfect for a wedding with two sides who don't share a first language.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="cel.faq.q6">How far ahead should we book?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="cel.faq.a6">Two weeks gives us time to write a properly personal quiz. Closer to the date? Ask anyway, we'll always try to make it work.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PLAN FORM ============ -->
+  <section id="plan" class="section section--tight">
+    <div class="wrap">
+      <div class="card reveal split split--flush" style="--split:0.85fr 1.15fr;overflow:hidden">
+        <div class="pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
+          <span class="eyebrow" style="color:rgba(255,255,255,.6)"><span style="background:var(--accent)"></span><span data-i18n="cel.cta.plan">Plan my event</span></span>
+          <h2 class="h2" style="color:#fff" data-i18n="cel.form.h2">Tell us who we're celebrating.</h2>
+          <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="cel.form.sub">Quick form, real human reply, usually same day. We'll take it from there.</p>
+          <div class="scorecard rot-1" style="max-width:240px;margin-top:6px">
+            <div class="scorecard__hd"><span data-i18n="sc.reply">Reply time</span> <span data-i18n="sc.today">Today</span></div>
+            <div class="scorecard__row"><span data-i18n="cel.form.mostq">Most enquiries</span><b style="color:var(--accent)" data-i18n="sc.under1d">&lt; 1 day</b></div>
+            <div class="scorecard__row"><span data-i18n="sc.email">Email</span><b>hello@qed.es</b></div>
+          </div>
+        </div>
+        <div class="pad">
+          <form id="event-form" name="celebrations-event" novalidate data-action="/.netlify/functions/book-event">
+            <input type="hidden" name="page" value="celebrations">
+            <p class="hp"><label>Leave this empty <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
+            <div class="form-body">
+              <div data-step="1">
+                <div class="form-grid">
+                  <div class="full">
+                    <label class="label" for="e-occasion"><span data-i18n="cel.form.eventType">What are we celebrating?</span> <span class="req">*</span></label>
+                    <select class="input" id="e-occasion" name="eventType" required>
+                      <option value="" data-i18n="cel.form.etph">Choose one…</option>
+                      <option data-i18n="cel.form.et1">Birthday</option>
+                      <option data-i18n="cel.form.et2">Wedding</option>
+                      <option data-i18n="cel.form.et3">Anniversary</option>
+                      <option data-i18n="cel.form.et4">Something else</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="label" for="e-first"><span data-i18n="cel.form.first">First name</span> <span class="req">*</span></label>
+                    <input class="input" id="e-first" name="firstName" required>
+                  </div>
+                  <div>
+                    <label class="label" for="e-last"><span data-i18n="cel.form.last">Last name</span> <span class="req">*</span></label>
+                    <input class="input" id="e-last" name="lastName" required>
+                  </div>
+                  <div class="full">
+                    <label class="label" for="e-email"><span data-i18n="form.email">Email</span> <span class="req">*</span></label>
+                    <input class="input" id="e-email" type="email" name="email" required>
+                  </div>
+                  <div class="full">
+                    <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="cel.form.continue">Continue</span> <span class="arr">&rarr;</span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-step2" data-step="2">
+                <div class="form-step2__in">
+                  <div class="form-grid">
+                    <div class="full">
+                      <label class="label" for="e-guest" data-i18n="cel.form.guest">Guest of honour</label>
+                      <input class="input" id="e-guest" name="guestOfHonour" data-i18n-ph="cel.ph.guest" placeholder="Whose big day is it?">
+                    </div>
+                    <div>
+                      <label class="label" for="e-date" data-i18n="cel.form.date">Event date</label>
+                      <input class="input" id="e-date" type="date" name="date">
+                    </div>
+                    <div>
+                      <label class="label" for="e-guests" data-i18n="cel.form.guests">Guests</label>
+                      <input class="input" id="e-guests" type="number" min="2" name="groupSize" data-i18n-ph="cel.ph.guests" placeholder="e.g. 30">
+                    </div>
+                    <div>
+                      <label class="label" for="e-city" data-i18n="form.city">City</label>
+                      <select class="input" id="e-city" name="city">
+                        <option>Valencia</option><option>Madrid</option><option>Murcia</option><option>Santiago de Compostela</option><option data-i18n="cel.form.elsewhere">Elsewhere</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label" for="e-phone" data-i18n="cel.form.phone">Phone (optional)</label>
+                      <input class="input" id="e-phone" type="tel" name="phone">
+                    </div>
+                    <div class="full">
+                      <label class="label" for="e-msg" data-i18n="form.else">Anything else?</label>
+                      <textarea class="input" id="e-msg" name="message" data-i18n-ph="cel.ph.msg" placeholder="Who are we celebrating, and what should we absolutely ask about?"></textarea>
+                    </div>
+                    <div class="full">
+                      <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="cel.form.submit">Plan my event</span> <span class="arr">&rarr;</span></button>
+                      <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="form.note">We reply by email, usually same day. No spam, ever.</p>
+                      <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:12px 0 0;text-align:center" data-i18n="form.generr">Something went wrong. Please email hello@qed.es.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-success" tabindex="-1">
+              <div style="text-align:center;padding:24px 8px">
+                <span class="stamp" style="background:var(--accent);color:#fff"><b style="color:#fff">✓</b><span style="color:#fff" data-i18n="cel.form.sent">sent</span></span>
+                <h3 class="h2" style="margin-top:18px" data-i18n="cel.form.successh">Let's make it a good one.</h3>
+                <p class="lead" style="margin-top:10px" data-i18n="cel.form.successp">Thanks. We've got the details and you'll hear from a real person at QED, usually within the day.</p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer__in">
+    <div class="footer__cols">
+      <div>
+        <a class="brand" href="/" data-i18n-aria="ui.home" aria-label="QED home">
+          <span class="brand__en"><img src="/shared/qed-logo.png" alt="Quiz Eat Drink"></span>
+          <img class="brand__es" src="/shared/tardeo-logo.svg" alt="Tardeo de Trivia">
+        </a>
+        <p style="color:rgba(255,255,255,.66);max-width:34ch;margin:16px 0 0;line-height:1.6" data-i18n="cel.foot.tagline">The party game that steals the show. Hosted across Valencia, Madrid, Murcia & Santiago de Compostela.</p>
+      </div>
+      <div>
+        <p class="footer__lab" data-i18n="foot.tagPlan">Plan a night</p>
+        <div class="footer__links">
+          <a href="/corporate/" data-i18n="foot.corporate">Corporate</a><a href="/celebrations/" data-i18n="foot.celebrations">Celebrations</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer__lab" data-i18n="foot.tagWork">Work with us</p>
+        <div class="footer__links">
+          <a href="/partners/" data-i18n="foot.partner">Become a partner</a><a href="/venues/" data-i18n="foot.venue">Host venue</a><a href="mailto:hello@qed.es">hello@qed.es</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__base">
+      <span>© <span data-year>2026</span> QED · Quiz. Eat. Drink.</span>
+      <span><a href="https://instagram.com/qedvalencia">@qedvalencia</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="/shared/i18n.js"></script>
+<script src="/shared/i18n-common.js"></script>
+<script src="/shared/i18n-celebrations.js"></script>
+<script src="/shared/qed.js"></script>
+</body>
+</html>
