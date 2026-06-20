@@ -27,6 +27,9 @@ window.QED_ES = window.QED_ES || {};
   function storedLang() { try { return localStorage.getItem(LANG_KEY); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
+  var BRAND_DOMAINS = { QED: "quizeatdrink.com", TDT: "tardeodetrivia.com" };
+  var BRAND_LANG    = { QED: "EN", TDT: "ES" };
+
   // Match the visitor's browser language to a locale we support (ES or EN).
   function browserLang() {
     try {
@@ -40,13 +43,27 @@ window.QED_ES = window.QED_ES || {};
     return null;
   }
 
-  // Priority: explicit stored choice > browser language > deploy default.
+  // Priority: brand (baked at build) > explicit stored choice > browser language > deploy default.
   function currentLang() {
+    var branded = cfg.brand && BRAND_LANG[cfg.brand];
+    if (branded) return branded;
     var s = storedLang();
     if (s === "EN" || s === "ES") return s;
     var b = browserLang();
     if (b) return b;
     return (cfg.defaultLanguage || "EN").toUpperCase() === "ES" ? "ES" : "EN";
+  }
+
+  // On a branded deployment, switching language navigates to the other brand's site.
+  // On local/preview (no cfg.brand), swap in-page as before.
+  function switchLang(lang) {
+    if (cfg.brand) {
+      var target = lang === "ES" ? BRAND_DOMAINS.TDT : BRAND_DOMAINS.QED;
+      var path = window.location.pathname + window.location.search;
+      window.location.href = "https://" + target + path;
+    } else {
+      apply(lang, true);
+    }
   }
 
   function tr(key, lang) {
@@ -101,7 +118,7 @@ window.QED_ES = window.QED_ES || {};
       b.type = "button";
       b.setAttribute("data-lang", l);
       b.textContent = l;
-      b.addEventListener("click", function () { apply(l, true); });
+      b.addEventListener("click", function () { switchLang(l); });
       sw.appendChild(b);
     });
     var cta = links.querySelector(".btn");
