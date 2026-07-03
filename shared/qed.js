@@ -8,6 +8,15 @@
   var y = String(new Date().getFullYear());
   document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = y; });
 
+  /* event-date pickers can't be in the past (junk leads to the founders' Telegram) */
+  var now = new Date();
+  var today = now.getFullYear() + "-" +
+    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+    String(now.getDate()).padStart(2, "0");
+  document.querySelectorAll("input[type=date]").forEach(function (el) {
+    if (!el.min) el.min = today;
+  });
+
   /* mobile nav */
   var toggle = document.querySelector(".nav__toggle");
   var links = document.querySelector(".nav__links");

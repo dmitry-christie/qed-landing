@@ -23,7 +23,11 @@ const lang = brand === "TDT" ? "ES"
   : brand === "QED" ? "EN"
   : (process.env.DEFAULT_LANGUAGE || "EN").toUpperCase() === "ES" ? "ES" : "EN";
 
-const devNotice = String(process.env.DEV_NOTICE ?? "true").toLowerCase() !== "false";
+// Explicit DEV_NOTICE wins; otherwise show the banner only on unbranded local/preview
+// builds — a branded (QED/TDT) production deploy ships without the "in development" notice.
+const devNotice = process.env.DEV_NOTICE != null
+  ? String(process.env.DEV_NOTICE).toLowerCase() !== "false"
+  : !brand;
 
 const config = { defaultLanguage: lang, devNotice, ...(brand && { brand }) };
 writeFileSync(

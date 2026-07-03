@@ -3,9 +3,10 @@
   "configurations": [
     {
       "name": "qed-prototype",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "4734"],
-      "port": 4734
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "python3 -m http.server $PORT"],
+      "port": 4734,
+      "autoPort": true
     }
   ]
 }

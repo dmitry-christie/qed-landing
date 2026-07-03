@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>document.documentElement.classList.add('js')</script>
 <title data-i18n="p.title">QED Partners · Run trivia nights. Build a real business.</title>
 <meta name="description" data-i18n-content="p.metadesc" content="Become a QED franchise partner. Our platform, content and brand. Your venues and personality. A paying room every week, with onboarding, training and SLA support.">
 <meta name="theme-color" content="#1F1A14">
@@ -72,7 +73,7 @@
 
       <div class="reveal deco-hide" data-d="2" aria-hidden="true" style="position:relative;min-height:300px">
         <div class="scorecard rot-2" style="max-width:300px;margin-left:auto">
-          <div class="scorecard__hd">Friday · full house <span>Live</span></div>
+          <div class="scorecard__hd">Friday · full house <span>R4</span></div>
           <div class="scorecard__row"><span>Players in</span><b style="color:var(--orange)">48</b></div>
           <div class="scorecard__row"><span>Tables booked</span><b>12</b></div>
           <div class="scorecard__row"><span>Regulars returning</span><b>most of them</b></div>
@@ -258,15 +259,15 @@
                 <div class="form-grid">
                   <div>
                     <label class="label" for="p-first"><span data-i18n="p.form.first">First name</span> <span class="req">*</span></label>
-                    <input class="input" id="p-first" name="firstName" required>
+                    <input class="input" id="p-first" name="firstName" autocomplete="given-name" required>
                   </div>
                   <div>
                     <label class="label" for="p-last"><span data-i18n="p.form.last">Last name</span> <span class="req">*</span></label>
-                    <input class="input" id="p-last" name="lastName" required>
+                    <input class="input" id="p-last" name="lastName" autocomplete="family-name" required>
                   </div>
                   <div class="full">
                     <label class="label" for="p-email"><span data-i18n="form.email">Email</span> <span class="req">*</span></label>
-                    <input class="input" id="p-email" type="email" name="email" required>
+                    <input class="input" id="p-email" type="email" name="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" required>
                   </div>
                   <div class="full">
                     <label class="label" for="p-city"><span data-i18n="p.form.cityq">City / area</span> <span class="req">*</span></label>
@@ -295,11 +296,11 @@
                     </div>
                     <div class="full">
                       <label class="label" for="p-phone" data-i18n="p.form.phone">Phone (optional)</label>
-                      <input class="input" id="p-phone" type="tel" name="phone">
+                      <input class="input" id="p-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel">
                     </div>
                     <div class="full">
                       <button type="submit" class="btn btn--soft btn--lg btn--block"><span data-i18n="p.form.submit">Send my application</span> <span class="arr">&rarr;</span></button>
-                      <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="form.note">We reply within 48 hours. No spam, ever.</p>
+                      <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="p.form.note">We reply within 48 hours. No spam, ever.</p>
                       <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:12px 0 0;text-align:center" data-i18n="form.generr">Something went wrong. Please email hello@qed.es.</p>
                     </div>
                   </div>
