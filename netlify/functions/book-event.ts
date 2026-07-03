@@ -1,9 +1,10 @@
 // Corporate + Celebrations lead form. Forwards to Telegram, fires Meta CAPI.
 import type { Handler } from "@netlify/functions";
-import { clean, json, metaLine, sendTelegram, fireMetaCapi } from "../lib/forms";
+import { clean, isEmail, json, MAX_BODY, metaLine, sendTelegram, fireMetaCapi } from "../lib/forms";
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { ok: false, error: "Method not allowed" });
+  if ((event.body || "").length > MAX_BODY) return json(413, { ok: false, error: "Request too large" });
 
   let body: Record<string, unknown>;
   try {
@@ -20,6 +21,7 @@ export const handler: Handler = async (event) => {
   for (const field of ["firstName", "lastName", "email", "eventType"]) {
     if (!d[field]) return json(400, { ok: false, error: `Missing required field: ${field}` });
   }
+  if (!isEmail(d.email)) return json(400, { ok: false, error: "Please enter a valid email address." });
 
   const page = d.page || "corporate";
   const lines = [

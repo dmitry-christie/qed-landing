@@ -7,11 +7,13 @@
 
    Output:
      - config.js   regenerated with the resolved values.
+     - On branded builds, the <!-- build:seo --> marker in each page's <head> is
+       replaced with canonical / hreflang / og:url / og:image tags for that domain.
 
    Every page lives at its natural folder path (/corporate/, /celebrations/, …) and
    identifies itself with a baked-in window.QED_SITE, so there is no page-copying step. */
 
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 
 const VALID_BRANDS = ["QED", "TDT"];
 const brand = VALID_BRANDS.includes((process.env.BRAND || "").toUpperCase())
@@ -37,3 +39,40 @@ writeFileSync(
 );
 
 console.log("[qed build] config:", config);
+
+/* ---- per-brand SEO head injection (branded deploys only) ----
+   The two brands serve the same pages on different domains (EN on QED, ES on TDT),
+   so canonical + hreflang must be stamped at build time. Local/preview builds keep
+   the inert <!-- build:seo --> comment. */
+const DOMAINS = { QED: "quizeatdrink.com", TDT: "tardeodetrivia.com" };
+const PAGES = ["", "corporate/", "celebrations/", "venues/", "partners/"];
+const SEO_MARK = "<!-- build:seo -->";
+
+if (brand) {
+  const domain = DOMAINS[brand];
+  let injected = 0;
+  for (const page of PAGES) {
+    const file = `${page}index.html`;
+    let html = readFileSync(file, "utf8");
+    if (!html.includes(SEO_MARK)) {
+      console.warn(`[qed build] ${file}: no ${SEO_MARK} marker, skipped`);
+      continue;
+    }
+    const tags = [
+      `<link rel="canonical" href="https://${domain}/${page}">`,
+      `<link rel="alternate" hreflang="en" href="https://${DOMAINS.QED}/${page}">`,
+      `<link rel="alternate" hreflang="es" href="https://${DOMAINS.TDT}/${page}">`,
+      `<link rel="alternate" hreflang="x-default" href="https://${DOMAINS.QED}/${page}">`,
+      `<meta property="og:url" content="https://${domain}/${page}">`,
+      `<meta property="og:image" content="https://${domain}/shared/og-image.png">`,
+      `<meta property="og:image:width" content="1200">`,
+      `<meta property="og:image:height" content="630">`,
+      `<meta property="og:locale" content="${lang === "ES" ? "es_ES" : "en_US"}">`,
+    ].join("\n");
+    html = html.replace(SEO_MARK, tags);
+    if (lang === "ES") html = html.replace('<html lang="en">', '<html lang="es">');
+    writeFileSync(file, html);
+    injected++;
+  }
+  console.log(`[qed build] injected SEO head tags for ${domain} into ${injected}/${PAGES.length} pages`);
+}

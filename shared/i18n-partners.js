@@ -16,7 +16,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.cta.apply": "Solicítalo ya",
   "p.cta.numbers": "Ver el modelo",
 
-  "p.stat.partners": "socios activos",
   "p.stat.locations": "ubicaciones",
   "p.stat.reply": "para responder",
   "p.stat.launch": "semanas al primer evento",

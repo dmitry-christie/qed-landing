@@ -7,10 +7,21 @@ export type Dict = Record<string, string>;
 
 const HTML_TAG = /<[^>]*>/g;
 
-// Strip HTML tags + trim. Used on every string field BEFORE validation.
+// Per-field and whole-request size ceilings. Generous for real leads, tight
+// enough that junk can't balloon the Telegram message or the function payload.
+const MAX_FIELD = 1500;
+export const MAX_BODY = 10_000;
+
+// Strip HTML tags + trim + cap length. Used on every string field BEFORE validation.
 export function sanitize(v: unknown): string {
   if (v == null) return "";
-  return String(v).replace(HTML_TAG, "").trim();
+  return String(v).slice(0, MAX_FIELD * 4).replace(HTML_TAG, "").trim().slice(0, MAX_FIELD);
+}
+
+// Light shape check, not RFC 5322 — the goal is catching typos and garbage,
+// not rejecting valid addresses.
+export function isEmail(s: string): boolean {
+  return /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,24}$/.test(s);
 }
 
 // Flatten + sanitize the parsed JSON body into a string dict.
@@ -39,6 +50,7 @@ export function metaLine(d: Dict, page: string): string {
 }
 
 // POST a plain-text message to the Telegram group. No parse_mode (plain text).
+// Telegram rejects messages over 4096 chars, so truncate rather than drop the lead.
 export async function sendTelegram(text: string): Promise<boolean> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -46,6 +58,7 @@ export async function sendTelegram(text: string): Promise<boolean> {
     console.error("Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env vars.");
     return false;
   }
+  if (text.length > 4000) text = text.slice(0, 4000) + "…";
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",

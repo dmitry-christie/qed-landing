@@ -275,6 +275,9 @@ form.sent .form-success{ display:block; }
   .deco-hide{ display:none !important; }
   .statbar4{ grid-template-columns:1fr 1fr !important; }
   .statbar4 > *:nth-child(2){ border-right:0 !important; }
+  .statbar3{ grid-template-columns:1fr 1fr !important; }
+  .statbar3 > *:nth-child(2){ border-right:0 !important; }
+  .statbar3 > *:nth-child(3){ grid-column:1 / -1; border-top:1px solid rgba(255,255,255,.16); }
 }
 
 /* ---------- motion ---------- */

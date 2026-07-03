@@ -3,10 +3,26 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.title": "QED · Quiz. Eat. Drink. — noches de quiz por toda España",
   "h.metadesc": "QED monta y dirige noches de quiz que la gente recuerda de verdad: para empresas, celebraciones, locales y socios de franquicia en Valencia, Madrid, Murcia y Santiago de Compostela.",
 
+  "h.nav.play": "Jugar",
   "h.nav.partners": "Socios",
   "h.nav.venues": "Locales",
 
-  "h.srh1": "QED — noches de quiz por toda España",
+  "h.hero.h1a": "Noches de quiz que ",
+  "h.hero.h1b": "se recuerdan de verdad.",
+  "h.hero.sub": "Nosotros lo escribimos, lo presentamos y llevamos la puntuación: tú traes un equipo y discutes las respuestas. Únete a una noche abierta, o resérvanos una solo para los tuyos.",
+  "h.hero.cta1": "Encuentra un quiz esta semana",
+  "h.hero.cta2": "Monta tu propia noche",
+  "h.hero.stamp": "por equipo",
+
+  "h.play.eyebrow": "¿Solo quieres jugar?",
+  "h.play.h2": "Hay una mesa con el nombre de tu equipo.",
+  "h.play.p": "Las noches abiertas de QED se juegan cada semana, la mayoría en Valencia, donde empezó todo. El cartel de la semana sale en Instagram, y con un mensaje te guardamos los asientos.",
+  "h.play.cta1": "Ver el cartel de esta semana",
+  "h.play.cta2": "O escríbenos un email",
+  "h.play.where": "Dónde jugamos",
+  "h.play.home": "★ nuestra casa",
+  "h.play.yours": "¿Tu ciudad?",
+  "h.play.run": "móntalo tú →",
 
   "h.plan.eyebrow": "Reserva una noche",
   "h.plan.h2": "¿Montas algo? Nosotros ponemos el quiz.",
