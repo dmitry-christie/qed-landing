@@ -59,16 +59,24 @@
       return m ? decodeURIComponent(m[1]) : "";
     } catch (e) { return ""; }
   }
-  function track(name, detail) {
+  function pushDataLayer(name, detail) {
     try { (window.dataLayer = window.dataLayer || []).push(assign({ event: name }, detail || {})); } catch (e) {}
+  }
+  function track(name, detail) {
+    pushDataLayer(name, detail);
     try {
       if (window.__qedConsent === "granted" && window.__qedRudderReady && window.rudderanalytics && window.rudderanalytics.track) {
         window.rudderanalytics.track(name, detail || {});
       }
     } catch (e) {}
   }
-  window.trackLeadIntent = window.trackLeadIntent || function (d) { track("lead_intent", d); };
-  window.trackLeadComplete = window.trackLeadComplete || function (d) { track("lead_complete", d); };
+  // Segment naming spec: Title Case, Object + Action. "Form Started" has no server-side
+  // equivalent (nothing was posted yet) so it tracks client-side. "Form Submitted" is
+  // fired server-side instead (netlify/lib/forms.ts, once the lead is actually accepted) —
+  // richer properties (hashed traits, IP/UA) and no dependency on the client SDK or
+  // ad-blockers, so only push it to dataLayer here to avoid double-counting in RudderStack.
+  window.trackLeadIntent = window.trackLeadIntent || function (d) { track("Form Started", d); };
+  window.trackLeadComplete = window.trackLeadComplete || function (d) { pushDataLayer("Form Submitted", d); };
 
   /* lead forms — two-step + fetch() → Netlify function → Telegram (no page reload) */
   document.querySelectorAll("form[data-action]").forEach(function (form) {
@@ -112,6 +120,10 @@
       new FormData(form).forEach(function (v, k) { if (typeof v === "string") data[k] = v; });
       data.lang = (document.documentElement.getAttribute("lang") || "en").toUpperCase();
       data.country = window.__qed.country || "ES";
+      data.form = form.getAttribute("name") || action;
+      data.title = document.title;
+      data.path = location.pathname;
+      data.referrer = document.referrer || "$direct"; // RudderStack's own convention for direct traffic
 
       /* CAPI/RudderStack match data: one id shared by the client + server track
          calls (dedup), the page url, current consent, and a Meta click id built
@@ -119,6 +131,7 @@
       data._event_id = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : (Date.now() + "-" + Math.random().toString(16).slice(2));
       data._url = location.href;
       data._consent = window.__qedConsent || "denied";
+      if (window.__qedConsentCategories) { try { data._consentCategories = JSON.stringify(window.__qedConsentCategories); } catch (e) {} }
       data._fbc = readCookie("_fbc");
       if (!data._fbc) {
         var fbclid = "";

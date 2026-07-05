@@ -80,10 +80,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "v.form.h2": "Vamos a llenar tu sala.",
   "v.form.sub": "Cuéntanos sobre tu local. Te organizamos tu primera noche y hablamos de unos términos que te encajen.",
-  "v.form.setup": "Puesta en marcha",
-  "v.form.fast": "Rápida",
-  "v.form.nocontracts": "Contrato",
-  "v.form.cancel": "términos flexibles",
   "v.form.venueName": "Nombre del local",
   "v.ph.venueName": "El nombre que hay sobre la puerta",
   "v.form.first": "Nombre",

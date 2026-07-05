@@ -32,14 +32,16 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "form.reqName": "Tu nombre",
   "form.optElse": "¿Algo más?",
 
-  /* reply-time scorecard (shared shape) */
-  "sc.reply": "Respuesta",
-  "sc.today": "Hoy",
-  "sc.email": "Email",
-  "sc.under1d": "< 1 día",
-
   /* consent banner */
   "consent.msg": "Usamos algunos datos para entender qué funciona y medir campañas publicitarias. Nada de spam ni de venderlos.",
-  "consent.accept": "Aceptar",
-  "consent.reject": "Rechazar"
+  "consent.accept": "Aceptar todo",
+  "consent.reject": "Rechazar",
+  "consent.manage": "Personalizar",
+  "consent.save": "Guardar preferencias",
+  "consent.cat.necessary": "Necesarias",
+  "consent.cat.necessaryd": "Recuerda esta elección. Siempre activas.",
+  "consent.cat.analytics": "Analítica",
+  "consent.cat.analyticsd": "Nos ayuda a ver qué funciona (RudderStack).",
+  "consent.cat.marketing": "Marketing",
+  "consent.cat.marketingd": "Medición de campañas publicitarias (Meta, Google)."
 });
