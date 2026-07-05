@@ -20,10 +20,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css">
 <style>
+  /* TEMP: placeholder photo blended into the dark hero bg — swap/remove header-bg.jpg later */
   .hero--dark{ background:
       radial-gradient(800px 420px at 82% 0%, rgba(245,197,24,.20), transparent 60%),
       radial-gradient(620px 380px at 0% 100%, rgba(232,99,26,.14), transparent 55%),
-      #1F1A14; color:#fff; }
+      linear-gradient(rgba(31,26,20,.86),rgba(31,26,20,.86)),
+      url('/shared/header-bg.jpg') center 40%/cover; color:#fff; }
   .hero--dark .lead{ color:rgba(255,255,255,.74); }
   .btn--onDark{ background:transparent; color:#fff; border-color:#fff; box-shadow:4px 4px 0 0 rgba(245,197,24,.9); }
   .btn--onDark:hover{ background:rgba(255,255,255,.08); }
@@ -65,7 +67,7 @@
 
   <!-- ============ HERO (dark) ============ -->
   <section class="hero hero--dark">
-    <div class="wrap split" style="--split:1.1fr 0.9fr">
+    <div class="wrap">
       <div class="reveal">
         <span class="tag tag--shadow" style="background:var(--yellow);border-color:var(--yellow)" data-i18n="p.hero.tag">Franchise opportunity</span>
         <h1 class="h-display" style="margin-top:20px;max-width:15ch;color:#fff"><span data-i18n="p.hero.h1a">Run trivia nights. Build a </span><span style="color:var(--yellow)" data-i18n="p.hero.h1b">real business.</span></h1>
@@ -73,12 +75,6 @@
         <div class="row" style="gap:12px;margin-top:26px">
           <a class="btn btn--soft btn--lg" href="#apply"><span data-i18n="p.cta.apply">Apply now</span> <span class="arr">&rarr;</span></a>
           <a class="btn btn--lg btn--onDark" href="#model" data-i18n="p.cta.numbers">See the model</a>
-        </div>
-      </div>
-
-      <div class="reveal deco-hide" data-d="2" aria-hidden="true" style="position:relative;min-height:120px;display:flex;align-items:center;justify-content:center">
-        <div class="stamp rot-3" style="background:var(--yellow)">
-          <b style="font-size:14px">48h</b><span>reply</span>
         </div>
       </div>
     </div>
@@ -237,7 +233,7 @@
         <div class="pad" style="display:flex;flex-direction:column;justify-content:center;gap:14px">
           <span class="eyebrow" data-i18n="p.case.eyebrow">Real case · Murcia</span>
           <h3 class="h2" data-i18n="p.case.h3">One partner. Four months. Revenue up 74%.</h3>
-          <p class="muted" style="line-height:1.6;margin:0" data-i18n="p.case.p">Our Murcia partner launched in March with three events and 70 players through the door. By June they were running a steady monthly circuit that pulled in 125 players and &euro;460 in ticket revenue that month alone.</p>
+          <p class="muted" style="line-height:1.6;margin:0" data-i18n="p.case.p">Our Murcia partner launched in March with three events and 70 players through the door. By June they were running a steady monthly circuit that pulled in 125 players and &euro;460 in ticket revenue that month alone — and that's before whatever they made at the bar.</p>
           <a class="btn btn--sm" href="#apply" style="align-self:flex-start;margin-top:6px" data-i18n="p.case.cta">Do this in your city</a>
         </div>
         <div class="pad" style="background:var(--ink);color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:2px;align-content:center">
@@ -257,11 +253,6 @@
           <span class="eyebrow eyebrow--plain" style="color:var(--yellow)" data-i18n="p.apply.eyebrow">Apply</span>
           <h2 class="h2" style="color:#fff" data-i18n="p.apply.h2">Let's see if it's a fit.</h2>
           <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="p.apply.sub">Tell us a bit about you and your city. We reply within 48 hours, every time.</p>
-          <div class="scorecard rot-1" style="max-width:240px;margin-top:6px">
-            <div class="scorecard__hd"><span data-i18n="sc.reply">Reply time</span> <span data-i18n="p.apply.sla">SLA</span></div>
-            <div class="scorecard__row"><span data-i18n="p.apply.every">Every application</span><b style="color:var(--yellow)" data-i18n="p.apply.under48">&lt; 48h</b></div>
-            <div class="scorecard__row"><span data-i18n="sc.email">Email</span><b data-i18n="p.apply.email">info@quizeatdrink.com</b></div>
-          </div>
         </div>
         <div class="pad">
           <form id="franchise-form" name="partner-application" novalidate data-action="/.netlify/functions/franchise-apply">

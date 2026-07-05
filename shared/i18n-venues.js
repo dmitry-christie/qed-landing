@@ -17,7 +17,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.hero.h1a": "Llena tu local cada semana con ",
   "v.hero.h1b": "quiz.",
   "v.hero.sub": "Nosotros ponemos el quiz. Tú pones las bebidas. Una noche semanal que convierte tus tardes de mesa para dos en una sala llena de clientes habituales, y te quedas con cada céntimo de la barra.",
-  "v.hero.stamp": "comisión",
 
   "v.stat.commission": "comisión",
   "v.stat.players": "jugadores por noche",

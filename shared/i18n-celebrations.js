@@ -18,7 +18,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.hero.h1a": "El juego de fiesta que ",
   "cel.hero.h1b": "se lleva el show.",
   "cel.hero.sub": "Un pub quiz escrito sobre el homenajeado. Tu gente, vuestras bromas internas, vuestras fotos más comprometedoras, convertidas en la ronda que todo el mundo recuerda.",
-  "cel.hero.stamp": "sobre vosotros",
 
   "cel.stat.flat": "fijo · Express",
   "cel.stat.hosted": "desde · con anfitrión",

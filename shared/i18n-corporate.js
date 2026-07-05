@@ -15,7 +15,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.hero.h1a": "Team building que de verdad ",
   "c.hero.h1b": "se disfruta.",
   "c.hero.sub": "Olvídate de las dinámicas de confianza y la diversión forzada. Montamos una noche de quiz afilada y de verdad divertida, de la que tu equipo habla durante semanas en vez de aguantarla en silencio.",
-  "c.hero.stamp": "dinámicas de confianza",
 
   "c.stat.cities": "ciudades",
   "c.stat.run": "de duración",

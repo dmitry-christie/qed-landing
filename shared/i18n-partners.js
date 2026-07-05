@@ -83,7 +83,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.case.eyebrow": "Caso real · Murcia",
   "p.case.h3": "Un socio. Cuatro meses. Ingresos +74 %.",
-  "p.case.p": "Nuestro socio de Murcia empezó en marzo con tres eventos y 70 asistentes. En junio ya llevaba un circuito mensual estable que sumó 125 asistentes y 460 € en ingresos por entradas solo ese mes.",
+  "p.case.p": "Nuestro socio de Murcia empezó en marzo con tres eventos y 70 asistentes. En junio ya llevaba un circuito mensual estable que sumó 125 asistentes y 460 € en ingresos por entradas solo ese mes, sin contar lo que ganaron en la barra.",
   "p.case.cta": "Haz esto en tu ciudad",
   "p.case.s1": "eventos desde el lanzamiento",
   "p.case.s2": "asistentes en total",
@@ -92,10 +92,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.apply.eyebrow": "Solicitar",
   "p.apply.h2": "Veamos si encajamos.",
   "p.apply.sub": "Cuéntanos un poco sobre ti y tu ciudad. Respondemos en 48 horas, siempre.",
-  "p.apply.sla": "SLA",
-  "p.apply.every": "Cada solicitud",
-  "p.apply.under48": "< 48 h",
-  "p.apply.email": "info@tardeodetrivia.com",
 
   "p.form.first": "Nombre",
   "p.form.last": "Apellidos",
