@@ -1,7 +1,7 @@
 /* QED build step (run by Netlify) — turns deploy env vars into a static config.
 
    Env vars (set in Netlify → Site settings → Environment variables):
-     BRAND                      QED | TDT    (QED = quizeatdrink.com/EN, TDT = tardeodetrivia.com/ES)
+     BRAND                      QED | TDT    (QED = landing.quizeatdrink.com/EN, TDT = landing.tardeodetrivia.com/ES)
      DEV_NOTICE                 true | false (default true — shows the "in development" banner)
      DEFAULT_LANGUAGE           EN | ES      (fallback when BRAND is not set; default EN)
      RUDDERSTACK_WRITE_KEY      live-site write key (used when Netlify's own CONTEXT === 'production')
@@ -57,7 +57,10 @@ console.log("[qed build] config:", config);
    The two brands serve the same pages on different domains (EN on QED, ES on TDT),
    so canonical + hreflang must be stamped at build time. Local/preview builds keep
    the inert <!-- build:seo --> comment. */
-const DOMAINS = { QED: "quizeatdrink.com", TDT: "tardeodetrivia.com" };
+// "landing." prefix matches where this site is actually deployed (see Netlify custom
+// domains). The bare apex domains are a separate, unrelated site — pointing canonical/
+// hreflang tags there would misdirect search engines off this site entirely.
+const DOMAINS = { QED: "landing.quizeatdrink.com", TDT: "landing.tardeodetrivia.com" };
 const PAGES = ["", "corporate/", "celebrations/", "venues/", "partners/"];
 const SEO_MARK = "<!-- build:seo -->";
 const ANALYTICS_MARK = "<!-- build:analytics -->";

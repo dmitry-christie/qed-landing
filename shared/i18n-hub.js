@@ -3,6 +3,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.title": "QED · Quiz. Eat. Drink. — noches de quiz por toda España",
   "h.metadesc": "QED monta y dirige noches de quiz que la gente recuerda de verdad: para empresas, celebraciones, locales y socios de franquicia en Valencia, Madrid, Murcia y Santiago de Compostela.",
 
+  "h.nav.work": "Organiza un quiz",
   "h.nav.partners": "Socios",
   "h.nav.venues": "Locales",
 
