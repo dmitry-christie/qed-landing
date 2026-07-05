@@ -27,7 +27,10 @@ window.QED_ES = window.QED_ES || {};
   function storedLang() { try { return localStorage.getItem(LANG_KEY); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
-  var BRAND_DOMAINS = { QED: "quizeatdrink.com", TDT: "tardeodetrivia.com" };
+  // These are the actual hosts this site is deployed on. quizeatdrink.com /
+  // tardeodetrivia.com (no "landing." prefix) are a separate, unrelated site —
+  // sending the switcher there takes visitors off this site entirely.
+  var BRAND_DOMAINS = { QED: "landing.quizeatdrink.com", TDT: "landing.tardeodetrivia.com" };
   var BRAND_LANG    = { QED: "EN", TDT: "ES" };
 
   // Match the visitor's browser language to a locale we support (ES or EN).
