@@ -1,6 +1,6 @@
-// Venues sign-up. Forwards to Telegram, fires Meta CAPI.
+// Venues sign-up. Forwards to Telegram + RudderStack.
 import type { Handler } from "@netlify/functions";
-import { clean, isEmail, json, MAX_BODY, metaLine, sendTelegram, fireMetaCapi } from "../lib/forms";
+import { clean, isEmail, json, MAX_BODY, metaLine, sendTelegram, sendToRudderstack } from "../lib/forms";
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { ok: false, error: "Method not allowed" });
@@ -16,6 +16,8 @@ export const handler: Handler = async (event) => {
   if (body._honey) return json(200, { ok: true });
 
   const d = clean(body);
+  d._ua = event.headers["user-agent"] || "";
+  d._ip = event.headers["x-nf-client-connection-ip"] || "";
 
   for (const field of ["venueName", "firstName", "lastName", "email"]) {
     if (!d[field]) return json(400, { ok: false, error: `Missing required field: ${field}` });
@@ -36,9 +38,12 @@ export const handler: Handler = async (event) => {
     metaLine(d, page),
   ].join("\n");
 
-  const sent = await sendTelegram(text);
+  const [telegramResult] = await Promise.allSettled([
+    sendTelegram(text),
+    sendToRudderstack("lead_complete", d, page),
+  ]);
+  const sent = telegramResult.status === "fulfilled" && telegramResult.value;
   if (!sent) return json(500, { ok: false, error: "Could not send right now. Please email hello@qed.es." });
 
-  fireMetaCapi(d, page);
   return json(200, { ok: true });
 };

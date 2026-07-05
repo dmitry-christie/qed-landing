@@ -7,6 +7,12 @@
       "runtimeArgs": ["-c", "python3 -m http.server $PORT"],
       "port": 4734,
       "autoPort": true
+    },
+    {
+      "name": "qed-netlify-dev",
+      "runtimeExecutable": "netlify",
+      "runtimeArgs": ["dev", "--port", "8888"],
+      "port": 8888
     }
   ]
 }

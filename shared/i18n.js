@@ -82,6 +82,7 @@ window.QED_ES = window.QED_ES || {};
     applyAttr("data-i18n-ph", "placeholder", lang);
     applyAttr("data-i18n-aria", "aria-label", lang);
     applyAttr("data-i18n-content", "content", lang);
+    applyAttr("data-i18n-href", "href", lang);
 
     document.querySelectorAll(".langsw button").forEach(function (b) {
       var on = b.getAttribute("data-lang") === lang;

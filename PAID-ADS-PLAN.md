@@ -9,9 +9,9 @@
 
 **The pages are good. The plumbing is not.** Hero copy, message match, honest stats, and the two-step forms are launch-quality on all four persona pages. What blocks spending money today:
 
-1. **Zero client-side measurement.** No GTM, GA4, or Meta Pixel on any page. `lead_intent`/`lead_complete` push into a dataLayer nothing reads. Google Ads would run completely blind. *(critical)*
+1. **Zero client-side measurement.** No GTM, GA4, or Meta Pixel on any page. `lead_intent`/`lead_complete` push into a dataLayer nothing reads. Google Ads would run completely blind. *(critical)* — **Fix: RudderStack JS SDK, see updated Part 2 (2026-07-04 decision).**
 2. **No lead attribution.** UTM/gclid/fbclid are never captured; Telegram (the de-facto CRM) shows identical messages for a €50-CPC lead and an organic one. Per-campaign lead quality is uncomputable. *(critical)*
-3. **CAPI is half-built.** `fireMetaCapi` in `netlify/lib/forms.ts` already fires CompleteRegistration server-side, but the client never sends `_fbp/_fbc/_event_id/_url/_ua` — events go out with hashed email only (low EMQ, no dedup key), and the unawaited `void fetch` gets killed by Lambda freeze nondeterministically. *(high)*
+3. **CAPI is half-built.** `fireMetaCapi` in `netlify/lib/forms.ts` already fires CompleteRegistration server-side, but the client never sends `_fbp/_fbc/_event_id/_url/_ua` — events go out with hashed email only (low EMQ, no dedup key), and the unawaited `void fetch` gets killed by Lambda freeze nondeterministically. *(high)* — **Superseded: replace the direct Graph API call with a server-side RudderStack `track()`, see updated Prompt 3.**
 4. **No Consent Mode v2 / CMP.** Legally required (denied-by-default) in Spain; Google rejects EEA remarketing without it since March 2024. *(high)*
 5. **Privacy/Terms footer links 404.** Google Ads destination-policy disapproval risk + GDPR exposure on PII-collecting forms. **Do not start paid traffic while these 404.** *(high)*
 6. **Enter/mobile-Go submits step 1 directly**, bypassing all qualification; server errors render inside the *collapsed* step-2 container — an invisible, silently dead form. *(high)*
@@ -23,28 +23,45 @@
 
 ## Part 2 — Measurement architecture (build once, both networks feed from it)
 
-```
-Browser                                Netlify function                 Ad platforms
-───────                                ────────────────                 ────────────
-Consent Mode v2 default:denied
-GTM container (per-brand env var)
-  ├─ GA4 config (analytics consent)
-  ├─ Meta Pixel base + Lead on         fireMetaCapi → Meta CAPI  ─────► Meta Events Manager
-  │    lead_complete (event_id ──────────── same event_id ─────────────► dedup, EMQ > 6
-  │    from dataLayer)                  (em+ph+fn/ln+IP+UA+fbp/fbc)
-  └─ Google Ads conversion tag
-       on lead_complete, per lead_type,
-       + enhanced conversions (email/phone)
+**2026-07-05: Prompts 2 + 3 below shipped** (markers, `shared/consent.js`, `sendToRudderstack` in `netlify/lib/forms.ts`, the 3 functions, `qed.js` capture — `npm run typecheck` clean, verified end-to-end in `netlify dev`: consent banner renders/persists/translates, Accept triggers the CDN script load attempt, Decline never does, and a real form submission carries `_event_id`/`_consent`/`_fbc`/`_url` to the function). One implementation detail changed from the original prompt text below: the CDN script URL turned out to be a third required input, not something safe to hardcode — see the new `RUDDERSTACK_CDN_URL` var. **Still blocked on real values for `RUDDERSTACK_DATA_PLANE_URL` and `RUDDERSTACK_CDN_URL`** before this does anything on a real deploy — see Part 5.
 
-qed.js: UTM/gclid/fbclid → localStorage → POST payload → Telegram "📣 Source:" line
+**2026-07-04 decision: RudderStack replaces the hand-rolled GTM container + direct Meta Graph API calls.** RudderStack is the single client-side tag *and* the fan-out layer to ad platforms (configured via cloud-mode destinations in the RudderStack dashboard, not in our code). Two sources exist already:
+
+| Env | Write key |
+|---|---|
+| Live (production) | `2e8anllkdUDI2MoK38sqseYAdMC` |
+| QA (previews/branch deploys) | `3CDsy9jQEW5IMiEEJ6DzYSeBvFP` |
+
+```
+Browser                                  Netlify function                    RudderStack                       Ad platforms
+───────                                  ────────────────                    ───────────                       ────────────
+Consent Mode v2 default:denied
+RudderStack JS SDK (write key selected
+by Netlify deploy CONTEXT: production
+→ live key, else → QA key)
+  ├─ track('lead_intent')  ───────────────────────────────────────────────►  RudderStack source  ─────────►  Cloud-mode destinations
+  │    (lead_type, persona, brand,                                            (live or QA, per write key)      (configured in dashboard,
+  │     lang, utm_*/gclid/fbclid)                                                                               not in code):
+  └─ track('lead_complete')                server-side track()                                                  · Facebook Conversions API
+       event_id shared with the    ───────►  (same event_id, from                                               · Google Ads / Enhanced Conv.
+       server-side call for dedup           netlify/lib/forms.ts,                                                · GA4
+                                             em/ph hashed if the                                                 · (add more later — config only)
+                                             destination doesn't hash
+                                             automatically)
+
+qed.js: UTM/gclid/fbclid → localStorage → merged into track() properties AND the Telegram "📣 Source:" line
 ```
 
 Decisions (so nobody re-litigates them):
-- **No sGTM at this stage.** The Netlify functions already are the server-side channel — first-party, receives the lead, can hash everything. Deploying sGTM adds a Cloud Run bill and a domain for marginal gain at this volume. Revisit at >10k sessions/mo.
-- **CAPI event name → `Lead`** (from CompleteRegistration), matched exactly by the browser Pixel event with the same `event_id` for dedup. `Lead` is what Meta lead-gen optimization expects.
-- **Google Ads primary = direct conversion tag** on `lead_complete` (custom-event trigger filtered by `lead_type`, NOT page-URL — success is a DOM state, no thank-you URL). GA4 `generate_lead` is the secondary/analysis layer. Enhanced conversions from the form's email/phone, gated on consent.
-- **Three conversion actions with relative values:** `Lead — franchise` (value 10), `Lead — venue` (value 3), `Lead — events` (value 1). Swap in real values when pricing lands.
-- **Attribution to the CRM:** Telegram is the CRM. The `📣 Source:` line per lead is the lead-quality feedback loop — founders judge campaign quality from it weekly.
+- **No GTM, no sGTM.** RudderStack's JS SDK is the only client-side tag; ad-platform pixels/tags are cloud-mode destinations RudderStack calls server-to-server, not scripts we load. Simpler CSP, no GTM container to maintain, no separate consent wiring per downstream tag.
+- **No direct Meta Graph API calls from `forms.ts`.** `fireMetaCapi` is replaced by a generic `sendToRudderstack(event, properties, anonymousId)` that POSTs to the RudderStack HTTP API (`<dataPlaneUrl>/v1/track`) using the server-side write key. RudderStack's Facebook Conversions API destination (configured once in the dashboard with the Meta Pixel ID + CAPI token — those credentials live in RudderStack now, not our env vars) does the event-name mapping, dedup, and (check its settings) PII hashing. If that destination does **not** hash em/ph itself, `forms.ts` keeps doing it before sending — mirroring the existing `sha256` helper.
+- **Event/property contract stays the same as the dataLayer plan:** `lead_intent` / `lead_complete`, carrying `lead_type`, `persona`, `brand`, `lang`, `event_id`, and (once Prompt 4 lands) `_utm_*`/`_gclid`/`_fbc` — client and server track calls share the same `event_id` so the Facebook Conversions API destination can dedup against a browser-side Pixel if one is later enabled.
+- **fbp/fbc caveat:** without a browser-loaded Meta Pixel, there's no real `_fbp` cookie (only Meta's own pixel script sets it). `_fbc` can still be constructed from a `fbclid` URL param (no pixel needed) — see Prompt 4. This means slightly lower Meta EMQ than a full pixel+CAPI setup unless we also turn on RudderStack's device-mode Facebook Pixel destination later; cloud-mode-only is the simpler starting point.
+- **Google Ads:** enhanced conversions + click-ID import happen via RudderStack's Google Ads destination, fed the same `lead_complete` event + hashed email/phone + `gclid`. GA4 stays a secondary destination for funnel analysis (`lead_intent` → `lead_complete` rate).
+- **Three conversion actions with relative values:** `Lead — franchise` (value 10), `Lead — venue` (value 3), `Lead — events` (value 1). Swap in real values when pricing lands. Set these up as destination-side event mappings in RudderStack, not in our code.
+- **Attribution to the CRM:** Telegram is still the CRM. The `📣 Source:` line per lead is the lead-quality feedback loop — founders judge campaign quality from it weekly. RudderStack is additive, not a replacement for that line.
+- **Write-key handling:** keys are client-visible by design (they ship in the page's JS, same as any Segment/RudderStack snippet) — fine to bake into `window.QED_CONFIG`. Still source them from Netlify env vars (`RUDDERSTACK_WRITE_KEY`, `RUDDERSTACK_WRITE_KEY_QA`) rather than hardcoding in `build.mjs`, selected by Netlify's own `CONTEXT` var (`production` → live, anything else → QA) — mirrors the existing `BRAND`/`config.js` pattern.
+- **Open question — data plane URL and CDN URL:** the JS SDK and the server-side HTTP call both need the RudderStack **data plane URL**, and the JS SDK also needs the exact **CDN script URL** for this workspace (the plausible-looking `cdn.rudderlabs.com/v3/...` path returned 403 when checked directly — RudderStack's CDN layout isn't something to guess at, it has to come from the source's own Setup page). Both now read from env vars (`RUDDERSTACK_DATA_PLANE_URL`, `RUDDERSTACK_CDN_URL`) so the code doesn't need to change once Dmitry supplies them — see Part 5.
 
 ## Part 3 — Campaign strategy
 
@@ -80,7 +97,7 @@ UTM taxonomy (bake into every ad): `utm_source=meta|google · utm_medium=paid_so
 | CPL events | < €8 | " |
 | Meta EMQ | > 6.0 | Events Manager |
 | lead_intent → lead_complete | > 55% | GA4 funnel |
-| Consent opt-in rate | > 65% | GTM/CMP |
+| Consent opt-in rate | > 65% | RudderStack consent gate |
 | Weekly ritual | Founders tag each Telegram lead ✅/❌ qualified, per source | 15 min/wk |
 
 Launch sequence: **Week 0** ship Batch 0 prompts → QA with Meta `test_event_code` + GTM preview + Google Tag Assistant → **Week 1** launch Search brand + venues ES + Meta C1 at €20/day → **Week 2** add franchise + retargeting once EMQ confirmed > 6 → **Week 3+** scale what the Telegram quality tags support.
@@ -155,77 +172,118 @@ I am not a lawyer — keep the policy factual and conservative, and add an HTML
 comment at the top flagging it for legal review.
 ```
 
-**Prompt 2 — GTM + Consent Mode v2 via build injection**
+**Prompt 2 — RudderStack SDK + Consent Mode v2 via build injection**
 
 ```
-No tag manager, GA4, or Meta Pixel exists on any page (verified: zero
-gtag/googletagmanager/fbq matches repo-wide). qed.js pushes lead_intent /
-lead_complete into a dataLayer nothing consumes. We're launching Meta + Google
-Ads and need the client-side tag layer, gated behind Consent Mode v2
-(denied-by-default — Spain/AEPD).
+No client-side measurement exists on any page (verified: zero
+gtag/googletagmanager/fbq/rudderanalytics matches repo-wide). qed.js pushes
+lead_intent/lead_complete into a dataLayer nothing consumes. We've decided to
+use RudderStack (not GTM) as the single client-side tag + fan-out layer to
+Meta/Google — two sources already exist:
+  live write key: 2e8anllkdUDI2MoK38sqseYAdMC
+  QA write key:   3CDsy9jQEW5IMiEEJ6DzYSeBvFP
+Both need the RudderStack DATA PLANE URL too (ask Dmitry if not already in
+Netlify env vars as RUDDERSTACK_DATA_PLANE_URL — the write key alone doesn't
+tell the SDK where to send events).
+Gate everything behind Consent Mode v2 (denied-by-default — Spain/AEPD).
 
-Implementation (mirror the existing build:seo pattern in build.mjs):
+Implementation (mirror the existing build:seo / config.js pattern in build.mjs):
 1. Add an inert <!-- build:analytics --> marker right after <meta name="viewport">
    in all 5 heads (7 if privacy/terms exist by now), and
-   <!-- build:analytics-body --> right after each <body> tag.
-2. Extend build.mjs to replace them when a GTM_ID env var is set (independent of
-   the `if (brand)` branch — gate on GTM_ID itself): head marker gets (a) an
-   inline Consent Mode v2 default snippet BEFORE the loader —
-   ad_storage/ad_user_data/ad_personalization/analytics_storage all 'denied',
-   wait_for_update:500 — then (b) the standard GTM loader with the GTM_ID; body
-   marker gets the GTM noscript iframe. Unbranded/local builds keep the inert
-   comments (tag-free previews), exactly like build:seo today.
-3. Consent banner: lightweight, handmade-styled (tag/stamp aesthetic per
+   <!-- build:analytics-body --> right after each <body> tag (keep the body
+   marker even if unused yet — RudderStack device-mode destinations may need
+   noscript/init markup later).
+2. Extend the config object build.mjs writes to config.js: add
+   rudderstackWriteKey (RUDDERSTACK_WRITE_KEY when process.env.CONTEXT ===
+   'production', else RUDDERSTACK_WRITE_KEY_QA — both env vars, never hardcode
+   the keys in build.mjs) and rudderstackDataPlaneUrl (RUDDERSTACK_DATA_PLANE_URL).
+   Unbranded/local builds still get whichever env vars are set locally (falls
+   back to undefined → SDK simply doesn't load, same inert-preview behavior as
+   build:seo today).
+3. Replace the <!-- build:analytics --> marker with the RudderStack JS SDK
+   snippet (standard rudder-analytics.js loader), initialized with
+   window.QED_CONFIG.rudderstackWriteKey + dataPlaneUrl, but DON'T call
+   rudderanalytics.load()/page() until consent is granted — queue an
+   initializer function that the consent banner calls on Accept, and call it
+   immediately if the stored consent is already 'granted' from a prior visit.
+4. Consent banner: lightweight, handmade-styled (tag/stamp aesthetic per
    PRODUCT.md, NOT a cookie-wall) fixed to bottom, two equal buttons
-   Accept / Reject, persisting to localStorage ('qed-consent') and calling
-   gtag('consent','update',...) on accept. Only render the banner when
-   window.QED_CONFIG has a gtmId (add gtmId to the config build.mjs writes).
-   Banner copy: EN baked in a new shared consent.js that injects it + ES keys in
+   Accept / Reject, persisting to localStorage ('qed-consent'). Only render
+   the banner when window.QED_CONFIG has a rudderstackWriteKey. Banner copy:
+   EN baked in a new shared consent.js that injects it + ES keys in
    shared/i18n-common.js. Respect prefers-reduced-motion.
-4. In qed.js, add data._consent = (localStorage 'qed-consent' value or 'denied')
-   to the form POST payload, and in netlify/lib/forms.ts make fireMetaCapi return
-   early unless _consent === 'granted'.
+5. In qed.js, add data._consent = (localStorage 'qed-consent' value or
+   'denied') to the form POST payload, and in netlify/lib/forms.ts make the
+   new sendToRudderstack() (see Prompt 3) return early unless
+   _consent === 'granted'.
+6. Wire trackLeadIntent/trackLeadComplete (shared/qed.js) to also call
+   window.rudderanalytics.track(name, detail) when rudderanalytics is loaded
+   (keep the existing dataLayer.push as-is — cheap, harmless, useful for
+   future GA4-via-RudderStack debugging in the browser console).
 
-Do not add GA4/Pixel tags in code — they'll be configured inside the GTM
-container. The deliverable is: markers, build injection, consent default +
-banner, consent gate on CAPI.
+Do not configure Meta/Google destinations in code — that happens once inside
+the RudderStack dashboard (cloud-mode connections), not in this repo. The
+deliverable here is: markers, build injection of the two RudderStack env
+vars, consent default + banner, consent-gated SDK load, and track() calls
+routed through RudderStack.
 ```
 
-**Prompt 3 — CAPI hardening (match quality, dedup, delivery)**
+**Prompt 3 — Server-side RudderStack forwarding (replaces direct Meta CAPI calls)**
 
 ```
-netlify/lib/forms.ts fireMetaCapi() fires a Meta CAPI event per lead but is
-crippled three ways. Fix all three:
+netlify/lib/forms.ts's fireMetaCapi() calls the Facebook Graph API directly.
+We've decided to route server-side events through RudderStack instead (its
+Facebook Conversions API + Google Ads destinations are configured once in the
+RudderStack dashboard with the real Meta Pixel ID/token and Google Ads IDs —
+this repo no longer needs META_PIXEL_ID/META_CAPI_TOKEN). Replace
+fireMetaCapi with a generic sendToRudderstack() and fix the three delivery
+bugs it inherits:
 
-A) Client fields never sent: fireMetaCapi reads d._fbp/_fbc/_ua/_event_id/_url
-   but shared/qed.js's submit handler (lines ~100-104) sends only FormData +
-   lang + country. In qed.js before the fetch: add a small readCookie helper;
-   set data._fbp = readCookie('_fbp'), data._fbc = readCookie('_fbc') ||
-   (fbclid from the stored attribution (see localStorage 'qed-attr' if it
-   exists, else location.search) ? 'fb.1.' + Date.now() + '.' + fbclid : ''),
-   data._url = location.href, data._event_id = crypto.randomUUID ?
-   crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2).
-   Pass the same _event_id into the trackLeadComplete(...) push so a browser
-   Pixel can later dedup via fbq eventID.
+A) New function shape: sendToRudderstack(event: string, d: Dict, page: string)
+   in forms.ts. Reads RUDDERSTACK_WRITE_KEY (or RUDDERSTACK_WRITE_KEY_QA when
+   process.env.CONTEXT !== 'production') and RUDDERSTACK_DATA_PLANE_URL from
+   env; no-ops if either is unset (same fail-open behavior fireMetaCapi had
+   for missing Meta env vars). Returns early unless d._consent === 'granted'
+   (see Prompt 2 step 5).
 
-B) Server underuses data in hand: in forms.ts, have each of the three functions
-   stash d._ua = event.headers['user-agent'] and d._ip =
-   event.headers['x-nf-client-connection-ip'] before calling fireMetaCapi (keeps
-   the signature unchanged; 3 call sites). In fireMetaCapi set
-   user_data.client_ip_address from d._ip; hash and add ph (phone digits,
-   normalize to 34-prefixed E.164 when 9-digit Spanish), fn, ln, ct (city),
-   country ('es') from existing fields when present — SHA-256 lowercase-trimmed
-   like the existing em. Rename event_name 'CompleteRegistration' → 'Lead'
-   (the GTM-side Pixel event must also be 'Lead' — leave a comment). Append
-   test_event_code from META_TEST_EVENT_CODE env var when set.
+B) Client fields never sent yet: shared/qed.js's submit handler (lines
+   ~100-104) sends only FormData + lang + country. Before the fetch, add:
+   data._event_id = crypto.randomUUID ? crypto.randomUUID() :
+   Date.now() + '-' + Math.random().toString(16).slice(2), and
+   data._url = location.href. Pass the same _event_id into the
+   trackLeadComplete(...) push (Prompt 2 step 6) so the client-side
+   RudderStack track() and the server-side one share one event/message ID —
+   set it as the RudderStack message's messageId (or a top-level
+   properties.event_id if the SDK doesn't expose messageId easily) so the
+   Facebook Conversions API destination's dedup can match a future
+   device-mode Pixel event. Also capture fbclid-derived _fbc the same way the
+   original plan described (readCookie('_fbc') ||, from stored attribution's
+   fbclid, 'fb.1.' + Date.now() + '.' + fbclid) — RudderStack's Facebook
+   destination uses it for click-based matching even with no Pixel loaded.
 
-C) Delivery is nondeterministic: fireMetaCapi is `void fetch(...)` and every
-   handler returns immediately after — Lambda freeze drops in-flight requests.
-   Make fireMetaCapi async returning the fetch promise with
-   AbortSignal.timeout(2000), log non-2xx like sendTelegram does, and in all
-   three handlers run it in parallel with sendTelegram via Promise.allSettled
-   so no latency is added but delivery is awaited.
+C) Build the payload: in each of the three functions (book-event,
+   franchise-apply, venue-apply), stash d._ua = event.headers['user-agent']
+   and d._ip = event.headers['x-nf-client-connection-ip'] before calling
+   sendToRudderstack (same as the old fireMetaCapi signature — no changes to
+   call sites beyond the rename). Inside sendToRudderstack, build a RudderStack
+   HTTP API v1/track payload: { event, userId or anonymousId (generate one if
+   absent — a stable per-lead id, e.g. sha256 of email, is fine), properties:
+   { lead_type, page, ...whatever's useful }, context: { ip: d._ip,
+   userAgent: d._ua }, traits (or context.traits): { email, phone, firstName,
+   lastName } }. CHECK RudderStack's Facebook Conversions API destination
+   docs for whether it hashes em/ph/fn/ln itself — if not, SHA-256
+   lowercase-trimmed hash them here first (reuse the existing sha256 helper),
+   mirroring what fireMetaCapi used to do by hand.
 
+D) Delivery must be awaited, not fire-and-forget: sendToRudderstack is async,
+   returns the fetch promise with AbortSignal.timeout(2000), logs non-2xx
+   like sendTelegram does, and in all three handlers runs in parallel with
+   sendTelegram via Promise.allSettled so no latency is added but delivery is
+   awaited (same fix the old Prompt 3 called for — the bug is unchanged,
+   only the destination is).
+
+Delete fireMetaCapi and the direct graph.facebook.com fetch entirely — no
+code in this repo should call the Facebook Graph API directly anymore.
 npm run typecheck must pass.
 ```
 
@@ -250,6 +308,12 @@ quality visibility.
    data is present: '📣 {utm_source||ref||"direct"} / {utm_medium||"—"} /
    {utm_campaign||"—"}' plus ' · gclid' / ' · fbclid' presence flags. All three
    functions use metaLine already, so one change covers them.
+4. Also merge _utm_source/_utm_medium/_utm_campaign/_utm_term/_utm_content/
+   _gclid/_fbclid into the properties object of both the client-side
+   trackLeadIntent/trackLeadComplete RudderStack track() calls (Prompt 2) and
+   the server-side sendToRudderstack() call (Prompt 3) — RudderStack's Google
+   Ads and Facebook destinations use gclid/fbclid for click-based matching,
+   so this data needs to reach RudderStack, not just Telegram.
 
 No visible copy, no i18n changes. typecheck must pass.
 ```
@@ -586,12 +650,14 @@ Three small verified wins (shared/qed.css, shared/, build.mjs):
 1. **Territory policy** — is it one partner per city/area? If yes, it's both the missing #1 objection answer on /partners/ AND the honest scarcity lever for ad copy ("your city may already be taken"). *(blocks part of prompt 11)*
 2. **Quiz format** — "Four rounds, 40 questions each" = 160 questions? Real number? *(blocks part of prompt 10)*
 3. **Pricing anchors** — franchise setup fee / monthly / rev-share %, and private-event from-prices. The ledger slots and .fmt__price slots are structurally ready. Until then leads can't self-qualify on budget.
-4. **Accounts** — GTM container ID (per brand or shared), Meta Pixel ID + CAPI token (env vars META_PIXEL_ID / META_CAPI_TOKEN are already read by the code), Google Ads account for conversion actions.
-5. **Venue/night list** for the hub #play section (existing open item — also unlocks consumer remarketing later).
+4. **RudderStack data plane URL + CDN script URL** — the write keys (live `2e8anllkdUDI2MoK38sqseYAdMC` / QA `3CDsy9jQEW5IMiEEJ6DzYSeBvFP`) were provided 2026-07-04. Code now ships (2026-07-05) reading both from Netlify env vars `RUDDERSTACK_DATA_PLANE_URL` and `RUDDERSTACK_CDN_URL` — grab the exact values from each source's own "Setup" page in the RudderStack dashboard (don't reuse a URL found by guessing; a plausible-looking CDN path checked out as a dead 403 during implementation). Until both are set in Netlify, the consent banner still renders but nothing actually loads or sends. *(was blocking Prompt 2/3 — code is unblocked, delivery isn't)*
+5. **RudderStack destination status** — Dmitry confirmed 2026-07-04 the Facebook Conversions API / Google Ads destinations are already connected in the dashboard. Worth a smoke test once the data plane/CDN URLs are in Netlify: submit a real lead on a deploy preview and confirm it shows up in RudderStack's live event stream and, from there, in Meta Events Manager.
+6. **Venue/night list** for the hub #play section (existing open item — also unlocks consumer remarketing later).
 
 ## Deliberately NOT recommended
 
-- **sGTM deployment** — Netlify functions already give a server-side CAPI path; revisit at scale.
+- **GTM / hand-rolled direct Meta Graph API calls** — superseded 2026-07-04 by the RudderStack decision (see Part 2); RudderStack is now the single client-side tag and the only path server-side events take to ad platforms.
+- **sGTM deployment** — Netlify functions (now forwarding through RudderStack) already give a server-side CAPI path; revisit at scale.
 - **Regularizing layouts/scorecards** — deliberate per PRODUCT.md; verifiers rejected every finding that touched them.
 - **Instant Forms (Meta) as primary** — landing-page leads are higher intent and feed the same measurement spine; test Instant Forms later for franchise volume only.
 - **Partial-lead capture on step-1 Continue** — GDPR/consent copy overhead + brand risk; revisit if step-2 abandonment shows up in GA4 funnels.

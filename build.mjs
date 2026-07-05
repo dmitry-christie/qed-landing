@@ -1,14 +1,26 @@
 /* QED build step (run by Netlify) — turns deploy env vars into a static config.
 
    Env vars (set in Netlify → Site settings → Environment variables):
-     BRAND             QED | TDT       (QED = quizeatdrink.com/EN, TDT = tardeodetrivia.com/ES)
-     DEV_NOTICE        true | false    (default true — shows the "in development" banner)
-     DEFAULT_LANGUAGE  EN | ES         (fallback when BRAND is not set; default EN)
+     BRAND                      QED | TDT    (QED = quizeatdrink.com/EN, TDT = tardeodetrivia.com/ES)
+     DEV_NOTICE                 true | false (default true — shows the "in development" banner)
+     DEFAULT_LANGUAGE           EN | ES      (fallback when BRAND is not set; default EN)
+     RUDDERSTACK_WRITE_KEY      live-site write key (used when Netlify's own CONTEXT === 'production')
+     RUDDERSTACK_WRITE_KEY_QA   QA write key (used for deploy previews / branch deploys)
+     RUDDERSTACK_DATA_PLANE_URL data plane URL from the RudderStack source's Setup tab
+     RUDDERSTACK_CDN_URL        the exact SDK <script src> URL from that same Setup tab —
+                                deliberately NOT hardcoded here; RudderStack's CDN path is
+                                workspace/version-specific and copying a guessed URL risks
+                                silently loading nothing on a live site.
 
    Output:
      - config.js   regenerated with the resolved values.
      - On branded builds, the <!-- build:seo --> marker in each page's <head> is
        replaced with canonical / hreflang / og:url / og:image tags for that domain.
+     - When the three RUDDERSTACK_* vars above are all set, the <!-- build:analytics -->
+       marker is replaced with an inline snippet carrying those values (baked at build
+       time, not read from config.js, so it works regardless of script load order) —
+       shared/consent.js reads window.__qedRudder and only loads the CDN script once
+       consent is granted.
 
    Every page lives at its natural folder path (/corporate/, /celebrations/, …) and
    identifies itself with a baked-in window.QED_SITE, so there is no page-copying step. */
@@ -40,39 +52,73 @@ writeFileSync(
 
 console.log("[qed build] config:", config);
 
-/* ---- per-brand SEO head injection (branded deploys only) ----
+/* ---- per-brand SEO head injection (branded deploys only), + RudderStack analytics
+   injection (any deploy with the right env vars, independent of BRAND) ----
    The two brands serve the same pages on different domains (EN on QED, ES on TDT),
    so canonical + hreflang must be stamped at build time. Local/preview builds keep
    the inert <!-- build:seo --> comment. */
 const DOMAINS = { QED: "quizeatdrink.com", TDT: "tardeodetrivia.com" };
 const PAGES = ["", "corporate/", "celebrations/", "venues/", "partners/"];
 const SEO_MARK = "<!-- build:seo -->";
+const ANALYTICS_MARK = "<!-- build:analytics -->";
+const ANALYTICS_BODY_MARK = "<!-- build:analytics-body -->";
 
-if (brand) {
-  const domain = DOMAINS[brand];
-  let injected = 0;
+// Live vs QA write key follows Netlify's own deploy CONTEXT (production | deploy-preview |
+// branch-deploy) — set by Netlify itself, no extra config needed to distinguish them.
+const rudderWriteKey = process.env.CONTEXT === "production"
+  ? process.env.RUDDERSTACK_WRITE_KEY
+  : process.env.RUDDERSTACK_WRITE_KEY_QA;
+const rudderDataPlaneUrl = process.env.RUDDERSTACK_DATA_PLANE_URL;
+const rudderCdnUrl = process.env.RUDDERSTACK_CDN_URL;
+const rudderReady = Boolean(rudderWriteKey && rudderDataPlaneUrl && rudderCdnUrl);
+
+if (brand || rudderReady) {
+  let seoInjected = 0;
+  let analyticsInjected = 0;
   for (const page of PAGES) {
     const file = `${page}index.html`;
     let html = readFileSync(file, "utf8");
-    if (!html.includes(SEO_MARK)) {
-      console.warn(`[qed build] ${file}: no ${SEO_MARK} marker, skipped`);
-      continue;
+    let changed = false;
+
+    if (brand) {
+      const domain = DOMAINS[brand];
+      if (html.includes(SEO_MARK)) {
+        const tags = [
+          `<link rel="canonical" href="https://${domain}/${page}">`,
+          `<link rel="alternate" hreflang="en" href="https://${DOMAINS.QED}/${page}">`,
+          `<link rel="alternate" hreflang="es" href="https://${DOMAINS.TDT}/${page}">`,
+          `<link rel="alternate" hreflang="x-default" href="https://${DOMAINS.QED}/${page}">`,
+          `<meta property="og:url" content="https://${domain}/${page}">`,
+          `<meta property="og:image" content="https://${domain}/shared/og-image.png">`,
+          `<meta property="og:image:width" content="1200">`,
+          `<meta property="og:image:height" content="630">`,
+          `<meta property="og:locale" content="${lang === "ES" ? "es_ES" : "en_US"}">`,
+        ].join("\n");
+        html = html.replace(SEO_MARK, tags);
+        if (lang === "ES") html = html.replace('<html lang="en">', '<html lang="es">');
+        changed = true;
+        seoInjected++;
+      } else {
+        console.warn(`[qed build] ${file}: no ${SEO_MARK} marker, skipped`);
+      }
     }
-    const tags = [
-      `<link rel="canonical" href="https://${domain}/${page}">`,
-      `<link rel="alternate" hreflang="en" href="https://${DOMAINS.QED}/${page}">`,
-      `<link rel="alternate" hreflang="es" href="https://${DOMAINS.TDT}/${page}">`,
-      `<link rel="alternate" hreflang="x-default" href="https://${DOMAINS.QED}/${page}">`,
-      `<meta property="og:url" content="https://${domain}/${page}">`,
-      `<meta property="og:image" content="https://${domain}/shared/og-image.png">`,
-      `<meta property="og:image:width" content="1200">`,
-      `<meta property="og:image:height" content="630">`,
-      `<meta property="og:locale" content="${lang === "ES" ? "es_ES" : "en_US"}">`,
-    ].join("\n");
-    html = html.replace(SEO_MARK, tags);
-    if (lang === "ES") html = html.replace('<html lang="en">', '<html lang="es">');
-    writeFileSync(file, html);
-    injected++;
+
+    if (rudderReady && html.includes(ANALYTICS_MARK)) {
+      const cfg = JSON.stringify({
+        writeKey: rudderWriteKey,
+        dataPlaneUrl: rudderDataPlaneUrl,
+        cdnUrl: rudderCdnUrl,
+      });
+      html = html.replace(ANALYTICS_MARK, `<script>window.__qedRudder=${cfg};</script>`);
+      if (html.includes(ANALYTICS_BODY_MARK)) html = html.replace(ANALYTICS_BODY_MARK, "");
+      changed = true;
+      analyticsInjected++;
+    }
+
+    if (changed) writeFileSync(file, html);
   }
-  console.log(`[qed build] injected SEO head tags for ${domain} into ${injected}/${PAGES.length} pages`);
+  if (brand) console.log(`[qed build] injected SEO head tags for ${DOMAINS[brand]} into ${seoInjected}/${PAGES.length} pages`);
+  if (rudderReady) console.log(`[qed build] injected RudderStack config into ${analyticsInjected}/${PAGES.length} pages`);
+} else {
+  console.log("[qed build] no BRAND and no RudderStack env vars set — build:seo / build:analytics markers left inert");
 }
