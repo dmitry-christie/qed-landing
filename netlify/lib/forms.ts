@@ -75,38 +75,64 @@ export async function sendTelegram(text: string): Promise<boolean> {
 
 const sha256 = (s: string) => createHash("sha256").update(s.trim().toLowerCase()).digest("hex");
 
-// Fire-and-forget Meta CAPI CompleteRegistration. No-op unless META_PIXEL_ID +
-// META_CAPI_TOKEN are set, so it never blocks or breaks the lead flow.
-export function fireMetaCapi(d: Dict, page: string): void {
-  const pixelId = process.env.META_PIXEL_ID;
-  const token = process.env.META_CAPI_TOKEN;
-  if (!pixelId || !token) return;
+// 9-digit Spanish mobile/landline numbers get a "34" prefix to look like E.164;
+// anything else is passed through digit-only (best-effort — Meta/Google hash
+// whatever they're given, so a slightly malformed number just fails to match).
+function normalizePhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  return digits.length === 9 ? `34${digits}` : digits;
+}
 
-  const userData: Record<string, unknown> = {};
-  if (d.email) userData.em = [sha256(d.email)];
-  if (d._fbp) userData.fbp = d._fbp;
-  if (d._fbc) userData.fbc = d._fbc;
-  if (d._ua) userData.client_user_agent = d._ua;
+// Forward a lead event to RudderStack, which fans it out to Meta Conversions API
+// / Google Ads / GA4 via cloud-mode destinations configured once in the
+// RudderStack dashboard — this repo no longer calls the Facebook Graph API (or
+// any ad platform) directly. No-op unless RUDDERSTACK_WRITE_KEY(_QA) +
+// RUDDERSTACK_DATA_PLANE_URL are set, and unless the visitor granted consent
+// (qed.js sends d._consent; see shared/consent.js).
+export async function sendToRudderstack(event: string, d: Dict, page: string): Promise<void> {
+  const writeKey = process.env.CONTEXT === "production"
+    ? process.env.RUDDERSTACK_WRITE_KEY
+    : process.env.RUDDERSTACK_WRITE_KEY_QA;
+  const dataPlaneUrl = process.env.RUDDERSTACK_DATA_PLANE_URL;
+  if (!writeKey || !dataPlaneUrl) return;
+  if (d._consent !== "granted") return;
+
+  // Hashed client-side per Meta/Google's PII-matching requirements — if the
+  // RudderStack destination(s) already hash em/ph/fn/ln themselves, hashing
+  // twice is harmless (still a stable one-way match), so this stays defensive.
+  const traits: Record<string, string> = {};
+  if (d.email) traits.email = sha256(d.email);
+  if (d.phone) traits.phone = sha256(normalizePhone(d.phone));
+  if (d.firstName) traits.firstName = sha256(d.firstName);
+  if (d.lastName) traits.lastName = sha256(d.lastName);
+  if (d.city) traits.city = d.city;
+
+  const properties: Record<string, unknown> = { page };
+  if (d._fbc) properties.fbc = d._fbc;
+  if (d._url) properties.url = d._url;
+  // Also surface as a property (not just messageId) so the Facebook Conversions
+  // API destination can be mapped to it explicitly if it doesn't dedup on
+  // messageId automatically.
+  if (d._event_id) properties.event_id = d._event_id;
 
   const payload = {
-    data: [
-      {
-        event_name: "CompleteRegistration",
-        event_time: Math.floor(Date.now() / 1000),
-        ...(d._event_id ? { event_id: d._event_id } : {}),
-        ...(d._url ? { event_source_url: d._url } : {}),
-        action_source: "website",
-        user_data: userData,
-        custom_data: { content_name: page, content_category: "lead" },
-      },
-    ],
+    event,
+    anonymousId: d._event_id || `${page}-${Date.now()}`,
+    ...(d._event_id ? { messageId: d._event_id } : {}),
+    properties,
+    context: { traits, ip: d._ip, userAgent: d._ua },
   };
 
-  void fetch(`https://graph.facebook.com/v19.0/${pixelId}/events?access_token=${encodeURIComponent(token)}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  }).catch(() => {
-    /* fire-and-forget: never block the response */
-  });
+  const auth = Buffer.from(`${writeKey}:`).toString("base64");
+  try {
+    const res = await fetch(`${dataPlaneUrl.replace(/\/$/, "")}/v1/track`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Basic ${auth}` },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(2000),
+    });
+    if (!res.ok) console.error("RudderStack track failed:", res.status, await res.text());
+  } catch (err) {
+    console.error("RudderStack track threw:", err);
+  }
 }

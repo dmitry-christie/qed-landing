@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- build:analytics -->
 <script>document.documentElement.classList.add('js')</script>
 <title data-i18n="c.title">QED for Corporate · Team building people actually enjoy</title>
 <meta name="description" data-i18n-content="c.metadesc" content="A genuinely funny quiz night for your team. Offsites, client entertainment and team days across Valencia, Madrid, Murcia & Santiago de Compostela.">
@@ -22,6 +23,7 @@
 <script src="/config.js"></script>
 </head>
 <body class="theme-orange">
+<!-- build:analytics-body -->
 
 <header class="nav">
   <div class="nav__in">
@@ -45,7 +47,7 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero">
-    <div class="wrap split" style="--split:1.1fr 0.9fr">
+    <div class="wrap">
       <div class="reveal">
         <span class="tag tag--accent tag--shadow" data-i18n="c.hero.tag">Hosted in Valencia, Madrid, Murcia &amp; Santiago de Compostela</span>
         <h1 class="h-display" style="margin-top:20px;max-width:13ch"><span data-i18n="c.hero.h1a">Team building people </span><span class="accent" data-i18n="c.hero.h1b">actually enjoy.</span></h1>
@@ -53,19 +55,6 @@
         <div class="row" style="gap:12px;margin-top:26px">
           <a class="btn btn--cta btn--lg" href="#quote"><span data-i18n="c.cta.quote">Get a quote</span> <span class="arr">&rarr;</span></a>
           <a class="btn btn--lg" href="#how" data-i18n="c.cta.how">See how it works</a>
-        </div>
-      </div>
-
-      <div class="reveal deco-hide" data-d="2" aria-hidden="true" style="position:relative;min-height:300px">
-        <div class="scorecard rot-2" style="max-width:300px;margin-left:auto">
-          <div class="scorecard__hd">Q3 Offsite <span>Final</span></div>
-          <div class="scorecard__row"><b>★ Sales Wolves</b><b style="color:var(--accent)">1,240</b></div>
-          <div class="scorecard__row"><span>Engineering Owls</span><span>1,190</span></div>
-          <div class="scorecard__row"><span>Ops Foxes</span><span>980</span></div>
-          <div class="scorecard__row"><span>Marketing Moths</span><span>910</span></div>
-        </div>
-        <div class="stamp rot-3" style="position:absolute;left:-2%;top:-10%;background:var(--paper)">
-          <b style="color:var(--accent)">0</b><span data-i18n="c.hero.stamp">trust falls</span>
         </div>
       </div>
     </div>
@@ -282,11 +271,6 @@
           <span class="eyebrow" style="color:rgba(255,255,255,.6)" data-i18n="c.cta.quote">Get a quote</span>
           <h2 class="h2" style="color:#fff" data-i18n="c.form.h2">Tell us about your team.</h2>
           <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="c.form.sub">Quick form, real human reply, usually same day. No sales gauntlet.</p>
-          <div class="scorecard rot-1" style="max-width:240px;margin-top:6px">
-            <div class="scorecard__hd"><span data-i18n="sc.reply">Reply time</span> <span data-i18n="sc.today">Today</span></div>
-            <div class="scorecard__row"><span data-i18n="c.form.mostq">Most quotes</span><b style="color:var(--accent)" data-i18n="sc.under1d">&lt; 1 day</b></div>
-            <div class="scorecard__row"><span data-i18n="sc.email">Email</span><b>hello@qed.es</b></div>
-          </div>
         </div>
         <div class="pad">
           <form id="event-form" name="corporate-event" novalidate data-action="/.netlify/functions/book-event">
@@ -405,7 +389,7 @@
       <div>
         <p class="footer__lab" data-i18n="foot.tagContact">Contact us</p>
         <div class="footer__links">
-          <a href="mailto:hello@qed.es">hello@qed.es</a>
+          <a href="mailto:info@quizeatdrink.com" data-i18n="foot.email" data-i18n-href="foot.emailhref">info@quizeatdrink.com</a>
           <a href="https://instagram.com/qedvalencia">@qedvalencia</a>
         </div>
       </div>
@@ -418,7 +402,7 @@
       </div>
     </div>
     <div class="footer__base">
-      <span>© <span data-year>2026</span> QED · Quiz. Eat. Drink.</span>
+      <span>© <span data-year>2026</span> <span data-i18n="foot.legal">QED Imperium Ltd &middot; Company No. 15499238 &middot; 8 Wey House, 15 Church St, Weybridge, Surrey, UK KT13 8NA</span></span>
     </div>
   </div>
 </footer>
@@ -426,6 +410,7 @@
 <script src="/shared/i18n.js"></script>
 <script src="/shared/i18n-common.js"></script>
 <script src="/shared/i18n-corporate.js"></script>
+<script src="/shared/consent.js"></script>
 <script src="/shared/qed.js"></script>
 </body>
 </html>

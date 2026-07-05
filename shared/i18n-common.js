@@ -16,6 +16,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "foot.venue": "Local anfitrión",
   "foot.privacy": "Política de privacidad",
   "foot.terms": "Términos",
+  "foot.email": "info@tardeodetrivia.com",
+  "foot.emailhref": "mailto:info@tardeodetrivia.com",
+  "foot.legal": "Tardeo de Trivia SL · CIF B88885199",
 
   /* common form fields */
   "form.name": "Tu nombre",
@@ -33,5 +36,10 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "sc.reply": "Respuesta",
   "sc.today": "Hoy",
   "sc.email": "Email",
-  "sc.under1d": "< 1 día"
+  "sc.under1d": "< 1 día",
+
+  /* consent banner */
+  "consent.msg": "Usamos algunos datos para entender qué funciona y medir campañas publicitarias. Nada de spam ni de venderlos.",
+  "consent.accept": "Aceptar",
+  "consent.reject": "Rechazar"
 });

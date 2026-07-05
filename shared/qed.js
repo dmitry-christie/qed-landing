@@ -53,8 +53,19 @@
   function assign(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
   window.__qed = window.__qed || {};
   if (!window.__qed.country) window.__qed.country = "ES";
+  function readCookie(name) {
+    try {
+      var m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+      return m ? decodeURIComponent(m[1]) : "";
+    } catch (e) { return ""; }
+  }
   function track(name, detail) {
     try { (window.dataLayer = window.dataLayer || []).push(assign({ event: name }, detail || {})); } catch (e) {}
+    try {
+      if (window.__qedConsent === "granted" && window.__qedRudderReady && window.rudderanalytics && window.rudderanalytics.track) {
+        window.rudderanalytics.track(name, detail || {});
+      }
+    } catch (e) {}
   }
   window.trackLeadIntent = window.trackLeadIntent || function (d) { track("lead_intent", d); };
   window.trackLeadComplete = window.trackLeadComplete || function (d) { track("lead_complete", d); };
@@ -102,6 +113,26 @@
       data.lang = (document.documentElement.getAttribute("lang") || "en").toUpperCase();
       data.country = window.__qed.country || "ES";
 
+      /* CAPI/RudderStack match data: one id shared by the client + server track
+         calls (dedup), the page url, current consent, and a Meta click id built
+         from a real _fbc cookie or a stored/URL fbclid (works with no Pixel loaded). */
+      data._event_id = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : (Date.now() + "-" + Math.random().toString(16).slice(2));
+      data._url = location.href;
+      data._consent = window.__qedConsent || "denied";
+      data._fbc = readCookie("_fbc");
+      if (!data._fbc) {
+        var fbclid = "";
+        try {
+          var attr = JSON.parse(localStorage.getItem("qed-attr") || "null");
+          if (attr && attr.fbclid) fbclid = attr.fbclid;
+        } catch (e) {}
+        if (!fbclid) {
+          var fm = location.search.match(/[?&]fbclid=([^&]+)/);
+          if (fm) fbclid = decodeURIComponent(fm[1]);
+        }
+        if (fbclid) data._fbc = "fb.1." + Date.now() + "." + fbclid;
+      }
+
       if (btn) { btn.disabled = true; btn.textContent = "…"; }
 
       fetch(action, {
@@ -120,7 +151,7 @@
         form.classList.add("sent");
         var s = form.querySelector(".form-success");
         if (s) { s.setAttribute("role", "status"); if (s.focus) s.focus(); }
-        trackLeadComplete({ form: form.getAttribute("name") || action });
+        trackLeadComplete({ form: form.getAttribute("name") || action, event_id: data._event_id });
         form.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
       }).catch(function (err) {
         if (btn) {
