@@ -126,6 +126,12 @@ const PROPERTY_OMIT = new Set([
 // only actually gate anything once matching Consent Categories are configured against
 // each destination in the RudderStack dashboard — until then this is inert, same as an
 // unset env var (see build.mjs's RUDDERSTACK_CDN_URL note for the same class of issue).
+//
+// Category split: "analytics" = measurement (did the campaign work — GA4, Meta/Google
+// in reporting-only mode); "marketing" = ad campaign optimization/targeting (full Meta
+// Conversions API + Google Ads destinations used to bid and target). Meta's Limited Data
+// Use and Google's Restricted Data Processing flags belong on those "marketing"-tagged
+// destinations specifically (dashboard-side, once configured) — not on this payload.
 function consentManagementFrom(d: Dict): { enabled: true; provider: "custom"; allowedConsentIds: string[]; deniedConsentIds: string[] } | undefined {
   if (!d._consentCategories) return undefined;
   let categories: Record<string, boolean>;

@@ -14,7 +14,13 @@
    RudderStack dashboard — until then this is inert, like an unset env var (see build.mjs's
    RUDDERSTACK_CDN_URL note for the same class of issue). Necessary is always granted (the
    site can't remember your choice without it) and isn't sent to RudderStack at all — it
-   gates nothing there. */
+   gates nothing there.
+
+   Analytics = measurement (is the site/campaign working — GA4, Meta/Google in reporting-
+   only mode). Marketing = ad campaign optimization/targeting (full Meta Conversions API +
+   Google Ads destinations used to bid and target). Meta's Limited Data Use / Google's
+   Restricted Data Processing belong on those "marketing" destinations once configured on
+   the RudderStack dashboard — see the matching note in netlify/lib/forms.ts. */
 (function () {
   "use strict";
 
@@ -142,12 +148,14 @@
 
     var cats = document.createElement("div");
     cats.className = "consent__categories";
-    cats.hidden = true;
+    var catsIn = document.createElement("div");
+    catsIn.className = "consent__categories__in";
+    cats.appendChild(catsIn);
 
     var catDefs = [
       { id: "necessary", labelKey: "consent.cat.necessary", label: "Necessary", descKey: "consent.cat.necessaryd", desc: "Remembers this choice. Always on.", locked: true },
-      { id: "analytics", labelKey: "consent.cat.analytics", label: "Analytics", descKey: "consent.cat.analyticsd", desc: "Helps us see what's working (RudderStack)." },
-      { id: "marketing", labelKey: "consent.cat.marketing", label: "Marketing", descKey: "consent.cat.marketingd", desc: "Ad campaign measurement (Meta, Google)." }
+      { id: "analytics", labelKey: "consent.cat.analytics", label: "Analytics", descKey: "consent.cat.analyticsd", desc: "Measurement — how the site and ad campaigns are performing (RudderStack, Meta, Google)." },
+      { id: "marketing", labelKey: "consent.cat.marketing", label: "Marketing", descKey: "consent.cat.marketingd", desc: "Ad campaign optimization and targeting (Meta, Google)." }
     ];
     var checkboxes = {};
     catDefs.forEach(function (c) {
@@ -169,7 +177,7 @@
       text.appendChild(desc);
       row.appendChild(box);
       row.appendChild(text);
-      cats.appendChild(row);
+      catsIn.appendChild(row);
     });
 
     var actions = document.createElement("div");
@@ -203,7 +211,7 @@
     var open = false;
     manage.addEventListener("click", function () {
       open = !open;
-      cats.hidden = !open;
+      cats.classList.toggle("is-open", open);
       manage.classList.toggle("is-open", open);
       if (open) return;
       decide({ analytics: checkboxes.analytics.checked, marketing: checkboxes.marketing.checked });

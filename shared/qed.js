@@ -49,6 +49,33 @@
     }
   }
 
+  /* FAQ accordions — native <details>, but height-animated (.ans already sets
+     overflow:hidden). Toggling [open] directly instead of letting the browser's
+     own click handling run first means it fires exactly once, in the right order. */
+  if (!reduce) {
+    document.querySelectorAll(".faq details").forEach(function (d) {
+      var summary = d.querySelector("summary");
+      var ans = d.querySelector(".ans");
+      if (!summary || !ans) return;
+      summary.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        var opening = !d.open;
+        if (opening) d.open = true;
+        var target = opening ? ans.scrollHeight : 0;
+        ans.style.height = (opening ? 0 : ans.scrollHeight) + "px";
+        ans.getBoundingClientRect(); // force layout so the next line transitions from this value
+        ans.style.transition = "height .32s cubic-bezier(.2,.7,.2,1)";
+        ans.style.height = target + "px";
+        ans.addEventListener("transitionend", function onEnd() {
+          ans.removeEventListener("transitionend", onEnd);
+          ans.style.transition = "";
+          ans.style.height = "";
+          if (!opening) d.open = false;
+        });
+      });
+    });
+  }
+
   /* window.__qed (lang/country) + analytics stubs (push to dataLayer; safe no-ops) */
   function assign(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
   window.__qed = window.__qed || {};
@@ -81,8 +108,10 @@
   /* lead forms — two-step + fetch() → Netlify function → Telegram (no page reload) */
   document.querySelectorAll("form[data-action]").forEach(function (form) {
     var action = form.getAttribute("data-action");
+    var step1 = form.querySelector("[data-step='1']");
     var step2 = form.querySelector("[data-step='2']");
     var continueBtn = form.querySelector("[data-continue]");
+    var backBtn = form.querySelector("[data-back]");
     var errEl = form.querySelector(".form-error");
 
     function showError(msg) {
@@ -90,22 +119,34 @@
       else window.alert(msg);
     }
 
-    /* step 1 → step 2: validate the required fields, then slide step 2 open */
+    function focusFirst(scope) {
+      var first = scope && scope.querySelector("input,select,textarea");
+      if (!first) return;
+      if (reduce) first.focus(); else setTimeout(function () { first.focus(); }, 360);
+    }
+
+    /* step 1 → step 2: validate the required fields, then hand off to step 2
+       (CSS crossfades/collapses the two — see .at-step2 rules in qed.css) */
     if (continueBtn && step2) {
       continueBtn.addEventListener("click", function () {
-        var scope = form.querySelector("[data-step='1']") || form;
+        var scope = step1 || form;
         var invalid = null;
         scope.querySelectorAll("input,select,textarea").forEach(function (el) {
           if (el.required && !el.checkValidity() && !invalid) invalid = el;
         });
         if (invalid) { invalid.reportValidity ? invalid.reportValidity() : invalid.focus(); return; }
-        step2.classList.add("is-open");
         form.classList.add("at-step2");
-        (continueBtn.closest(".full") || continueBtn).style.display = "none";
         var et = form.elements.eventType;
         trackLeadIntent({ form: form.getAttribute("name") || action, eventType: et ? et.value : undefined });
-        var first = step2.querySelector("input,select,textarea");
-        if (first) { if (reduce) first.focus(); else setTimeout(function () { first.focus(); }, 360); }
+        focusFirst(step2);
+      });
+    }
+
+    /* step 2 → step 1: come back to edit, values untouched (nothing left the DOM) */
+    if (backBtn) {
+      backBtn.addEventListener("click", function () {
+        form.classList.remove("at-step2");
+        focusFirst(step1);
       });
     }
 

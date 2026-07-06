@@ -21,6 +21,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "foot.legal": "Tardeo de Trivia SL · CIF B88885199",
 
   /* common form fields */
+  "form.back": "Atrás",
   "form.name": "Tu nombre",
   "form.email": "Email",
   "form.city": "Ciudad",
@@ -41,7 +42,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "consent.cat.necessary": "Necesarias",
   "consent.cat.necessaryd": "Recuerda esta elección. Siempre activas.",
   "consent.cat.analytics": "Analítica",
-  "consent.cat.analyticsd": "Nos ayuda a ver qué funciona (RudderStack).",
+  "consent.cat.analyticsd": "Medición — cómo funcionan el sitio y las campañas publicitarias (RudderStack, Meta, Google).",
   "consent.cat.marketing": "Marketing",
-  "consent.cat.marketingd": "Medición de campañas publicitarias (Meta, Google)."
+  "consent.cat.marketingd": "Optimización y segmentación de campañas publicitarias (Meta, Google)."
 });
