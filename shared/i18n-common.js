@@ -21,6 +21,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "foot.legal": "Tardeo de Trivia SL · CIF B88885199",
 
   /* common form fields */
+  "form.back": "Atrás",
   "form.name": "Tu nombre",
   "form.email": "Email",
   "form.city": "Ciudad",
@@ -32,14 +33,16 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "form.reqName": "Tu nombre",
   "form.optElse": "¿Algo más?",
 
-  /* reply-time scorecard (shared shape) */
-  "sc.reply": "Respuesta",
-  "sc.today": "Hoy",
-  "sc.email": "Email",
-  "sc.under1d": "< 1 día",
-
   /* consent banner */
   "consent.msg": "Usamos algunos datos para entender qué funciona y medir campañas publicitarias. Nada de spam ni de venderlos.",
-  "consent.accept": "Aceptar",
-  "consent.reject": "Rechazar"
+  "consent.accept": "Aceptar todo",
+  "consent.reject": "Rechazar",
+  "consent.manage": "Personalizar",
+  "consent.save": "Guardar preferencias",
+  "consent.cat.necessary": "Necesarias",
+  "consent.cat.necessaryd": "Recuerda esta elección. Siempre activas.",
+  "consent.cat.analytics": "Analítica",
+  "consent.cat.analyticsd": "Medición — cómo funcionan el sitio y las campañas publicitarias (RudderStack, Meta, Google).",
+  "consent.cat.marketing": "Marketing",
+  "consent.cat.marketingd": "Optimización y segmentación de campañas publicitarias (Meta, Google)."
 });

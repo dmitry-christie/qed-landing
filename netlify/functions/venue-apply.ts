@@ -40,7 +40,7 @@ export const handler: Handler = async (event) => {
 
   const [telegramResult] = await Promise.allSettled([
     sendTelegram(text),
-    sendToRudderstack("lead_complete", d, page),
+    sendToRudderstack("Form Submitted", d, page),
   ]);
   const sent = telegramResult.status === "fulfilled" && telegramResult.value;
   if (!sent) return json(500, { ok: false, error: "Could not send right now. Please email hello@qed.es." });

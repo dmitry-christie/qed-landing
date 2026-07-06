@@ -104,7 +104,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "cel.form.h2": "Cuéntanos a quién celebramos.",
   "cel.form.sub": "Formulario rápido, respuesta de una persona de verdad, normalmente el mismo día. A partir de ahí nos encargamos nosotros.",
-  "cel.form.mostq": "Casi todas",
   "cel.form.eventType": "¿Qué celebramos?",
   "cel.form.etph": "Elige una…",
   "cel.form.et1": "Cumpleaños",
