@@ -16,7 +16,7 @@
     // Launcher styling + placement (Brevo reads this before its widget script runs).
     window.BrevoConversationsSetup = {
       buttonPosition: "br",
-      colors: { buttonBg: "#E8631A", buttonText: "#FFFFFF" }
+      colors: { buttonBg: "#D64545", buttonText: "#FFFFFF" }
     };
 
     window.BrevoConversationsID = "6a0e00ca9c2d1da06c0c918f";

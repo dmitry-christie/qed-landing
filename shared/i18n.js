@@ -69,8 +69,15 @@ window.QED_ES = window.QED_ES || {};
   function switchLang(lang) {
     if (cfg.brand) {
       var target = lang === "ES" ? BRAND_DOMAINS.TDT : BRAND_DOMAINS.QED;
-      var path = window.location.pathname + window.location.search;
-      window.location.href = "https://" + target + path;
+      var url = "https://" + target + window.location.pathname + window.location.search;
+      // Carry the cookie-consent choice across the two brand domains — separate origins
+      // can't share localStorage, so without this a language switch re-triggers the banner.
+      // consent.js on the destination reads ?qedc=, adopts it, then strips it from the URL.
+      try {
+        var c = localStorage.getItem("qed-consent");
+        if (c) url += (url.indexOf("?") > -1 ? "&" : "?") + "qedc=" + encodeURIComponent(c);
+      } catch (e) {}
+      window.location.href = url;
     } else {
       apply(lang, true);
     }

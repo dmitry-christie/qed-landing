@@ -66,6 +66,28 @@
 
   function saveCategories(c) { save(JSON.stringify(c)); }
 
+  // Cross-domain consent: the language switcher (i18n.js) appends ?qedc=<stored value> when
+  // moving between the two brand domains (separate origins → separate localStorage). Adopt it
+  // here once — unless this domain already holds an explicit choice — then strip it from the URL
+  // so it isn't shared onward or bookmarked.
+  function importConsentFromUrl() {
+    try {
+      var url = new URL(location.href);
+      if (!url.searchParams.has("qedc")) return;
+      if (stored() == null) {
+        var incoming = url.searchParams.get("qedc");
+        var ok = incoming === "granted" || incoming === "denied";
+        if (!ok) { try { ok = !!(incoming && JSON.parse(incoming)); } catch (e) {} }
+        if (ok) save(incoming);
+      }
+      url.searchParams.delete("qedc");
+      if (window.history && history.replaceState) {
+        history.replaceState(null, "", url.pathname + url.search + url.hash);
+      }
+    } catch (e) {}
+  }
+  importConsentFromUrl();
+
   var categories = loadCategories();
   applyCategories(categories);
 

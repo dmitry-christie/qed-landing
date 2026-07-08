@@ -25,16 +25,17 @@
   --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:28px;
   --maxw:1140px;
 
-  /* per-page accent (default orange; pages set a theme-* class) */
-  --accent:#E8631A; --accent-deep:#C84F0B; --accent-soft:#FFE6D2; --accent-on:#FFFFFF;
+  /* site accent — the /celebrations/ (party) red, used everywhere (pages set a theme-* class) */
+  --accent:#D64545; --accent-deep:#B83232; --accent-soft:#FFF1B8; --accent-on:#FFFFFF;
 }
 
-/* per-page signature colors */
-.theme-orange{ --accent:#E8631A; --accent-deep:#C84F0B; --accent-soft:#FFE6D2; --accent-on:#fff; }
-.theme-party { --accent:#D64545; --accent-deep:#B83232; --accent-soft:#FFF1B8; --accent-on:#fff; }
-.theme-ink   { --accent:#1F1A14; --accent-deep:#000;    --accent-soft:#FFF1B8; --accent-on:#F5C518; }
-.theme-green { --accent:#3F7A4A; --accent-deep:#2C5F37; --accent-soft:#DCEDDF; --accent-on:#fff; }
-.theme-multi { --accent:#E8631A; --accent-deep:#C84F0B; --accent-soft:#FFE6D2; --accent-on:#fff; }
+/* Unified accent: every theme resolves to the celebrations red so the whole site shares
+   one signature colour. (The class names are kept so per-page accents can be restored.) */
+.theme-orange,
+.theme-party,
+.theme-ink,
+.theme-green,
+.theme-multi { --accent:#D64545; --accent-deep:#B83232; --accent-soft:#FFF1B8; --accent-on:#fff; }
 
 *,*::before,*::after{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
@@ -340,7 +341,7 @@ form.sent .form-success{ display:block; }
 .cmp > *{ padding:15px 16px; border-bottom:1px solid var(--hairline-strong); display:flex; align-items:center; min-width:0; }
 .cmp__corner{ background:var(--cream-soft); }
 .cmp__colh{ background:var(--ink); color:#fff; font-weight:900; letter-spacing:-0.02em; font-size:clamp(15px,2vw,18px); justify-content:center; text-align:center; }
-.cmp__colh--alt{ background:var(--green-ink); color:#fff; }
+.cmp__colh--alt{ background:var(--accent); color:#fff; }
 .cmp__rowlab{ background:var(--cream-soft); font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
 .cmp__cell{ font-weight:600; line-height:1.42; font-size:15px; }
 .cmp__foot{ border-bottom:0; padding:16px; }
@@ -471,12 +472,12 @@ html.js .reveal.in{ opacity:1; transform:none; }
 .esmap__grid{ stroke:var(--hairline); stroke-width:1; fill:none; }
 .esmap__shadow{ fill:var(--ink); opacity:.92; }
 .esmap__land{ fill:var(--cream); stroke:var(--ink); stroke-width:3; stroke-linejoin:round; stroke-linecap:round; }
-.esmap__arrow{ fill:none; stroke:var(--orange); stroke-width:3; stroke-linecap:round; stroke-dasharray:0.5 9; }
-.esmap__arrowhead{ fill:var(--orange); }
+.esmap__arrow{ fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round; stroke-dasharray:0.5 9; }
+.esmap__arrowhead{ fill:var(--accent); }
 .esmap__pinring{ fill:var(--paper); stroke:var(--ink); stroke-width:2.5; }
-.esmap__pindot{ fill:var(--orange); }
+.esmap__pindot{ fill:var(--accent); }
 .esmap__sat{ fill:var(--ink-soft); }
-.esmap__home{ fill:var(--orange); stroke:var(--ink); stroke-width:3; stroke-linejoin:round; }
+.esmap__home{ fill:var(--accent); stroke:var(--ink); stroke-width:3; stroke-linejoin:round; }
 .esmap__home-dot{ fill:#fff; }
 /* cream halo (paint-order:stroke) so labels stay legible over pins, arrows + coastline */
 .esmap__label{ font-family:var(--mono); font-weight:700; font-size:16px; fill:var(--ink); paint-order:stroke; stroke:var(--cream-soft); stroke-width:4.5px; stroke-linejoin:round; }
