@@ -203,7 +203,13 @@ a.lift{ text-decoration:none; color:inherit; display:block; }
   .consent{ animation:consentIn .3s cubic-bezier(.2,.7,.2,1); }
   @keyframes consentIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
 }
-@media (max-width:560px){ .consent{ left:10px; right:10px; bottom:10px; padding:14px; gap:12px; } .consent__actions{ width:100%; margin-left:0; } .consent__btn{ flex:1 1 0; } }
+@media (max-width:560px){
+  .consent{ left:10px; right:10px; bottom:10px; padding:14px; gap:12px; }
+  /* stack the actions full-width — three long ES labels ("Guardar preferencias" etc.)
+     don't fit on one row and would clip "Aceptar todo" at the edge */
+  .consent__actions{ width:100%; margin-left:0; flex-direction:column; }
+  .consent__btn{ width:100%; white-space:normal; }
+}
 
 /* ---------- nav ---------- */
 .nav{ position:sticky; top:0; z-index:60; background:var(--cream); border-bottom:2px solid var(--ink); }
@@ -331,7 +337,7 @@ form.sent .form-success{ display:block; }
   display:grid; grid-template-columns:0.9fr 1fr 1fr; border:2px solid var(--ink); border-radius:var(--r-lg);
   overflow:hidden; background:var(--paper); box-shadow:5px 5px 0 0 var(--ink);
 }
-.cmp > *{ padding:15px 16px; border-bottom:1px solid var(--hairline-strong); display:flex; align-items:center; }
+.cmp > *{ padding:15px 16px; border-bottom:1px solid var(--hairline-strong); display:flex; align-items:center; min-width:0; }
 .cmp__corner{ background:var(--cream-soft); }
 .cmp__colh{ background:var(--ink); color:#fff; font-weight:900; letter-spacing:-0.02em; font-size:clamp(15px,2vw,18px); justify-content:center; text-align:center; }
 .cmp__colh--alt{ background:var(--green-ink); color:#fff; }
@@ -346,6 +352,7 @@ form.sent .form-success{ display:block; }
   .cmp{ grid-template-columns:1fr 1fr; }
   .cmp__corner{ display:none; }
   .cmp__rowlab{ grid-column:1 / -1; }
+  .cmp__foot{ grid-column:1 / -1; }   /* stack the two CTAs full-width instead of clipping */
 }
 
 /* ---------- footer ---------- */
