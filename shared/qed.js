@@ -97,13 +97,58 @@
       }
     } catch (e) {}
   }
-  // Segment naming spec: Title Case, Object + Action. "Form Started" has no server-side
-  // equivalent (nothing was posted yet) so it tracks client-side. "Form Submitted" is
-  // fired server-side instead (netlify/lib/forms.ts, once the lead is actually accepted) —
-  // richer properties (hashed traits, IP/UA) and no dependency on the client SDK or
-  // ad-blockers, so only push it to dataLayer here to avoid double-counting in RudderStack.
-  window.trackLeadIntent = window.trackLeadIntent || function (d) { track("Form Started", d); };
-  window.trackLeadComplete = window.trackLeadComplete || function (d) { pushDataLayer("Form Submitted", d); };
+  // Lead funnel — Segment naming spec (Title Case, Object + Action). We fire ONE event
+  // name, "Form Submitted", split by a `step` property so partial and full submits each
+  // build a retargeting audience:
+  //   step 1 = the visitor cleared step 1 (name + email captured) — may not finish.
+  //   step 2 = the full lead, carrying every step-1 property plus the step-2 fields.
+  // Both go to RudderStack server-side (netlify/lib/forms.ts) for hashed traits + ad-blocker
+  // resistance: the step-1 POST is fire-and-forget (no Telegram, no UI wait); the step-2
+  // POST is the real submit. dataLayer gets both here for GTM parity — RudderStack is only
+  // touched server-side, so there's no double-counting. step 1 and step 2 use different
+  // event ids (they are distinct conversions, not a client/server pair to dedupe).
+
+  function uuid() {
+    return (window.crypto && window.crypto.randomUUID)
+      ? window.crypto.randomUUID()
+      : (Date.now() + "-" + Math.random().toString(16).slice(2));
+  }
+
+  // Meta click id: a real _fbc cookie, else a stored/URL fbclid (works with no Pixel loaded).
+  function fbc() {
+    var v = readCookie("_fbc");
+    if (v) return v;
+    var fbclid = "";
+    try {
+      var attr = JSON.parse(localStorage.getItem("qed-attr") || "null");
+      if (attr && attr.fbclid) fbclid = attr.fbclid;
+    } catch (e) {}
+    if (!fbclid) {
+      var fm = location.search.match(/[?&]fbclid=([^&]+)/);
+      if (fm) fbclid = decodeURIComponent(fm[1]);
+    }
+    return fbclid ? ("fb.1." + Date.now() + "." + fbclid) : "";
+  }
+
+  // Snapshot the whole form (both steps live in the DOM at once) + shared context fields.
+  function collect(form, action, step, eventId) {
+    var data = {};
+    new FormData(form).forEach(function (v, k) { if (typeof v === "string") data[k] = v; });
+    data.lang = (document.documentElement.getAttribute("lang") || "en").toUpperCase();
+    data.country = window.__qed.country || "ES";
+    data.form = form.getAttribute("name") || action;
+    data.title = document.title;
+    data.path = location.pathname;
+    data.referrer = document.referrer || "$direct"; // RudderStack's convention for direct
+    data._step = String(step);
+    data._event_id = eventId;
+    data._url = location.href;
+    data._consent = window.__qedConsent || "denied";
+    if (window.__qedConsentCategories) { try { data._consentCategories = JSON.stringify(window.__qedConsentCategories); } catch (e) {} }
+    var f = fbc();
+    if (f) data._fbc = f;
+    return data;
+  }
 
   /* lead forms — two-step + fetch() → Netlify function → Telegram (no page reload) */
   document.querySelectorAll("form[data-action]").forEach(function (form) {
@@ -120,13 +165,13 @@
     }
 
     function focusFirst(scope) {
-      var first = scope && scope.querySelector("input,select,textarea");
+      var first = scope && scope.querySelector("input:not(.cselect__native), textarea, select:not(.cselect__native), .cselect__btn");
       if (!first) return;
       if (reduce) first.focus(); else setTimeout(function () { first.focus(); }, 360);
     }
 
-    /* step 1 → step 2: validate the required fields, then hand off to step 2
-       (CSS crossfades/collapses the two — see .at-step2 rules in qed.css) */
+    /* step 1 → step 2: validate required fields, fire the partial "Form Submitted" (step 1),
+       then hand off to step 2 (CSS crossfades/collapses — see .at-step2 rules in qed.css) */
     if (continueBtn && step2) {
       continueBtn.addEventListener("click", function () {
         var scope = step1 || form;
@@ -134,10 +179,28 @@
         scope.querySelectorAll("input,select,textarea").forEach(function (el) {
           if (el.required && !el.checkValidity() && !invalid) invalid = el;
         });
-        if (invalid) { invalid.reportValidity ? invalid.reportValidity() : invalid.focus(); return; }
+        if (invalid) {
+          if (invalid.__csOpen) { invalid.__cselectBtn.focus(); invalid.__csOpen(); }
+          else if (invalid.reportValidity) invalid.reportValidity();
+          else invalid.focus();
+          return;
+        }
         form.classList.add("at-step2");
-        var et = form.elements.eventType;
-        trackLeadIntent({ form: form.getAttribute("name") || action, eventType: et ? et.value : undefined });
+        if (!form.__step1Sent) {
+          form.__step1Sent = true;
+          var d1 = collect(form, action, 1, uuid());
+          var et = form.elements.eventType;
+          pushDataLayer("Form Submitted", { step: 1, form: d1.form, eventType: et ? et.value : undefined, event_id: d1._event_id });
+          // fire-and-forget: partial lead → RudderStack (no Telegram). Never blocks the UI.
+          try {
+            fetch(action, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(d1),
+              keepalive: true
+            }).catch(function () {});
+          } catch (e) {}
+        }
         focusFirst(step2);
       });
     }
@@ -150,42 +213,14 @@
       });
     }
 
-    /* submit → POST JSON to the function */
+    /* submit → POST the full lead (step 2) to the function */
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       var btn = form.querySelector("[type=submit]");
       var btnKids = btn ? [].slice.call(btn.childNodes) : null;
       if (errEl) errEl.style.display = "none";
 
-      var data = {};
-      new FormData(form).forEach(function (v, k) { if (typeof v === "string") data[k] = v; });
-      data.lang = (document.documentElement.getAttribute("lang") || "en").toUpperCase();
-      data.country = window.__qed.country || "ES";
-      data.form = form.getAttribute("name") || action;
-      data.title = document.title;
-      data.path = location.pathname;
-      data.referrer = document.referrer || "$direct"; // RudderStack's own convention for direct traffic
-
-      /* CAPI/RudderStack match data: one id shared by the client + server track
-         calls (dedup), the page url, current consent, and a Meta click id built
-         from a real _fbc cookie or a stored/URL fbclid (works with no Pixel loaded). */
-      data._event_id = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : (Date.now() + "-" + Math.random().toString(16).slice(2));
-      data._url = location.href;
-      data._consent = window.__qedConsent || "denied";
-      if (window.__qedConsentCategories) { try { data._consentCategories = JSON.stringify(window.__qedConsentCategories); } catch (e) {} }
-      data._fbc = readCookie("_fbc");
-      if (!data._fbc) {
-        var fbclid = "";
-        try {
-          var attr = JSON.parse(localStorage.getItem("qed-attr") || "null");
-          if (attr && attr.fbclid) fbclid = attr.fbclid;
-        } catch (e) {}
-        if (!fbclid) {
-          var fm = location.search.match(/[?&]fbclid=([^&]+)/);
-          if (fm) fbclid = decodeURIComponent(fm[1]);
-        }
-        if (fbclid) data._fbc = "fb.1." + Date.now() + "." + fbclid;
-      }
+      var data = collect(form, action, 2, uuid());
 
       if (btn) { btn.disabled = true; btn.textContent = "…"; }
 
@@ -200,12 +235,12 @@
         });
       }).then(function (res) {
         if (!(res.ok && res.body && res.body.ok)) {
-          throw new Error((res.body && res.body.error) || "Something went wrong. Please email hello@qed.es.");
+          throw new Error((res.body && res.body.error) || "Something went wrong. Please email info@quizeatdrink.com.");
         }
         form.classList.add("sent");
         var s = form.querySelector(".form-success");
         if (s) { s.setAttribute("role", "status"); if (s.focus) s.focus(); }
-        trackLeadComplete({ form: form.getAttribute("name") || action, event_id: data._event_id });
+        pushDataLayer("Form Submitted", { step: 2, form: data.form, event_id: data._event_id });
         form.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
       }).catch(function (err) {
         if (btn) {
@@ -213,8 +248,195 @@
           btn.textContent = "";
           (btnKids || []).forEach(function (n) { btn.appendChild(n); });
         }
-        showError(err && err.message ? err.message : "Something went wrong. Please email hello@qed.es.");
+        showError(err && err.message ? err.message : "Something went wrong. Please email info@quizeatdrink.com.");
       });
+    });
+  });
+
+  /* ---------- custom dropdowns ----------
+     Native <select> can't be styled once open, so we enhance each into a styled listbox
+     (progressive enhancement — the native select stays in the DOM, keeps the value, and
+     still submits + validates; if this code never runs the form works exactly as before). */
+  function buildCustomSelect(sel) {
+    var wrap = document.createElement("div");
+    wrap.className = "cselect";
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(sel);
+    sel.classList.add("cselect__native");
+    sel.setAttribute("tabindex", "-1");
+    sel.setAttribute("aria-hidden", "true");
+
+    var labelText = "";
+    if (sel.id) { var lab = document.querySelector('label[for="' + sel.id + '"]'); if (lab) labelText = lab.textContent.trim(); }
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "cselect__btn";
+    btn.setAttribute("aria-haspopup", "listbox");
+    btn.setAttribute("aria-expanded", "false");
+    if (labelText) btn.setAttribute("aria-label", labelText);
+    var labelSpan = document.createElement("span");
+    labelSpan.className = "cselect__value";
+    var chev = document.createElement("span");   // chevron drawn in CSS (see .cselect__chev)
+    chev.className = "cselect__chev";
+    chev.setAttribute("aria-hidden", "true");
+    btn.appendChild(labelSpan);
+    btn.appendChild(chev);
+    wrap.appendChild(btn);
+
+    var list = document.createElement("ul");
+    list.className = "cselect__list";
+    list.setAttribute("role", "listbox");
+    if (labelText) list.setAttribute("aria-label", labelText);
+    var listId = (sel.id || "cs-" + Math.random().toString(16).slice(2)) + "-list";
+    list.id = listId;
+    btn.setAttribute("aria-controls", listId);
+    wrap.appendChild(list);
+
+    var activeIndex = -1;
+    function opts() { return Array.prototype.slice.call(sel.options); }
+
+    function renderList() {
+      list.textContent = "";
+      opts().forEach(function (opt, i) {
+        var li = document.createElement("li");
+        li.className = "cselect__opt";
+        li.setAttribute("role", "option");
+        li.id = listId + "-" + i;
+        li.textContent = opt.textContent;
+        li.setAttribute("aria-selected", opt.selected ? "true" : "false");
+        if (opt.selected) li.classList.add("is-selected");
+        if (opt.disabled) li.setAttribute("aria-disabled", "true");
+        li.addEventListener("click", function () { choose(i); });
+        list.appendChild(li);
+      });
+    }
+
+    function syncValue() {
+      var opt = sel.options[sel.selectedIndex] || sel.options[0];
+      labelSpan.textContent = opt ? opt.textContent : "";
+      btn.classList.toggle("is-placeholder", !!opt && opt.value === "");
+    }
+
+    function refresh() { renderList(); syncValue(); }
+
+    function setActive(i) {
+      var items = list.children;
+      if (activeIndex >= 0 && items[activeIndex]) items[activeIndex].classList.remove("is-active");
+      activeIndex = i;
+      if (i >= 0 && items[i]) {
+        items[i].classList.add("is-active");
+        btn.setAttribute("aria-activedescendant", items[i].id);
+        items[i].scrollIntoView({ block: "nearest" });
+      } else {
+        btn.removeAttribute("aria-activedescendant");
+      }
+    }
+
+    function onDocClick(e) { if (!wrap.contains(e.target)) close(); }
+
+    // The list is position:fixed so it escapes the form's overflow:hidden clipping (the
+    // step-collapse animation containers + the split card). Anchor it to the button and
+    // flip above when there isn't room below.
+    function positionList() {
+      var r = btn.getBoundingClientRect();
+      list.style.width = r.width + "px";
+      list.style.left = r.left + "px";
+      var lh = list.offsetHeight;
+      var below = window.innerHeight - r.bottom;
+      if (below < lh + 12 && r.top > below) {
+        list.style.top = "auto";
+        list.style.bottom = (window.innerHeight - r.top + 6) + "px";
+      } else {
+        list.style.bottom = "auto";
+        list.style.top = (r.bottom + 6) + "px";
+      }
+    }
+    function reposition() { if (wrap.classList.contains("is-open")) positionList(); }
+
+    function open() {
+      if (wrap.classList.contains("is-open")) return;
+      renderList();
+      wrap.classList.add("is-open");
+      btn.setAttribute("aria-expanded", "true");
+      positionList();
+      setActive(sel.selectedIndex >= 0 ? sel.selectedIndex : 0);
+      document.addEventListener("click", onDocClick, true);
+      window.addEventListener("scroll", reposition, true);
+      window.addEventListener("resize", reposition);
+    }
+    function close() {
+      if (!wrap.classList.contains("is-open")) return;
+      wrap.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+      setActive(-1);
+      document.removeEventListener("click", onDocClick, true);
+      window.removeEventListener("scroll", reposition, true);
+      window.removeEventListener("resize", reposition);
+    }
+    function choose(i) {
+      if (i < 0 || i >= sel.options.length || sel.options[i].disabled) return;
+      sel.selectedIndex = i;
+      sel.dispatchEvent(new Event("change", { bubbles: true }));
+      syncValue();
+      Array.prototype.forEach.call(list.children, function (li, idx) {
+        li.setAttribute("aria-selected", idx === i ? "true" : "false");
+        li.classList.toggle("is-selected", idx === i);
+      });
+      close();
+      btn.focus();
+    }
+
+    btn.addEventListener("click", function () { wrap.classList.contains("is-open") ? close() : open(); });
+    btn.addEventListener("keydown", function (e) {
+      var isOpen = wrap.classList.contains("is-open");
+      switch (e.key) {
+        case "ArrowDown": e.preventDefault(); isOpen ? setActive(Math.min(activeIndex + 1, sel.options.length - 1)) : open(); break;
+        case "ArrowUp": e.preventDefault(); isOpen ? setActive(Math.max(activeIndex - 1, 0)) : open(); break;
+        case "Home": if (isOpen) { e.preventDefault(); setActive(0); } break;
+        case "End": if (isOpen) { e.preventDefault(); setActive(sel.options.length - 1); } break;
+        case "Enter": case " ": case "Spacebar": e.preventDefault(); isOpen ? choose(activeIndex) : open(); break;
+        case "Escape": if (isOpen) { e.preventDefault(); close(); } break;
+        case "Tab": if (isOpen) close(); break;
+        default: if (e.key && e.key.length === 1) typeahead(e.key);
+      }
+    });
+
+    var typeBuf = "", typeTimer = null;
+    function typeahead(ch) {
+      if (!wrap.classList.contains("is-open")) open();
+      typeBuf += ch.toLowerCase();
+      clearTimeout(typeTimer); typeTimer = setTimeout(function () { typeBuf = ""; }, 700);
+      var o = opts();
+      for (var i = 0; i < o.length; i++) { if (o[i].textContent.toLowerCase().indexOf(typeBuf) === 0) { setActive(i); return; } }
+    }
+
+    // native option text changes (i18n language swap) → refresh labels
+    if ("MutationObserver" in window) {
+      new MutationObserver(function () { refresh(); }).observe(sel, { childList: true, subtree: true, characterData: true });
+    }
+    sel.addEventListener("change", syncValue);
+
+    sel.__cselect = wrap;
+    sel.__cselectBtn = btn;
+    sel.__csOpen = open;
+    refresh();
+  }
+
+  function enhanceSelects() {
+    document.querySelectorAll("select.input").forEach(function (sel) {
+      if (sel.__enhanced) return;
+      sel.__enhanced = true;
+      try { buildCustomSelect(sel); } catch (e) { sel.classList.remove("cselect__native"); }
+    });
+  }
+  enhanceSelects();
+
+  /* re-open the cookie banner to review/update consent (privacy/legal page button) */
+  document.querySelectorAll("[data-consent-open]").forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (window.QEDConsent && window.QEDConsent.open) window.QEDConsent.open();
     });
   });
 })();

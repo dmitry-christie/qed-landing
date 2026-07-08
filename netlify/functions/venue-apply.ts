@@ -25,6 +25,14 @@ export const handler: Handler = async (event) => {
   if (!isEmail(d.email)) return json(400, { ok: false, error: "Please enter a valid email address." });
 
   const page = d.page || "venues";
+
+  // step 1 = partial submit, fire-and-forget from the client (shared/qed.js): forward to
+  // RudderStack for the retargeting audience, but don't ping the founders' Telegram.
+  if (d._step === "1") {
+    await sendToRudderstack("Form Submitted", d, page);
+    return json(200, { ok: true });
+  }
+
   const text = [
     "🍻 New Venue Sign-up",
     `🏠 Venue: ${d.venueName}`,

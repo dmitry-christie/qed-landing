@@ -118,7 +118,7 @@ const PRODUCT_BY_PAGE: Record<string, string> = {
 const PROPERTY_OMIT = new Set([
   "email", "phone", "firstName", "lastName",
   "page", "form", "lang", "country", "title", "referrer", "path",
-  "_ua", "_ip", "_event_id", "_url", "_consent", "_consentCategories", "_fbc", "_honey",
+  "_ua", "_ip", "_event_id", "_url", "_consent", "_consentCategories", "_fbc", "_honey", "_step",
 ]);
 
 // Consent categories the visitor granted (shared/consent.js), forwarded in the shape
@@ -171,6 +171,10 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
   // "site" / "language" / "product" naming matches the main site's own RudderStack
   // properties so both sources roll up consistently downstream.
   const properties: Record<string, unknown> = {
+    // step 1 = partial (name + email captured, may not finish) · step 2 = full lead. Both
+    // fire "Form Submitted"; the client splits them (shared/qed.js) to build two retargeting
+    // audiences (started-but-not-finished vs completed). Defaults to 2 for older callers.
+    step: Number(d._step) === 1 ? 1 : 2,
     site: (d.lang || "EN").toUpperCase() === "ES" ? "tardeo-de-trivia" : "quiz-eat-drink",
     language: (d.lang || "EN").toLowerCase(),
     product: PRODUCT_BY_PAGE[page] || page,

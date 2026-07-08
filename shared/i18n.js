@@ -25,7 +25,14 @@ window.QED_ES = window.QED_ES || {};
   };
 
   function storedLang() { try { return localStorage.getItem(LANG_KEY); } catch (e) { return null; } }
-  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  // Functional-consent gate: language + dismissed-notice memory are "functional" cookies,
+  // so only persist them once the visitor allows functional storage (consent.js sets these
+  // globals). Where the consent banner isn't shown (local/preview, __qedConsentActive false)
+  // preferences persist as before so those environments keep working.
+  function save(k, v) {
+    if (window.__qedConsentActive && !window.__qedFunctional) return;
+    try { localStorage.setItem(k, v); } catch (e) {}
+  }
 
   // These are the actual hosts this site is deployed on. quizeatdrink.com /
   // tardeodetrivia.com (no "landing." prefix) are a separate, unrelated site —

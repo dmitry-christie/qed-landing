@@ -61,7 +61,7 @@ console.log("[qed build] config:", config);
 // domains). The bare apex domains are a separate, unrelated site — pointing canonical/
 // hreflang tags there would misdirect search engines off this site entirely.
 const DOMAINS = { QED: "landing.quizeatdrink.com", TDT: "landing.tardeodetrivia.com" };
-const PAGES = ["", "corporate/", "celebrations/", "venues/", "partners/"];
+const PAGES = ["", "corporate/", "celebrations/", "venues/", "partners/", "privacy/", "terms/"];
 const SEO_MARK = "<!-- build:seo -->";
 const ANALYTICS_MARK = "<!-- build:analytics -->";
 const ANALYTICS_BODY_MARK = "<!-- build:analytics-body -->";

@@ -245,6 +245,76 @@
     </div>
   </section>
 
+  <!-- ============ WHERE WE ARE (map of Spain) ============ -->
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="reveal" style="max-width:62ch">
+        <span class="eyebrow" data-i18n="p.map.eyebrow">Where we already are</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="p.map.h2">Already live across Spain.</h2>
+        <p class="lead" style="margin-top:12px" data-i18n="p.map.lead">From our Valencia home base out to Madrid, Barcelona, Murcia and Santiago. Your city could be the next pin on the map.</p>
+      </div>
+
+      <div class="card reveal esmap" style="margin-top:30px;padding:clamp(16px,3vw,30px);background:var(--cream-soft)">
+        <svg class="esmap__svg" viewBox="0 0 600 480" role="img" aria-labelledby="esmap-title" xmlns="http://www.w3.org/2000/svg">
+          <title id="esmap-title">Map of Spain showing where QED runs trivia nights: Valencia (home base), Madrid, Barcelona, Murcia and Santiago de Compostela.</title>
+          <defs>
+            <pattern id="esgrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 H0 V40" class="esmap__grid"/></pattern>
+            <marker id="esArrow" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L11 6 L1 11 Z" class="esmap__arrowhead"/></marker>
+          </defs>
+          <rect width="600" height="480" fill="url(#esgrid)"/>
+
+          <!-- Spain silhouette (stylised, sticker style) with hard shadow -->
+          <path class="esmap__shadow" transform="translate(6,7)" d="M60 74 L140 50 L305 42 L452 60 L535 120 L549 180 L455 258 L430 332 L378 388 L250 420 L150 398 L118 350 L150 300 L150 208 L146 138 L98 116 Z"/>
+          <path class="esmap__land" d="M60 74 L140 50 L305 42 L452 60 L535 120 L549 180 L455 258 L430 332 L378 388 L250 420 L150 398 L118 350 L150 300 L150 208 L146 138 L98 116 Z"/>
+          <text x="150" y="405" class="esmap__country">ESPAÑA</text>
+
+          <!-- arrows out of Valencia -->
+          <g>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M402 246 Q235 120 112 102"/>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M405 247 Q345 200 286 207"/>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M412 244 Q478 208 505 165"/>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M407 256 Q398 290 383 313"/>
+          </g>
+
+          <!-- satellite venues (Padrón near Santiago, La Cañada near Valencia) -->
+          <circle class="esmap__sat" cx="84" cy="106" r="3.5"/>
+          <circle class="esmap__sat" cx="420" cy="266" r="3.5"/>
+
+          <!-- destination cities -->
+          <g>
+            <circle class="esmap__pinring" cx="95" cy="92" r="8"/><circle class="esmap__pindot" cx="95" cy="92" r="3.5"/>
+            <text x="110" y="88" class="esmap__label">Santiago</text>
+
+            <circle class="esmap__pinring" cx="271" cy="205" r="8"/><circle class="esmap__pindot" cx="271" cy="205" r="3.5"/>
+            <text x="271" y="190" text-anchor="middle" class="esmap__label">Madrid</text>
+
+            <circle class="esmap__pinring" cx="513" cy="157" r="8"/><circle class="esmap__pindot" cx="513" cy="157" r="3.5"/>
+            <text x="500" y="152" text-anchor="end" class="esmap__label">Barcelona</text>
+
+            <circle class="esmap__pinring" cx="377" cy="323" r="8"/><circle class="esmap__pindot" cx="377" cy="323" r="3.5"/>
+            <text x="390" y="330" class="esmap__label">Murcia</text>
+          </g>
+
+          <!-- Valencia — home base (map pin, tip at 408,251) -->
+          <g transform="translate(408,251)">
+            <path class="esmap__home" d="M0 0 C-10 -14 -13 -20 -13 -27 A13 13 0 1 1 13 -27 C13 -20 10 -14 0 0 Z"/>
+            <circle class="esmap__home-dot" cx="0" cy="-27" r="5"/>
+          </g>
+          <text x="428" y="226" class="esmap__label">Valencia</text>
+          <g transform="translate(428,233)">
+            <rect width="66" height="21" rx="10.5" class="esmap__badge-bg"/>
+            <text x="33" y="15" text-anchor="middle" class="esmap__badge-tx" data-i18n="p.map.home">home</text>
+          </g>
+        </svg>
+
+        <div class="esmap__foot">
+          <span class="tag tag--solid" data-i18n="p.map.note">7 venues and counting</span>
+          <a class="btn btn--soft btn--sm" href="#apply" data-i18n="p.map.cta">Put your city on the map</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ APPLY FORM ============ -->
   <section id="apply" class="section section--tight">
     <div class="wrap">
@@ -325,6 +395,53 @@
     </div>
   </section>
 
+  <!-- ============ COMPARE — franchise vs host venue (cross-sell) ============ -->
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="reveal" style="max-width:62ch">
+        <span class="eyebrow" data-i18n="cmp.eyebrow">Work with us</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="cmp.h2">Franchise, or host at your venue?</h2>
+        <p class="lead" style="margin-top:12px" data-i18n="cmp.lead">Two ways to run trivia with us. Pick the one that fits you.</p>
+      </div>
+      <div class="cmp reveal" style="margin-top:30px">
+        <div class="cmp__corner"></div>
+        <div class="cmp__colh" data-i18n="cmp.col1">Franchise</div>
+        <div class="cmp__colh cmp__colh--alt" data-i18n="cmp.col2">Host venue</div>
+
+        <div class="cmp__rowlab" data-i18n="cmp.r1l">Best for</div>
+        <div class="cmp__cell" data-i18n="cmp.r1a">Building a business with room to expand</div>
+        <div class="cmp__cell" data-i18n="cmp.r1b">Filling your venue one night a week</div>
+
+        <div class="cmp__rowlab" data-i18n="cmp.r2l">Commitment</div>
+        <div class="cmp__cell" data-i18n="cmp.r2a">Recurring · you build your brand with ours</div>
+        <div class="cmp__cell" data-i18n="cmp.r2b">Flexible · no franchise commitment</div>
+
+        <div class="cmp__rowlab" data-i18n="cmp.r3l">Who hosts</div>
+        <div class="cmp__cell" data-i18n="cmp.r3a">You, as the franchisee</div>
+        <div class="cmp__cell" data-i18n="cmp.r3b">A host of ours (or your team with Express)</div>
+
+        <div class="cmp__rowlab" data-i18n="cmp.r4l">Economics</div>
+        <div class="cmp__cell" data-i18n="cmp.r4a">Revenue share · you run the night</div>
+        <div class="cmp__cell" data-i18n="cmp.r4b">0% commission on bar and food</div>
+
+        <div class="cmp__corner cmp__foot"></div>
+        <div class="cmp__foot"><a class="btn btn--sm btn--dark" href="/partners/" data-i18n="cmp.cta1">See franchising</a></div>
+        <div class="cmp__foot"><a class="btn btn--sm" href="/venues/" style="background:var(--green-ink);color:#fff;border-color:var(--green-ink)" data-i18n="cmp.cta2">See venues</a></div>
+      </div>
+
+      <div class="card card--flat reveal" style="background:var(--yellow-soft);border-radius:var(--r-md);margin-top:18px;display:flex;gap:16px 20px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding:18px 24px">
+        <div style="display:flex;flex-direction:column;gap:4px;max-width:52ch">
+          <b style="font-size:clamp(16px,2vw,19px);letter-spacing:-0.01em" data-i18n="xsell.event.h">Just want a one-off event?</b>
+          <span class="muted" style="font-weight:600" data-i18n="xsell.event.d">We also run trivia for companies and celebrations, no strings attached.</span>
+        </div>
+        <div class="row" style="gap:10px">
+          <a class="btn btn--sm" href="/corporate/" data-i18n="os.corp.link">Explore corporate</a>
+          <a class="btn btn--sm" href="/celebrations/" data-i18n="os.cele.link">Explore celebrations</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer class="footer">
@@ -347,7 +464,7 @@
       <div>
         <p class="footer__lab" data-i18n="foot.tagWork">Work with us</p>
         <div class="footer__links">
-          <a href="/partners/" data-i18n="foot.partner">Become a partner</a>
+          <a href="/partners/" data-i18n="foot.partner">Franchising</a>
           <a href="/venues/" data-i18n="foot.venue">Host venue</a>
         </div>
       </div>
