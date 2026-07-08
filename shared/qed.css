@@ -478,8 +478,9 @@ html.js .reveal.in{ opacity:1; transform:none; }
 .esmap__sat{ fill:var(--ink-soft); }
 .esmap__home{ fill:var(--orange); stroke:var(--ink); stroke-width:3; stroke-linejoin:round; }
 .esmap__home-dot{ fill:#fff; }
-.esmap__label{ font-family:var(--mono); font-weight:700; font-size:16px; fill:var(--ink); }
-.esmap__country{ font-family:var(--mono); font-weight:700; font-size:14px; fill:var(--ink-soft); letter-spacing:.24em; }
+/* cream halo (paint-order:stroke) so labels stay legible over pins, arrows + coastline */
+.esmap__label{ font-family:var(--mono); font-weight:700; font-size:16px; fill:var(--ink); paint-order:stroke; stroke:var(--cream-soft); stroke-width:4.5px; stroke-linejoin:round; }
+.esmap__country{ font-family:var(--mono); font-weight:700; font-size:14px; fill:var(--ink-soft); letter-spacing:.24em; paint-order:stroke; stroke:var(--cream-soft); stroke-width:4px; stroke-linejoin:round; }
 .esmap__badge-bg{ fill:var(--ink); }
 .esmap__badge-tx{ font-family:var(--mono); font-weight:700; font-size:12px; fill:#fff; letter-spacing:.12em; text-transform:uppercase; }
 .esmap__foot{ display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-top:20px; }
