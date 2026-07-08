@@ -263,50 +263,50 @@
           </defs>
           <rect width="600" height="480" fill="url(#esgrid)"/>
 
-          <!-- Mainland Spain (coastline projected from real lat/long, sticker style) + shadow -->
-          <path class="esmap__shadow" transform="translate(6,7)" d="M41 83 L77 60 L99 41 L182 47 L267 56 L303 61 L350 62 L486 98 L561 112 L513 158 L460 190 L411 251 L433 287 L404 306 L395 341 L333 385 L241 385 L193 420 L164 394 L118 363 L135 279 L141 176 L63 132 L61 116 Z"/>
-          <ellipse class="esmap__shadow" cx="554" cy="252" rx="14" ry="8.5"/>
-          <path class="esmap__land" d="M41 83 L77 60 L99 41 L182 47 L267 56 L303 61 L350 62 L486 98 L561 112 L513 158 L460 190 L411 251 L433 287 L404 306 L395 341 L333 385 L241 385 L193 420 L164 394 L118 363 L135 279 L141 176 L63 132 L61 116 Z"/>
-          <ellipse class="esmap__land" cx="548" cy="245" rx="14" ry="8.5"/>
-          <ellipse class="esmap__land" cx="484" cy="281" rx="7" ry="5"/>
-          <text x="182" y="352" class="esmap__country">ESPAÑA</text>
+          <!-- Mainland Spain (real coastline, equirectangular-projected) + shadow, + Balearic islands -->
+          <path class="esmap__shadow" transform="translate(6,7)" d="M69.2 145.6 L71.1 112.2 L56.3 91.9 L107.4 58.0 L151.7 66.5 L200.2 66.2 L238.7 74.2 L268.7 71.7 L327.1 73.3 L341.5 91.5 L408.1 112.8 L421.2 102.7 L461.9 123.9 L503.8 117.8 L505.7 145.1 L471.4 176.3 L425.1 186.2 L421.9 202.0 L399.7 228.0 L385.8 266.2 L399.9 293.0 L378.9 314.0 L371.1 344.5 L343.8 353.8 L318.2 389.9 L272.4 390.6 L237.9 389.7 L215.3 406.3 L201.5 424.0 L183.8 420.1 L170.4 404.3 L160.1 377.3 L126.4 370.0 L123.4 354.5 L136.8 336.9 L141.7 324.1 L129.3 310.2 L139.3 279.4 L124.8 251.2 L140.4 247.4 L141.8 225.2 L147.7 218.3 L148.2 181.7 L164.9 169.0 L154.8 145.5 L133.7 143.9 L127.5 149.8 L106.2 149.8 L97.1 126.9 L82.4 133.7 L69.2 145.6 Z"/>
+          <ellipse class="esmap__shadow" cx="510" cy="260" rx="13" ry="8"/>
+          <path class="esmap__land" d="M69.2 145.6 L71.1 112.2 L56.3 91.9 L107.4 58.0 L151.7 66.5 L200.2 66.2 L238.7 74.2 L268.7 71.7 L327.1 73.3 L341.5 91.5 L408.1 112.8 L421.2 102.7 L461.9 123.9 L503.8 117.8 L505.7 145.1 L471.4 176.3 L425.1 186.2 L421.9 202.0 L399.7 228.0 L385.8 266.2 L399.9 293.0 L378.9 314.0 L371.1 344.5 L343.8 353.8 L318.2 389.9 L272.4 390.6 L237.9 389.7 L215.3 406.3 L201.5 424.0 L183.8 420.1 L170.4 404.3 L160.1 377.3 L126.4 370.0 L123.4 354.5 L136.8 336.9 L141.7 324.1 L129.3 310.2 L139.3 279.4 L124.8 251.2 L140.4 247.4 L141.8 225.2 L147.7 218.3 L148.2 181.7 L164.9 169.0 L154.8 145.5 L133.7 143.9 L127.5 149.8 L106.2 149.8 L97.1 126.9 L82.4 133.7 L69.2 145.6 Z"/>
+          <ellipse class="esmap__land" cx="504" cy="253" rx="13" ry="8"/>
+          <ellipse class="esmap__land" cx="447" cy="282" rx="7" ry="5"/>
+          <text x="196" y="392" class="esmap__country">ESPAÑA</text>
 
           <!-- arrows out of Valencia -->
           <g>
-            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M402 246 Q230 118 84 90"/>
-            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M405 247 Q345 202 286 207"/>
-            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M414 245 Q478 205 503 167"/>
-            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M407 256 Q398 292 383 315"/>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M376 251 Q215 118 101 104"/>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M380 254 Q322 202 277 216"/>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M388 250 Q448 203 461 180"/>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M381 262 Q380 300 362 320"/>
           </g>
 
-          <!-- satellite venues (Padrón near Santiago, La Cañada near Valencia) -->
-          <circle class="esmap__sat" cx="65" cy="96" r="3.5"/>
-          <circle class="esmap__sat" cx="398" cy="262" r="3.5"/>
+          <!-- satellite venues (Padrón · La Cañada) -->
+          <circle class="esmap__sat" cx="79" cy="110" r="3.5"/>
+          <circle class="esmap__sat" cx="366" cy="262" r="3.5"/>
 
           <!-- destination cities -->
           <g>
-            <circle class="esmap__pinring" cx="71" cy="85" r="8"/><circle class="esmap__pindot" cx="71" cy="85" r="3.5"/>
-            <text x="86" y="81" class="esmap__label">Santiago</text>
+            <circle class="esmap__pinring" cx="87.1" cy="98.7" r="8"/><circle class="esmap__pindot" cx="87.1" cy="98.7" r="3.5"/>
+            <text x="103" y="95" class="esmap__label">Santiago</text>
 
-            <circle class="esmap__pinring" cx="271" cy="205" r="8"/><circle class="esmap__pindot" cx="271" cy="205" r="3.5"/>
-            <text x="271" y="190" text-anchor="middle" class="esmap__label">Madrid</text>
+            <circle class="esmap__pinring" cx="262.1" cy="214.1" r="8"/><circle class="esmap__pindot" cx="262.1" cy="214.1" r="3.5"/>
+            <text x="262" y="199" text-anchor="middle" class="esmap__label">Madrid</text>
 
-            <circle class="esmap__pinring" cx="510" cy="162" r="8"/><circle class="esmap__pindot" cx="510" cy="162" r="3.5"/>
-            <text x="496" y="150" text-anchor="end" class="esmap__label">Barcelona</text>
+            <circle class="esmap__pinring" cx="471.7" cy="172.9" r="8"/><circle class="esmap__pindot" cx="471.7" cy="172.9" r="3.5"/>
+            <text x="459" y="168" text-anchor="end" class="esmap__label">Barcelona</text>
 
-            <circle class="esmap__pinring" cx="377" cy="323" r="8"/><circle class="esmap__pindot" cx="377" cy="323" r="3.5"/>
-            <text x="392" y="330" class="esmap__label">Murcia</text>
+            <circle class="esmap__pinring" cx="355.0" cy="328.1" r="8"/><circle class="esmap__pindot" cx="355.0" cy="328.1" r="3.5"/>
+            <text x="372" y="333" class="esmap__label">Murcia</text>
           </g>
 
-          <!-- Valencia — home base (map pin, tip at 408,251) -->
-          <g transform="translate(408,251)">
+          <!-- Valencia — home base -->
+          <g transform="translate(382.1,258.7)">
             <path class="esmap__home" d="M0 0 C-10 -14 -13 -20 -13 -27 A13 13 0 1 1 13 -27 C13 -20 10 -14 0 0 Z"/>
             <circle class="esmap__home-dot" cx="0" cy="-27" r="5"/>
           </g>
-          <text x="428" y="226" class="esmap__label">Valencia</text>
-          <g transform="translate(428,233)">
-            <rect width="66" height="21" rx="10.5" class="esmap__badge-bg"/>
-            <text x="33" y="15" text-anchor="middle" class="esmap__badge-tx" data-i18n="p.map.home">home</text>
+          <text x="401" y="236" class="esmap__label">Valencia</text>
+          <g transform="translate(401,244)">
+            <rect width="62" height="20" rx="10" class="esmap__badge-bg"/>
+            <text x="31" y="14" text-anchor="middle" class="esmap__badge-tx" data-i18n="p.map.home">home</text>
           </g>
         </svg>
 
