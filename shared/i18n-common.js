@@ -16,6 +16,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "foot.venue": "Local anfitrión",
   "foot.privacy": "Política de privacidad",
   "foot.terms": "Términos y aviso legal",
+  "foot.cookies": "Preferencias de cookies",
   "foot.email": "info@tardeodetrivia.com",
   "foot.emailhref": "mailto:info@tardeodetrivia.com",
   "foot.legal": "Tardeo de Trivia SL · CIF B88885199",
