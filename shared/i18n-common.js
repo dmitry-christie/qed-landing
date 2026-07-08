@@ -43,7 +43,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "consent.cat.necessary": "Necesarias",
   "consent.cat.necessaryd": "Imprescindibles para que el sitio funcione y recuerde esta elección. Siempre activas.",
   "consent.cat.functional": "Funcionales",
-  "consent.cat.functionald": "Recuerdan tus preferencias, como el idioma. Sin ellas el sitio funciona, pero no te recuerda.",
+  "consent.cat.functionald": "Recuerdan tus preferencias (como el idioma) y hacen funcionar el chat en directo. Sin ellas el sitio funciona, pero no te recuerda.",
   "consent.cat.analytics": "Analítica",
   "consent.cat.analyticsd": "Medición — cómo funcionan el sitio y las campañas publicitarias (RudderStack, Meta, Google).",
   "consent.cat.marketing": "Marketing",

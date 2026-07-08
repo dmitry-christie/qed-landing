@@ -43,6 +43,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.ck.r5d": "90 días",
   "pr.ck.r6p": "Identificador de clic de Meta para medición y segmentación (si está presente).",
   "pr.ck.r6d": "90 días",
+  "pr.ck.r7p": "Hace funcionar el chat en directo y mantiene tu conversación.",
+  "pr.ck.r7d": "Sesión / hasta 1 año",
 
   "pr.share.h": "Con quién compartimos los datos",
   "pr.share.p": "Nunca vendemos tus datos. Solo los compartimos con los proveedores que hacen funcionar este sitio y nuestra medición, cada uno bajo un contrato de encargo de tratamiento:",
@@ -50,6 +52,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.share.li2": "Telegram — tu solicitud llega a nuestro equipo como un mensaje para poder responderte.",
   "pr.share.li3": "RudderStack — analítica que dirige la medición a las herramientas de abajo.",
   "pr.share.li4": "Meta y Google — medición y segmentación publicitaria, solo con tu consentimiento de Marketing.",
+  "pr.share.li5": "Brevo — el chat en directo y el seguimiento de tu solicitud.",
 
   "pr.retention.h": "Cuánto tiempo los conservamos",
   "pr.retention.p": "Los datos de solicitudes se conservan solo el tiempo necesario para gestionar tu petición y nuestra relación contigo, y luego se eliminan o anonimizan. La duración de las cookies figura en la tabla de arriba.",

@@ -136,6 +136,8 @@
     saveCategories(cats);
     applyCategories(cats);
     loadRudderstack(cats);
+    // Let consent-gated features (e.g. shared/brevo.js) react to a fresh grant on this page.
+    try { window.dispatchEvent(new CustomEvent("qed:consentchange", { detail: cats })); } catch (e) {}
     // If the SDK is already up (preference changed via the reopened banner), update it live.
     try {
       if (window.rudderanalytics && window.rudderanalytics.consent) {
@@ -179,7 +181,7 @@
 
     var catDefs = [
       { id: "necessary", labelKey: "consent.cat.necessary", label: "Necessary", descKey: "consent.cat.necessaryd", desc: "Essential for the site to work and to remember this choice. Always on.", locked: true },
-      { id: "functional", labelKey: "consent.cat.functional", label: "Functional", descKey: "consent.cat.functionald", desc: "Remembers your preferences, like language. Without them the site still works, but forgets you." },
+      { id: "functional", labelKey: "consent.cat.functional", label: "Functional", descKey: "consent.cat.functionald", desc: "Remembers your preferences (like language) and powers the live chat. Without them the site still works, but forgets you." },
       { id: "analytics", labelKey: "consent.cat.analytics", label: "Analytics", descKey: "consent.cat.analyticsd", desc: "Measurement — how the site and ad campaigns are performing (RudderStack, Meta, Google)." },
       { id: "marketing", labelKey: "consent.cat.marketing", label: "Marketing", descKey: "consent.cat.marketingd", desc: "Ad campaign optimization and targeting (Meta, Google)." }
     ];
