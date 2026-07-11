@@ -126,8 +126,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.about.eyebrow": "Quiénes somos",
   "p.about.h2": "Mucho más que solo responder preguntas.",
-  "p.about.p1": "Quiz Eat Drink nació de tres amigos en Valencia — Dmitry, Stu y Evgeny. No es solo trivia: va de compañerismo, risas y momentos memorables.",
-  "p.about.p2": "En marzo de 2025, al asociarse con Matt, crean Tardeos de Trivia con el objetivo de traer a nuestra cultura latina el concepto del quiz, ligándolo a la gastronomía local y al encuentro entre amigos y familiares para generar una combinación infalible. Nos alegra contar con vosotros para seguir generando eventos de encuentro, fortaleciendo la unión a través de la diversión (y unas buenas cañas).",
+  "p.about.p1": "Dmitry, Stu y Evgeny montaron Quiz Eat Drink en Valencia para ir más allá del típico quiz de bar: una sala llena de desconocidos que se van hechos amigos, riéndose de rondas que siguen comentando al día siguiente.",
+  "p.about.p2": "En marzo de 2025 se asociaron con Matt para lanzar Tardeos de Trivia y traer esa misma idea a España: trivia ligada a las sobremesas largas, la buena comida y la gente que ya se junta alrededor de la mesa. Ven y pilla sitio, tanto si vienes a ganar como si solo quieres discutir las respuestas.",
   "p.about.caption": "Nuestro equipo · Valencia",
 
   "p.cmp.cta": "Empieza tu solicitud",
