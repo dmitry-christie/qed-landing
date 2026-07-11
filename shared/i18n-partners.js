@@ -128,8 +128,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.about.h2": "Mucho más que solo responder preguntas.",
   "p.about.p1": "TDT trivia nights nació de tres amigos en Valencia — Evgeny, Dmitry y Stu — que crearon un concepto único: Tardeo De Trivia. No es solo trivia: va de compañerismo, risas y momentos memorables.",
   "p.about.p2": "En marzo de 2025, al asociarse con Matt, crean Tardeos de Trivia con el objetivo de traer a nuestra cultura latina el concepto del quiz, ligándolo a la gastronomía local y al encuentro entre amigos y familiares para generar una combinación infalible. Nos alegra contar con vosotros para seguir generando eventos de encuentro, fortaleciendo la unión a través de la diversión (y unas buenas cañas).",
-  "p.about.names": "Matt, Evgeny, Dmitry y Stu",
-  "p.about.place": "Valencia",
+  "p.about.caption": "Nuestro equipo · Valencia",
 
   "p.cmp.cta": "Empieza tu solicitud",
 

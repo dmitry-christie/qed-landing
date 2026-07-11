@@ -47,12 +47,6 @@
   .ledger__row{ display:grid; grid-template-columns:1fr auto; gap:18px; align-items:baseline; padding:16px 0; border-bottom:1px dashed var(--hairline-strong); }
   .ledger__row:last-child{ border-bottom:0; }
   .ledger__amt{ font-weight:700; font-size:22px; letter-spacing:-0.02em; white-space:nowrap; }
-  /* founder avatars — overlapping cut-out circles on the dark panel. Matt joined the
-     Spanish (Tardeos de Trivia) brand only, so his avatar shows just on the ES site. */
-  .founders{ display:flex; padding-left:12px; }
-  .founder{ width:56px; height:56px; border-radius:50%; display:grid; place-items:center; font-family:var(--sans); font-weight:800; font-size:21px; border:3px solid var(--ink); margin-left:-12px; }
-  .founder--matt{ display:none; }
-  html[lang="es"] .founder--matt{ display:grid; }
   .tl{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(16px,2.5vw,26px); }
   @media (max-width:780px){ .tl{ grid-template-columns:1fr 1fr; } }
   @media (max-width:460px){ .tl{ grid-template-columns:1fr; } }
@@ -305,25 +299,19 @@
   <!-- ============ ABOUT US ============ -->
   <section id="about" class="section section--tight">
     <div class="wrap">
-      <div class="card reveal split" style="--split:1.1fr 0.9fr;--split-align:center;overflow:hidden">
+      <div class="card reveal split split--flush" style="--split:1.05fr 0.95fr;overflow:hidden">
         <div class="pad">
           <span class="eyebrow" data-i18n="p.about.eyebrow">Who we are</span>
           <h2 class="h2" style="margin-top:14px" data-i18n="p.about.h2">Started by three friends who built a better quiz night.</h2>
           <p class="lead" style="margin-top:14px" data-i18n="p.about.p1">Three friends in Valencia — Evgeny, Dmitry, and Stu — birthed a unique concept: Quiz Eat Drink. This isn't just trivia, it's about camaraderie, laughs, and memorable moments.</p>
           <p class="muted" style="margin-top:14px;line-height:1.6" data-i18n="p.about.p2">They've created an environment where fun mingles with knowledge, transforming every trivia night into a lively event. Whether you crave a competitive challenge or a sociable evening with trivia enthusiasts, Quiz Eat Drink caters to all. Come and join Valencia's favourite trivia night!</p>
         </div>
-        <div class="pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:22px">
-          <div class="founders">
-            <span class="founder founder--matt" style="background:var(--yellow);color:var(--ink)" aria-hidden="true">M</span>
-            <span class="founder" style="background:var(--accent);color:#fff" aria-hidden="true">E</span>
-            <span class="founder" style="background:var(--orange);color:#fff" aria-hidden="true">D</span>
-            <span class="founder" style="background:var(--cream);color:var(--ink)" aria-hidden="true">S</span>
-          </div>
-          <div>
-            <div style="font-family:var(--sans);font-weight:800;font-size:17px" data-i18n="p.about.names">Evgeny, Dmitry &amp; Stu</div>
-            <div class="kpi-lab" style="color:rgba(255,255,255,.6);margin-top:5px" data-i18n="p.about.place">Valencia</div>
-          </div>
-        </div>
+        <figure style="margin:0;position:relative;min-height:320px;background:var(--ink)">
+          <img src="/shared/about-us.jpg" alt="The Quiz Eat Drink team celebrating a trivia night in Valencia" loading="lazy" decoding="async" width="1280" height="853" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;display:block">
+          <figcaption style="margin:0;position:absolute;left:0;right:0;bottom:0;padding:22px 18px 14px;color:#fff;font-family:var(--sans);font-weight:700;font-size:14px;background:linear-gradient(transparent,rgba(31,26,20,.82))">
+            <span data-i18n="p.about.caption">Our team · Valencia</span>
+          </figcaption>
+        </figure>
       </div>
     </div>
   </section>
