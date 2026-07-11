@@ -20,23 +20,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css">
 <style>
+  /* Franchise page accent — the logo's green replaces the site's yellow accent on this
+     page only. Overriding the token flips every var(--yellow) reference plus the inherited
+     .btn--soft / .stamp / ledger header to green in one move (verified >=4.5:1 contrast
+     both as a button fill with dark text and as text on the dark hero). */
+  body{ --yellow:#89AF96; --yellow-soft:#DCEDDF; }
   /* Real venue photo blended into the dark hero bg under gradients.
      Mobile drops the photo layer (flat dark fill) so the image never loads on the LCP
      path for paid mobile clicks; the gradients keep the look. Image loads from 700px up. */
   .hero--dark{ background:
-      radial-gradient(800px 420px at 82% 0%, rgba(245,197,24,.20), transparent 60%),
+      radial-gradient(800px 420px at 82% 0%, rgba(137,175,150,.30), transparent 60%),
       radial-gradient(620px 380px at 0% 100%, rgba(232,99,26,.14), transparent 55%),
       linear-gradient(rgba(31,26,20,.86),rgba(31,26,20,.86)),
       #1f1a14; color:#fff; }
   @media (min-width:700px){
     .hero--dark{ background:
-      radial-gradient(800px 420px at 82% 0%, rgba(245,197,24,.20), transparent 60%),
+      radial-gradient(800px 420px at 82% 0%, rgba(137,175,150,.30), transparent 60%),
       radial-gradient(620px 380px at 0% 100%, rgba(232,99,26,.14), transparent 55%),
       linear-gradient(rgba(31,26,20,.86),rgba(31,26,20,.86)),
       url('/shared/header-bg.jpg') center 40%/cover; }
   }
   .hero--dark .lead{ color:rgba(255,255,255,.74); }
-  .btn--onDark{ background:transparent; color:#fff; border-color:#fff; box-shadow:4px 4px 0 0 rgba(245,197,24,.9); }
+  .btn--onDark{ background:transparent; color:#fff; border-color:#fff; box-shadow:4px 4px 0 0 rgba(137,175,150,.9); }
   .btn--onDark:hover{ background:rgba(255,255,255,.08); }
   .ledger{ font-family:var(--mono); }
   .ledger__row{ display:grid; grid-template-columns:1fr auto; gap:18px; align-items:baseline; padding:16px 0; border-bottom:1px dashed var(--hairline-strong); }
