@@ -25,17 +25,9 @@
   --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:28px;
   --maxw:1140px;
 
-  /* site accent — the /celebrations/ (party) red, used everywhere (pages set a theme-* class) */
+  /* site accent — one signature red across every page (the /celebrations/ party red) */
   --accent:#D64545; --accent-deep:#B83232; --accent-soft:#FFF1B8; --accent-on:#FFFFFF;
 }
-
-/* Unified accent: every theme resolves to the celebrations red so the whole site shares
-   one signature colour. (The class names are kept so per-page accents can be restored.) */
-.theme-orange,
-.theme-party,
-.theme-ink,
-.theme-green,
-.theme-multi { --accent:#D64545; --accent-deep:#B83232; --accent-soft:#FFF1B8; --accent-on:#fff; }
 
 *,*::before,*::after{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }

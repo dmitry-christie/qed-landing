@@ -74,7 +74,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.how.3d": "Lo dirigimos nosotros, de principio a fin. Tú te llevas el caos, las fotos y un ganador de lo más chulito.",
 
   "cel.feat.eyebrow": "Qué incluye",
-  "cel.feat.h2": "Más que una lista de preguntas.",
+  "cel.feat.h2": "Una fiesta entera montada sobre ellos.",
   "cel.feat.f0tag": "Packs a medida",
   "cel.feat.f0t": "Rondas escritas sobre ellos",
   "cel.feat.f0d": "El homenajeado, la pareja, la efeméride. Preguntas personales que solo vuestra gente sabría responder, nunca un pack de trivia reciclado.",
@@ -88,7 +88,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.feat.f4d": "Conocemos los sitios. Te proponemos y reservamos el adecuado, o lo montamos en casa.",
 
   "cel.faq.eyebrow": "Preguntas",
-  "cel.faq.h2": "Lo que la gente pregunta.",
+  "cel.faq.h2": "Lo que todo el mundo quiere saber.",
   "cel.faq.q1": "¿Cuánto se personaliza?",
   "cel.faq.a1": "Muchísimo. Montamos una ronda entera (o más) con los detalles y las fotos que nos mandas sobre el homenajeado o la pareja, y luego la equilibramos con preguntas generales para que todos puedan participar.",
   "cel.faq.q2": "¿Cuántos invitados pueden jugar?",
