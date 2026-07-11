@@ -37,11 +37,12 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.ledger.3n": "Pack de preguntas",
   "p.ledger.optional": "opcional",
   "p.ledger.3d": "Contenido nuevo cada semana, seis rondas temáticas listas para jugar.",
-  "p.ledger.4n": "Trofeos personalizados",
-  "p.ledger.4d": "Trofeos hechos a medida para tus ganadores, con precio por set.",
+  "p.ledger.4n": "Trofeos personalizados y materiales",
+  "p.ledger.perset": "por set",
+  "p.ledger.4d": "Trofeos y materiales del evento hechos a medida para tus ganadores, con precio por set. Las hojas de respuestas las imprimes tú.",
   "p.ledger.5n": "Gasto en anuncios",
   "p.ledger.passthrough": "a coste",
-  "p.ledger.5d": "Gestionamos anuncios segmentados en tu nombre, facturados a precio de coste con una inversión mínima mensual.",
+  "p.ledger.5d": "Anuncios segmentados que lanzamos por ti cuando quieras llenar más la sala, facturados a coste. Si llenas el local por tu cuenta, no gastas nada.",
 
   "p.rev.tag": "Reparto de ingresos",
   "p.rev.h3": "Tú diriges el tardeo. Compartimos lo que sale bien.",
@@ -123,12 +124,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.map.home": "casa",
   "p.map.note": "7 locales y sumando",
   "p.map.cta": "Pon tu ciudad en el mapa",
-
-  "p.about.eyebrow": "Quiénes somos",
-  "p.about.h2": "Mucho más que solo responder preguntas.",
-  "p.about.p1": "Dmitry, Stu y Evgeny montaron Quiz Eat Drink en Valencia para ir más allá del típico quiz de bar: una sala llena de desconocidos que se van hechos amigos, riéndose de rondas que siguen comentando al día siguiente.",
-  "p.about.p2": "En marzo de 2025 se asociaron con Matt para lanzar Tardeos de Trivia y traer esa misma idea a España: trivia ligada a las sobremesas largas, la buena comida y la gente que ya se junta alrededor de la mesa. Ven y pilla sitio, tanto si vienes a ganar como si solo quieres discutir las respuestas.",
-  "p.about.caption": "Nuestro equipo · Valencia",
 
   "p.cmp.cta": "Empieza tu solicitud",
 

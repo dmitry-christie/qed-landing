@@ -86,6 +86,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cmp.r4l": "Economía",
   "cmp.r4a": "Reparto de ingresos · tú diriges el tardeo",
   "cmp.r4b": "0% de comisión en barra y comida",
+  "cmp.r5l": "Promoción",
+  "cmp.r5a": "Incluida · lanzamos los anuncios contigo",
+  "cmp.r5b": "Complemento opcional de redes sociales",
   "cmp.cta1": "Descubre la franquicia",
   "cmp.cta2": "Ver locales anfitriones",
 
@@ -93,5 +96,12 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "xsell.event.h": "¿Solo quieres un evento puntual?",
   "xsell.event.d": "También montamos tardeos de trivia para empresas y celebraciones, sin compromiso.",
   "xsell.work.h": "¿Tienes un local o quieres tu propio negocio?",
-  "xsell.work.d": "Llena tu local cada semana o abre tu propia franquicia de tardeos de trivia."
+  "xsell.work.d": "Llena tu local cada semana o abre tu propia franquicia de tardeos de trivia.",
+
+  /* ---- About us (shared story — present on every page) ---- */
+  "about.eyebrow": "Quiénes somos",
+  "about.h2": "Mucho más que solo responder preguntas.",
+  "about.p1": "Dmitry, Stu y Evgeny montaron Quiz Eat Drink en Valencia para ir más allá del típico quiz de bar: una sala llena de desconocidos que se van hechos amigos, riéndose de rondas que siguen comentando al día siguiente.",
+  "about.p2": "En marzo de 2025 se asociaron con Matt para lanzar Tardeos de Trivia y traer esa misma idea a España: trivia ligada a las sobremesas largas, la buena comida y la gente que ya se junta alrededor de la mesa. Ven y pilla sitio, tanto si vienes a ganar como si solo quieres discutir las respuestas.",
+  "about.caption": "Nuestro equipo · Valencia"
 });
