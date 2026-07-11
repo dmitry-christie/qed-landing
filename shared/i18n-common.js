@@ -87,7 +87,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cmp.r4a": "Reparto de ingresos · tú diriges el tardeo",
   "cmp.r4b": "0% de comisión en barra y comida",
   "cmp.r5l": "Promoción",
-  "cmp.r5a": "Incluida · lanzamos los anuncios contigo",
+  "cmp.r5a": "Incluida · lanzamos los anuncios y te apoyamos con las redes, pero la gestión es tuya",
   "cmp.r5b": "Complemento opcional de redes sociales",
   "cmp.cta1": "Descubre la franquicia",
   "cmp.cta2": "Ver locales anfitriones",
