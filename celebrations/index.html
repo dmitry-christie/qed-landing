@@ -6,7 +6,7 @@
 <!-- build:analytics -->
 <script>document.documentElement.classList.add('js')</script>
 <title data-i18n="cel.title">QED for Celebrations · The party game that steals the show</title>
-<meta name="description" data-i18n-content="cel.metadesc" content="A pub quiz written about the guest of honour. Birthdays, weddings & anniversaries hosted across Valencia, Madrid, Murcia & Santiago de Compostela.">
+<meta name="description" data-i18n-content="cel.metadesc" content="A pub quiz written about the guest of honour. Birthdays, hen & stag parties, weddings & anniversaries hosted across Valencia, Madrid, Murcia & Santiago de Compostela.">
 <meta name="theme-color" content="#FBF6EA">
 <meta property="og:title" data-i18n-content="cel.ogtitle" content="QED for Celebrations · The party game that steals the show">
 <meta property="og:description" data-i18n-content="cel.ogdesc" content="Personalised trivia about the birthday girl, the happy couple, or the milestone. Not a generic quiz.">
@@ -49,7 +49,7 @@
   <section class="hero">
     <div class="wrap">
       <div class="reveal">
-        <span class="tag tag--accent tag--shadow" data-i18n="cel.hero.tag">Birthdays · Weddings · Anniversaries</span>
+        <span class="tag tag--accent tag--shadow" data-i18n="cel.hero.tag">Birthdays · Hen &amp; stag · Anniversaries</span>
         <h1 class="h-display" style="margin-top:20px;max-width:13ch"><span data-i18n="cel.hero.h1a">The party game that </span><span class="accent" data-i18n="cel.hero.h1b">steals the show.</span></h1>
         <p class="lead" style="margin:20px 0 0;max-width:46ch" data-i18n="cel.hero.sub">A pub quiz written about the guest of honour. Your people, your inside jokes, your most incriminating photos, turned into the round everyone remembers.</p>
         <div class="row" style="gap:12px;margin-top:26px">
@@ -286,6 +286,7 @@
                       <option data-i18n="cel.form.et1">Birthday</option>
                       <option data-i18n="cel.form.et2">Wedding</option>
                       <option data-i18n="cel.form.et3">Anniversary</option>
+                      <option data-i18n="cel.form.et5">Hen &amp; stag party</option>
                       <option data-i18n="cel.form.et4">Something else</option>
                     </select>
                   </div>
@@ -325,12 +326,19 @@
                     <div>
                       <label class="label" for="e-city" data-i18n="form.city">City</label>
                       <select class="input" id="e-city" name="city">
-                        <option>Valencia</option><option>Madrid</option><option>Murcia</option><option>Santiago de Compostela</option><option data-i18n="cel.form.elsewhere">Elsewhere</option>
+                        <option value="" data-i18n="form.cityph">Choose a city…</option><option>Valencia</option><option>Madrid</option><option>Murcia</option><option>Santiago de Compostela</option><option data-i18n="cel.form.elsewhere">Elsewhere</option>
                       </select>
                     </div>
-                    <div>
+                    <div class="full">
                       <label class="label" for="e-phone" data-i18n="cel.form.phone">Phone (optional)</label>
-                      <input class="input" id="e-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel">
+                      <div class="tel-field">
+                        <label class="sr-only" for="e-phone-cc" data-i18n="form.phoneCC">Country code</label>
+                        <select class="input" id="e-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
+                          <option value="ES" data-dial="34" selected>Spain +34</option>
+                        </select>
+                        <input class="input tel-field__num" id="e-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
+                      </div>
+                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
                     </div>
                     <div class="full">
                       <label class="label" for="e-msg" data-i18n="form.else">Anything else?</label>
@@ -339,11 +347,11 @@
                     <div class="full">
                       <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="cel.form.submit">Plan my event</span> <span class="arr">&rarr;</span></button>
                       <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="form.note">We reply by email, usually same day. No spam, ever.</p>
-                      <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:12px 0 0;text-align:center" data-i18n="form.generr">Something went wrong. Please email hello@qed.es.</p>
                     </div>
                   </div>
                 </div>
               </div>
+              <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:16px 0 0;text-align:center" data-i18n="form.generr">Something went wrong. Please email info@quizeatdrink.com.</p>
             </div>
             <div class="form-success" tabindex="-1">
               <div style="text-align:center;padding:24px 8px">
@@ -437,6 +445,7 @@
 <script src="/shared/i18n-celebrations.js"></script>
 <script src="/shared/consent.js"></script>
 <script src="/shared/brevo.js"></script>
+<script src="/shared/phone-countries.js"></script>
 <script src="/shared/qed.js"></script>
 </body>
 </html>

@@ -26,6 +26,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "form.name": "Tu nombre",
   "form.email": "Email",
   "form.city": "Ciudad",
+  "form.cityph": "Elige una ciudad…",
   "form.else": "¿Algo más?",
   "form.note": "Respondemos por email, normalmente el mismo día. Sin spam, jamás.",
   "form.err1": "Vaya, no se ha enviado. Escríbenos a ",
@@ -33,6 +34,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "form.generr": "Algo ha fallado. Escríbenos a info@tardeodetrivia.com.",
   "form.reqName": "Tu nombre",
   "form.optElse": "¿Algo más?",
+  "form.phoneCC": "Prefijo del país",
+  "form.phoneErr": "Introduce un número de teléfono válido.",
 
   /* consent banner */
   "consent.msg": "Usamos algunos datos para entender qué funciona y medir campañas publicitarias. Nada de spam ni de venderlos.",
@@ -76,15 +79,15 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cmp.r1b": "Llenar tu local un tardeo a la semana",
   "cmp.r2l": "Compromiso",
   "cmp.r2a": "Recurrente · construyes tu marca con la nuestra",
-  "cmp.r2b": "Flexible · sin compromiso de franquicia",
-  "cmp.r3l": "Quién presenta",
+  "cmp.r2b": "Flexible · lo organizas cuando quieras, sin permanencia",
+  "cmp.r3l": "Quién lo dirige",
   "cmp.r3a": "Tú, como franquiciado",
-  "cmp.r3b": "Un anfitrión nuestro (o tu equipo con Express)",
+  "cmp.r3b": "Tú o tu equipo — marca blanca si quieres",
   "cmp.r4l": "Economía",
   "cmp.r4a": "Reparto de ingresos · tú diriges el tardeo",
   "cmp.r4b": "0% de comisión en barra y comida",
   "cmp.cta1": "Descubre la franquicia",
-  "cmp.cta2": "Descubre Locales",
+  "cmp.cta2": "Ver locales anfitriones",
 
   /* ---- cross-sell headings ---- */
   "xsell.event.h": "¿Solo quieres un evento puntual?",

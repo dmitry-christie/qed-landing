@@ -90,6 +90,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.form.fmt2": "QED Classic · con anfitrión",
   "v.form.fmt3": "Aún no lo sé",
   "v.form.nights": "Tardeos por semana que podrías acoger",
+  "v.form.phone": "Teléfono / WhatsApp (opcional)",
   "v.form.else": "¿Algo más?",
   "v.form.submit": "Apunta mi local",
   "v.ph.city": "p. ej. Valencia",
@@ -98,6 +99,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.form.sent": "enviado",
   "v.form.successh": "Vamos a dejarte reservado.",
   "v.form.successp": "Gracias. Tenemos los datos de tu local y te escribirá una persona de verdad de nuestro equipo, normalmente el mismo día.",
+
+  "v.cmp.cta": "Apunta mi local",
 
   "v.foot.tagline": "Nosotros ponemos la trivia. Tú pones las bebidas. Un tardeo de trivia semanal que llena tu local, sin comisiones."
 });

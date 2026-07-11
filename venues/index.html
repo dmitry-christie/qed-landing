@@ -215,11 +215,11 @@
 
         <div class="cmp__rowlab" data-i18n="cmp.r2l">Commitment</div>
         <div class="cmp__cell" data-i18n="cmp.r2a">Recurring · you build your brand with ours</div>
-        <div class="cmp__cell" data-i18n="cmp.r2b">Flexible · no franchise commitment</div>
+        <div class="cmp__cell" data-i18n="cmp.r2b">Flexible · run it when you want, no lock-in</div>
 
-        <div class="cmp__rowlab" data-i18n="cmp.r3l">Who hosts</div>
+        <div class="cmp__rowlab" data-i18n="cmp.r3l">Who runs it</div>
         <div class="cmp__cell" data-i18n="cmp.r3a">You, as the franchisee</div>
-        <div class="cmp__cell" data-i18n="cmp.r3b">A host of ours (or your team with Express)</div>
+        <div class="cmp__cell" data-i18n="cmp.r3b">You or your team — white-label if you like</div>
 
         <div class="cmp__rowlab" data-i18n="cmp.r4l">Economics</div>
         <div class="cmp__cell" data-i18n="cmp.r4a">Revenue share · you run the night</div>
@@ -227,7 +227,7 @@
 
         <div class="cmp__corner cmp__foot"></div>
         <div class="cmp__foot"><a class="btn btn--sm btn--dark" href="/partners/" data-i18n="cmp.cta1">See franchising</a></div>
-        <div class="cmp__foot"><a class="btn btn--sm" href="/venues/" style="background:var(--accent);color:#fff;border-color:var(--accent)" data-i18n="cmp.cta2">See venues</a></div>
+        <div class="cmp__foot"><a class="btn btn--sm" href="#start" style="background:var(--accent);color:#fff;border-color:var(--accent)" data-i18n="v.cmp.cta">Sign up my venue</a></div>
       </div>
     </div>
   </section>
@@ -290,17 +290,28 @@
                       <input class="input" id="v-nights" type="number" min="1" name="nights" data-i18n-ph="v.ph.nights" placeholder="e.g. 1">
                     </div>
                     <div class="full">
+                      <label class="label" for="v-phone" data-i18n="v.form.phone">Phone / WhatsApp (optional)</label>
+                      <div class="tel-field">
+                        <label class="sr-only" for="v-phone-cc" data-i18n="form.phoneCC">Country code</label>
+                        <select class="input" id="v-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
+                          <option value="ES" data-dial="34" selected>Spain +34</option>
+                        </select>
+                        <input class="input tel-field__num" id="v-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
+                      </div>
+                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
+                    </div>
+                    <div class="full">
                       <label class="label" for="v-msg" data-i18n="v.form.else">Anything else?</label>
                       <textarea class="input" id="v-msg" name="message" data-i18n-ph="v.ph.else" placeholder="Capacity, quiet nights you'd like to fill, the crowd you get…"></textarea>
                     </div>
                     <div class="full">
                       <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="v.form.submit">Sign my venue up</span> <span class="arr">&rarr;</span></button>
                       <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="form.note">We reply by email, usually same day. No spam, ever.</p>
-                      <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:12px 0 0;text-align:center" data-i18n="form.generr">Something went wrong. Please email hello@qed.es.</p>
                     </div>
                   </div>
                 </div>
               </div>
+              <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:16px 0 0;text-align:center" data-i18n="form.generr">Something went wrong. Please email info@quizeatdrink.com.</p>
             </div>
             <div class="form-success" tabindex="-1">
               <div style="text-align:center;padding:24px 8px">
@@ -383,6 +394,7 @@
 <script src="/shared/i18n-venues.js"></script>
 <script src="/shared/consent.js"></script>
 <script src="/shared/brevo.js"></script>
+<script src="/shared/phone-countries.js"></script>
 <script src="/shared/qed.js"></script>
 </body>
 </html>

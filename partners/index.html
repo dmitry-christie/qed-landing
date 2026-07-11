@@ -20,12 +20,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css">
 <style>
-  /* TEMP: placeholder photo blended into the dark hero bg — swap/remove header-bg.jpg later */
+  /* TEMP: placeholder photo blended into the dark hero bg — swap/remove header-bg.jpg later.
+     Mobile drops the photo layer (flat dark fill) so the ~200KB image never loads on the
+     LCP path for paid mobile clicks; the gradients keep the look. Image loads from 700px up. */
   .hero--dark{ background:
       radial-gradient(800px 420px at 82% 0%, rgba(245,197,24,.20), transparent 60%),
       radial-gradient(620px 380px at 0% 100%, rgba(232,99,26,.14), transparent 55%),
       linear-gradient(rgba(31,26,20,.86),rgba(31,26,20,.86)),
-      url('/shared/header-bg.jpg') center 40%/cover; color:#fff; }
+      #1f1a14; color:#fff; }
+  @media (min-width:700px){
+    .hero--dark{ background:
+      radial-gradient(800px 420px at 82% 0%, rgba(245,197,24,.20), transparent 60%),
+      radial-gradient(620px 380px at 0% 100%, rgba(232,99,26,.14), transparent 55%),
+      linear-gradient(rgba(31,26,20,.86),rgba(31,26,20,.86)),
+      url('/shared/header-bg.jpg') center 40%/cover; }
+  }
   .hero--dark .lead{ color:rgba(255,255,255,.74); }
   .btn--onDark{ background:transparent; color:#fff; border-color:#fff; box-shadow:4px 4px 0 0 rgba(245,197,24,.9); }
   .btn--onDark:hover{ background:rgba(255,255,255,.08); }
@@ -33,6 +42,12 @@
   .ledger__row{ display:grid; grid-template-columns:1fr auto; gap:18px; align-items:baseline; padding:16px 0; border-bottom:1px dashed var(--hairline-strong); }
   .ledger__row:last-child{ border-bottom:0; }
   .ledger__amt{ font-weight:700; font-size:22px; letter-spacing:-0.02em; white-space:nowrap; }
+  /* founder avatars — overlapping cut-out circles on the dark panel. Matt joined the
+     Spanish (Tardeos de Trivia) brand only, so his avatar shows just on the ES site. */
+  .founders{ display:flex; padding-left:12px; }
+  .founder{ width:56px; height:56px; border-radius:50%; display:grid; place-items:center; font-family:var(--sans); font-weight:800; font-size:21px; border:3px solid var(--ink); margin-left:-12px; }
+  .founder--matt{ display:none; }
+  html[lang="es"] .founder--matt{ display:grid; }
   .tl{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(16px,2.5vw,26px); }
   @media (max-width:780px){ .tl{ grid-template-columns:1fr 1fr; } }
   @media (max-width:460px){ .tl{ grid-template-columns:1fr; } }
@@ -105,8 +120,9 @@
             <div class="ledger__row">
               <div>
                 <div style="font-family:var(--sans);font-weight:800;font-size:17px"><span data-i18n="p.ledger.1n">Onboarding</span> <span class="tag" style="margin-left:6px;vertical-align:middle" data-i18n="p.ledger.onetime">one-time</span></div>
-                <div class="muted" style="font-family:var(--sans);font-weight:500;margin-top:5px;font-size:14px" data-i18n="p.ledger.1d">Training, brand setup and your first question pack.</div>
+                <div class="muted" style="font-family:var(--sans);font-weight:500;margin-top:5px;font-size:14px" data-i18n="p.ledger.1d">Training, brand setup and your first set of questions.</div>
               </div>
+              <div class="ledger__amt"><span data-i18n="p.ledger.1amt">€99</span> <span style="font-weight:600;font-size:13px;opacity:.7" data-i18n="p.ledger.1vat">+ VAT</span></div>
             </div>
             <div class="ledger__row">
               <div>
@@ -156,44 +172,6 @@
     </div>
   </section>
 
-  <!-- ============ WHAT YOU GET / GIVE ============ -->
-  <section id="support" class="section section--tight">
-    <div class="wrap">
-      <div class="reveal" style="max-width:62ch">
-        <span class="eyebrow" data-i18n="p.deal.eyebrow">The deal</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="p.deal.h2">We bring the machine. You bring the room.</h2>
-      </div>
-      <div class="split reveal" style="--split-align:stretch;margin-top:30px">
-        <div class="card pad">
-          <span class="tag tag--accent" style="background:var(--yellow-soft)" data-i18n="p.deal.qedtag">What QED provides</span>
-          <ul class="ticks ticks--ink" style="margin-top:18px">
-            <li data-i18n="p.deal.q1">The platform: scoring, leaderboards, tie-breakers, reservations and loyalty</li>
-            <li data-i18n="p.deal.q2">Fresh, themed question content every week</li>
-            <li data-i18n="p.deal.q3">A brand players already recognise and trust</li>
-            <li data-i18n="p.deal.q4">Full onboarding, training and brand setup</li>
-            <li data-i18n="p.deal.q5">SLA-backed support when you need it</li>
-            <li data-i18n="p.deal.q6">A monthly analytics review of your nights</li>
-            <li data-i18n="p.deal.q7">A direct WhatsApp / Telegram support channel</li>
-          </ul>
-        </div>
-        <div class="card pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column">
-          <span class="tag" style="align-self:flex-start;background:var(--yellow);border-color:var(--yellow)" data-i18n="p.deal.youtag">What you provide</span>
-          <ul class="ticks" style="margin-top:18px;--tick-dot:var(--yellow)">
-            <li style="color:#fff" data-i18n="p.deal.y1">Relationships with the right local venues</li>
-            <li style="color:#fff" data-i18n="p.deal.y2">The hosting personality that fills a room</li>
-            <li style="color:#fff" data-i18n="p.deal.y3">At least one quiz night, every week</li>
-            <li style="color:#fff" data-i18n="p.deal.y4">Your own social media presence</li>
-            <li style="color:#fff" data-i18n="p.deal.y5">The ongoing costs of running each night</li>
-          </ul>
-          <div style="margin-top:auto;padding-top:22px">
-            <p style="color:rgba(255,255,255,.72);line-height:1.6;margin:0" data-i18n="p.deal.note">If you know the bars, love a mic, and want a business that runs on weeknights, the rest is on us.</p>
-            <a class="btn btn--soft" href="#apply" style="margin-top:18px" data-i18n="p.deal.cta">Start your application</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ============ TIMELINE ============ -->
   <section id="timeline" class="section section--tight">
     <div class="wrap">
@@ -234,6 +212,7 @@
           <span class="eyebrow" data-i18n="p.case.eyebrow">Real case · Murcia</span>
           <h3 class="h2" data-i18n="p.case.h3">One partner. Four months. Revenue up 74%.</h3>
           <p class="muted" style="line-height:1.6;margin:0" data-i18n="p.case.p">Our Murcia partner launched in March with three events and 70 players through the door. By June they were running a steady monthly circuit that pulled in 125 players and &euro;460 in ticket revenue that month alone — and that's before whatever they made at the bar.</p>
+          <p class="muted" style="font-size:12px;opacity:.65;line-height:1.5;margin:0" data-i18n="p.case.note">One partner's first four months. Every city and operator is different — results vary.</p>
           <a class="btn btn--sm" href="#apply" style="align-self:flex-start;margin-top:6px" data-i18n="p.case.cta">Do this in your city</a>
         </div>
         <div class="pad" style="background:var(--ink);color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:2px;align-content:center">
@@ -249,8 +228,8 @@
   <section class="section section--tight">
     <div class="wrap">
       <div class="reveal" style="max-width:62ch">
-        <span class="eyebrow" data-i18n="p.map.eyebrow">Where we already are</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="p.map.h2">Already live across Spain.</h2>
+        <span class="eyebrow" data-i18n="p.map.eyebrow">Where we are</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="p.map.h2">On a mission to conquer the whole of Spain.</h2>
         <p class="lead" style="margin-top:12px" data-i18n="p.map.lead">From our Valencia home base out to Madrid, Barcelona, Murcia and Santiago. Your city could be the next pin on the map.</p>
       </div>
 
@@ -318,6 +297,32 @@
     </div>
   </section>
 
+  <!-- ============ ABOUT US ============ -->
+  <section id="about" class="section section--tight">
+    <div class="wrap">
+      <div class="card reveal split" style="--split:1.1fr 0.9fr;--split-align:center;overflow:hidden">
+        <div class="pad">
+          <span class="eyebrow" data-i18n="p.about.eyebrow">Who we are</span>
+          <h2 class="h2" style="margin-top:14px" data-i18n="p.about.h2">Started by three friends who built a better quiz night.</h2>
+          <p class="lead" style="margin-top:14px" data-i18n="p.about.p1">Three friends in Valencia — Evgeny, Dmitry, and Stu — birthed a unique concept: Quiz Eat Drink. This isn't just trivia, it's about camaraderie, laughs, and memorable moments.</p>
+          <p class="muted" style="margin-top:14px;line-height:1.6" data-i18n="p.about.p2">They've created an environment where fun mingles with knowledge, transforming every trivia night into a lively event. Whether you crave a competitive challenge or a sociable evening with trivia enthusiasts, Quiz Eat Drink caters to all. Come and join Valencia's favourite trivia night!</p>
+        </div>
+        <div class="pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:22px">
+          <div class="founders">
+            <span class="founder founder--matt" style="background:var(--yellow);color:var(--ink)" aria-hidden="true">M</span>
+            <span class="founder" style="background:var(--accent);color:#fff" aria-hidden="true">E</span>
+            <span class="founder" style="background:var(--orange);color:#fff" aria-hidden="true">D</span>
+            <span class="founder" style="background:var(--cream);color:var(--ink)" aria-hidden="true">S</span>
+          </div>
+          <div>
+            <div style="font-family:var(--sans);font-weight:800;font-size:17px" data-i18n="p.about.names">Evgeny, Dmitry &amp; Stu</div>
+            <div class="kpi-lab" style="color:rgba(255,255,255,.6);margin-top:5px" data-i18n="p.about.place">Valencia</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ COMPARE — franchise vs host venue ============ -->
   <section class="section section--tight">
     <div class="wrap">
@@ -337,19 +342,19 @@
 
         <div class="cmp__rowlab" data-i18n="cmp.r2l">Commitment</div>
         <div class="cmp__cell" data-i18n="cmp.r2a">Recurring · you build your brand with ours</div>
-        <div class="cmp__cell" data-i18n="cmp.r2b">Flexible · no franchise commitment</div>
+        <div class="cmp__cell" data-i18n="cmp.r2b">Flexible · run it when you want, no lock-in</div>
 
-        <div class="cmp__rowlab" data-i18n="cmp.r3l">Who hosts</div>
+        <div class="cmp__rowlab" data-i18n="cmp.r3l">Who runs it</div>
         <div class="cmp__cell" data-i18n="cmp.r3a">You, as the franchisee</div>
-        <div class="cmp__cell" data-i18n="cmp.r3b">A host of ours (or your team with Express)</div>
+        <div class="cmp__cell" data-i18n="cmp.r3b">You or your team — white-label if you like</div>
 
         <div class="cmp__rowlab" data-i18n="cmp.r4l">Economics</div>
         <div class="cmp__cell" data-i18n="cmp.r4a">Revenue share · you run the night</div>
         <div class="cmp__cell" data-i18n="cmp.r4b">0% commission on bar and food</div>
 
         <div class="cmp__corner cmp__foot"></div>
-        <div class="cmp__foot"><a class="btn btn--sm btn--dark" href="/partners/" data-i18n="cmp.cta1">See franchising</a></div>
-        <div class="cmp__foot"><a class="btn btn--sm" href="/venues/" style="background:var(--accent);color:#fff;border-color:var(--accent)" data-i18n="cmp.cta2">See venues</a></div>
+        <div class="cmp__foot"><a class="btn btn--sm btn--dark" href="#apply" data-i18n="p.cmp.cta">Apply to run nights</a></div>
+        <div class="cmp__foot"><a class="btn btn--sm" href="/venues/" style="background:var(--accent);color:#fff;border-color:var(--accent)" data-i18n="cmp.cta2">See host venues</a></div>
       </div>
     </div>
   </section>
@@ -398,6 +403,7 @@
                     <div class="full">
                       <label class="label" for="p-venues" data-i18n="p.form.venueSituation">Venue situation</label>
                       <select class="input" id="p-venues" name="venueSituation">
+                        <option value="" disabled selected data-i18n="p.form.vsph">— pick one —</option>
                         <option data-i18n="p.form.vs1">I already have venue relationships</option>
                         <option data-i18n="p.form.vs2">I have leads, not deals yet</option>
                         <option data-i18n="p.form.vs3">I'd need help finding venues</option>
@@ -410,16 +416,23 @@
                     </div>
                     <div class="full">
                       <label class="label" for="p-phone" data-i18n="p.form.phone">Phone (optional)</label>
-                      <input class="input" id="p-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel">
+                      <div class="tel-field">
+                        <label class="sr-only" for="p-phone-cc" data-i18n="form.phoneCC">Country code</label>
+                        <select class="input" id="p-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
+                          <option value="ES" data-dial="34" selected>Spain +34</option>
+                        </select>
+                        <input class="input tel-field__num" id="p-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
+                      </div>
+                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
                     </div>
                     <div class="full">
                       <button type="submit" class="btn btn--soft btn--lg btn--block"><span data-i18n="p.form.submit">Send my application</span> <span class="arr">&rarr;</span></button>
                       <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="p.form.note">We reply within 48 hours. No spam, ever.</p>
-                      <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:12px 0 0;text-align:center" data-i18n="p.form.generr">Something went wrong. Please email info@quizeatdrink.com.</p>
                     </div>
                   </div>
                 </div>
               </div>
+              <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:16px 0 0;text-align:center" data-i18n="p.form.generr">Something went wrong. Please email info@quizeatdrink.com.</p>
             </div>
             <div class="form-success" tabindex="-1">
               <div style="text-align:center;padding:24px 8px">
@@ -502,6 +515,7 @@
 <script src="/shared/i18n-partners.js"></script>
 <script src="/shared/consent.js"></script>
 <script src="/shared/brevo.js"></script>
+<script src="/shared/phone-countries.js"></script>
 <script src="/shared/qed.js"></script>
 </body>
 </html>

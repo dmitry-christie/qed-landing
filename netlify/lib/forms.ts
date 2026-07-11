@@ -44,9 +44,26 @@ export function json(statusCode: number, body: unknown) {
   };
 }
 
-// Build the "🌐 Lang … | Country … | Page …" footer line shared by every message.
+// Build the "🌐 Lang … | Country … | Page …" footer line shared by every message, plus a
+// "📣 Source:" line when the lead carries campaign attribution — the founders' per-lead
+// lead-quality feedback loop (tell a €50-CPC paid lead from an organic one at a glance).
 export function metaLine(d: Dict, page: string): string {
-  return `🌐 Lang: ${d.lang || "—"} | Country: ${d.country || "—"} | Page: ${page}`;
+  const base = `🌐 Lang: ${d.lang || "—"} | Country: ${d.country || "—"} | Page: ${page}`;
+  const hasAttr = d._utm_source || d._utm_campaign || d._gclid || d._wbraid || d._gbraid || d._fbclid || d._ref;
+  if (!hasAttr) return base;
+  const src = d._utm_source || d._ref || "direct";
+  const medium = d._utm_medium || (d._gclid || d._wbraid || d._gbraid ? "cpc" : d._fbclid ? "paid_social" : "—");
+  const campaign = d._utm_campaign || "—";
+  const clicks = [d._gclid && "gclid", (d._wbraid || d._gbraid) && "wbraid", d._fbclid && "fbclid"].filter(Boolean).join("·");
+  return `${base}\n📣 Source: ${src} / ${medium} / ${campaign}${clicks ? ` · ${clicks}` : ""}`;
+}
+
+// "+34 963 12 34 56" for the Telegram message — same best-effort spirit as
+// normalizePhone: d.phoneDial is only there for submissions that went through the
+// country selector, so this just degrades to the raw digits when it's missing.
+export function displayPhone(d: Dict): string {
+  if (!d.phone) return "—";
+  return d.phoneDial ? `+${d.phoneDial} ${d.phone}` : d.phone;
 }
 
 // POST a plain-text message to the Telegram group. No parse_mode (plain text).
@@ -75,11 +92,15 @@ export async function sendTelegram(text: string): Promise<boolean> {
 
 const sha256 = (s: string) => createHash("sha256").update(s.trim().toLowerCase()).digest("hex");
 
-// 9-digit Spanish mobile/landline numbers get a "34" prefix to look like E.164;
-// anything else is passed through digit-only (best-effort — Meta/Google hash
-// whatever they're given, so a slightly malformed number just fails to match).
-function normalizePhone(phone: string): string {
+// The client sends the dial code picked in the phone field's country selector
+// (shared/phone-countries.js) as `phoneDial` — trust it when present. Falls back to the
+// old Spain heuristic for any submission without it (e.g. a cached page pre-dating the
+// selector). Either way this is best-effort: Meta/Google hash whatever they're given, so
+// a slightly malformed number just fails to match, it's not a validation gate.
+function normalizePhone(phone: string, dial?: string): string {
   const digits = phone.replace(/\D/g, "");
+  if (!digits) return digits;
+  if (dial && /^\d{1,4}$/.test(dial)) return `${dial}${digits}`;
   return digits.length === 9 ? `34${digits}` : digits;
 }
 
@@ -119,7 +140,21 @@ const PROPERTY_OMIT = new Set([
   "email", "phone", "firstName", "lastName",
   "page", "form", "lang", "country", "title", "referrer", "path",
   "_ua", "_ip", "_event_id", "_url", "_consent", "_consentCategories", "_fbc", "_honey", "_step",
+  // attribution + identity — promoted to clean-named properties / context below, so keep
+  // the raw underscore-prefixed versions out of the catch-all (no duplicates).
+  "_utm_source", "_utm_medium", "_utm_campaign", "_utm_term", "_utm_content",
+  "_gclid", "_wbraid", "_gbraid", "_fbclid", "_msclkid", "_ttclid", "_ref", "_eid",
 ]);
+
+// Relative lead value (EUR) for value-based bidding (Meta value optimization / Google
+// tROAS). Proxy weights until real pricing lands — a franchise lead is worth far more than
+// a birthday enquiry; a venue partnership sits between. Dashboard can override per action.
+const LEAD_VALUE: Record<string, number> = {
+  partners: 10,
+  venues: 3,
+  corporate: 1,
+  celebrations: 1,
+};
 
 // Consent categories the visitor granted (shared/consent.js), forwarded in the shape
 // RudderStack's custom consent manager expects. NOTE: allowedConsentIds/deniedConsentIds
@@ -156,17 +191,26 @@ function consentManagementFrom(d: Dict): { enabled: true; provider: "custom"; al
 // consent (qed.js sends d._consent / d._consentCategories; see shared/consent.js).
 export async function sendToRudderstack(event: string, d: Dict, page: string): Promise<void> {
   if (!analyticsEnabled(d._url)) return;
-  if (d._consent !== "granted") return;
+  if (d._consent !== "granted") return; // analytics gate — measurement
+
+  // Marketing gate: identity used for AD MATCHING (hashed em/ph/name, IP, click-id,
+  // external_id) is attached ONLY when the visitor granted the "marketing" category —
+  // belt-and-braces on top of the dashboard's per-destination Consent Category mapping,
+  // so an analytics-only visitor is still measured but never matched/targeted for ads.
+  let marketing = false;
+  try { marketing = !!JSON.parse(d._consentCategories || "{}").marketing; } catch { /* no categories → treat as denied */ }
 
   // Hashed client-side per Meta/Google's PII-matching requirements — if the
   // RudderStack destination(s) already hash em/ph/fn/ln themselves, hashing
   // twice is harmless (still a stable one-way match), so this stays defensive.
   const traits: Record<string, string> = {};
-  if (d.email) traits.email = sha256(d.email);
-  if (d.phone) traits.phone = sha256(normalizePhone(d.phone));
-  if (d.firstName) traits.firstName = sha256(d.firstName);
-  if (d.lastName) traits.lastName = sha256(d.lastName);
-  if (d.city) traits.city = d.city;
+  if (marketing) {
+    if (d.email) traits.email = sha256(d.email);
+    if (d.phone) traits.phone = sha256(normalizePhone(d.phone, d.phoneDial));
+    if (d.firstName) traits.firstName = sha256(d.firstName);
+    if (d.lastName) traits.lastName = sha256(d.lastName);
+    if (d.city) traits.city = d.city;
+  }
 
   // "site" / "language" / "product" naming matches the main site's own RudderStack
   // properties so both sources roll up consistently downstream.
@@ -178,6 +222,9 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
     site: (d.lang || "EN").toUpperCase() === "ES" ? "tardeo-de-trivia" : "quiz-eat-drink",
     language: (d.lang || "EN").toLowerCase(),
     product: PRODUCT_BY_PAGE[page] || page,
+    // Relative lead value for value-based bidding (dashboard may override per action).
+    value: LEAD_VALUE[page] || 1,
+    currency: "EUR",
     page,
     form: d.form,
     path: d.path,
@@ -187,7 +234,16 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
     country: d.country,
     event_id: d._event_id,
   };
-  if (d._fbc) properties.fbc = d._fbc;
+
+  // First-touch attribution (captured client-side). Click-ids drive offline/enhanced
+  // conversion matching: gclid/wbraid/gbraid → Google Ads, fbclid → Meta. These are
+  // campaign identifiers, not personal data, so they ride the analytics gate (needed to
+  // attribute the conversion at all) rather than the marketing gate.
+  const ATTR = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "wbraid", "gbraid", "fbclid", "msclkid", "ttclid", "ref"];
+  for (const k of ATTR) { const v = d["_" + k]; if (v) properties[k] = v; }
+
+  if (marketing && d._fbc) properties.fbc = d._fbc;
+
   // Every other field the form actually collected (event type, format, group size,
   // date, guest of honour, venue name, nights, message, ...) — whatever properties
   // we have access to for this particular form, without re-listing each one by name.
@@ -197,12 +253,22 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
 
   const consentManagement = consentManagementFrom(d);
 
+  const context: Record<string, unknown> = {
+    userAgent: d._ua,
+    ...(consentManagement ? { consentManagement } : {}),
+  };
+  if (marketing) {
+    if (Object.keys(traits).length) context.traits = traits;
+    if (d._ip) context.ip = d._ip;
+    if (d._eid) context.externalId = d._eid; // pseudonymous match key → CAPI external_id
+  }
+
   const payload = {
     event,
     anonymousId: d._event_id || `${page}-${Date.now()}`,
     ...(d._event_id ? { messageId: d._event_id } : {}),
     properties,
-    context: { traits, ip: d._ip, userAgent: d._ua, ...(consentManagement ? { consentManagement } : {}) },
+    context,
   };
 
   const auth = Buffer.from(`${WRITE_KEY}:`).toString("base64");

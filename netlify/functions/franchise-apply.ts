@@ -1,6 +1,6 @@
 // Partners (franchise) application. Forwards to Telegram + RudderStack.
 import type { Handler } from "@netlify/functions";
-import { clean, isEmail, json, MAX_BODY, metaLine, sendTelegram, sendToRudderstack } from "../lib/forms";
+import { clean, displayPhone, isEmail, json, MAX_BODY, metaLine, sendTelegram, sendToRudderstack } from "../lib/forms";
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { ok: false, error: "Method not allowed" });
@@ -39,7 +39,7 @@ export const handler: Handler = async (event) => {
     `🏠 Venues: ${d.venueSituation || "—"}`,
     `👤 Name: ${d.firstName} ${d.lastName}`,
     `📧 Email: ${d.email}`,
-    `📱 Phone: ${d.phone || "—"}`,
+    `📱 Phone: ${displayPhone(d)}`,
     "💬 About:",
     d.about || d.message || "—",
     metaLine(d, page),
@@ -50,7 +50,7 @@ export const handler: Handler = async (event) => {
     sendToRudderstack("Form Submitted", d, page),
   ]);
   const sent = telegramResult.status === "fulfilled" && telegramResult.value;
-  if (!sent) return json(500, { ok: false, error: "Could not send right now. Please email hello@qed.es." });
+  if (!sent) return json(500, { ok: false, error: "Could not send right now. Please email info@quizeatdrink.com." });
 
   return json(200, { ok: true });
 };

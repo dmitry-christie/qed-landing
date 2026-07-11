@@ -6,13 +6,17 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# Shared assets (css/js/images/fonts) live under /shared/. They aren't content-hashed,
+# so keep max-age conservative (1 day) — long enough to help retargeted/multi-session
+# repeat visitors and Lighthouse's "efficient cache policy" audit (a Google Ads landing-
+# page-experience signal), short enough that a deploy propagates within a day.
 [[headers]]
-  for = "/*.jsx"
-  [headers.values]
-    Content-Type = "text/babel; charset=utf-8"
-    Cache-Control = "public, max-age=300, must-revalidate"
-
-[[headers]]
-  for = "/assets/*"
+  for = "/shared/*"
   [headers.values]
     Cache-Control = "public, max-age=86400"
+
+# config.js is regenerated per-brand at build time — must never be served stale.
+[[headers]]
+  for = "/config.js"
+  [headers.values]
+    Cache-Control = "no-cache"

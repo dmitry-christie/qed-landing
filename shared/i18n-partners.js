@@ -28,7 +28,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.ledger.hdr": "lo que incluye",
   "p.ledger.1n": "Onboarding",
   "p.ledger.onetime": "pago único",
-  "p.ledger.1d": "Formación, configuración de marca y tu primer pack de preguntas.",
+  "p.ledger.1d": "Formación, configuración de marca y tu primer set de preguntas.",
+  "p.ledger.1amt": "99 €",
+  "p.ledger.1vat": "+ IVA",
   "p.ledger.2n": "Acceso a la plataforma",
   "p.ledger.included": "incluido",
   "p.ledger.2d": "Eventos ilimitados y todas las funciones de la plataforma. Sin cuota mensual.",
@@ -84,6 +86,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.case.eyebrow": "Caso real · Murcia",
   "p.case.h3": "Un franquiciado. Cuatro meses. Ingresos +74 %.",
   "p.case.p": "Nuestro franquiciado de Murcia empezó en marzo con tres eventos y 70 asistentes. En junio ya llevaba un circuito mensual estable que sumó 125 asistentes y 460 € en ingresos por entradas solo ese mes, sin contar lo que ganaron en la barra.",
+  "p.case.note": "Los primeros cuatro meses de un franquiciado. Cada ciudad y cada operador son distintos: los resultados varían.",
   "p.case.cta": "Haz esto en tu ciudad",
   "p.case.s1": "eventos desde el lanzamiento",
   "p.case.s2": "asistentes en total",
@@ -99,6 +102,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.form.cityq": "Ciudad / zona",
   "p.ph.cityq": "¿Dónde montarías los tardeos?",
   "p.form.venueSituation": "Situación de los locales",
+  "p.form.vsph": "— elige una —",
   "p.form.vs1": "Ya tengo relación con locales",
   "p.form.vs2": "Tengo contactos, pero aún no cerrados",
   "p.form.vs3": "Necesitaría ayuda para encontrar locales",
@@ -113,12 +117,21 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.form.successp": "Gracias. Una persona de verdad de nuestro equipo se pondrá en contacto en 48 horas para hablar de tu ciudad y de si encajamos.",
   "p.form.generr": "Algo ha fallado. Escríbenos a info@tardeodetrivia.com.",
 
-  "p.map.eyebrow": "Dónde ya estamos",
-  "p.map.h2": "Ya estamos por toda España.",
+  "p.map.eyebrow": "Dónde estamos",
+  "p.map.h2": "Con la misión de conquistar toda España.",
   "p.map.lead": "Desde nuestra casa en Valencia hasta Madrid, Barcelona, Murcia y Santiago. Tu ciudad puede ser el próximo punto del mapa.",
   "p.map.home": "casa",
   "p.map.note": "7 locales y sumando",
   "p.map.cta": "Pon tu ciudad en el mapa",
+
+  "p.about.eyebrow": "Quiénes somos",
+  "p.about.h2": "Mucho más que solo responder preguntas.",
+  "p.about.p1": "TDT trivia nights nació de tres amigos en Valencia — Evgeny, Dmitry y Stu — que crearon un concepto único: Tardeo De Trivia. No es solo trivia: va de compañerismo, risas y momentos memorables.",
+  "p.about.p2": "En marzo de 2025, al asociarse con Matt, crean Tardeos de Trivia con el objetivo de traer a nuestra cultura latina el concepto del quiz, ligándolo a la gastronomía local y al encuentro entre amigos y familiares para generar una combinación infalible. Nos alegra contar con vosotros para seguir generando eventos de encuentro, fortaleciendo la unión a través de la diversión (y unas buenas cañas).",
+  "p.about.names": "Matt, Evgeny, Dmitry y Stu",
+  "p.about.place": "Valencia",
+
+  "p.cmp.cta": "Empieza tu solicitud",
 
   "p.foot.tagline": "Monta tardeos de trivia. Crea un negocio de verdad. Una franquicia de Tardeo de Trivia, impulsada por nuestra plataforma y nuestra marca."
 });

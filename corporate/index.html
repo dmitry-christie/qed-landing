@@ -186,7 +186,8 @@
         <div>
           <div class="step__n">03</div><div class="step__bar"></div>
           <h3 class="h3" data-i18n="c.how.3t">Game on</h3>
-          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.3d">We host it, start to finish. You get the photos, the trash talk and a winning team.</p>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.3d">We run it from start to finish. You get the photos, the banter and a winning team.</p>
+          <p class="muted" style="margin-top:8px;font-size:13px;opacity:.8" data-i18n="c.how.3note">Photographer available as an optional add-on.</p>
         </div>
       </div>
     </div>
@@ -328,12 +329,19 @@
                     <div>
                       <label class="label" for="c-city" data-i18n="form.city">City</label>
                       <select class="input" id="c-city" name="city">
-                        <option>Valencia</option><option>Madrid</option><option>Murcia</option><option>Santiago de Compostela</option><option data-i18n="c.form.elsewhere">Elsewhere</option>
+                        <option value="" data-i18n="form.cityph">Choose a city…</option><option>Valencia</option><option>Madrid</option><option>Murcia</option><option>Santiago de Compostela</option><option data-i18n="c.form.elsewhere">Elsewhere</option>
                       </select>
                     </div>
                     <div class="full">
                       <label class="label" for="c-phone" data-i18n="c.form.phone">Phone (optional)</label>
-                      <input class="input" id="c-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel">
+                      <div class="tel-field">
+                        <label class="sr-only" for="c-phone-cc" data-i18n="form.phoneCC">Country code</label>
+                        <select class="input" id="c-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
+                          <option value="ES" data-dial="34" selected>Spain +34</option>
+                        </select>
+                        <input class="input tel-field__num" id="c-phone" type="tel" name="phone" autocomplete="tel" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
+                      </div>
+                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
                     </div>
                     <div class="full">
                       <label class="label" for="c-msg" data-i18n="form.else">Anything else?</label>
@@ -342,11 +350,11 @@
                     <div class="full">
                       <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="c.form.submit">Get my quote</span> <span class="arr">&rarr;</span></button>
                       <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="form.note">We reply by email, usually same day. No spam, ever.</p>
-                      <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:12px 0 0;text-align:center" data-i18n="form.generr">Something went wrong. Please email hello@qed.es.</p>
                     </div>
                   </div>
                 </div>
               </div>
+              <p class="form-error" role="alert" style="display:none;color:var(--red-deep);font-weight:700;margin:16px 0 0;text-align:center" data-i18n="form.generr">Something went wrong. Please email info@quizeatdrink.com.</p>
             </div>
             <div class="form-success" tabindex="-1">
               <div style="text-align:center;padding:24px 8px">
@@ -440,6 +448,7 @@
 <script src="/shared/i18n-corporate.js"></script>
 <script src="/shared/consent.js"></script>
 <script src="/shared/brevo.js"></script>
+<script src="/shared/phone-countries.js"></script>
 <script src="/shared/qed.js"></script>
 </body>
 </html>

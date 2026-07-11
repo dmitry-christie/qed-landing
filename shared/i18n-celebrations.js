@@ -1,7 +1,7 @@
 /* Spanish — Celebrations page. English is baked into celebrations/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.title": "Tardeo de Trivia para Celebraciones · El juego de fiesta que se lleva el show",
-  "cel.metadesc": "Un tardeo de trivia escrito sobre el homenajeado. Cumpleaños, bodas y aniversarios presenciales en Valencia, Madrid, Murcia y Santiago de Compostela.",
+  "cel.metadesc": "Un tardeo de trivia escrito sobre el homenajeado. Cumpleaños, despedidas, bodas y aniversarios presenciales en Valencia, Madrid, Murcia y Santiago de Compostela.",
   "cel.ogtitle": "Tardeo de Trivia para Celebraciones · El juego de fiesta que se lleva el show",
   "cel.ogdesc": "Trivia personalizada sobre la cumpleañera, la feliz pareja o la efeméride. No una trivia genérica.",
 
@@ -14,7 +14,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.cta.express": "Empieza con Express",
   "cel.cta.planhosted": "Organiza un evento con anfitrión",
 
-  "cel.hero.tag": "Cumpleaños · Bodas · Aniversarios",
+  "cel.hero.tag": "Cumpleaños · Despedidas · Aniversarios",
   "cel.hero.h1a": "El juego de fiesta que ",
   "cel.hero.h1b": "se lleva el show.",
   "cel.hero.sub": "Un tardeo de trivia escrito sobre el homenajeado. Tu gente, vuestras bromas internas, vuestras fotos más comprometedoras, convertidas en la ronda que todo el mundo recuerda.",
@@ -110,6 +110,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.form.et2": "Boda",
   "cel.form.et3": "Aniversario",
   "cel.form.et4": "Otra cosa",
+  "cel.form.et5": "Despedida de soltera/o",
   "cel.form.first": "Nombre",
   "cel.form.last": "Apellidos",
   "cel.form.continue": "Continuar",

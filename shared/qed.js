@@ -114,20 +114,69 @@
       : (Date.now() + "-" + Math.random().toString(16).slice(2));
   }
 
-  // Meta click id: a real _fbc cookie, else a stored/URL fbclid (works with no Pixel loaded).
+  /* ---------- first-touch attribution ----------
+     Capture ad click-ids + UTMs the moment the visitor lands, BEFORE any internal click
+     strips them from the URL, so a "land → browse → submit" journey still carries the click
+     that paid for it. First touch wins (30-day window). NOTHING is sent anywhere until the
+     visitor grants analytics consent — the Netlify function drops any lead whose _consent
+     isn't "granted" (and gates ad-match identifiers on the marketing category). This only
+     persists attribution locally so it survives until the lead is submitted. */
+  var ATTR_KEY = "qed-attr";
+  var ATTR_TTL = 30 * 24 * 60 * 60 * 1000;
+  var ATTR_FIELDS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "wbraid", "gbraid", "fbclid", "msclkid", "ttclid"];
+
+  function refHost() {
+    try { return (document.referrer || "").replace(/^[a-z]+:\/\//i, "").split("/")[0] || ""; } catch (e) { return ""; }
+  }
+
+  function captureAttribution() {
+    try {
+      var params = new URLSearchParams(location.search);
+      var found = {};
+      ATTR_FIELDS.forEach(function (k) { var v = params.get(k); if (v) found[k] = v.slice(0, 512); });
+      var existing = null;
+      try { existing = JSON.parse(localStorage.getItem(ATTR_KEY) || "null"); } catch (e) {}
+      var fresh = existing && existing.ts && (Date.now() - existing.ts < ATTR_TTL);
+      if (Object.keys(found).length && !fresh) {
+        found.ts = Date.now();
+        found.ref = refHost();
+        localStorage.setItem(ATTR_KEY, JSON.stringify(found));
+      } else if (!existing) {
+        // No click params and no record yet — seed an organic/direct first touch.
+        localStorage.setItem(ATTR_KEY, JSON.stringify({ ts: Date.now(), ref: refHost() }));
+      }
+    } catch (e) {}
+  }
+  captureAttribution();
+
+  function storedAttr() {
+    try { return JSON.parse(localStorage.getItem(ATTR_KEY) || "null") || {}; } catch (e) { return {}; }
+  }
+
+  // Durable first-party pseudonymous id — a non-PII match key (Meta CAPI external_id /
+  // Google), stable across the two-step form and repeat visits. Raises ad match quality
+  // without a browser Pixel. Forwarded server-side only under marketing consent.
+  function externalId() {
+    try {
+      var id = localStorage.getItem("qed-eid");
+      if (!id) { id = uuid(); localStorage.setItem("qed-eid", id); }
+      return id;
+    } catch (e) { return ""; }
+  }
+
+  // Meta click id: a real _fbc cookie, else the stored/URL fbclid (works with no Pixel
+  // loaded). Uses the stored click timestamp when available, not "now".
   function fbc() {
     var v = readCookie("_fbc");
     if (v) return v;
-    var fbclid = "";
-    try {
-      var attr = JSON.parse(localStorage.getItem("qed-attr") || "null");
-      if (attr && attr.fbclid) fbclid = attr.fbclid;
-    } catch (e) {}
+    var attr = storedAttr();
+    var fbclid = attr.fbclid || "";
+    var ts = attr.ts;
     if (!fbclid) {
       var fm = location.search.match(/[?&]fbclid=([^&]+)/);
-      if (fm) fbclid = decodeURIComponent(fm[1]);
+      if (fm) { fbclid = decodeURIComponent(fm[1]); ts = Date.now(); }
     }
-    return fbclid ? ("fb.1." + Date.now() + "." + fbclid) : "";
+    return fbclid ? ("fb.1." + (ts || Date.now()) + "." + fbclid) : "";
   }
 
   // Snapshot the whole form (both steps live in the DOM at once) + shared context fields.
@@ -136,6 +185,9 @@
     new FormData(form).forEach(function (v, k) { if (typeof v === "string") data[k] = v; });
     data.lang = (document.documentElement.getAttribute("lang") || "en").toUpperCase();
     data.country = window.__qed.country || "ES";
+    var ccSel = form.querySelector("[data-role='phone-country']");
+    var ccOpt = ccSel && ccSel.selectedOptions && ccSel.selectedOptions[0];
+    if (ccOpt) data.phoneDial = ccOpt.getAttribute("data-dial") || "";
     data.form = form.getAttribute("name") || action;
     data.title = document.title;
     data.path = location.pathname;
@@ -147,6 +199,11 @@
     if (window.__qedConsentCategories) { try { data._consentCategories = JSON.stringify(window.__qedConsentCategories); } catch (e) {} }
     var f = fbc();
     if (f) data._fbc = f;
+    // first-touch attribution + durable pseudonymous id (forwarded only under consent)
+    var attr = storedAttr();
+    ATTR_FIELDS.forEach(function (k) { if (attr[k]) data["_" + k] = attr[k]; });
+    if (attr.ref) data._ref = attr.ref;
+    data._eid = externalId();
     return data;
   }
 
@@ -168,6 +225,38 @@
       var first = scope && scope.querySelector("input:not(.cselect__native), textarea, select:not(.cselect__native), .cselect__btn");
       if (!first) return;
       if (reduce) first.focus(); else setTimeout(function () { first.focus(); }, 360);
+    }
+
+    /* phone: digit-filter as you type, loose format check before submit (optional field —
+       an empty value is always valid). Spain (the primary market) gets an exact 9-digit
+       rule; every other country gets a generic E.164-ish length range rather than a
+       per-country table, since one wrong number just fails to reach the lead by phone,
+       it's not a security boundary. */
+    var phoneInput = form.querySelector("[data-role='phone-number']");
+    var phoneCC = form.querySelector("[data-role='phone-country']");
+    var phoneErr = form.querySelector("[data-role='phone-error']");
+
+    function phoneDigits() { return phoneInput ? phoneInput.value.replace(/\D/g, "") : ""; }
+    function phoneValid() {
+      var digits = phoneDigits();
+      if (!digits) return true;
+      var iso = phoneCC ? phoneCC.value : "ES";
+      return iso === "ES" ? digits.length === 9 : (digits.length >= 7 && digits.length <= 14);
+    }
+    function setPhoneError(show) {
+      if (!phoneErr || !phoneInput) return;
+      phoneErr.style.display = show ? "block" : "none";
+      phoneInput.setAttribute("aria-invalid", show ? "true" : "false");
+    }
+
+    if (phoneInput) {
+      phoneInput.addEventListener("input", function () {
+        var v = phoneInput.value.replace(/[^\d ]/g, "");
+        if (v !== phoneInput.value) phoneInput.value = v;
+        if (phoneErr && phoneErr.style.display === "block" && phoneValid()) setPhoneError(false);
+      });
+      phoneInput.addEventListener("blur", function () { setPhoneError(!phoneValid()); });
+      if (phoneCC) phoneCC.addEventListener("change", function () { if (phoneErr && phoneErr.style.display === "block") setPhoneError(!phoneValid()); });
     }
 
     /* step 1 → step 2: validate required fields, fire the partial "Form Submitted" (step 1),
@@ -216,9 +305,38 @@
     /* submit → POST the full lead (step 2) to the function */
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
+
+      // Enter / mobile-keyboard "Go" from a step-1 field fires implicit submission even
+      // though the only type=submit lives in the (collapsed) step 2 — route it to Continue
+      // so step 1 validates and fires its partial event, instead of POSTing a half-empty
+      // "full" lead that skips qualification.
+      if (step2 && continueBtn && !form.classList.contains("at-step2")) {
+        continueBtn.click();
+        return;
+      }
+
       var btn = form.querySelector("[type=submit]");
       var btnKids = btn ? [].slice.call(btn.childNodes) : null;
       if (errEl) errEl.style.display = "none";
+
+      // Forms are novalidate — this handler is the only submit-time gate. Enforce required
+      // fields (mirrors the Continue handler) before touching the network or tracking.
+      var invalid = null;
+      form.querySelectorAll("input,select,textarea").forEach(function (el) {
+        if (el.required && !el.checkValidity() && !invalid) invalid = el;
+      });
+      if (invalid) {
+        if (invalid.__csOpen) { invalid.__cselectBtn.focus(); invalid.__csOpen(); }
+        else if (invalid.reportValidity) invalid.reportValidity();
+        else invalid.focus();
+        return;
+      }
+
+      if (phoneInput && !phoneValid()) {
+        setPhoneError(true);
+        phoneInput.focus();
+        return;
+      }
 
       var data = collect(form, action, 2, uuid());
 
@@ -430,6 +548,46 @@
       try { buildCustomSelect(sel); } catch (e) { sel.classList.remove("cselect__native"); }
     });
   }
+
+  /* ---------- phone country/dial-code selectors ----------
+     select[data-role="phone-country"] ships in the HTML with a single "Spain" <option>
+     (works with no JS). Here we fill it from shared/phone-countries.js (name + dial code,
+     localized) — Spain first since it's the home market, the rest A-Z. It's still a plain
+     select.input, so enhanceSelects() above wraps it into the same custom dropdown as
+     every other select. A MutationObserver on <html lang> re-labels the options in place
+     if the visitor flips language in-page (local/preview builds — branded deploys navigate
+     to the other domain instead, see i18n.js switchLang). */
+  function countryLabel(c, lang) { return (lang === "ES" ? c.es : c.en) + " +" + c.dial; }
+
+  function populatePhoneCountrySelects() {
+    var all = window.QED_COUNTRIES || [];
+    if (!all.length) return;
+    var lang = (document.documentElement.getAttribute("lang") || "en").toUpperCase();
+    var es = null;
+    var rest = [];
+    all.forEach(function (c) { if (c.iso === "ES") es = c; else rest.push(c); });
+    rest.sort(function (a, b) { return countryLabel(a, lang).localeCompare(countryLabel(b, lang)); });
+    var sorted = es ? [es].concat(rest) : rest;
+
+    document.querySelectorAll("select[data-role='phone-country']").forEach(function (sel) {
+      var current = sel.value || sel.getAttribute("data-default") || "ES";
+      sel.textContent = "";
+      sorted.forEach(function (c) {
+        var opt = document.createElement("option");
+        opt.value = c.iso;
+        opt.setAttribute("data-dial", c.dial);
+        opt.textContent = countryLabel(c, lang);
+        if (c.iso === current) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    });
+  }
+  populatePhoneCountrySelects();
+  if ("MutationObserver" in window) {
+    new MutationObserver(populatePhoneCountrySelects)
+      .observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+  }
+
   enhanceSelects();
 
   /* re-open the cookie banner to review/update consent (privacy/legal page button) */

@@ -64,7 +64,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.how.2t": "Montamos tu trivia",
   "c.how.2d": "Rondas a medida sobre tu equipo, tu sector y un par de cosas que solo vosotros sabríais. Tu logo en las diapositivas.",
   "c.how.3t": "¡A jugar!",
-  "c.how.3d": "Lo dirigimos nosotros, de principio a fin. Tú te llevas las fotos, las pullas y un equipo ganador.",
+  "c.how.3d": "Lo dirigimos nosotros, de principio a fin. Tú te llevas las fotos, el pique y un equipo ganador.",
+  "c.how.3note": "Fotógrafo disponible como extra opcional.",
 
   "c.feat.eyebrow": "Qué incluye",
   "c.feat.h2": "Más que una lista de preguntas.",
