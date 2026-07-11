@@ -145,7 +145,11 @@
       head.insertBefore(s, head.firstChild);
       ra.load(WRITE_KEY, DATA_PLANE_URL, { consentManagement: consentManagementFor(cats) });
       // v3 SDK does not auto-capture page views — fire one per load (queued, flushed on ready).
-      ra.page();
+      // These landing pages are a single template, so tag every page view with its section
+      // (window.QED_SITE; the hub sets none) and the language currently rendered.
+      var pvSection = window.QED_SITE || "home";
+      var pvLang = (document.documentElement.getAttribute("lang") || "en").toUpperCase();
+      ra.page(pvSection, { page_type: "landing", section: pvSection, language: pvLang });
     }
 
     window.__qedRudderReady = true;

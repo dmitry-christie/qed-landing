@@ -85,13 +85,12 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.tl.4d": "En marcha en menos de dos semanas desde que dices que sí.",
 
   "p.case.eyebrow": "Caso real · Murcia",
-  "p.case.h3": "Un franquiciado. Cuatro meses. Ingresos +74 %.",
+  "p.case.h3": "Un franquiciado. Cuatro meses. Un circuito que no para de crecer.",
   "p.case.p": "Nuestro franquiciado de Murcia empezó en marzo con tres eventos y 70 asistentes. En junio ya llevaba un circuito mensual estable que sumó 125 asistentes y 460 € en ingresos por entradas solo ese mes, sin contar lo que ganaron en la barra.",
   "p.case.note": "Los primeros cuatro meses de un franquiciado. Cada ciudad y cada operador son distintos: los resultados varían.",
   "p.case.cta": "Haz esto en tu ciudad",
   "p.case.s1": "eventos desde el lanzamiento",
   "p.case.s2": "asistentes en total",
-  "p.case.s3": "crecimiento de ingresos, marzo-junio",
 
   "p.apply.eyebrow": "Solicitar",
   "p.apply.h2": "Veamos si encajamos.",
