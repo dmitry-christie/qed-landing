@@ -75,6 +75,26 @@ const rudderDataPlaneUrl = process.env.RUDDERSTACK_DATA_PLANE_URL;
 const rudderCdnUrl = process.env.RUDDERSTACK_CDN_URL;
 const rudderReady = Boolean(rudderWriteKey && rudderDataPlaneUrl && rudderCdnUrl);
 
+/* ---- shared "About us" injection (runs on every build, branded or not) ----
+   The About section is identical on every page, so it lives in one partial
+   (shared/about.partial.html) and is stamped into each page's <!-- build:about -->
+   marker here. Edit the partial once and every page updates. Pages without the
+   marker (privacy, terms) are left untouched. Copy is still translated at runtime
+   via the about.* keys in shared/i18n-common.js. */
+const ABOUT_MARK = "<!-- build:about -->";
+const aboutPartial = readFileSync("shared/about.partial.html", "utf8")
+  .replace(/^\s*<!--[\s\S]*?-->\s*/, "") // drop the partial's dev-note comment; don't ship it
+  .trimEnd();
+let aboutInjected = 0;
+for (const page of PAGES) {
+  const file = `${page}index.html`;
+  const html = readFileSync(file, "utf8");
+  if (!html.includes(ABOUT_MARK)) continue;
+  writeFileSync(file, html.replace(ABOUT_MARK, aboutPartial));
+  aboutInjected++;
+}
+console.log(`[qed build] injected About section into ${aboutInjected} page(s)`);
+
 if (brand || rudderReady) {
   let seoInjected = 0;
   let analyticsInjected = 0;

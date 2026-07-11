@@ -44,8 +44,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "v.plan.classic": "QED Classic",
   "v.plan.clastag": "Ponemos el anfitrión",
-  "v.plan.clasnow": "Disponible ya",
-  "v.plan.clasprice": "por evento, o mensual",
+  "v.plan.clasamt": "150 €",
+  "v.plan.clasprice": "+ IVA/mes · hasta 5 eventos",
+  "v.plan.clasoneoff": "o 50 € + IVA por evento suelto",
   "v.plan.clasdesc": "La experiencia completa de trivia, dirigida por un anfitrión nuestro para que tu equipo se dedique a la barra.",
   "v.plan.clasf1": "Cuatro rondas, 40 preguntas cada una",
   "v.plan.clasf2": "Hojas de respuestas en papel de toda la vida",

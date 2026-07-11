@@ -16,7 +16,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.cta.apply": "Solicítalo ya",
   "p.cta.numbers": "Ver el modelo",
 
-  "p.stat.locations": "ubicaciones",
+  "p.stat.locations": "ciudades",
   "p.stat.reply": "para responder",
   "p.stat.launch": "semanas al primer evento",
 
@@ -121,7 +121,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.map.h2": "Con la misión de conquistar toda España.",
   "p.map.lead": "Desde nuestra casa en Valencia hasta Madrid, Barcelona, Murcia y Santiago. Tu ciudad puede ser el próximo punto del mapa.",
   "p.map.home": "casa",
-  "p.map.note": "7 locales y sumando",
+  "p.map.note": "7 ciudades y sumando",
   "p.map.cta": "Pon tu ciudad en el mapa",
 
   "p.cmp.cta": "Empieza tu solicitud",
