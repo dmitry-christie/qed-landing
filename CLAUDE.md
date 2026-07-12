@@ -56,13 +56,41 @@ Reads deploy env vars and rewrites files in the ephemeral build (never committed
 
 - Regenerates `config.js` from `BRAND` / `DEV_NOTICE` / `DEFAULT_LANGUAGE`.
 - Injects the About partial at every `<!-- build:about -->` marker (all builds).
-- Branded builds: injects canonical/hreflang/OG SEO tags at `<!-- build:seo -->` and sets
-  `<html lang>`.
+- Branded builds: injects canonical/hreflang/OG SEO tags at `<!-- build:seo -->`, sets
+  `<html lang>`, swaps the favicon/apple-touch-icon/`og:image` to the brand's asset
+  (`BRAND_ASSETS`), and — on TDT — rewrites `<title>`/meta `content` for every tag carrying
+  `data-i18n(-content)` to that key's Spanish string (see "Social preview images" below).
 - When the `RUDDERSTACK_*` env vars are set: injects the analytics snippet at
   `<!-- build:analytics -->`.
 
 Committed source keeps the markers; the build fills them. To run locally without dirtying the
 tree: `git add -A`, `node build.mjs`, inspect, then `git checkout -- .` to restore the markers.
+
+## Social preview images (og:image / favicon)
+
+Link-preview crawlers (WhatsApp, Facebook, Slack, iMessage…) fetch the raw HTML and never run
+`shared/i18n.js`, so a `data-i18n*` key alone is not enough for `<title>`, meta description, or
+`og:title`/`og:description` — build.mjs must bake the real Spanish text into `content=` at build
+time for TDT (see `localizeHead()`). **Every `og:title`/`og:description` tag must carry a
+`data-i18n-content="key"`** (reuse the page's title/metadesc key, or add an `*.ogtitle`/`*.ogdesc`
+key, as `h.ogtitle`/`h.ogdesc` and `p.ogdesc` do) — one without it silently ships English on TDT.
+
+Brand-specific image/icon assets, swapped by `BRAND_ASSETS` in build.mjs:
+
+| | QED | TDT |
+|---|---|---|
+| favicon / apple-touch-icon | `shared/qed-logo.png` | `shared/tardeo-logo.png` |
+| `og:image` (1200×630) | `shared/og-image.png` | `shared/og-image-tdt.png` |
+
+**`shared/og-image-tdt.png` bakes the tagline and city list as pixels, not live text.**
+Regenerate it with `python3 shared/make-og-image-tdt.py` (needs Pillow + `rsvg-convert`,
+`brew install librsvg`) whenever:
+- a new city launches or the city list changes,
+- the `h.foot.tagline` copy changes (keep the script's `TAGLINE` constant in sync with it),
+- the Tardeo logo (`shared/tardeo-logo.svg`) changes.
+
+There's no equivalent regen step for the QED image (`og-image.png`) — it was hand-made; if QED's
+city list changes, it needs manual editing or a comparable script.
 
 ## Analytics
 

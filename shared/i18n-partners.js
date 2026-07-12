@@ -2,6 +2,7 @@
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.title": "Franquicia Tardeo de Trivia · Monta tardeos de trivia. Crea un negocio de verdad.",
   "p.metadesc": "Abre tu franquicia de Tardeo de Trivia. Nuestra plataforma, contenido y marca. Tus locales y tu carácter. Una sala que paga cada semana, con onboarding, formación y soporte con SLA.",
+  "p.ogdesc": "Una franquicia basada en tardeos de trivia semanales. Entrada baja, unit economics reales, soporte completo.",
 
   "p.nav.kicker": "Franquicias",
   "p.nav.model": "El modelo",

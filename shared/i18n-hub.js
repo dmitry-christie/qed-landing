@@ -2,6 +2,8 @@
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.title": "Tardeo de Trivia · Tardeos de trivia por toda España",
   "h.metadesc": "Montamos y presentamos tardeos de trivia que la gente recuerda de verdad: para empresas, celebraciones, locales y franquicias en Valencia, Madrid, Murcia y Santiago de Compostela.",
+  "h.ogtitle": "Tardeo de Trivia",
+  "h.ogdesc": "La empresa de tardeos de trivia para noches que no aburren. Elige tu sala.",
 
   "h.nav.work": "Organiza un tardeo",
   "h.nav.partners": "Franquicias",
