@@ -145,11 +145,28 @@
       head.insertBefore(s, head.firstChild);
       ra.load(WRITE_KEY, DATA_PLANE_URL, { consentManagement: consentManagementFor(cats) });
       // v3 SDK does not auto-capture page views — fire one per load (queued, flushed on ready).
-      // These landing pages are a single template, so tag every page view with its section
-      // (window.QED_SITE; the hub sets none) and the language currently rendered.
+      // Schema matches the main site's (quizeatdrink.com) page() calls so both roll up
+      // together downstream: site/product/language use the same values and casing as
+      // netlify/lib/forms.ts uses for the server-side "Form Submitted" track calls.
       var pvSection = window.QED_SITE || "home";
-      var pvLang = (document.documentElement.getAttribute("lang") || "en").toUpperCase();
-      ra.page(pvSection, { page_type: "landing", section: pvSection, language: pvLang });
+      var pvLang = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
+      var PRODUCTS = {
+        corporate: "corporate-event",
+        celebrations: "celebration-event",
+        venues: "venue-partnership",
+        partners: "franchise-partnership"
+      };
+      var NAMES = {
+        home: "Home", corporate: "Corporate", celebrations: "Celebrations",
+        venues: "Venues", partners: "Partners", privacy: "Privacy", terms: "Terms"
+      };
+      ra.page(NAMES[pvSection] || pvSection, {
+        page_type: "landing",
+        section: pvSection,
+        language: pvLang,
+        site: pvLang === "es" ? "tardeo-de-trivia" : "quiz-eat-drink",
+        product: PRODUCTS[pvSection] || null
+      });
     }
 
     window.__qedRudderReady = true;
