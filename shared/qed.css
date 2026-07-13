@@ -216,6 +216,9 @@ a.lift{ text-decoration:none; color:inherit; display:block; }
 .nav__links a:not(.btn):hover{ color:var(--accent); }
 .nav__toggle{ display:none; width:46px; height:42px; border:2px solid var(--ink); border-radius:11px; background:var(--paper); cursor:pointer; align-items:center; justify-content:center; box-shadow:3px 3px 0 0 var(--ink); }
 .nav__toggle svg{ width:22px; height:22px; }
+/* mobile-only duplicate of the header CTA (see .nav__links .btn) — keeps a booking
+   button visible in the top row once .nav__links collapses behind the burger below 860px */
+.nav__cta-m{ display:none; }
 @media (max-width:860px){
   .nav__links{
     position:absolute; top:100%; left:0; right:0; flex-direction:column; align-items:stretch; gap:0;
@@ -228,6 +231,10 @@ a.lift{ text-decoration:none; color:inherit; display:block; }
   .nav__links .btn{ margin:14px 22px; }
   .nav__links .langsw{ margin:16px 22px 2px; align-self:flex-start; }
   .nav__toggle{ display:inline-flex; }
+  .nav__cta-m{ display:inline-flex; margin-left:auto; flex:0 0 auto; white-space:nowrap; }
+}
+@media (max-width:360px){
+  .nav__cta-m.btn--sm{ height:40px; padding:0 12px; font-size:13px; }
 }
 
 /* ---------- hero ---------- */
