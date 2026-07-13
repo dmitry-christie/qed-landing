@@ -23,6 +23,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   /* common form fields */
   "form.back": "Atrás",
+  "form.sending": "Enviando…",
   "form.name": "Tu nombre",
   "form.email": "Email",
   "form.city": "Ciudad",
@@ -49,7 +50,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "consent.cat.functional": "Funcionales",
   "consent.cat.functionald": "Recuerdan tus preferencias (como el idioma) y hacen funcionar el chat en directo. Sin ellas el sitio funciona, pero no te recuerda.",
   "consent.cat.analytics": "Analítica",
-  "consent.cat.analyticsd": "Medición — cómo funcionan el sitio y las campañas publicitarias (RudderStack, Meta, Google).",
+  "consent.cat.analyticsd": "Medición: cómo funcionan el sitio y las campañas publicitarias (RudderStack, Meta, Google).",
   "consent.cat.marketing": "Marketing",
   "consent.cat.marketingd": "Optimización y segmentación de campañas publicitarias (Meta, Google).",
 
@@ -82,7 +83,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cmp.r2b": "Flexible · lo organizas cuando quieras, sin permanencia",
   "cmp.r3l": "Quién lo dirige",
   "cmp.r3a": "Tú, como franquiciado",
-  "cmp.r3b": "Tú o tu equipo — marca blanca si quieres",
+  "cmp.r3b": "Tú o tu equipo, marca blanca si quieres",
   "cmp.r4l": "Economía",
   "cmp.r4a": "Reparto de ingresos · tú diriges el tardeo",
   "cmp.r4b": "0% de comisión en barra y comida",
@@ -98,7 +99,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "xsell.work.h": "¿Tienes un local o quieres tu propio negocio?",
   "xsell.work.d": "Llena tu local cada semana o abre tu propia franquicia de tardeos de trivia.",
 
-  /* ---- About us (shared story — present on every page) ---- */
+  /* ---- About us (shared story, present on every page) ---- */
   "about.eyebrow": "Quiénes somos",
   "about.h2": "Mucho más que solo responder preguntas.",
   "about.p1": "Dmitry, Stu y Evgeny montaron Quiz Eat Drink en Valencia para ir más allá del típico quiz de bar: una sala llena de desconocidos que se van hechos amigos, riéndose de rondas que siguen comentando al día siguiente.",

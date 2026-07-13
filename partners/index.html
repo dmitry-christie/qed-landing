@@ -20,7 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css">
 <style>
-  /* Franchise page accent — the logo's green replaces the site's yellow accent on this
+  /* Franchise page accent: the logo's green replaces the site's yellow accent on this
      page only. Overriding the token flips every var(--yellow) reference plus the inherited
      .btn--soft / .stamp / ledger header to green in one move (verified >=4.5:1 contrast
      both as a button fill with dark text and as text on the dark hero). */
@@ -84,7 +84,7 @@
   <section class="hero hero--dark">
     <div class="wrap">
       <div class="reveal">
-        <span class="tag tag--shadow" style="background:var(--yellow);border-color:var(--yellow)" data-i18n="p.hero.tag">Franchise opportunity</span>
+        <span class="tag tag--shadow" style="background:var(--yellow);border-color:var(--yellow);color:var(--ink)" data-i18n="p.hero.tag">Franchise opportunity</span>
         <h1 class="h-display" style="margin-top:20px;max-width:15ch;color:#fff"><span data-i18n="p.hero.h1a">Run trivia nights. Build a </span><span style="color:var(--yellow)" data-i18n="p.hero.h1b">real business.</span></h1>
         <p class="lead" style="margin:20px 0 0;max-width:48ch" data-i18n="p.hero.sub">We hand you the platform, the content and a brand people already turn up for. You bring the venues and the personality. Then you keep the room running.</p>
         <div class="row" style="gap:12px;margin-top:26px">
@@ -276,7 +276,7 @@
             <text x="378" y="332" class="esmap__label">Murcia</text>
           </g>
 
-          <!-- Valencia — home base -->
+          <!-- Valencia: home base -->
           <g transform="translate(382.1,258.7)">
             <path class="esmap__home" d="M0 0 C-10 -14 -13 -20 -13 -27 A13 13 0 1 1 13 -27 C13 -20 10 -14 0 0 Z"/>
             <circle class="esmap__home-dot" cx="0" cy="-27" r="5"/>
@@ -298,7 +298,7 @@
 
   <!-- build:about -->
 
-  <!-- ============ COMPARE — franchise vs host venue ============ -->
+  <!-- ============ COMPARE: franchise vs host venue ============ -->
   <section class="section section--tight">
     <div class="wrap">
       <div class="reveal" style="max-width:62ch">
@@ -321,7 +321,7 @@
 
         <div class="cmp__rowlab" data-i18n="cmp.r3l">Who runs it</div>
         <div class="cmp__cell" data-i18n="cmp.r3a">You, as the franchisee</div>
-        <div class="cmp__cell" data-i18n="cmp.r3b">You or your team — white-label if you like</div>
+        <div class="cmp__cell" data-i18n="cmp.r3b">You or your team, white-label if you like</div>
 
         <div class="cmp__rowlab" data-i18n="cmp.r4l">Economics</div>
         <div class="cmp__cell" data-i18n="cmp.r4a">Revenue share · you run the night</div>
@@ -382,7 +382,7 @@
                     <div class="full">
                       <label class="label" for="p-venues" data-i18n="p.form.venueSituation">Venue situation</label>
                       <select class="input" id="p-venues" name="venueSituation">
-                        <option value="" disabled selected data-i18n="p.form.vsph">— pick one —</option>
+                        <option value="" disabled selected data-i18n="p.form.vsph">Choose one…</option>
                         <option data-i18n="p.form.vs1">I already have venue relationships</option>
                         <option data-i18n="p.form.vs2">I have leads, not deals yet</option>
                         <option data-i18n="p.form.vs3">I'd need help finding venues</option>

@@ -1,4 +1,4 @@
-/* Spanish — Hub / homepage. English is baked into /index.html. */
+/* Spanish: Hub / homepage. English is baked into /index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.title": "Tardeo de Trivia · Tardeos de trivia por toda España",
   "h.metadesc": "Montamos y presentamos tardeos de trivia que la gente recuerda de verdad: para empresas, celebraciones, locales y franquicias en Valencia, Madrid, Murcia y Santiago de Compostela.",
@@ -11,7 +11,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "h.hero.h1a": "Tardeos de trivia que ",
   "h.hero.h1b": "se recuerdan de verdad.",
-  "h.hero.sub": "Nosotros lo escribimos, lo presentamos y llevamos la puntuación; tú solo traes a tu gente. Reservamos tardeos de trivia privados para tu empresa, tu cumpleaños o tu celebración — donde tú quieras.",
+  "h.hero.sub": "Nosotros lo escribimos, lo presentamos y llevamos la puntuación; tú solo traes a tu gente. Reservamos tardeos de trivia privados para tu empresa, tu cumpleaños o tu celebración, donde tú quieras.",
   "h.hero.cta2": "Reserva tu evento privado",
 
   "h.plan.eyebrow": "Reserva un tardeo",

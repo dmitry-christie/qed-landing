@@ -1,4 +1,4 @@
-/* Spanish — Corporate page. English is baked into corporate/index.html. */
+/* Spanish: Corporate page. English is baked into corporate/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.title": "Tardeo de Trivia para Empresas · Team building que de verdad se disfruta",
   "c.metadesc": "Un tardeo de trivia de verdad divertido para tu equipo. Offsites, eventos con clientes y jornadas de equipo en Valencia, Madrid, Murcia y Santiago de Compostela.",

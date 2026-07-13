@@ -1,4 +1,4 @@
-/* Spanish — Venues page. English is baked into venues/index.html. */
+/* Spanish: Venues page. English is baked into venues/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.title": "Tardeo de Trivia para Locales · Llena tu local cada semana con trivia",
   "v.metadesc": "Nosotros ponemos la trivia. Tú pones las bebidas. Un tardeo de trivia semanal que llena tu local, 0% de comisión sobre barra y comida, con términos flexibles.",

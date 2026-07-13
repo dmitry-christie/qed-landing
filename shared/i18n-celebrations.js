@@ -1,4 +1,4 @@
-/* Spanish — Celebrations page. English is baked into celebrations/index.html. */
+/* Spanish: Celebrations page. English is baked into celebrations/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.title": "Tardeo de Trivia para Celebraciones · El juego de fiesta que se lleva el show",
   "cel.metadesc": "Un tardeo de trivia escrito sobre el homenajeado. Cumpleaños, despedidas, bodas y aniversarios presenciales en Valencia, Madrid, Murcia y Santiago de Compostela.",
@@ -84,7 +84,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.cust.themes.d": "Marca el tono antes de escribir la primera pregunta.",
   "cel.cust.themes.tag1": "Educativo",
   "cel.cust.themes.tag2": "Fiesta",
-  "cel.cust.themes.tag3": "Estilo corporativo",
+  "cel.cust.themes.tag3": "Cachondeo",
   "cel.cust.themes.tag4": "Puro humor",
   "cel.cust.rounds.t": "Más que preguntas tipo test",
   "cel.cust.rounds.d": "Combina las modalidades de ronda que mejor encajen con tu gente.",

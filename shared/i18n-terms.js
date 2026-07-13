@@ -1,4 +1,4 @@
-/* Spanish — Terms & Legal Notice page. English is baked into terms/index.html. */
+/* Spanish: Terms & Legal Notice page. English is baked into terms/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "tm.title": "Términos y Aviso Legal · Tardeo de Trivia",
   "tm.metadesc": "Las condiciones de uso y el aviso legal de este sitio web de Tardeo de Trivia.",
@@ -13,7 +13,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "tm.who.contact": "Contacto: ",
 
   "tm.object.h": "Objeto",
-  "tm.object.p": "Este sitio presenta nuestros servicios de tardeos de trivia — eventos de empresa, celebraciones, colaboración con locales anfitriones y franquicia — y te permite consultarlos a través de nuestros formularios. Es informativo: la reserva de un servicio se confirma aparte por email, y cada evento queda sujeto a un acuerdo específico.",
+  "tm.object.p": "Este sitio presenta nuestros servicios de tardeos de trivia (eventos de empresa, celebraciones, colaboración con locales anfitriones y franquicia) y te permite consultarlos a través de nuestros formularios. Es informativo: la reserva de un servicio se confirma aparte por email, y cada evento queda sujeto a un acuerdo específico.",
 
   "tm.use.h": "Condiciones de uso",
   "tm.use.p": "Te comprometes a usar el sitio de forma lícita y a no enviar información falsa, datos de terceros sin su permiso ni solicitudes automatizadas o abusivas a través de nuestros formularios. Podemos retirar el acceso a quien haga un uso indebido del sitio.",

@@ -1,4 +1,4 @@
-/* Spanish — Partners (franchise) page. English is baked into partners/index.html. */
+/* Spanish: Partners (franchise) page. English is baked into partners/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.title": "Franquicia Tardeo de Trivia · Monta tardeos de trivia. Crea un negocio de verdad.",
   "p.metadesc": "Abre tu franquicia de Tardeo de Trivia. Nuestra plataforma, contenido y marca. Tus locales y tu carácter. Una sala que paga cada semana, con onboarding, formación y soporte con SLA.",
@@ -103,7 +103,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.form.cityq": "Ciudad / zona",
   "p.ph.cityq": "¿Dónde montarías los tardeos?",
   "p.form.venueSituation": "Situación de los locales",
-  "p.form.vsph": "— elige una —",
+  "p.form.vsph": "Elige una…",
   "p.form.vs1": "Ya tengo relación con locales",
   "p.form.vs2": "Tengo contactos, pero aún no cerrados",
   "p.form.vs3": "Necesitaría ayuda para encontrar locales",

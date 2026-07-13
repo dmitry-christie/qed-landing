@@ -316,7 +316,8 @@
       }
 
       var btn = form.querySelector("[type=submit]");
-      var btnKids = btn ? [].slice.call(btn.childNodes) : null;
+      var btnLabel = btn ? btn.querySelector("[data-i18n]") : null;
+      var btnLabelText = btnLabel ? btnLabel.textContent : null;
       if (errEl) errEl.style.display = "none";
 
       // Forms are novalidate — this handler is the only submit-time gate. Enforce required
@@ -340,7 +341,13 @@
 
       var data = collect(form, action, 2, uuid());
 
-      if (btn) { btn.disabled = true; btn.textContent = "…"; }
+      if (btn) {
+        btn.disabled = true;
+        if (btnLabel) {
+          var lang = window.QEDi18n ? window.QEDi18n.current() : "EN";
+          btnLabel.textContent = (lang === "ES" && window.QED_ES["form.sending"] != null) ? window.QED_ES["form.sending"] : "Sending…";
+        }
+      }
 
       fetch(action, {
         method: "POST",
@@ -363,8 +370,7 @@
       }).catch(function (err) {
         if (btn) {
           btn.disabled = false;
-          btn.textContent = "";
-          (btnKids || []).forEach(function (n) { btn.appendChild(n); });
+          if (btnLabel) btnLabel.textContent = btnLabelText;
         }
         showError(err && err.message ? err.message : "Something went wrong. Please email info@quizeatdrink.com.");
       });
