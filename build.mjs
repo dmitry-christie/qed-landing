@@ -114,6 +114,23 @@ const rudderDataPlaneUrl = process.env.RUDDERSTACK_DATA_PLANE_URL;
 const rudderCdnUrl = process.env.RUDDERSTACK_CDN_URL;
 const rudderReady = Boolean(rudderWriteKey && rudderDataPlaneUrl && rudderCdnUrl);
 
+/* ---- robots.txt + sitemap.xml (runs on every build, branded or not) ----
+   Both are root-level static files, so — like config.js — they're fully regenerated here
+   rather than marker-patched. A branded build gets a real sitemap and full crawl access; an
+   unbranded build (local/preview, *.netlify.app) blocks crawling outright, same spirit as
+   consent.js never firing analytics off the two production domains — a preview should never
+   get indexed under the wrong URL. */
+if (brand) {
+  const domain = DOMAINS[brand];
+  writeFileSync("robots.txt", `User-agent: *\nAllow: /\n\nSitemap: https://${domain}/sitemap.xml\n`);
+  const urls = PAGES.map((page) => `  <url><loc>https://${domain}/${page}</loc></url>`).join("\n");
+  writeFileSync("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+  console.log(`[qed build] wrote robots.txt + sitemap.xml for ${domain}`);
+} else {
+  writeFileSync("robots.txt", "User-agent: *\nDisallow: /\n");
+  writeFileSync("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>\n');
+}
+
 /* ---- shared "About us" injection (runs on every build, branded or not) ----
    The About section is identical on every page, so it lives in one partial
    (shared/about.partial.html) and is stamped into each page's <!-- build:about -->

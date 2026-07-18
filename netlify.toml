@@ -6,6 +6,17 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# publish = "." means the whole repo root is served as static files — that includes internal
+# docs committed here (CLAUDE.md, PAID-ADS-PLAN.md, PRODUCT.md: media plan, budgets, CRM
+# internals). force = true is required because these are real files on disk, which Netlify
+# would otherwise serve directly ahead of any redirect rule. Serves the homepage body but
+# with a 404 status, so the content itself is never returned — no dedicated 404 page needed.
+[[redirects]]
+  from = "/*.md"
+  to = "/"
+  status = 404
+  force = true
+
 # Shared assets (css/js/images/fonts) live under /shared/. They aren't content-hashed,
 # so keep max-age conservative (1 day) — long enough to help retargeted/multi-session
 # repeat visitors and Lighthouse's "efficient cache policy" audit (a Google Ads landing-
