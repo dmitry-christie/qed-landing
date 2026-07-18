@@ -1,6 +1,6 @@
 // Corporate + Celebrations lead form. Forwards to Telegram + RudderStack + Brevo.
 import type { Handler } from "@netlify/functions";
-import { clean, displayPhone, isEmail, json, MAX_BODY, metaLine, sendTelegram, sendToBrevo, sendToRudderstack } from "../lib/forms";
+import { clean, displayPhone, isEmail, isTooFast, json, MAX_BODY, metaLine, sendTelegram, sendToBrevo, sendToRudderstack } from "../lib/forms";
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { ok: false, error: "Method not allowed" });
@@ -17,6 +17,9 @@ export const handler: Handler = async (event) => {
   if (body._honey) return json(200, { ok: true });
 
   const d = clean(body);
+  // Bots that render JS/CSS can spot and skip the hidden honeypot field — this catches
+  // them by dwell time instead. Same pretend-success response, so bots don't retry.
+  if (isTooFast(d)) return json(200, { ok: true });
   d._ua = event.headers["user-agent"] || "";
   d._ip = event.headers["x-nf-client-connection-ip"] || "";
 

@@ -24,6 +24,20 @@ export function isEmail(s: string): boolean {
   return /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,24}$/.test(s);
 }
 
+// Complements the hidden _honey field (shared/qed.js): a bot that renders the page and CSS
+// (headless Chrome, not a dumb HTTP client) can inspect computed styles and skip a hidden
+// input entirely, walking straight past the honeypot. It's far less likely to also emulate
+// a human-plausible dwell time. qed.js stamps _t = Date.now() when the script starts, so a
+// submission claiming to have taken under MIN_FILL_MS to fill a multi-field form is almost
+// certainly automated. Only fires on a definite, non-negative gap — a missing _t (cached
+// pre-this-change JS) or a negative one (client/server clock skew) fails open rather than
+// blocking a real visitor.
+const MIN_FILL_MS = 1500;
+export function isTooFast(d: Dict): boolean {
+  const elapsed = Date.now() - Number(d._t || NaN);
+  return Number.isFinite(elapsed) && elapsed >= 0 && elapsed < MIN_FILL_MS;
+}
+
 // Flatten + sanitize the parsed JSON body into a string dict.
 export function clean(body: Record<string, unknown>): Dict {
   const out: Dict = {};
@@ -66,28 +80,50 @@ export function displayPhone(d: Dict): string {
   return d.phoneDial ? `+${d.phoneDial} ${d.phone}` : d.phone;
 }
 
+const TELEGRAM_TIMEOUT_MS = 4000;
+const TELEGRAM_MAX_ATTEMPTS = 3;
+const TELEGRAM_RETRY_DELAY_MS = 500;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function sendTelegramOnce(token: string, chatId: string, text: string): Promise<boolean> {
+  const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text }),
+    signal: AbortSignal.timeout(TELEGRAM_TIMEOUT_MS),
+  });
+  if (!res.ok) console.error("Telegram sendMessage failed:", res.status, await res.text());
+  return res.ok;
+}
+
 // POST a plain-text message to the Telegram group. No parse_mode (plain text).
 // Telegram rejects messages over 4096 chars, so truncate rather than drop the lead.
+// Retries a couple of times (transient network blips / Telegram hiccups) before giving
+// up. On final failure, logs the full message under a distinct "LOST LEAD" marker —
+// this is the only durable copy of the alert at that point, so it needs to be grep/
+// alertable from Netlify function logs rather than silently swallowed.
 export async function sendTelegram(text: string): Promise<boolean> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) {
     console.error("Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env vars.");
+    console.error("LOST LEAD (Telegram not configured):", text);
     return false;
   }
   if (text.length > 4000) text = text.slice(0, 4000) + "…";
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text }),
-    });
-    if (!res.ok) console.error("Telegram sendMessage failed:", res.status, await res.text());
-    return res.ok;
-  } catch (err) {
-    console.error("Telegram sendMessage threw:", err);
-    return false;
+
+  for (let attempt = 1; attempt <= TELEGRAM_MAX_ATTEMPTS; attempt++) {
+    try {
+      if (await sendTelegramOnce(token, chatId, text)) return true;
+    } catch (err) {
+      console.error(`Telegram sendMessage threw (attempt ${attempt}/${TELEGRAM_MAX_ATTEMPTS}):`, err);
+    }
+    if (attempt < TELEGRAM_MAX_ATTEMPTS) await sleep(TELEGRAM_RETRY_DELAY_MS * attempt);
   }
+
+  console.error("LOST LEAD (Telegram failed after retries):", text);
+  return false;
 }
 
 const sha256 = (s: string) => createHash("sha256").update(s.trim().toLowerCase()).digest("hex");
@@ -182,6 +218,78 @@ async function createBrevoDeal(apiKey: string, d: Dict, page: string, notes: str
   }
 }
 
+// Brevo validates a contact upsert as one atomic payload — if a single custom attribute's
+// value doesn't match how it's configured in the Brevo dashboard, the whole request 400s
+// and NOTHING is saved, not just that field. This bit LEAD_CITY specifically: Brevo's
+// built-in CITY is a "Category" enum (madrid/valencia/murcia/santiago/barcelona), not free
+// text — every submission sending a real typed city (e.g. "Santiago de Compostela") 400ed
+// the whole contact. LEAD_CITY is this integration's own attribute (must be created as
+// "Text" in Brevo, see the setup note above), so it can't collide with a built-in's type.
+// This retry is now a generic safety net for any OTHER attribute drifting out of sync with
+// its Brevo type: if Brevo's error names one of our attribute keys, drop it and retry once
+// so the contact still lands — better than silently losing the entire lead over one
+// misconfigured field. Whatever's dropped still survives in NOTES, since the alert text
+// always includes every field the form collected.
+async function upsertBrevoContact(
+  headers: Record<string, string>,
+  email: string,
+  attributes: Record<string, string>,
+  listId: number | undefined,
+): Promise<number | undefined> {
+  try {
+    const res = await fetch("https://api.brevo.com/v3/contacts", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        email,
+        attributes,
+        ...(listId ? { listIds: [listId] } : {}),
+        updateEnabled: true, // resubmitting the same email (e.g. a fixed typo) updates, doesn't 400
+      }),
+      signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
+    });
+    if (res.status === 201) {
+      return (await res.json().catch(() => null))?.id;
+    }
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("Brevo contact upsert failed:", res.status, errText);
+      const badAttr = Object.keys(attributes).find((k) => new RegExp(k, "i").test(errText));
+      if (badAttr) {
+        console.error(`Retrying Brevo contact upsert without ${badAttr} (attribute type mismatch in Brevo dashboard — fix its type there).`);
+        const rest = { ...attributes };
+        delete rest[badAttr];
+        return upsertBrevoContact(headers, email, rest, listId);
+      }
+    }
+  } catch (err) {
+    console.error("Brevo contact upsert threw:", err);
+  }
+  return undefined;
+}
+
+// Deals aren't deduplicated by Brevo, and paid traffic draws bots that render JS/CSS well
+// enough to dodge the honeypot and timing check some of the time — a burst of retries (bot
+// or human double-click/back-button) would otherwise create a fresh deal on every hit.
+// Stashed on the contact itself as "<page>:<epoch ms>" rather than queried from Brevo's
+// deals search API, since Contacts is the one endpoint this integration already depends on
+// and knows works. Needs a LAST_DEAL Text attribute in Brevo (see setup note above) — until
+// then this attribute is just dropped same as any other misconfigured one, and dedupe no-ops.
+const DEAL_DEDUPE_WINDOW_MS = 30 * 60 * 1000;
+
+async function getBrevoContact(headers: Record<string, string>, email: string): Promise<{ id?: number; attributes?: Record<string, unknown> } | undefined> {
+  try {
+    const res = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
+      headers,
+      signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
+    });
+    if (res.ok) return await res.json().catch(() => undefined);
+  } catch (err) {
+    console.error("Brevo contact lookup threw:", err);
+  }
+  return undefined;
+}
+
 export async function sendToBrevo(d: Dict, page: string, notes: string): Promise<void> {
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
@@ -190,6 +298,12 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
   }
   if (!d.email) return;
 
+  const headers = { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey };
+  const existing = await getBrevoContact(headers, d.email);
+  const lastDeal = typeof existing?.attributes?.LAST_DEAL === "string" ? existing.attributes.LAST_DEAL : "";
+  const [lastDealPage, lastDealTs] = [lastDeal.slice(0, lastDeal.lastIndexOf(":")), Number(lastDeal.slice(lastDeal.lastIndexOf(":") + 1))];
+  const dupeDeal = lastDealPage === page && Number.isFinite(lastDealTs) && Date.now() - lastDealTs < DEAL_DEDUPE_WINDOW_MS;
+
   const attributes: Record<string, string> = { LEAD_SOURCE: page };
   if (d.firstName) attributes.FIRSTNAME = d.firstName;
   if (d.lastName) attributes.LASTNAME = d.lastName;
@@ -197,52 +311,24 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
     const digits = d.phone.replace(/\D/g, "");
     if (digits) attributes.SMS = `+${d.phoneDial && /^\d{1,4}$/.test(d.phoneDial) ? d.phoneDial : digits.length === 9 ? "34" : ""}${digits}`;
   }
-  if (d.city) attributes.CITY = d.city;
+  if (d.city) attributes.LEAD_CITY = d.city;
   if (d.lang) attributes.LANG = d.lang.toUpperCase();
   if (d._utm_source) attributes.UTM_SOURCE = d._utm_source;
   if (d._utm_campaign) attributes.UTM_CAMPAIGN = d._utm_campaign;
   attributes.NOTES = notes.slice(0, 1800);
+  // Only bump LAST_DEAL when a deal is actually about to be created — leaving it untouched
+  // on a skipped duplicate means the dedupe window counts from the real deal, not extended
+  // indefinitely by repeat hits.
+  if (!dupeDeal) attributes.LAST_DEAL = `${page}:${Date.now()}`;
 
   const listId = brevoListId(page);
-  const headers = { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey };
+  const upsertedId = await upsertBrevoContact(headers, d.email, attributes, listId);
+  const contactId = existing?.id ?? upsertedId;
 
-  // Brevo returns the new contact's id on create (201) but no body on update-existing
-  // (204) — grab it from the create response when we can, otherwise look it up by email,
-  // so the deal below can always link back to the contact.
-  let contactId: number | undefined;
-  try {
-    const res = await fetch("https://api.brevo.com/v3/contacts", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        email: d.email,
-        attributes,
-        ...(listId ? { listIds: [listId] } : {}),
-        updateEnabled: true, // resubmitting the same email (e.g. a fixed typo) updates, doesn't 400
-      }),
-      signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
-    });
-    if (res.status === 201) {
-      contactId = (await res.json().catch(() => null))?.id;
-    } else if (!res.ok) {
-      console.error("Brevo contact upsert failed:", res.status, await res.text());
-    }
-  } catch (err) {
-    console.error("Brevo contact upsert threw:", err);
+  if (dupeDeal) {
+    console.error("Skipping duplicate Brevo deal:", page, d.email);
+    return;
   }
-
-  if (contactId === undefined) {
-    try {
-      const res = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(d.email)}`, {
-        headers,
-        signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
-      });
-      if (res.ok) contactId = (await res.json().catch(() => null))?.id;
-    } catch (err) {
-      console.error("Brevo contact lookup threw:", err);
-    }
-  }
-
   await createBrevoDeal(apiKey, d, page, notes, contactId);
 }
 
@@ -281,7 +367,7 @@ const PRODUCT_BY_PAGE: Record<string, string> = {
 const PROPERTY_OMIT = new Set([
   "email", "phone", "firstName", "lastName",
   "page", "form", "lang", "country", "title", "referrer", "path",
-  "_ua", "_ip", "_event_id", "_url", "_consent", "_consentCategories", "_fbc", "_honey", "_step",
+  "_ua", "_ip", "_event_id", "_url", "_consent", "_consentCategories", "_fbc", "_honey", "_step", "_t",
   // attribution + identity — promoted to clean-named properties / context below, so keep
   // the raw underscore-prefixed versions out of the catch-all (no duplicates).
   "_utm_source", "_utm_medium", "_utm_campaign", "_utm_term", "_utm_content",
@@ -407,7 +493,12 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
 
   const payload = {
     event,
-    anonymousId: d._event_id || `${page}-${Date.now()}`,
+    // A durable per-visitor id (shared/qed.js's externalId(), stable across sessions in
+    // localStorage), not the per-submission _event_id — anonymousId is what RudderStack
+    // uses to stitch events into one visitor timeline, so a fresh id per event (the old
+    // fallback) meant step 1 and step 2 of the same visit, or a repeat visit, could never
+    // be linked together. _event_id still does its own job as messageId (per-event dedupe).
+    anonymousId: d._eid || d._event_id || `${page}-${Date.now()}`,
     ...(d._event_id ? { messageId: d._event_id } : {}),
     properties,
     context,

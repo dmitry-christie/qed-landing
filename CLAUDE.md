@@ -111,19 +111,27 @@ Env vars (set on both Netlify sites, since both brands' leads go to the same Bre
 `BREVO_LIST_ID_<PAGE>` (e.g. `BREVO_LIST_ID_PARTNERS`) to route a funnel to its own list.
 
 Brevo rejects unknown custom attributes, so these must exist in Brevo first (Contacts >
-Settings > Contact attributes, type "Text"): `CITY`, `LANG`, `LEAD_SOURCE`, `UTM_SOURCE`,
-`UTM_CAMPAIGN`, `NOTES`. (`FIRSTNAME`/`LASTNAME`/`SMS` are built in.) Until that setup is done,
+Settings > Contact attributes, type "Text"): `LEAD_CITY`, `LANG`, `LEAD_SOURCE`, `UTM_SOURCE`,
+`UTM_CAMPAIGN`, `NOTES`, `LAST_DEAL`. (`FIRSTNAME`/`LASTNAME`/`SMS` are built in.) Until that setup is done,
 contacts silently fail to save — check Netlify function logs, not just the form's success state.
+City is sent as `LEAD_CITY`, not Brevo's built-in `CITY` — that one is a "Category" enum
+(madrid/valencia/murcia/santiago/barcelona) in this account, and the free text this site
+collects (e.g. "Santiago de Compostela") 400ed the whole contact against it. Brevo validates
+the whole contact payload atomically, so any wrong attribute type (not just a missing one)
+fails the entire upsert — `upsertBrevoContact` retries once without whichever attribute
+Brevo's error names, so one misconfigured field doesn't lose the whole lead, but its type in
+Brevo still needs fixing to actually store that data.
 
 Each lead also creates a Brevo **deal** (`createBrevoDeal`), in this account's one pipeline
 ("Deals Pipeline", `BREVO_PIPELINE_ID`) and its first stage ("New", `BREVO_STAGE_NEW_ID`) —
 both hardcoded ids specific to this Brevo account (update them if the pipeline is ever
-rebuilt). The deal is linked to the contact by id: Brevo returns the id on contact-create
-(201) but not on contact-update (204), so `sendToBrevo` falls back to a GET-by-email lookup
-when it updated an existing contact. No monetary `amount` is set (the `LEAD_VALUE` map above
-is a relative ad-bidding weight, not a real deal size) — founders fill that in once a lead is
-qualified. Deals aren't deduplicated: a resubmission creates a second deal (contacts do
-dedupe, via `updateEnabled`).
+rebuilt). `sendToBrevo` GETs the contact by email up front (both to link the deal by id — Brevo
+returns the id on contact-create (201) but not on contact-update (204) — and to dedupe
+deals: a resubmission of the same funnel within `DEAL_DEDUPE_WINDOW_MS` (30 min, absorbs bot
+retries and double-clicks) is skipped, tracked via the contact's `LAST_DEAL` attribute
+(`"<page>:<epoch ms>"`, only bumped when a deal is actually created). No monetary `amount` is
+set (the `LEAD_VALUE` map above is a relative ad-bidding weight, not a real deal size) —
+founders fill that in once a lead is qualified.
 
 ## Caching gotcha
 
