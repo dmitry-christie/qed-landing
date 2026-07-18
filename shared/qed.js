@@ -4,6 +4,13 @@
 (function () {
   "use strict";
 
+  // Timestamp this script started running — sent back as _t on submit so the server can
+  // spot submissions that arrive faster than a human could plausibly fill the form (see
+  // forms.ts MIN_FILL_MS). Complements the _honey field: a bot sophisticated enough to
+  // render the page and skip the hidden honeypot input still has to either wait out this
+  // clock or submit inhumanly fast.
+  var PAGE_LOAD_TS = Date.now();
+
   /* footer year */
   var y = String(new Date().getFullYear());
   document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = y; });
@@ -137,12 +144,18 @@
       var existing = null;
       try { existing = JSON.parse(localStorage.getItem(ATTR_KEY) || "null"); } catch (e) {}
       var fresh = existing && existing.ts && (Date.now() - existing.ts < ATTR_TTL);
-      if (Object.keys(found).length && !fresh) {
+      if (Object.keys(found).length) {
+        // A click param on the URL always overwrites, regardless of how fresh the stored
+        // record is — last non-direct touch wins. Without this, a visitor who browsed
+        // organically (or clicked a different ad) within the last 30 days would have this
+        // new ad click silently swallowed and convert as "direct".
         found.ts = Date.now();
         found.ref = refHost();
         localStorage.setItem(ATTR_KEY, JSON.stringify(found));
-      } else if (!existing) {
-        // No click params and no record yet — seed an organic/direct first touch.
+      } else if (!fresh) {
+        // No click params on this visit: only (re-)seed an organic/direct touch once the
+        // existing record (organic or ad-click) has aged past the 30-day window — keeps
+        // "first touch wins" for organic visits without clobbering a still-valid ad click.
         localStorage.setItem(ATTR_KEY, JSON.stringify({ ts: Date.now(), ref: refHost() }));
       }
     } catch (e) {}
@@ -204,6 +217,7 @@
     ATTR_FIELDS.forEach(function (k) { if (attr[k]) data["_" + k] = attr[k]; });
     if (attr.ref) data._ref = attr.ref;
     data._eid = externalId();
+    data._t = String(PAGE_LOAD_TS);
     return data;
   }
 

@@ -176,13 +176,16 @@ window.QED_ES = window.QED_ES || {};
     injectDevbar();
     injectSwitcher();
     apply(currentLang());
+    // Lifts the i18n-veil (see qed.css) set synchronously in <head> on brand builds with a
+    // forced language (TDT) — now that the swap is done, it's safe to paint.
+    document.documentElement.classList.remove("i18n-veil");
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
+  // This script tag sits after all data-i18n content in the page, so by the time it runs
+  // every translatable element already exists — no need to wait for DOMContentLoaded, which
+  // would also block on any scripts still to come after this one (e.g. consent.js) and widen
+  // the veiled/flash window on slow connections.
+  init();
 
   window.QEDi18n = { apply: apply, current: currentLang };
 })();
