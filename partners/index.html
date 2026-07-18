@@ -25,21 +25,12 @@
      .btn--soft / .stamp / ledger header to green in one move (verified >=4.5:1 contrast
      both as a button fill with dark text and as text on the dark hero). */
   body{ --yellow:#89AF96; --yellow-soft:#DCEDDF; }
-  /* Real venue photo blended into the dark hero bg under gradients.
-     Mobile drops the photo layer (flat dark fill) so the image never loads on the LCP
-     path for paid mobile clicks; the gradients keep the look. Image loads from 700px up. */
+  /* Real venue photo blended into the dark hero bg under gradients. */
   .hero--dark{ background:
       radial-gradient(800px 420px at 82% 0%, rgba(137,175,150,.30), transparent 60%),
       radial-gradient(620px 380px at 0% 100%, rgba(232,99,26,.14), transparent 55%),
       linear-gradient(rgba(31,26,20,.86),rgba(31,26,20,.86)),
-      #1f1a14; color:#fff; }
-  @media (min-width:700px){
-    .hero--dark{ background:
-      radial-gradient(800px 420px at 82% 0%, rgba(137,175,150,.30), transparent 60%),
-      radial-gradient(620px 380px at 0% 100%, rgba(232,99,26,.14), transparent 55%),
-      linear-gradient(rgba(31,26,20,.86),rgba(31,26,20,.86)),
-      url('/shared/header-bg.jpg') center 40%/cover; }
-  }
+      url('/shared/header-bg.jpg') center 40%/cover; color:#fff; }
   .hero--dark .lead{ color:rgba(255,255,255,.74); }
   .btn--onDark{ background:transparent; color:#fff; border-color:#fff; box-shadow:4px 4px 0 0 rgba(137,175,150,.9); }
   .btn--onDark:hover{ background:rgba(255,255,255,.08); }

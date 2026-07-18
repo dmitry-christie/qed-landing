@@ -238,14 +238,8 @@ a.lift{ text-decoration:none; color:inherit; display:block; }
 }
 
 /* ---------- hero ---------- */
-/* Real venue photo (a packed trivia night) blended into the hero bg under a cream wash.
-   Mobile ships a flat cream fill (no image request at all) — the photo sits under an
-   0.88 overlay anyway, and skipping the image on the LCP path is the biggest win for
-   paid mobile clicks. The image loads only from 700px up (desktop). */
-.hero{ padding:clamp(44px,7vw,92px) 0 clamp(40px,5vw,68px); position:relative; overflow:hidden; background:#FBF6EA; }
-@media (min-width:700px){
-  .hero{ background:linear-gradient(rgba(251,246,234,.88),rgba(251,246,234,.88)),url('/shared/header-bg.jpg') center 40%/cover; }
-}
+/* Real venue photo (a packed trivia night) blended into the hero bg under a cream wash. */
+.hero{ padding:clamp(44px,7vw,92px) 0 clamp(40px,5vw,68px); position:relative; overflow:hidden; background:linear-gradient(rgba(251,246,234,.88),rgba(251,246,234,.88)),url('/shared/header-bg.jpg') center 40%/cover; }
 .hero__glow{ position:absolute; inset:0; pointer-events:none; z-index:0; }
 
 /* ---------- forms ---------- */
