@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="/shared/qed.css">
 <script>window.QED_SITE = "venues";</script>
 <script src="/config.js"></script>
+<script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
 </head>
 <body>
 <!-- build:analytics-body -->
@@ -39,6 +40,7 @@
       <a href="#plans" data-i18n="v.nav.plans">Plans</a>
       <a href="#calc" data-i18n="v.nav.numbers">Why it works</a>
       <a href="#get" data-i18n="v.nav.get">What you get</a>
+      <a href="#faq" data-i18n="v.nav.faq">FAQ</a>
       <a class="btn btn--sm btn--cta" href="#start" data-i18n="v.cta.start">Get started</a>
     </nav>
   </div>
@@ -237,6 +239,30 @@
     </div>
   </section>
 
+  <!-- ============ FAQ ============ -->
+  <section id="faq" class="section">
+    <div class="wrap wrap--narrow">
+      <div class="reveal">
+        <span class="eyebrow" data-i18n="v.faq.eyebrow">Questions</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="v.faq.h2">The stuff venue owners ask.</h2>
+      </div>
+      <div class="faq reveal" style="margin-top:26px">
+        <details open>
+          <summary><span data-i18n="v.faq.q1">How often do we need to run it?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="v.faq.a1">One quiz night a week fills a venue best, but it's flexible. Less often works too, whatever fits your calendar.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="v.faq.q2">Will the questions get repetitive for regulars?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="v.faq.a2">No. We ship a new question pack every week, so your regulars never get the same trivia twice.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="v.faq.q3">Who handles promoting the night to fill the room?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="v.faq.a3">We can run Instagram ads on your behalf, it's something we're genuinely good at. It's optional though: if you already know how to advertise events or have your own channels, feel free to run promotion yourself.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ START FORM ============ -->
   <section id="start" class="section section--tight">
     <div class="wrap">
@@ -396,9 +422,9 @@
   </div>
 </footer>
 
-<script src="/shared/i18n.js"></script>
 <script src="/shared/i18n-common.js"></script>
 <script src="/shared/i18n-venues.js"></script>
+<script src="/shared/i18n.js"></script>
 <script src="/shared/consent.js"></script>
 <script src="/shared/brevo.js"></script>
 <script src="/shared/phone-countries.js"></script>

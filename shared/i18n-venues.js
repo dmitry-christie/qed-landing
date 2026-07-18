@@ -8,6 +8,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.nav.plans": "Planes",
   "v.nav.numbers": "Por qué funciona",
   "v.nav.get": "Qué te llevas",
+  "v.nav.faq": "FAQ",
   "v.cta.start": "Empieza ya",
   "v.cta.numbers": "Mira por qué funciona",
   "v.cta.expstart": "Empieza con Express",
@@ -77,6 +78,15 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.get.f4t": "Panel de analíticas",
   "v.get.f4d": "Mira asistencia y tendencias tardeo a tardeo, para saber exactamente qué funciona.",
   "v.get.commission": "Sin comisión sobre barra o comida. Términos de contrato flexibles.",
+
+  "v.faq.eyebrow": "Preguntas",
+  "v.faq.h2": "Lo que preguntan los dueños de locales.",
+  "v.faq.q1": "¿Con qué frecuencia hay que montarlo?",
+  "v.faq.a1": "Un tardeo a la semana es lo que mejor llena un local, pero es flexible. También funciona con menos frecuencia, lo que mejor encaje en tu calendario.",
+  "v.faq.q2": "¿Se repiten las preguntas para los habituales?",
+  "v.faq.a2": "No. Sacamos un pack de preguntas nuevo cada semana, así que tus habituales nunca repiten trivia.",
+  "v.faq.q3": "¿Quién se encarga de promocionar el tardeo para llenar la sala?",
+  "v.faq.a3": "Podemos gestionar anuncios en Instagram por ti, es algo que se nos da muy bien. Aunque es opcional: si ya sabes promocionar eventos o tienes tus propios canales, puedes encargarte tú mismo.",
 
   "v.form.h2": "Vamos a llenar tu sala.",
   "v.form.sub": "Cuéntanos sobre tu local. Te organizamos tu primer tardeo y hablamos de unos términos que te encajen.",
