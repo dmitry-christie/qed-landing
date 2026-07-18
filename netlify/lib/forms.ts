@@ -104,6 +104,65 @@ function normalizePhone(phone: string, dial?: string): string {
   return digits.length === 9 ? `34${digits}` : digits;
 }
 
+// Push the lead into Brevo (our CRM, starter plan) as a real contact record — Telegram
+// is a transient ping the founders can miss/scroll past, RudderStack only feeds ad
+// platforms, so Brevo is currently the only durable, searchable place a lead lives.
+// Env: BREVO_API_KEY (required) + BREVO_LIST_ID (default list) and/or
+// BREVO_LIST_ID_<PAGE> (e.g. BREVO_LIST_ID_PARTNERS) to route funnels to separate lists.
+// Only called on the full (step 2) submission — a step-1 partial abandon isn't a
+// qualified lead yet; RudderStack already covers that audience for retargeting.
+//
+// NOTE: Brevo rejects unknown custom attributes, so before this goes live create these
+// contact attributes in Brevo (Contacts > Settings > Contact attributes, type "Text"):
+// CITY, LANG, LEAD_SOURCE, UTM_SOURCE, UTM_CAMPAIGN, NOTES. FIRSTNAME/LASTNAME/SMS are
+// built in. A missing list/attribute makes this fail silently (logged, non-blocking) —
+// check Netlify function logs after setup to confirm it's actually landing contacts.
+function brevoListId(page: string): number | undefined {
+  const perPage = process.env[`BREVO_LIST_ID_${page.toUpperCase()}`];
+  const id = Number(perPage || process.env.BREVO_LIST_ID);
+  return Number.isFinite(id) && id > 0 ? id : undefined;
+}
+
+export async function sendToBrevo(d: Dict, page: string, notes: string): Promise<void> {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
+    console.error("Missing BREVO_API_KEY env var.");
+    return;
+  }
+  if (!d.email) return;
+
+  const attributes: Record<string, string> = { LEAD_SOURCE: page };
+  if (d.firstName) attributes.FIRSTNAME = d.firstName;
+  if (d.lastName) attributes.LASTNAME = d.lastName;
+  if (d.phone) {
+    const digits = d.phone.replace(/\D/g, "");
+    if (digits) attributes.SMS = `+${d.phoneDial && /^\d{1,4}$/.test(d.phoneDial) ? d.phoneDial : digits.length === 9 ? "34" : ""}${digits}`;
+  }
+  if (d.city) attributes.CITY = d.city;
+  if (d.lang) attributes.LANG = d.lang.toUpperCase();
+  if (d._utm_source) attributes.UTM_SOURCE = d._utm_source;
+  if (d._utm_campaign) attributes.UTM_CAMPAIGN = d._utm_campaign;
+  attributes.NOTES = notes.slice(0, 1800);
+
+  const listId = brevoListId(page);
+
+  try {
+    const res = await fetch("https://api.brevo.com/v3/contacts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey },
+      body: JSON.stringify({
+        email: d.email,
+        attributes,
+        ...(listId ? { listIds: [listId] } : {}),
+        updateEnabled: true, // resubmitting the same email (e.g. a fixed typo) updates, doesn't 400
+      }),
+    });
+    if (!res.ok) console.error("Brevo contact upsert failed:", res.status, await res.text());
+  } catch (err) {
+    console.error("Brevo contact upsert threw:", err);
+  }
+}
+
 // Same write key + data plane as shared/consent.js — these are public client-side
 // values (like a GA measurement id), not secrets, so both sides hardcode them rather
 // than depend on Netlify env vars (RUDDERSTACK_WRITE_KEY/_QA/RUDDERSTACK_DATA_PLANE_URL

@@ -1,6 +1,6 @@
-// Corporate + Celebrations lead form. Forwards to Telegram + RudderStack.
+// Corporate + Celebrations lead form. Forwards to Telegram + RudderStack + Brevo.
 import type { Handler } from "@netlify/functions";
-import { clean, displayPhone, isEmail, json, MAX_BODY, metaLine, sendTelegram, sendToRudderstack } from "../lib/forms";
+import { clean, displayPhone, isEmail, json, MAX_BODY, metaLine, sendTelegram, sendToBrevo, sendToRudderstack } from "../lib/forms";
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { ok: false, error: "Method not allowed" });
@@ -51,10 +51,12 @@ export const handler: Handler = async (event) => {
     d.message || "—",
     metaLine(d, page),
   );
+  const text = lines.join("\n");
 
   const [telegramResult] = await Promise.allSettled([
-    sendTelegram(lines.join("\n")),
+    sendTelegram(text),
     sendToRudderstack("Form Submitted", d, page),
+    sendToBrevo(d, page, text),
   ]);
   const sent = telegramResult.status === "fulfilled" && telegramResult.value;
   if (!sent) return json(500, { ok: false, error: "Could not send right now. Please email info@quizeatdrink.com." });

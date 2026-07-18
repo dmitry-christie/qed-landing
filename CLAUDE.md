@@ -99,6 +99,22 @@ Analytics consent, and never on `*.netlify.app` previews. The page view (`rudder
 carries `page_type: "landing"`, `section` (`window.QED_SITE`; hub = `"home"`), and `language`.
 Forms fire `Form Submitted` at step 1 and step 2.
 
+## CRM (Brevo)
+
+The three lead functions (`book-event`, `venue-apply`, `franchise-apply`) upsert the lead
+into Brevo as a contact via `sendToBrevo` (`netlify/lib/forms.ts`), alongside Telegram and
+RudderStack. Only fires on the full (step 2) submission, not the step-1 partial. Failures are
+logged and non-blocking, same as RudderStack — a Brevo outage never breaks the form.
+
+Env vars (set on both Netlify sites, since both brands' leads go to the same Brevo account):
+`BREVO_API_KEY` (required), `BREVO_LIST_ID` (default numeric list id) and/or
+`BREVO_LIST_ID_<PAGE>` (e.g. `BREVO_LIST_ID_PARTNERS`) to route a funnel to its own list.
+
+Brevo rejects unknown custom attributes, so these must exist in Brevo first (Contacts >
+Settings > Contact attributes, type "Text"): `CITY`, `LANG`, `LEAD_SOURCE`, `UTM_SOURCE`,
+`UTM_CAMPAIGN`, `NOTES`. (`FIRSTNAME`/`LASTNAME`/`SMS` are built in.) Until that setup is done,
+contacts silently fail to save — check Netlify function logs, not just the form's success state.
+
 ## Caching gotcha
 
 `/shared/*` is served `max-age=86400` (see `netlify.toml`). After adding new `data-i18n` keys,
