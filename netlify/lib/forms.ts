@@ -132,20 +132,28 @@ const BREVO_TIMEOUT_MS = 4000;
 const BREVO_PIPELINE_ID = "6a0e00d16662659f87dcaf97"; // "Deals Pipeline"
 const BREVO_STAGE_NEW_ID = "14486bd2-629d-46d8-b65f-6dc6019339ea"; // "New" stage
 
+// Same BRAND env var build.mjs uses (set per Netlify site, also readable at function
+// runtime) — prefixed onto the deal name so the Brevo "TDT"/"QED" saved views (each
+// filtered on the deal name containing that string) actually catch every deal.
+function brandTag(): string {
+  return (process.env.BRAND || "").toUpperCase() === "TDT" ? "TDT" : "QED";
+}
+
 // Human-readable deal title per funnel — shown in the Brevo pipeline board, so it needs to
 // let the founders tell leads apart at a glance without opening each one.
 function dealName(d: Dict, page: string): string {
   const who = `${d.firstName} ${d.lastName}`.trim();
+  const tag = `[${brandTag()}]`;
   switch (page) {
     case "corporate":
     case "celebrations":
-      return `${d.eventType || "Event"} — ${who}`;
+      return `${tag} ${d.eventType || "Event"} — ${who}`;
     case "venues":
-      return `${d.venueName || "Venue"} — ${who}`;
+      return `${tag} ${d.venueName || "Venue"} — ${who}`;
     case "partners":
-      return `Franchise: ${d.city || "—"} — ${who}`;
+      return `${tag} Franchise: ${d.city || "—"} — ${who}`;
     default:
-      return `${page} lead — ${who}`;
+      return `${tag} ${page} lead — ${who}`;
   }
 }
 
