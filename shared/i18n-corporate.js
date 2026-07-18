@@ -1,7 +1,7 @@
 /* Spanish: Corporate page. English is baked into corporate/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.title": "Tardeo de Trivia para Empresas · Team building que de verdad se disfruta",
-  "c.metadesc": "Un tardeo de trivia de verdad divertido para tu equipo. Offsites, eventos con clientes y jornadas de equipo en Valencia, Madrid, Murcia y Santiago de Compostela.",
+  "c.metadesc": "La cena de empresa que tu equipo pedirá repetir: tardeos de trivia para offsites y eventos con clientes en Valencia, Madrid, Murcia y Santiago de Compostela.",
 
   "c.nav.kicker": "Empresas",
   "c.nav.formats": "Formatos",
@@ -28,7 +28,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.uc.1b": "Mezcla",
   "c.uc.1s": "los equipos",
   "c.uc.2t": "Offsites de empresa",
-  "c.uc.2d": "El tardeo que salva el offsite de ser todo diapositivas. Entramos después de los talleres, en tu local o en uno que coordinamos, y mandamos a todos a cenar con subidón.",
+  "c.uc.2d": "El tardeo que salva el offsite de ser todo diapositivas. Entramos después de los talleres, en tu local o en uno que coordinamos, y convertimos la cena de empresa en la mejor parte de la noche.",
   "c.uc.2b": "Lo mejor",
   "c.uc.2s": "del tardeo",
   "c.uc.3t": "Eventos con clientes",
