@@ -115,6 +115,16 @@ Settings > Contact attributes, type "Text"): `CITY`, `LANG`, `LEAD_SOURCE`, `UTM
 `UTM_CAMPAIGN`, `NOTES`. (`FIRSTNAME`/`LASTNAME`/`SMS` are built in.) Until that setup is done,
 contacts silently fail to save — check Netlify function logs, not just the form's success state.
 
+Each lead also creates a Brevo **deal** (`createBrevoDeal`), in this account's one pipeline
+("Deals Pipeline", `BREVO_PIPELINE_ID`) and its first stage ("New", `BREVO_STAGE_NEW_ID`) —
+both hardcoded ids specific to this Brevo account (update them if the pipeline is ever
+rebuilt). The deal is linked to the contact by id: Brevo returns the id on contact-create
+(201) but not on contact-update (204), so `sendToBrevo` falls back to a GET-by-email lookup
+when it updated an existing contact. No monetary `amount` is set (the `LEAD_VALUE` map above
+is a relative ad-bidding weight, not a real deal size) — founders fill that in once a lead is
+qualified. Deals aren't deduplicated: a resubmission creates a second deal (contacts do
+dedupe, via `updateEnabled`).
+
 ## Caching gotcha
 
 `/shared/*` is served `max-age=86400` (see `netlify.toml`). After adding new `data-i18n` keys,

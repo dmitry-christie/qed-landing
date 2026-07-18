@@ -104,9 +104,10 @@ function normalizePhone(phone: string, dial?: string): string {
   return digits.length === 9 ? `34${digits}` : digits;
 }
 
-// Push the lead into Brevo (our CRM, starter plan) as a real contact record — Telegram
-// is a transient ping the founders can miss/scroll past, RudderStack only feeds ad
-// platforms, so Brevo is currently the only durable, searchable place a lead lives.
+// Push the lead into Brevo (our CRM, starter plan) as a contact + a pipeline deal —
+// Telegram is a transient ping the founders can miss/scroll past, RudderStack only feeds
+// ad platforms, so Brevo is the only durable, searchable, trackable-through-a-sales-
+// pipeline place a lead lives.
 // Env: BREVO_API_KEY (required) + BREVO_LIST_ID (default list) and/or
 // BREVO_LIST_ID_<PAGE> (e.g. BREVO_LIST_ID_PARTNERS) to route funnels to separate lists.
 // Only called on the full (step 2) submission — a step-1 partial abandon isn't a
@@ -121,6 +122,56 @@ function brevoListId(page: string): number | undefined {
   const perPage = process.env[`BREVO_LIST_ID_${page.toUpperCase()}`];
   const id = Number(perPage || process.env.BREVO_LIST_ID);
   return Number.isFinite(id) && id > 0 ? id : undefined;
+}
+
+const BREVO_TIMEOUT_MS = 4000;
+
+// This account only has the one default pipeline/stage Brevo creates on signup — hardcoded
+// like RudderStack's WRITE_KEY above, since these are internal Brevo ids for this account,
+// not secrets or per-deploy config. Update both if the pipeline is ever rebuilt in Brevo.
+const BREVO_PIPELINE_ID = "6a0e00d16662659f87dcaf97"; // "Deals Pipeline"
+const BREVO_STAGE_NEW_ID = "14486bd2-629d-46d8-b65f-6dc6019339ea"; // "New" stage
+
+// Human-readable deal title per funnel — shown in the Brevo pipeline board, so it needs to
+// let the founders tell leads apart at a glance without opening each one.
+function dealName(d: Dict, page: string): string {
+  const who = `${d.firstName} ${d.lastName}`.trim();
+  switch (page) {
+    case "corporate":
+    case "celebrations":
+      return `${d.eventType || "Event"} — ${who}`;
+    case "venues":
+      return `${d.venueName || "Venue"} — ${who}`;
+    case "partners":
+      return `Franchise: ${d.city || "—"} — ${who}`;
+    default:
+      return `${page} lead — ${who}`;
+  }
+}
+
+// No monetary "amount" is set — LEAD_VALUE above is a relative ad-bidding weight, not a
+// real deal size, and we don't have real average deal values yet. Founders can fill amount
+// in once a lead is qualified, same as they'd do with a deal from any other source.
+async function createBrevoDeal(apiKey: string, d: Dict, page: string, notes: string, contactId?: number): Promise<void> {
+  try {
+    const res = await fetch("https://api.brevo.com/v3/crm/deals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey },
+      body: JSON.stringify({
+        name: dealName(d, page),
+        attributes: {
+          pipeline: BREVO_PIPELINE_ID,
+          deal_stage: BREVO_STAGE_NEW_ID,
+          deal_description: notes.slice(0, 1800),
+        },
+        ...(contactId ? { linkedContactsIds: [contactId] } : {}),
+      }),
+      signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
+    });
+    if (!res.ok) console.error("Brevo deal create failed:", res.status, await res.text());
+  } catch (err) {
+    console.error("Brevo deal create threw:", err);
+  }
 }
 
 export async function sendToBrevo(d: Dict, page: string, notes: string): Promise<void> {
@@ -145,22 +196,46 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
   attributes.NOTES = notes.slice(0, 1800);
 
   const listId = brevoListId(page);
+  const headers = { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey };
 
+  // Brevo returns the new contact's id on create (201) but no body on update-existing
+  // (204) — grab it from the create response when we can, otherwise look it up by email,
+  // so the deal below can always link back to the contact.
+  let contactId: number | undefined;
   try {
     const res = await fetch("https://api.brevo.com/v3/contacts", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey },
+      headers,
       body: JSON.stringify({
         email: d.email,
         attributes,
         ...(listId ? { listIds: [listId] } : {}),
         updateEnabled: true, // resubmitting the same email (e.g. a fixed typo) updates, doesn't 400
       }),
+      signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
     });
-    if (!res.ok) console.error("Brevo contact upsert failed:", res.status, await res.text());
+    if (res.status === 201) {
+      contactId = (await res.json().catch(() => null))?.id;
+    } else if (!res.ok) {
+      console.error("Brevo contact upsert failed:", res.status, await res.text());
+    }
   } catch (err) {
     console.error("Brevo contact upsert threw:", err);
   }
+
+  if (contactId === undefined) {
+    try {
+      const res = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(d.email)}`, {
+        headers,
+        signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
+      });
+      if (res.ok) contactId = (await res.json().catch(() => null))?.id;
+    } catch (err) {
+      console.error("Brevo contact lookup threw:", err);
+    }
+  }
+
+  await createBrevoDeal(apiKey, d, page, notes, contactId);
 }
 
 // Same write key + data plane as shared/consent.js — these are public client-side
