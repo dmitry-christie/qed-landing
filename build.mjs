@@ -25,7 +25,7 @@
    Every page lives at its natural folder path (/corporate/, /celebrations/, …) and
    identifies itself with a baked-in window.QED_SITE, so there is no page-copying step. */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, unlinkSync, readdirSync } from "node:fs";
 
 const VALID_BRANDS = ["QED", "TDT"];
 const brand = VALID_BRANDS.includes((process.env.BRAND || "").toUpperCase())
@@ -208,3 +208,27 @@ if (brand || rudderReady) {
 } else {
   console.log("[qed build] no BRAND and no RudderStack env vars set — build:seo / build:analytics markers left inert");
 }
+
+/* ---- strip internal-only files from the ephemeral publish tree (runs on every build) ----
+   publish = "." serves the whole repo root as static files, so anything committed here that
+   isn't meant for visitors (planning docs, tooling config, this script) is reachable at its
+   literal URL unless removed before Netlify uploads the build. This never touches netlify/ —
+   Netlify Functions are bundled from that source directory as a separate build phase, so it
+   must still exist on disk after this script runs; netlify.toml blocks it at the HTTP layer
+   instead (see the /netlify/* redirect). None of this is committed — it only edits the
+   ephemeral build tree, restored by `git checkout -- .` after a local `node build.mjs` run. */
+const NAMED_INTERNAL_FILES = [
+  "package.json",
+  "package-lock.json",
+  "tsconfig.json",
+  "deno.lock",
+];
+let stripped = 0;
+for (const file of readdirSync(".")) {
+  if (file.endsWith(".md") || NAMED_INTERNAL_FILES.includes(file)) {
+    unlinkSync(file);
+    stripped++;
+  }
+}
+console.log(`[qed build] stripped ${stripped} internal file(s) from the publish tree`);
+unlinkSync("build.mjs");
