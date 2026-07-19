@@ -80,7 +80,10 @@ export function displayPhone(d: Dict): string {
   return d.phoneDial ? `+${d.phoneDial} ${d.phone}` : d.phone;
 }
 
-const TELEGRAM_TIMEOUT_MS = 4000;
+// Worst case (all attempts fail) must fit under Netlify's 10s synchronous function
+// limit so the LOST LEAD log line actually gets a chance to emit: 3 * 2500ms timeout +
+// (500 + 1000)ms backoff = 9s.
+const TELEGRAM_TIMEOUT_MS = 2500;
 const TELEGRAM_MAX_ATTEMPTS = 3;
 const TELEGRAM_RETRY_DELAY_MS = 500;
 
@@ -151,9 +154,10 @@ function normalizePhone(phone: string, dial?: string): string {
 //
 // NOTE: Brevo rejects unknown custom attributes, so before this goes live create these
 // contact attributes in Brevo (Contacts > Settings > Contact attributes, type "Text"):
-// CITY, LANG, LEAD_SOURCE, UTM_SOURCE, UTM_CAMPAIGN, NOTES. FIRSTNAME/LASTNAME/SMS are
-// built in. A missing list/attribute makes this fail silently (logged, non-blocking) —
-// check Netlify function logs after setup to confirm it's actually landing contacts.
+// LEAD_CITY, LANG, LEAD_SOURCE, UTM_SOURCE, UTM_CAMPAIGN, NOTES, LAST_DEAL. FIRSTNAME/
+// LASTNAME/SMS are built in. A missing list/attribute makes this fail silently (logged,
+// non-blocking) — check Netlify function logs after setup to confirm it's actually
+// landing contacts.
 function brevoListId(page: string): number | undefined {
   const perPage = process.env[`BREVO_LIST_ID_${page.toUpperCase()}`];
   const id = Number(perPage || process.env.BREVO_LIST_ID);
@@ -196,7 +200,7 @@ function dealName(d: Dict, page: string): string {
 // No monetary "amount" is set — LEAD_VALUE above is a relative ad-bidding weight, not a
 // real deal size, and we don't have real average deal values yet. Founders can fill amount
 // in once a lead is qualified, same as they'd do with a deal from any other source.
-async function createBrevoDeal(apiKey: string, d: Dict, page: string, notes: string, contactId?: number): Promise<void> {
+async function createBrevoDeal(apiKey: string, d: Dict, page: string, notes: string, contactId?: number): Promise<boolean> {
   try {
     const res = await fetch("https://api.brevo.com/v3/crm/deals", {
       method: "POST",
@@ -212,9 +216,14 @@ async function createBrevoDeal(apiKey: string, d: Dict, page: string, notes: str
       }),
       signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
     });
-    if (!res.ok) console.error("Brevo deal create failed:", res.status, await res.text());
+    if (!res.ok) {
+      console.error("Brevo deal create failed:", res.status, await res.text());
+      return false;
+    }
+    return true;
   } catch (err) {
     console.error("Brevo deal create threw:", err);
+    return false;
   }
 }
 
@@ -290,6 +299,30 @@ async function getBrevoContact(headers: Record<string, string>, email: string): 
   return undefined;
 }
 
+// Templates #7 (EN, "QED Lead Follow-up") and #8 (ES, "TdT Lead Follow-up") in Brevo,
+// tag lead-followup — branch their body per LEAD_SOURCE (contact.LEAD_SOURCE) internally,
+// so one send per submission covers every funnel. Picked by LANG, not BRAND, since a
+// Spanish-speaking visitor filling the QED site (or vice versa) should still get the
+// email in the language they actually typed the form in.
+const BREVO_TEMPLATE_ID_EN = 7;
+const BREVO_TEMPLATE_ID_ES = 8;
+
+async function sendBrevoFollowupEmail(apiKey: string, d: Dict, contactId: number | undefined): Promise<void> {
+  if (!contactId) return; // template personalizes from the contact record; nothing to send without one
+  const templateId = d.lang?.toUpperCase() === "ES" ? BREVO_TEMPLATE_ID_ES : BREVO_TEMPLATE_ID_EN;
+  try {
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey },
+      body: JSON.stringify({ templateId, to: [{ email: d.email }] }),
+      signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
+    });
+    if (!res.ok) console.error("Brevo follow-up email send failed:", res.status, await res.text());
+  } catch (err) {
+    console.error("Brevo follow-up email send threw:", err);
+  }
+}
+
 export async function sendToBrevo(d: Dict, page: string, notes: string): Promise<void> {
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
@@ -316,10 +349,6 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
   if (d._utm_source) attributes.UTM_SOURCE = d._utm_source;
   if (d._utm_campaign) attributes.UTM_CAMPAIGN = d._utm_campaign;
   attributes.NOTES = notes.slice(0, 1800);
-  // Only bump LAST_DEAL when a deal is actually about to be created — leaving it untouched
-  // on a skipped duplicate means the dedupe window counts from the real deal, not extended
-  // indefinitely by repeat hits.
-  if (!dupeDeal) attributes.LAST_DEAL = `${page}:${Date.now()}`;
 
   const listId = brevoListId(page);
   const upsertedId = await upsertBrevoContact(headers, d.email, attributes, listId);
@@ -329,7 +358,14 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
     console.error("Skipping duplicate Brevo deal:", page, d.email);
     return;
   }
-  await createBrevoDeal(apiKey, d, page, notes, contactId);
+  await sendBrevoFollowupEmail(apiKey, d, contactId);
+  const dealCreated = await createBrevoDeal(apiKey, d, page, notes, contactId);
+  // Only bump LAST_DEAL once the deal actually exists — bumping it up front would make a
+  // failed deal create (timeout/5xx) look like a real one, silently suppressing the
+  // resubmission that would otherwise retry it within the dedupe window.
+  if (dealCreated) {
+    await upsertBrevoContact(headers, d.email, { LAST_DEAL: `${page}:${Date.now()}` }, listId);
+  }
 }
 
 // Same write key + data plane as shared/consent.js — these are public client-side
