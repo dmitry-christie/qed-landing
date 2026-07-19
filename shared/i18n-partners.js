@@ -41,10 +41,10 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.ledger.perset": "por set",
   "p.ledger.4d": "Trofeos y materiales del evento hechos a medida para tus ganadores, con precio por set. Las hojas de respuestas las imprimes tú.",
   "p.ledger.5n": "Gasto en anuncios",
-  "p.ledger.recommended": "recomendado",
+  "p.ledger.required": "obligatorio",
   "p.ledger.5amt": "250 €",
   "p.ledger.5amtnote": "/mes mín.",
-  "p.ledger.5d": "Un mínimo para tus primeros 3 meses de arranque, y luego se ajusta según el aforo. Gestionamos tus anuncios en Instagram con experiencia propia — ¿ya tienes un canal que te funciona? Úsalo.",
+  "p.ledger.5d": "Obligatorio en tus primeros 3 meses de arranque, y luego se ajusta según el aforo. Gestionamos tus anuncios en Instagram con experiencia propia — ¿ya tienes un canal que te funciona? Úsalo.",
 
   "p.rev.tag": "Reparto de ingresos",
   "p.rev.h3": "Tú diriges el tardeo. Compartimos lo que sale bien.",
