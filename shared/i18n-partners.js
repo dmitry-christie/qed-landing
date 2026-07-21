@@ -122,7 +122,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.form.generr": "Algo ha fallado. Escríbenos a info@tardeodetrivia.com.",
 
   "p.map.eyebrow": "Dónde estamos",
-  "p.map.h2": "Con la misión de conquistar toda España.",
+  "p.map.h2": "Con la misión de llegar a toda España.",
   "p.map.lead": "Desde nuestra casa en Valencia hasta Madrid, Barcelona, Murcia y Santiago. Tu ciudad puede ser el próximo punto del mapa.",
   "p.map.home": "casa",
   "p.map.note": "7 ciudades y sumando",
