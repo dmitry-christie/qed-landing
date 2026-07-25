@@ -1,6 +1,6 @@
-// Venues sign-up. Forwards to Telegram + RudderStack + Brevo.
+// Venues sign-up. Forwards to Telegram + Segment + Brevo.
 import type { Handler } from "@netlify/functions";
-import { clean, displayPhone, isEmail, isTooFast, json, MAX_BODY, metaLine, sendTelegram, sendToBrevo, sendToRudderstack } from "../lib/forms";
+import { clean, displayPhone, isEmail, isTooFast, json, MAX_BODY, metaLine, sendTelegram, sendToBrevo, sendToSegment } from "../lib/forms";
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { ok: false, error: "Method not allowed" });
@@ -28,9 +28,9 @@ export const handler: Handler = async (event) => {
   const page = d.page || "venues";
 
   // step 1 = partial submit, fire-and-forget from the client (shared/qed.js): forward to
-  // RudderStack for the retargeting audience, but don't ping the founders' Telegram.
+  // Segment for the retargeting audience, but don't ping the founders' Telegram.
   if (d._step === "1") {
-    await sendToRudderstack("Form Submitted", d, page);
+    await sendToSegment("Form Submitted", d, page);
     return json(200, { ok: true });
   }
 
@@ -50,7 +50,7 @@ export const handler: Handler = async (event) => {
 
   const [telegramResult] = await Promise.allSettled([
     sendTelegram(text),
-    sendToRudderstack("Form Submitted", d, page),
+    sendToSegment("Form Submitted", d, page),
     sendToBrevo(d, page, text),
   ]);
   const sent = telegramResult.status === "fulfilled" && telegramResult.value;

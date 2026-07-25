@@ -23,6 +23,18 @@
 
 ## Part 2 — Measurement architecture (build once, both networks feed from it)
 
+**2026-07-25: Switched from RudderStack to Segment.** Same architecture (consent-gated client
+SDK for page views, server-side HTTP Tracking API call for `Form Submitted` at step 1/step 2),
+just a different vendor — this sidesteps the data-plane-URL/CDN-URL blocker noted in the
+2026-07-05 entry below, since Segment's ingestion endpoint (`api.segment.io`) and CDN path
+(`cdn.segment.com/analytics.js/v1/<writeKey>/...`) are fixed, not per-workspace. Write key
+`WcDzJkXhvepcJqsfDdaEKFPv2uyjKafd` is hardcoded in both `shared/consent.js` and
+`netlify/lib/forms.ts` (`sendToSegment`) — no env vars, no `build.mjs` injection. Ad-platform
+fan-out (Meta CAPI, Google Ads, GA4) is still configured as destinations/connections in the
+vendor dashboard, now Segment's instead of RudderStack's — that configuration work (Part 5)
+still needs doing under the new account. The rest of this section's history predates the
+switch and is kept for context; read "RudderStack" in it as "Segment's predecessor here."
+
 **2026-07-05: Prompts 2 + 3 below shipped** (markers, `shared/consent.js`, `sendToRudderstack` in `netlify/lib/forms.ts`, the 3 functions, `qed.js` capture — `npm run typecheck` clean, verified end-to-end in `netlify dev`: consent banner renders/persists/translates, Accept triggers the CDN script load attempt, Decline never does, and a real form submission carries `_event_id`/`_consent`/`_fbc`/`_url` to the function). One implementation detail changed from the original prompt text below: the CDN script URL turned out to be a third required input, not something safe to hardcode — see the new `RUDDERSTACK_CDN_URL` var. **Still blocked on real values for `RUDDERSTACK_DATA_PLANE_URL` and `RUDDERSTACK_CDN_URL`** before this does anything on a real deploy — see Part 5.
 
 **2026-07-04 decision: RudderStack replaces the hand-rolled GTM container + direct Meta Graph API calls.** RudderStack is the single client-side tag *and* the fan-out layer to ad platforms (configured via cloud-mode destinations in the RudderStack dashboard, not in our code). Two sources exist already:

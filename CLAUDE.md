@@ -60,8 +60,8 @@ Reads deploy env vars and rewrites files in the ephemeral build (never committed
   `<html lang>`, swaps the favicon/apple-touch-icon/`og:image` to the brand's asset
   (`BRAND_ASSETS`), and — on TDT — rewrites `<title>`/meta `content` for every tag carrying
   `data-i18n(-content)` to that key's Spanish string (see "Social preview images" below).
-- When the `RUDDERSTACK_*` env vars are set: injects the analytics snippet at
-  `<!-- build:analytics -->`.
+Analytics (Segment) is not build-time config — `shared/consent.js` hardcodes the write key
+and loads the SDK client-side once consent is granted, the same way on every build.
 
 Committed source keeps the markers; the build fills them. To run locally without dirtying the
 tree: `git add -A`, `node build.mjs`, inspect, then `git checkout -- .` to restore the markers.
@@ -94,17 +94,22 @@ city list changes, it needs manual editing or a comparable script.
 
 ## Analytics
 
-Consent-gated RudderStack (`shared/consent.js`). Nothing loads until the visitor grants
-Analytics consent, and never on `*.netlify.app` previews. The page view (`rudderanalytics.page()`)
-carries `page_type: "landing"`, `section` (`window.QED_SITE`; hub = `"home"`), and `language`.
-Forms fire `Form Submitted` at step 1 and step 2.
+Consent-gated Segment (`shared/consent.js`, official `analytics.js` v1 snippet, write key
+hardcoded client-side like a GA measurement id — same key used server-side in
+`netlify/lib/forms.ts`). Nothing loads until the visitor grants Analytics consent, and never
+on `*.netlify.app` previews. The page view (`analytics.page()`) carries `page_type: "landing"`,
+`section` (`window.QED_SITE`; hub = `"home"`), and `language`. Forms fire `Form Submitted` at
+step 1 and step 2, sent server-side via Segment's HTTP Tracking API (`sendToSegment`) — not
+the client SDK, so it isn't blocked by an ad blocker and still fires on the fire-and-forget
+step-1 partial. Segment fans events out to Meta Conversions API / Google Ads / GA4 via
+destinations configured once in the Segment dashboard.
 
 ## CRM (Brevo)
 
 The three lead functions (`book-event`, `venue-apply`, `franchise-apply`) upsert the lead
 into Brevo as a contact via `sendToBrevo` (`netlify/lib/forms.ts`), alongside Telegram and
-RudderStack. Only fires on the full (step 2) submission, not the step-1 partial. Failures are
-logged and non-blocking, same as RudderStack — a Brevo outage never breaks the form.
+Segment. Only fires on the full (step 2) submission, not the step-1 partial. Failures are
+logged and non-blocking, same as Segment — a Brevo outage never breaks the form.
 
 Env vars (set on both Netlify sites, since both brands' leads go to the same Brevo account):
 `BREVO_API_KEY` (required), `BREVO_LIST_ID` (default numeric list id) and/or

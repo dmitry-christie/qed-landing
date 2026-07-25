@@ -1,37 +1,30 @@
-/* Consent banner — gates RudderStack loading (Spain/AEPD: denied by default).
-   The RudderStack write key + data plane URL are public client-side values (like a
-   GA measurement id), so they are baked in here directly — no build-time env vars.
-   Analytics loads only on the production brand domains (never localhost / *.netlify.app
-   deploy previews, so dev traffic stays out of the live ad-conversion data) and only
-   after the visitor grants consent. qed.js forwards lead events server-side; consent.js
-   fires the page view (rudderanalytics.page()) once the SDK is up.
+/* Consent banner — gates Segment loading (Spain/AEPD: denied by default).
+   The Segment write key is a public client-side value (like a GA measurement id), so it's
+   baked in here directly — no build-time env vars. Analytics loads only on the production
+   brand domains (never localhost / *.netlify.app deploy previews, so dev traffic stays out
+   of the live ad-conversion data) and only after the visitor grants consent. qed.js forwards
+   lead events server-side; consent.js fires the page view (analytics.page()) once the SDK
+   is up.
 
    Consent is granular (Necessary / Functional / Analytics / Marketing), stored as a JSON
-   object under "qed-consent". Only Analytics + Marketing map to RudderStack (passed in the
-   shape its custom consent manager expects: consentManagement { enabled, provider:"custom",
-   allowedConsentIds, deniedConsentIds } on load(), the category ids doubling as keys). Those
-   ids only actually gate destinations once matching Consent Categories are configured against
-   each destination in the RudderStack dashboard — until then this is inert, like an unset env
-   var. Necessary is always granted and never sent to RudderStack. Functional is a first-party
-   preference gate (language memory, dismissed notices — see i18n.js) and likewise never sent
-   to RudderStack; it only decides whether we may persist those preference values.
+   object under "qed-consent". Only Analytics gates whether the Segment SDK loads at all —
+   nothing (not even a page view) fires before that's granted. Marketing additionally gates
+   which visitor identity gets attached server-side (see netlify/lib/forms.ts): hashed
+   em/ph/name, IP, click-ids. Necessary is always granted and never sent to Segment.
+   Functional is a first-party preference gate (language memory, dismissed notices — see
+   i18n.js) and likewise never sent to Segment; it only decides whether we may persist those
+   preference values.
 
    Analytics = measurement (is the site/campaign working — GA4, Meta/Google in reporting-only
    mode). Marketing = ad campaign optimization/targeting (full Meta Conversions API + Google
-   Ads destinations). Meta's Limited Data Use / Google's Restricted Data Processing belong on
-   those "marketing" destinations once configured on the dashboard (see netlify/lib/forms.ts). */
+   Ads destinations, configured as Segment connections). Meta's Limited Data Use / Google's
+   Restricted Data Processing belong on those "marketing" destinations once configured on the
+   dashboard (see netlify/lib/forms.ts). */
 (function () {
   "use strict";
 
   var KEY = "qed-consent";
-  // "necessary" is implicit (always on). "functional" gates first-party preference storage
-  // (see i18n.js) and is NOT sent to RudderStack. RS_CATEGORIES are the ones forwarded to
-  // RudderStack's consent manager.
-  var RS_CATEGORIES = ["analytics", "marketing"];
-  var WRITE_KEY = "2e8anllkdUDI2MoK38sqseYAdMC";
-  var DATA_PLANE_URL = "https://quizeatdricdmw.dataplane.rudderstack.com";
-  // RudderStack v3 SDK, modern build (targets the evergreen browsers of the QED audience).
-  var SDK_URL = "https://cdn.rudderlabs.com/v3/modern/rsa.min.js";
+  var WRITE_KEY = "WcDzJkXhvepcJqsfDdaEKFPv2uyjKafd";
   var PRIVACY_URL = "/privacy/";
 
   // Only measure on the real production domains — keeps localhost `netlify dev` and
@@ -102,91 +95,94 @@
 
   function assign(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
 
-  // allowedConsentIds/deniedConsentIds per RudderStack's custom consent manager spec —
-  // only Analytics + Marketing; Necessary/Functional are not gates on that side.
-  function consentManagementFor(cats) {
-    var allowed = [], denied = [];
-    RS_CATEGORIES.forEach(function (id) { (cats[id] ? allowed : denied).push(id); });
-    return { enabled: true, provider: "custom", allowedConsentIds: allowed, deniedConsentIds: denied };
-  }
-
-  function loadRudderstack(cats) {
+  function loadSegment(cats) {
     if (!analyticsEnabled()) return;
     if (!cats.analytics) return; // strongest guarantee: don't even fetch the SDK
-    if (window.__qedRudderLoading) return;
-    window.__qedRudderLoading = true;
+    if (window.__qedSegmentLoading) return;
+    window.__qedSegmentLoading = true;
 
-    /* Official RudderStack JS SDK v3 loader, invoked only after consent. Stubs
-       window.rudderanalytics so queued page()/track() calls survive until the async SDK
-       finishes loading, then flushes the queue. */
-    var e = "rudderanalytics";
-    window[e] || (window[e] = []);
-    var ra = window[e];
-    if (Array.isArray(ra)) {
-      if (ra.snippetExecuted === true) return;
-      ra.snippetExecuted = true;
-      var methods = ["setDefaultInstanceKey", "load", "ready", "page", "track", "identify", "alias", "group", "reset", "setAnonymousId", "startSession", "endSession", "consent", "addCustomIntegration"];
-      for (var n = 0; n < methods.length; n++) {
-        ra[methods[n]] = (function (m) {
-          return function () {
-            var i;
-            Array.isArray(window[e])
-              ? ra.push([m].concat(Array.prototype.slice.call(arguments)))
-              : (i = window[e][m]) && i.apply(window[e], arguments);
+    /* Official Segment analytics.js (v1) snippet, invoked only after consent. Stubs
+       window.analytics so queued page()/track() calls survive until the async SDK finishes
+       loading, then flushes the queue. */
+    !function () {
+      var i = "analytics", analytics = window[i] = window[i] || [];
+      if (!analytics.initialize) {
+        if (analytics.invoked) {
+          window.console && console.error && console.error("Segment snippet included twice.");
+        } else {
+          analytics.invoked = true;
+          analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "screen", "once", "off", "on", "addSourceMiddleware", "addIntegrationMiddleware", "setAnonymousId", "addDestinationMiddleware", "register"];
+          analytics.factory = function (e) {
+            return function () {
+              if (window[i].initialized) return window[i][e].apply(window[i], arguments);
+              var n = Array.prototype.slice.call(arguments);
+              if (["track", "screen", "alias", "group", "page", "identify"].indexOf(e) > -1) {
+                var c = document.querySelector("link[rel='canonical']");
+                n.push({ __t: "bpc", c: c && c.getAttribute("href") || undefined, p: location.pathname, u: location.href, s: location.search, t: document.title, r: document.referrer });
+              }
+              n.unshift(e);
+              analytics.push(n);
+              return analytics;
+            };
           };
-        })(methods[n]);
+          for (var n = 0; n < analytics.methods.length; n++) {
+            var key = analytics.methods[n];
+            analytics[key] = analytics.factory(key);
+          }
+          analytics.load = function (key, n) {
+            var t = document.createElement("script");
+            t.type = "text/javascript";
+            t.async = true;
+            t.setAttribute("data-global-segment-analytics-key", i);
+            t.src = "https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";
+            var r = document.getElementsByTagName("script")[0];
+            r.parentNode.insertBefore(t, r);
+            analytics._loadOptions = n;
+          };
+          analytics._writeKey = WRITE_KEY;
+          analytics.SNIPPET_VERSION = "5.2.0";
+          analytics.load(WRITE_KEY);
+        }
       }
-      var s = document.createElement("script");
-      s.src = SDK_URL;
-      s.async = true;
-      s.setAttribute("data-loader", "RS_JS_SDK");
-      s.setAttribute("data-rsa-write-key", WRITE_KEY);
-      var head = document.head || document.getElementsByTagName("head")[0];
-      head.insertBefore(s, head.firstChild);
-      ra.load(WRITE_KEY, DATA_PLANE_URL, { consentManagement: consentManagementFor(cats) });
-      // v3 SDK does not auto-capture page views — fire one per load (queued, flushed on ready).
-      // Schema matches the main site's (quizeatdrink.com) page() calls so both roll up
-      // together downstream: site/product/language use the same values and casing as
-      // netlify/lib/forms.ts uses for the server-side "Form Submitted" track calls.
-      var pvSection = window.QED_SITE || "home";
-      var pvLang = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
-      var PRODUCTS = {
-        corporate: "corporate-event",
-        celebrations: "celebration-event",
-        venues: "venue-partnership",
-        partners: "franchise-partnership"
-      };
-      var NAMES = {
-        home: "Home", corporate: "Corporate", celebrations: "Celebrations",
-        venues: "Venues", partners: "Partners", privacy: "Privacy", terms: "Terms"
-      };
-      ra.page(NAMES[pvSection] || pvSection, {
-        page_type: "landing",
-        section: pvSection,
-        language: pvLang,
-        site: pvLang === "es" ? "tardeo-de-trivia" : "quiz-eat-drink",
-        product: PRODUCTS[pvSection] || null
-      });
-    }
+    }();
 
-    window.__qedRudderReady = true;
+    // The snippet's own page() would fire a bare pageview — instead send one enriched call
+    // (queued, flushed once the async SDK is ready). Schema matches the main site's own
+    // conventions so both client- and server-side (netlify/lib/forms.ts) events roll up
+    // together downstream: site/product/language use the same values and casing as the
+    // server-side "Form Submitted" track calls.
+    var pvSection = window.QED_SITE || "home";
+    var pvLang = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
+    var PRODUCTS = {
+      corporate: "corporate-event",
+      celebrations: "celebration-event",
+      venues: "venue-partnership",
+      partners: "franchise-partnership"
+    };
+    var NAMES = {
+      home: "Home", corporate: "Corporate", celebrations: "Celebrations",
+      venues: "Venues", partners: "Partners", privacy: "Privacy", terms: "Terms"
+    };
+    window.analytics.page(NAMES[pvSection] || pvSection, {
+      page_type: "landing",
+      section: pvSection,
+      language: pvLang,
+      site: pvLang === "es" ? "tardeo-de-trivia" : "quiz-eat-drink",
+      product: PRODUCTS[pvSection] || null
+    });
+
+    window.__qedSegmentReady = true;
   }
 
-  if (categories) loadRudderstack(categories);
+  if (categories) loadSegment(categories);
 
   function decide(cats) {
     categories = cats;
     saveCategories(cats);
     applyCategories(cats);
-    loadRudderstack(cats);
+    loadSegment(cats);
     // Let consent-gated features (e.g. shared/brevo.js) react to a fresh grant on this page.
     try { window.dispatchEvent(new CustomEvent("qed:consentchange", { detail: cats })); } catch (e) {}
-    // If the SDK is already up (preference changed via the reopened banner), update it live.
-    try {
-      if (window.rudderanalytics && window.rudderanalytics.consent) {
-        window.rudderanalytics.consent({ consentManagement: consentManagementFor(cats) });
-      }
-    } catch (e) {}
   }
 
   // force = reopened from the privacy page (window.QEDConsent.open) — shows the banner even
@@ -241,7 +237,7 @@
     var catDefs = [
       { id: "necessary", labelKey: "consent.cat.necessary", label: "Necessary", descKey: "consent.cat.necessaryd", desc: "Essential for the site to work and to remember this choice. Always on.", locked: true },
       { id: "functional", labelKey: "consent.cat.functional", label: "Functional", descKey: "consent.cat.functionald", desc: "Remembers your preferences (like language) and powers the live chat. Without them the site still works, but forgets you." },
-      { id: "analytics", labelKey: "consent.cat.analytics", label: "Analytics", descKey: "consent.cat.analyticsd", desc: "Measurement: how the site and ad campaigns are performing (RudderStack, Meta, Google)." },
+      { id: "analytics", labelKey: "consent.cat.analytics", label: "Analytics", descKey: "consent.cat.analyticsd", desc: "Measurement: how the site and ad campaigns are performing (Segment, Meta, Google)." },
       { id: "marketing", labelKey: "consent.cat.marketing", label: "Marketing", descKey: "consent.cat.marketingd", desc: "Ad campaign optimization and targeting (Meta, Google)." }
     ];
     var checkboxes = {};
@@ -321,9 +317,26 @@
   // Re-open the banner to review/update consent (wired to the button on /privacy/).
   window.QEDConsent = { open: function () { showBanner(true); } };
 
+  // Defer the first-visit banner until the visitor scrolls (or a few seconds pass, for
+  // anyone who never scrolls) instead of slapping it over the hero CTAs on load. Doesn't
+  // affect the consent gate itself — nothing analytics-related loads until a real decision
+  // is made either way, this just delays when the prompt appears.
+  function deferredShow() {
+    var shown = false;
+    function trigger() {
+      if (shown) return;
+      shown = true;
+      window.removeEventListener("scroll", trigger);
+      clearTimeout(timer);
+      showBanner(false);
+    }
+    window.addEventListener("scroll", trigger, { passive: true, once: true });
+    var timer = setTimeout(trigger, 4000);
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function () { showBanner(false); });
+    document.addEventListener("DOMContentLoaded", deferredShow);
   } else {
-    showBanner(false);
+    deferredShow();
   }
 })();

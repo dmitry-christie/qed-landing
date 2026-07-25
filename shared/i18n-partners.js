@@ -126,7 +126,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.map.h2": "Con la misión de llegar a toda España.",
   "p.map.lead": "Desde nuestra casa en Valencia hasta Madrid, Barcelona, Murcia y Santiago. Tu ciudad puede ser el próximo punto del mapa.",
   "p.map.home": "casa",
-  "p.map.note": "7 ciudades y sumando",
+  "p.map.note": "7 ciudades y creciendo",
   "p.map.cta": "Pon tu ciudad en el mapa",
 
   "p.cmp.cta": "Empieza tu solicitud",

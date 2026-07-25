@@ -4,7 +4,7 @@
    (local / preview) window.__qedFunctional defaults true, so it loads there for testing.
    Launcher is brand orange, bottom-right ('br'). Loading it consent-gated keeps the cookie
    policy's "nothing but necessary loads before consent" promise accurate — Brevo sets its
-   own cookies, so it must wait for consent like RudderStack does. */
+   own cookies, so it must wait for consent like Segment does. */
 (function () {
   "use strict";
   var loaded = false;

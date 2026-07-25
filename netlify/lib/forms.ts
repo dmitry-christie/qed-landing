@@ -144,13 +144,13 @@ function normalizePhone(phone: string, dial?: string): string {
 }
 
 // Push the lead into Brevo (our CRM, starter plan) as a contact + a pipeline deal —
-// Telegram is a transient ping the founders can miss/scroll past, RudderStack only feeds
+// Telegram is a transient ping the founders can miss/scroll past, Segment only feeds
 // ad platforms, so Brevo is the only durable, searchable, trackable-through-a-sales-
 // pipeline place a lead lives.
 // Env: BREVO_API_KEY (required) + BREVO_LIST_ID (default list) and/or
 // BREVO_LIST_ID_<PAGE> (e.g. BREVO_LIST_ID_PARTNERS) to route funnels to separate lists.
 // Only called on the full (step 2) submission — a step-1 partial abandon isn't a
-// qualified lead yet; RudderStack already covers that audience for retargeting.
+// qualified lead yet; Segment already covers that audience for retargeting.
 //
 // NOTE: Brevo rejects unknown custom attributes, so before this goes live create these
 // contact attributes in Brevo (Contacts > Settings > Contact attributes, type "Text"):
@@ -167,7 +167,7 @@ function brevoListId(page: string): number | undefined {
 const BREVO_TIMEOUT_MS = 4000;
 
 // This account only has the one default pipeline/stage Brevo creates on signup — hardcoded
-// like RudderStack's WRITE_KEY above, since these are internal Brevo ids for this account,
+// like Segment's WRITE_KEY above, since these are internal Brevo ids for this account,
 // not secrets or per-deploy config. Update both if the pipeline is ever rebuilt in Brevo.
 const BREVO_PIPELINE_ID = "6a0e00d16662659f87dcaf97"; // "Deals Pipeline"
 const BREVO_STAGE_NEW_ID = "14486bd2-629d-46d8-b65f-6dc6019339ea"; // "New" stage
@@ -368,12 +368,12 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
   }
 }
 
-// Same write key + data plane as shared/consent.js — these are public client-side
-// values (like a GA measurement id), not secrets, so both sides hardcode them rather
-// than depend on Netlify env vars (RUDDERSTACK_WRITE_KEY/_QA/RUDDERSTACK_DATA_PLANE_URL
-// were never actually set in this project, which silently no-opped this function).
-const WRITE_KEY = "2e8anllkdUDI2MoK38sqseYAdMC";
-const DATA_PLANE_URL = "https://quizeatdricdmw.dataplane.rudderstack.com";
+// Same write key as shared/consent.js — a public client-side value (like a GA measurement
+// id), not a secret, so both sides hardcode it directly rather than depend on a Netlify env
+// var. Segment's HTTP Tracking API endpoint is fixed (no per-workspace data plane URL to
+// configure, unlike the RudderStack setup this replaced).
+const WRITE_KEY = "WcDzJkXhvepcJqsfDdaEKFPv2uyjKafd";
+const SEGMENT_API_URL = "https://api.segment.io";
 
 // Mirrors consent.js's analyticsEnabled() — keeps localhost / *.netlify.app deploy
 // previews out of production analytics. Reads the page URL the client posted rather
@@ -387,7 +387,7 @@ function analyticsEnabled(url: string | undefined): boolean {
   }
 }
 
-// page → Segment/RudderStack "product" property. Each funnel is a genuinely different
+// page → Segment "product" property. Each funnel is a genuinely different
 // product line (not just a variant of one), so these are distinct rather than a single
 // shared value — the main site's "product" (e.g. "quiz-night") doesn't map cleanly here.
 const PRODUCT_BY_PAGE: Record<string, string> = {
@@ -420,18 +420,20 @@ const LEAD_VALUE: Record<string, number> = {
   celebrations: 1,
 };
 
-// Consent categories the visitor granted (shared/consent.js), forwarded in the shape
-// RudderStack's custom consent manager expects. NOTE: allowedConsentIds/deniedConsentIds
-// only actually gate anything once matching Consent Categories are configured against
-// each destination in the RudderStack dashboard — until then this is inert, same as an
-// unset env var (see build.mjs's RUDDERSTACK_CDN_URL note for the same class of issue).
+// Consent categories the visitor granted (shared/consent.js), sent as a custom context
+// field on every event. Segment's plain analytics.js snippet has no built-in consent
+// manager to hand this to (that needs a CMP integration like OneTrust, not set up here) —
+// this is our own record of what was granted, in case a downstream destination mapping
+// ever needs to filter on it. The real, currently-enforced gates are: sendToSegment()
+// below no-ops without analytics consent, and traits/IP/click-ids are only attached with
+// marketing consent.
 //
 // Category split: "analytics" = measurement (did the campaign work — GA4, Meta/Google
 // in reporting-only mode); "marketing" = ad campaign optimization/targeting (full Meta
 // Conversions API + Google Ads destinations used to bid and target). Meta's Limited Data
 // Use and Google's Restricted Data Processing flags belong on those "marketing"-tagged
 // destinations specifically (dashboard-side, once configured) — not on this payload.
-function consentManagementFrom(d: Dict): { enabled: true; provider: "custom"; allowedConsentIds: string[]; deniedConsentIds: string[] } | undefined {
+function consentContextFrom(d: Dict): { categoryPreferences: Record<string, boolean> } | undefined {
   if (!d._consentCategories) return undefined;
   let categories: Record<string, boolean>;
   try {
@@ -439,21 +441,20 @@ function consentManagementFrom(d: Dict): { enabled: true; provider: "custom"; al
   } catch {
     return undefined;
   }
-  const allowedConsentIds: string[] = [];
-  const deniedConsentIds: string[] = [];
+  const categoryPreferences: Record<string, boolean> = {};
   for (const id of Object.keys(categories)) {
     if (id === "necessary") continue; // matches consent.js: not a real gate on either side
-    (categories[id] ? allowedConsentIds : deniedConsentIds).push(id);
+    categoryPreferences[id] = !!categories[id];
   }
-  return { enabled: true, provider: "custom", allowedConsentIds, deniedConsentIds };
+  return { categoryPreferences };
 }
 
-// Forward a lead event to RudderStack, which fans it out to Meta Conversions API
-// / Google Ads / GA4 via cloud-mode destinations configured once in the RudderStack
-// dashboard — this repo no longer calls the Facebook Graph API (or any ad platform)
-// directly. No-op off the production domains, and unless the visitor granted analytics
-// consent (qed.js sends d._consent / d._consentCategories; see shared/consent.js).
-export async function sendToRudderstack(event: string, d: Dict, page: string): Promise<void> {
+// Forward a lead event to Segment, which fans it out to Meta Conversions API / Google Ads
+// / GA4 via cloud-mode destinations (connections) configured once in the Segment dashboard
+// — this repo no longer calls the Facebook Graph API (or any ad platform) directly. No-op
+// off the production domains, and unless the visitor granted analytics consent (qed.js
+// sends d._consent / d._consentCategories; see shared/consent.js).
+export async function sendToSegment(event: string, d: Dict, page: string): Promise<void> {
   if (!analyticsEnabled(d._url)) return;
   if (d._consent !== "granted") return; // analytics gate — measurement
 
@@ -465,7 +466,7 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
   try { marketing = !!JSON.parse(d._consentCategories || "{}").marketing; } catch { /* no categories → treat as denied */ }
 
   // Hashed client-side per Meta/Google's PII-matching requirements — if the
-  // RudderStack destination(s) already hash em/ph/fn/ln themselves, hashing
+  // Segment destination(s) already hash em/ph/fn/ln themselves, hashing
   // twice is harmless (still a stable one-way match), so this stays defensive.
   const traits: Record<string, string> = {};
   if (marketing) {
@@ -476,7 +477,7 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
     if (d.city) traits.city = d.city;
   }
 
-  // "site" / "language" / "product" naming matches the main site's own RudderStack
+  // "site" / "language" / "product" naming matches the main site's own Segment
   // properties so both sources roll up consistently downstream.
   const properties: Record<string, unknown> = {
     // step 1 = partial (name + email captured, may not finish) · step 2 = full lead. Both
@@ -514,11 +515,11 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
     if (!PROPERTY_OMIT.has(key) && d[key]) properties[key] = d[key];
   }
 
-  const consentManagement = consentManagementFrom(d);
+  const consent = consentContextFrom(d);
 
   const context: Record<string, unknown> = {
     userAgent: d._ua,
-    ...(consentManagement ? { consentManagement } : {}),
+    ...(consent ? { consent } : {}),
   };
   if (marketing) {
     if (Object.keys(traits).length) context.traits = traits;
@@ -529,7 +530,7 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
   const payload = {
     event,
     // A durable per-visitor id (shared/qed.js's externalId(), stable across sessions in
-    // localStorage), not the per-submission _event_id — anonymousId is what RudderStack
+    // localStorage), not the per-submission _event_id — anonymousId is what Segment
     // uses to stitch events into one visitor timeline, so a fresh id per event (the old
     // fallback) meant step 1 and step 2 of the same visit, or a repeat visit, could never
     // be linked together. _event_id still does its own job as messageId (per-event dedupe).
@@ -541,14 +542,14 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
 
   const auth = Buffer.from(`${WRITE_KEY}:`).toString("base64");
   try {
-    const res = await fetch(`${DATA_PLANE_URL}/v1/track`, {
+    const res = await fetch(`${SEGMENT_API_URL}/v1/track`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Basic ${auth}` },
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(2000),
     });
-    if (!res.ok) console.error("RudderStack track failed:", res.status, await res.text());
+    if (!res.ok) console.error("Segment track failed:", res.status, await res.text());
   } catch (err) {
-    console.error("RudderStack track threw:", err);
+    console.error("Segment track threw:", err);
   }
 }

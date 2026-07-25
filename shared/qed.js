@@ -99,8 +99,8 @@
   function track(name, detail) {
     pushDataLayer(name, detail);
     try {
-      if (window.__qedConsent === "granted" && window.__qedRudderReady && window.rudderanalytics && window.rudderanalytics.track) {
-        window.rudderanalytics.track(name, detail || {});
+      if (window.__qedConsent === "granted" && window.__qedSegmentReady && window.analytics && window.analytics.track) {
+        window.analytics.track(name, detail || {});
       }
     } catch (e) {}
   }
@@ -109,9 +109,9 @@
   // build a retargeting audience:
   //   step 1 = the visitor cleared step 1 (name + email captured) — may not finish.
   //   step 2 = the full lead, carrying every step-1 property plus the step-2 fields.
-  // Both go to RudderStack server-side (netlify/lib/forms.ts) for hashed traits + ad-blocker
+  // Both go to Segment server-side (netlify/lib/forms.ts) for hashed traits + ad-blocker
   // resistance: the step-1 POST is fire-and-forget (no Telegram, no UI wait); the step-2
-  // POST is the real submit. dataLayer gets both here for GTM parity — RudderStack is only
+  // POST is the real submit. dataLayer gets both here for GTM parity — Segment is only
   // touched server-side, so there's no double-counting. step 1 and step 2 use different
   // event ids (they are distinct conversions, not a client/server pair to dedupe).
 
@@ -204,7 +204,7 @@
     data.form = form.getAttribute("name") || action;
     data.title = document.title;
     data.path = location.pathname;
-    data.referrer = document.referrer || "$direct"; // RudderStack's convention for direct
+    data.referrer = document.referrer || "$direct"; // Segment's convention for direct
     data._step = String(step);
     data._event_id = eventId;
     data._url = location.href;
@@ -307,7 +307,7 @@
           var d1 = collect(form, action, 1, uuid());
           var et = form.elements.eventType;
           pushDataLayer("Form Submitted", { step: 1, form: d1.form, eventType: et ? et.value : undefined, event_id: d1._event_id });
-          // fire-and-forget: partial lead → RudderStack (no Telegram). Never blocks the UI.
+          // fire-and-forget: partial lead → Segment (no Telegram). Never blocks the UI.
           try {
             fetch(action, {
               method: "POST",
