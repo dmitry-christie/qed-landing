@@ -230,9 +230,12 @@
     var backBtn = form.querySelector("[data-back]");
     var errEl = form.querySelector(".form-error");
 
-    function showError(msg) {
-      if (errEl) { errEl.textContent = msg; errEl.style.display = "block"; }
-      else window.alert(msg);
+    // Always shows the page's own localized, correctly-branded .form-error text (data-i18n
+    // "form.generr" / "p.form.generr") — never the server's raw `error` string, which is
+    // English-only and always names the QED inbox even on the Spanish/TDT site.
+    function showError() {
+      if (errEl) errEl.style.display = "block";
+      else window.alert("Something went wrong.");
     }
 
     function focusFirst(scope) {
@@ -381,8 +384,12 @@
           return { ok: r.ok, body: j };
         });
       }).then(function (res) {
+        // The server's `error` string (validation/server-error text) is for logging only —
+        // it's English-only and hardcodes the QED inbox, so it must never reach the UI on
+        // the Spanish/TDT site. The visible message is always the page's own localized
+        // .form-error text, shown as-is by showError().
         if (!(res.ok && res.body && res.body.ok)) {
-          throw new Error((res.body && res.body.error) || "Something went wrong. Please email info@quizeatdrink.com.");
+          throw new Error((res.body && res.body.error) || "Server returned an error response.");
         }
         form.classList.add("sent");
         var s = form.querySelector(".form-success");
@@ -394,7 +401,8 @@
           btn.disabled = false;
           if (btnLabel) btnLabel.textContent = btnLabelText;
         }
-        showError(err && err.message ? err.message : "Something went wrong. Please email info@quizeatdrink.com.");
+        if (window.console && console.error) console.error("Form submit failed:", err);
+        showError();
       });
     });
   });

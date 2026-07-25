@@ -192,16 +192,22 @@ a.lift{ text-decoration:none; color:inherit; display:block; }
 .consent__cat b{ display:block; font-family:var(--sans); font-size:13px; font-weight:700; color:var(--ink); }
 .consent__cat small{ display:block; font-family:var(--mono); font-size:11px; color:var(--ink-mute); margin-top:2px; }
 .consent__more{ color:var(--accent-deep); font-weight:700; text-decoration:underline; white-space:nowrap; }
+/* .consent__manage is a <button> living inline in the message text, styled to match the
+   .consent__more link rather than the boxed action buttons — keeps it out of the
+   .consent__actions row so the banner has only two full-width buttons to stack on mobile,
+   not three (see the max-width:560px block below). */
+button.consent__manage{ background:none; border:0; padding:0; margin:0; font:inherit; cursor:pointer; }
 @media (prefers-reduced-motion:no-preference){
   .consent{ animation:consentIn .3s cubic-bezier(.2,.7,.2,1); }
   @keyframes consentIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
 }
 @media (max-width:560px){
   .consent{ left:10px; right:10px; bottom:10px; padding:14px; gap:12px; }
-  /* stack the actions full-width — three long ES labels ("Guardar preferencias" etc.)
-     don't fit on one row and would clip "Aceptar todo" at the edge */
-  .consent__actions{ width:100%; margin-left:0; flex-direction:column; }
-  .consent__btn{ width:100%; white-space:normal; }
+  /* Only "Decline" / "Accept all" live here now (Manage moved into the message text above),
+     so two buttons fit one row even in Spanish — keeps the banner's mobile footprint to a
+     single compact row instead of a tall multi-button stack covering the fold. */
+  .consent__actions{ width:100%; margin-left:0; }
+  .consent__btn{ flex:1 1 0; padding:0 10px; white-space:normal; }
 }
 
 /* ---------- nav ---------- */

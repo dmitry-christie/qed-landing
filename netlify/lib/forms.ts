@@ -489,7 +489,6 @@ export async function sendToRudderstack(event: string, d: Dict, page: string): P
     // Relative lead value for value-based bidding (dashboard may override per action).
     value: LEAD_VALUE[page] || 1,
     currency: "EUR",
-    page,
     form: d.form,
     path: d.path,
     url: d._url,

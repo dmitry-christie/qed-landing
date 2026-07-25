@@ -8,6 +8,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.nav.model": "El modelo",
   "p.nav.support": "Qué te llevas",
   "p.nav.timeline": "Tiempos",
+  "p.nav.faq": "Preguntas",
   "p.nav.apply": "Solicitar",
 
   "p.hero.tag": "Oportunidad de franquicia",
@@ -44,7 +45,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.ledger.required": "obligatorio",
   "p.ledger.5amt": "250 €",
   "p.ledger.5amtnote": "/mes mín.",
-  "p.ledger.5d": "Obligatorio en tus primeros 3 meses de arranque, y luego se ajusta según el aforo. Gestionamos tus anuncios en Instagram con experiencia propia — ¿ya tienes un canal que te funciona? Úsalo.",
+  "p.ledger.5d": "Obligatorio solo tus primeros 3 meses de arranque, y luego se ajusta a la baja según el aforo. Gestionamos tus anuncios en Instagram con experiencia propia — ¿ya tienes un canal que te funciona? Úsalo.",
 
   "p.rev.tag": "Reparto de ingresos",
   "p.rev.h3": "Tú diriges el tardeo. Compartimos lo que sale bien.",
@@ -129,6 +130,17 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.map.cta": "Pon tu ciudad en el mapa",
 
   "p.cmp.cta": "Empieza tu solicitud",
+
+  "p.faq.eyebrow": "Preguntas",
+  "p.faq.h2": "Lo que preguntan los franquiciados.",
+  "p.faq.q1": "¿Tengo derechos exclusivos en mi zona?",
+  "p.faq.a1": "Sí. Cada franquiciado tiene un radio protegido de 5 km alrededor de sus locales: no firmamos con otro franquiciado dentro de ese radio mientras el tuyo esté activo.",
+  "p.faq.q2": "¿Puedo llevar más de una ciudad?",
+  "p.faq.a2": "Sí. El Hachazo lleva Murcia y Madrid con un solo franquiciado. Solicita cada ciudad y la montamos como su propio circuito, con su propio radio.",
+  "p.faq.q3": "¿Necesito experiencia organizando tardeos de trivia?",
+  "p.faq.a3": "No. El onboarding y la formación completos están incluidos. Tú pones los locales y el carácter, nosotros la plataforma, el contenido y la marca.",
+  "p.faq.q4": "¿Qué pasa con el gasto en anuncios con el tiempo?",
+  "p.faq.a4": "Es obligatorio solo tus primeros 3 meses mientras construyes audiencia, y luego se ajusta a la baja según el aforo. ¿Ya tienes un canal que te funciona? Úsalo en su lugar.",
 
   "p.foot.tagline": "Monta tardeos de trivia. Crea un negocio de verdad. Una franquicia de Tardeo de Trivia, impulsada por nuestra plataforma y nuestra marca."
 });

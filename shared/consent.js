@@ -212,9 +212,25 @@
     more.href = PRIVACY_URL;
     more.setAttribute("data-i18n", "consent.more");
     more.textContent = "Learn more";
+
+    var manage = document.createElement("button");
+    manage.type = "button";
+    manage.className = "consent__more consent__manage";
+    var manageLabel = document.createElement("span");
+    manageLabel.setAttribute("data-i18n", "consent.manage");
+    manageLabel.textContent = "Manage";
+    var saveLabel = document.createElement("span");
+    saveLabel.className = "consent__save-label";
+    saveLabel.setAttribute("data-i18n", "consent.save");
+    saveLabel.textContent = "Save preferences";
+    manage.appendChild(manageLabel);
+    manage.appendChild(saveLabel);
+
     msg.appendChild(msgText);
     msg.appendChild(document.createTextNode(" "));
     msg.appendChild(more);
+    msg.appendChild(document.createTextNode(" · "));
+    msg.appendChild(manage);
 
     var cats = document.createElement("div");
     cats.className = "consent__categories";
@@ -262,19 +278,6 @@
     reject.setAttribute("data-i18n", "consent.reject");
     reject.textContent = "Decline";
 
-    var manage = document.createElement("button");
-    manage.type = "button";
-    manage.className = "btn btn--sm consent__btn consent__manage";
-    var manageLabel = document.createElement("span");
-    manageLabel.setAttribute("data-i18n", "consent.manage");
-    manageLabel.textContent = "Manage";
-    var saveLabel = document.createElement("span");
-    saveLabel.className = "consent__save-label";
-    saveLabel.setAttribute("data-i18n", "consent.save");
-    saveLabel.textContent = "Save preferences";
-    manage.appendChild(manageLabel);
-    manage.appendChild(saveLabel);
-
     var accept = document.createElement("button");
     accept.type = "button";
     accept.className = "btn btn--sm btn--cta consent__btn";
@@ -304,7 +307,6 @@
     });
 
     actions.appendChild(reject);
-    actions.appendChild(manage);
     actions.appendChild(accept);
     bar.appendChild(msg);
     bar.appendChild(cats);
