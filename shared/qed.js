@@ -250,7 +250,17 @@
     var phoneCC = form.querySelector("[data-role='phone-country']");
     var phoneErr = form.querySelector("[data-role='phone-error']");
 
-    function phoneDigits() { return phoneInput ? phoneInput.value.replace(/\D/g, "") : ""; }
+    function phoneDigits() {
+      if (!phoneInput) return "";
+      var digits = phoneInput.value.replace(/\D/g, "");
+      // Autofill (and pasted numbers) often include the country's dial code, e.g. "+34 600
+      // 123 456" for a 9-digit ES number — strip it so it doesn't get counted as part of
+      // the national number.
+      var dialOpt = phoneCC && phoneCC.selectedOptions && phoneCC.selectedOptions[0];
+      var dial = dialOpt ? dialOpt.getAttribute("data-dial") : "";
+      if (dial && digits.indexOf(dial) === 0) digits = digits.slice(dial.length);
+      return digits;
+    }
     function phoneValid() {
       var digits = phoneDigits();
       if (!digits) return true;
@@ -265,7 +275,7 @@
 
     if (phoneInput) {
       phoneInput.addEventListener("input", function () {
-        var v = phoneInput.value.replace(/[^\d ]/g, "");
+        var v = phoneInput.value.replace(/[^\d +]/g, "");
         if (v !== phoneInput.value) phoneInput.value = v;
         if (phoneErr && phoneErr.style.display === "block" && phoneValid()) setPhoneError(false);
       });
@@ -347,11 +357,9 @@
         return;
       }
 
-      if (phoneInput && !phoneValid()) {
-        setPhoneError(true);
-        phoneInput.focus();
-        return;
-      }
+      // Phone is optional — an invalid-looking number shows the inline hint but never
+      // blocks submission of an otherwise-valid lead.
+      if (phoneInput) setPhoneError(!phoneValid());
 
       var data = collect(form, action, 2, uuid());
 

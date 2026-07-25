@@ -23,7 +23,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.model.eyebrow": "El modelo",
   "p.model.h2": "Empiezas con poco. Pensado para crecer.",
-  "p.model.lead": "Una pequeña cuota de alta, la plataforma sin coste añadido, y un reparto de lo que ganas. Sin sorpresas escondidas en el contrato.",
+  "p.model.lead": "Una pequeña cuota de alta, la plataforma sin coste añadido, un gasto mínimo en anuncios los primeros 3 meses, y un 17% de lo que ganas. Sin sorpresas escondidas en el contrato.",
 
   "p.ledger.hd": "Plan de franquicia",
   "p.ledger.hdr": "lo que incluye",
@@ -48,7 +48,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.rev.tag": "Reparto de ingresos",
   "p.rev.h3": "Tú diriges el tardeo. Compartimos lo que sale bien.",
-  "p.rev.terms": "Una pequeña parte de los ingresos por entradas, patrocinios y eventos privados gestionados a través de la plataforma.",
+  "p.rev.terms": "17% de los ingresos por entradas, patrocinios y eventos privados gestionados a través de la plataforma.",
   "p.rev.note": "Todo lo demás del tardeo es tuyo. Solo crecemos cuando tú creces.",
 
   "p.maths.eyebrow": "La oportunidad",
@@ -88,7 +88,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.case.eyebrow": "Caso real · El Hachazo",
   "p.case.h3": "Un franquiciado. Dos ciudades. Las dos creciendo.",
-  "p.case.p": "El Hachazo se lanzó en Murcia y Madrid el mismo mes. En junio, el circuito de Murcia ya era estable con 125 asistentes y 460 € en ingresos por entradas; Madrid había pasado de 21 asistentes en su primer mes a 104, con 465 € solo en junio, ambos sin contar lo que ganaron en la barra.",
+  "p.case.p": "El Hachazo se lanzó en Murcia y Madrid el mismo mes. En junio, el circuito de Murcia atrajo a 125 asistentes y 460 € en ingresos por entradas; Madrid atrajo a 104 asistentes y 465 €, ambos sin contar la barra, que se queda el local.",
   "p.case.note": "Los primeros cuatro meses de El Hachazo en cada ciudad. Cada ciudad y cada operador son distintos: los resultados varían.",
   "p.case.cta": "Haz esto en tu ciudad",
   "p.case.s1": "eventos desde el lanzamiento",
