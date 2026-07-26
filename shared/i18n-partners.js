@@ -45,7 +45,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.ledger.recommended": "muy recomendado",
   "p.ledger.5amt": "250 €",
   "p.ledger.5amtnote": "/mes mín.",
-  "p.ledger.5d": "Muy recomendado tus primeros 3 meses de arranque, y luego se ajusta a la baja según el aforo. Gestionamos tus anuncios en Instagram con experiencia propia — ¿ya tienes un canal que te funciona? Úsalo.",
+  "p.ledger.5d": "Muy recomendado tus primeros 3 meses de arranque, y luego se ajusta a la baja según el aforo. Gestionamos tus anuncios en Instagram con experiencia propia — ¿ya tienes un canal que te funciona? Hablemos. Nuestro único objetivo es que el evento sea un éxito, y estamos en el mismo equipo.",
 
   "p.rev.tag": "Reparto de ingresos",
   "p.rev.h3": "Tú diriges el tardeo. Compartimos lo que sale bien.",
@@ -129,18 +129,20 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.map.note": "7 ciudades y creciendo",
   "p.map.cta": "Pon tu ciudad en el mapa",
 
-  "p.cmp.cta": "Empieza tu solicitud",
-
   "p.faq.eyebrow": "Preguntas",
   "p.faq.h2": "Lo que preguntan los franquiciados.",
   "p.faq.q1": "¿Tengo derechos exclusivos en mi zona?",
-  "p.faq.a1": "Sí. Cada franquiciado tiene un radio protegido de 5 km alrededor de sus locales: no firmamos con otro franquiciado dentro de ese radio mientras el tuyo esté activo.",
+  "p.faq.a1": "Sí. Cada franquiciado tiene un radio protegido de 3 km alrededor de su local para el mismo día de la semana de su evento: no firmamos con otro franquiciado que organice ese día dentro de ese radio mientras el tuyo esté activo.",
   "p.faq.q2": "¿Puedo llevar más de una ciudad?",
-  "p.faq.a2": "Sí. El Hachazo lleva Murcia y Madrid con un solo franquiciado. Solicita cada ciudad y la montamos como su propio circuito, con su propio radio.",
+  "p.faq.a2": "Sí, es posible. Hablemos de los detalles cuando hagas tu solicitud.",
   "p.faq.q3": "¿Necesito experiencia organizando tardeos de trivia?",
   "p.faq.a3": "No. El alta y la formación completas están incluidas. Tú pones los locales y el carácter, nosotros la plataforma, el contenido y la marca.",
   "p.faq.q4": "¿Qué pasa con el gasto en anuncios con el tiempo?",
-  "p.faq.a4": "Es muy recomendado tus primeros 3 meses mientras construyes audiencia, y luego se ajusta a la baja según el aforo. ¿Ya tienes un canal que te funciona? Úsalo en su lugar.",
+  "p.faq.a4": "Es muy recomendado tus primeros 3 meses mientras construyes audiencia, y luego se ajusta a la baja según el aforo. ¿Ya tienes un canal que te funciona? Hablemos: nuestro único objetivo es que el evento sea un éxito, y estamos en el mismo equipo.",
+
+  "p.xsell.venue.h": "¿Buscas organizar eventos puntuales?",
+  "p.xsell.venue.d": "Conviértete en local anfitrión en su lugar, sin compromiso de franquicia, sin permanencia.",
+  "p.xsell.venue.cta": "Descubre locales anfitriones",
 
   "p.foot.tagline": "Monta tardeos de trivia. Crea un negocio de verdad. Una franquicia de Tardeo de Trivia, impulsada por nuestra plataforma y nuestra marca."
 });
