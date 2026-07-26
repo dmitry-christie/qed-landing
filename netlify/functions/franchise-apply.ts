@@ -38,6 +38,7 @@ export const handler: Handler = async (event) => {
     "🤝 New Franchise Application",
     `📍 City / area: ${d.city}`,
     `🏠 Venues: ${d.venueSituation || "—"}`,
+    `📍 Premises: ${d.premisesLocation || "—"}`,
     `👤 Name: ${d.firstName} ${d.lastName}`,
     `📧 Email: ${d.email}`,
     `📱 Phone: ${displayPhone(d)}`,

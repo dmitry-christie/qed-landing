@@ -112,6 +112,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.form.vs2": "Tengo contactos, pero aún no cerrados",
   "p.form.vs3": "Necesitaría ayuda para encontrar locales",
   "p.form.vs4": "Solo estoy explorando",
+  "p.form.premises": "Ubicación del local",
+  "p.ph.premises": "Si ya tienes un local en mente, ¿dónde está?",
   "p.form.about": "Sobre ti",
   "p.ph.about": "Experiencia como anfitrión, por qué la trivia, qué te gustaría montar…",
   "p.form.phone": "Teléfono (opcional)",
