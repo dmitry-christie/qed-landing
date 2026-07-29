@@ -495,8 +495,15 @@ html.js .hero .reveal{ opacity:1; transform:none; transition:none; }
 .esmap__shadow{ fill:var(--ink); opacity:.92; }
 .esmap__land{ fill:var(--cream); stroke:var(--ink); stroke-width:3; stroke-linejoin:round; stroke-linecap:round; }
 .esmap__arrow{ fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round; stroke-dasharray:0.5 9; }
+/* Temporary solid "pen" overlay qed.js draws in on scroll-into-view, then crossfades into
+   the real dotted .esmap__arrow above — see animateMapArrows(). */
+.esmap__arrow-draw{ fill:none; stroke:var(--accent); stroke-width:3; stroke-linecap:round; }
 .esmap__arrowhead{ fill:var(--accent); }
 .esmap__pinring{ fill:var(--paper); stroke:var(--ink); stroke-width:2.5; }
+/* Radar-style pulse ring behind each city pin, staggered per-pin via inline animation-delay. */
+.esmap__pulse{ fill:none; stroke:var(--accent); stroke-width:2; opacity:0; transform-box:fill-box; transform-origin:center; animation:esmapPulse 2.6s ease-out infinite; }
+@keyframes esmapPulse{ 0%{ opacity:.55; transform:scale(1); } 100%{ opacity:0; transform:scale(2.1); } }
+@media (prefers-reduced-motion:reduce){ .esmap__pulse{ animation:none; opacity:0; } }
 .esmap__pindot{ fill:var(--accent); }
 .esmap__sat{ fill:var(--ink-soft); }
 .esmap__home{ fill:var(--accent); stroke:var(--ink); stroke-width:3; stroke-linejoin:round; }

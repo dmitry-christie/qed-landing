@@ -41,11 +41,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.ledger.4n": "Trofeos personalizados y materiales",
   "p.ledger.perset": "por set",
   "p.ledger.4d": "Trofeos y materiales del evento hechos a medida para tus ganadores, con precio por set. Las hojas de respuestas las imprimes tú.",
-  "p.ledger.5n": "Gasto en anuncios",
-  "p.ledger.recommended": "muy recomendado",
-  "p.ledger.5amt": "250 €",
-  "p.ledger.5amtnote": "/mes mín.",
-  "p.ledger.5d": "Muy recomendado tus primeros 3 meses de arranque, y luego se ajusta a la baja según el aforo. Gestionamos tus anuncios en Instagram con experiencia propia — ¿ya tienes un canal que te funciona? Hablemos. Nuestro único objetivo es que el evento sea un éxito, y estamos en el mismo equipo.",
 
   "p.rev.tag": "Reparto de ingresos",
   "p.rev.h3": "Tú diriges el tardeo. Compartimos lo que sale bien.",

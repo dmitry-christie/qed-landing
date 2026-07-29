@@ -28,9 +28,11 @@ export const handler: Handler = async (event) => {
   const page = d.page || "partners";
 
   // step 1 = partial submit, fire-and-forget from the client (shared/qed.js): forward to
-  // Segment for the retargeting audience, but don't ping the founders' Telegram.
+  // Segment for the retargeting audience, but don't ping the founders' Telegram. Distinct
+  // event name from step 2's "Form Submitted" so a Lead conversion mapped to that name in
+  // Google Ads / Meta can never accidentally include abandoners — see CLAUDE.md Analytics.
   if (d._step === "1") {
-    await sendToSegment("Form Submitted", d, page);
+    await sendToSegment("Lead Started", d, page);
     return json(200, { ok: true });
   }
 

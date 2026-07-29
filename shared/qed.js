@@ -40,17 +40,84 @@
     });
   }
 
-  /* scroll reveal */
+  /* scroll reveal + count-up stat numbers + map route draw-on — one observer, same trigger
+     point for all three, so a section's numbers/arrows animate in sync with its fade-in.
+
+     Count-up elements are authored with their real final value already in the HTML
+     (e.g. <span data-count="125">125</span>) so a no-JS visitor sees the correct number
+     immediately; only once JS confirms it can animate does it blank them to "0" up front,
+     ready to count back up to the authored value when scrolled into view. */
   var reveals = document.querySelectorAll(".reveal");
+  var counters = document.querySelectorAll("[data-count]");
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reveals.length) {
+
+  function easeOutCubic(p) { return 1 - Math.pow(1 - p, 3); }
+
+  function animateCount(el) {
+    var target = parseInt(el.getAttribute("data-count"), 10);
+    if (!isFinite(target)) return;
+    var duration = 3000, start = null;
+    function tick(ts) {
+      if (start === null) start = ts;
+      var p = Math.min((ts - start) / duration, 1);
+      el.textContent = Math.round(easeOutCubic(p) * target);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Draws each route arrow from Valencia outward as if being penned in, then crossfades
+  // into the real (dotted, arrowhead-tipped) static path. Draws via a temporary solid
+  // overlay rather than animating the original's stroke-dasharray directly, because the
+  // original's dotted "0.5 9" pattern can't be smoothly interpolated from/to, and its
+  // marker-end arrowhead would otherwise render at full opacity from frame one regardless
+  // of dash progress — hiding the original until the overlay finishes sidesteps both.
+  function animateMapArrows(arrows) {
+    Array.prototype.forEach.call(arrows, function (path, i) {
+      var len = path.getTotalLength();
+      var overlay = path.cloneNode();
+      overlay.removeAttribute("marker-end");
+      overlay.setAttribute("class", "esmap__arrow-draw");
+      overlay.style.strokeDasharray = len;
+      overlay.style.strokeDashoffset = len;
+      path.style.opacity = "0";
+      path.parentNode.insertBefore(overlay, path.nextSibling);
+
+      setTimeout(function () {
+        var duration = Math.max(650, Math.min(1400, len * 4)), start = null;
+        function tick(ts) {
+          if (start === null) start = ts;
+          var p = Math.min((ts - start) / duration, 1);
+          overlay.style.strokeDashoffset = String(len * (1 - easeOutCubic(p)));
+          if (p < 1) { requestAnimationFrame(tick); return; }
+          path.style.transition = overlay.style.transition = "opacity .25s ease";
+          path.style.opacity = "1";
+          overlay.style.opacity = "0";
+          setTimeout(function () { overlay.remove(); }, 260);
+        }
+        requestAnimationFrame(tick);
+      }, i * 130);
+    });
+  }
+
+  if (reveals.length || counters.length) {
     if ("IntersectionObserver" in window && !reduce) {
+      counters.forEach(function (el) { el.textContent = "0"; });
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
-          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          if (e.target.hasAttribute("data-count")) {
+            animateCount(e.target);
+            return;
+          }
+          e.target.classList.add("in");
+          var arrows = e.target.querySelectorAll(".esmap__arrow");
+          if (arrows.length) animateMapArrows(arrows);
         });
       }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
       reveals.forEach(function (el) { io.observe(el); });
+      counters.forEach(function (el) { io.observe(el); });
     } else {
       reveals.forEach(function (el) { el.classList.add("in"); });
     }
@@ -104,11 +171,11 @@
       }
     } catch (e) {}
   }
-  // Lead funnel — Segment naming spec (Title Case, Object + Action). We fire ONE event
-  // name, "Form Submitted", split by a `step` property so partial and full submits each
-  // build a retargeting audience:
-  //   step 1 = the visitor cleared step 1 (name + email captured) — may not finish.
-  //   step 2 = the full lead, carrying every step-1 property plus the step-2 fields.
+  // Lead funnel — Segment naming spec (Title Case, Object + Action). Two distinct event
+  // names, not one name split by a `step` property, so a Lead conversion mapped to
+  // "Form Submitted" in Google Ads / Meta can never accidentally include abandoners:
+  //   "Lead Started"   = the visitor cleared step 1 (name + email captured) — may not finish.
+  //   "Form Submitted" = the full lead, carrying every step-1 property plus the step-2 fields.
   // Both go to Segment server-side (netlify/lib/forms.ts) for hashed traits + ad-blocker
   // resistance: the step-1 POST is fire-and-forget (no Telegram, no UI wait); the step-2
   // POST is the real submit. dataLayer gets both here for GTM parity — Segment is only
@@ -286,7 +353,7 @@
       if (phoneCC) phoneCC.addEventListener("change", function () { if (phoneErr && phoneErr.style.display === "block") setPhoneError(!phoneValid()); });
     }
 
-    /* step 1 → step 2: validate required fields, fire the partial "Form Submitted" (step 1),
+    /* step 1 → step 2: validate required fields, fire the partial "Lead Started" (step 1),
        then hand off to step 2 (CSS crossfades/collapses — see .at-step2 rules in qed.css) */
     if (continueBtn && step2) {
       continueBtn.addEventListener("click", function () {
@@ -306,7 +373,7 @@
           form.__step1Sent = true;
           var d1 = collect(form, action, 1, uuid());
           var et = form.elements.eventType;
-          pushDataLayer("Form Submitted", { step: 1, form: d1.form, eventType: et ? et.value : undefined, event_id: d1._event_id });
+          pushDataLayer("Lead Started", { step: 1, form: d1.form, eventType: et ? et.value : undefined, event_id: d1._event_id });
           // fire-and-forget: partial lead → Segment (no Telegram). Never blocks the UI.
           try {
             fetch(action, {

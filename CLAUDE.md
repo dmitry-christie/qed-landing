@@ -98,10 +98,12 @@ Consent-gated Segment (`shared/consent.js`, official `analytics.js` v1 snippet, 
 hardcoded client-side like a GA measurement id — same key used server-side in
 `netlify/lib/forms.ts`). Nothing loads until the visitor grants Analytics consent, and never
 on `*.netlify.app` previews. The page view (`analytics.page()`) carries `page_type: "landing"`,
-`section` (`window.QED_SITE`; hub = `"home"`), and `language`. Forms fire `Form Submitted` at
-step 1 and step 2, sent server-side via Segment's HTTP Tracking API (`sendToSegment`) — not
-the client SDK, so it isn't blocked by an ad blocker and still fires on the fire-and-forget
-step-1 partial. Segment fans events out to Meta Conversions API / Google Ads / GA4 via
+`section` (`window.QED_SITE`; hub = `"home"`), and `language`. Forms fire two distinct event
+names — `Lead Started` at step 1, `Form Submitted` at step 2 — rather than one name split by
+a `step` property, so a Lead conversion mapped to `Form Submitted` in Google Ads / Meta can't
+accidentally include abandoners. Sent server-side via Segment's HTTP Tracking API
+(`sendToSegment`) — not the client SDK, so it isn't blocked by an ad blocker and still fires
+on the fire-and-forget step-1 partial. Segment fans events out to Meta Conversions API / Google Ads / GA4 via
 destinations configured once in the Segment dashboard.
 
 ## CRM (Brevo)

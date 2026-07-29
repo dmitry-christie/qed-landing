@@ -480,9 +480,11 @@ export async function sendToSegment(event: string, d: Dict, page: string): Promi
   // "site" / "language" / "product" naming matches the main site's own Segment
   // properties so both sources roll up consistently downstream.
   const properties: Record<string, unknown> = {
-    // step 1 = partial (name + email captured, may not finish) · step 2 = full lead. Both
-    // fire "Form Submitted"; the client splits them (shared/qed.js) to build two retargeting
-    // audiences (started-but-not-finished vs completed). Defaults to 2 for older callers.
+    // step 1 = partial (name + email captured, may not finish, event name "Lead Started") ·
+    // step 2 = full lead (event name "Form Submitted"). Kept as its own property too — on
+    // top of the distinct event names — so a single retargeting-audience query can still
+    // split started-but-not-finished vs completed without re-deriving it from the event
+    // name. Defaults to 2 for older callers.
     step: Number(d._step) === 1 ? 1 : 2,
     site: (d.lang || "EN").toUpperCase() === "ES" ? "tardeo-de-trivia" : "quiz-eat-drink",
     language: (d.lang || "EN").toLowerCase(),
