@@ -125,6 +125,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.map.home": "casa",
   "p.map.note": "7 ciudades y creciendo",
   "p.map.cta": "Pon tu ciudad en el mapa",
+  "p.map.country": "ESPAÑA",
 
   "p.faq.eyebrow": "Preguntas",
   "p.faq.h2": "Lo que preguntan los franquiciados.",

@@ -6,7 +6,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.nav.kicker": "Empresas",
   "c.nav.formats": "Formatos",
   "c.nav.how": "Cómo funciona",
-  "c.nav.faq": "FAQ",
+  "c.nav.faq": "Preguntas",
   "c.cta.quote": "Pide presupuesto",
   "c.cta.how": "Ver cómo funciona",
   "c.cta.express": "Empieza con Express",

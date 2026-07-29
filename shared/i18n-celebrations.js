@@ -8,7 +8,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.nav.kicker": "Celebraciones",
   "cel.nav.formats": "Formatos",
   "cel.nav.how": "Cómo funciona",
-  "cel.nav.faq": "FAQ",
+  "cel.nav.faq": "Preguntas",
   "cel.cta.plan": "Organiza mi evento",
   "cel.cta.how": "Ver cómo funciona",
   "cel.cta.express": "Empieza con Express",

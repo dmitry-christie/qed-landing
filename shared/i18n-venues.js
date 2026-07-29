@@ -8,7 +8,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.nav.plans": "Planes",
   "v.nav.numbers": "Por qué funciona",
   "v.nav.get": "Qué te llevas",
-  "v.nav.faq": "FAQ",
+  "v.nav.faq": "Preguntas",
   "v.cta.start": "Empieza ya",
   "v.cta.numbers": "Mira por qué funciona",
   "v.cta.expstart": "Empieza con Express",
