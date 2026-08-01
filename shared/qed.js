@@ -54,12 +54,14 @@
   function easeOutCubic(p) { return 1 - Math.pow(1 - p, 3); }
 
   /* Group thousands the way the current language does, so a four-figure counter lands on
-     "6,700" in English and "6700" in Spanish (Spanish only groups from five figures) rather
-     than the bare "6700" a raw Number gives you. Falls back to the raw number on old
-     browsers without Intl. */
+     "6,700" in English and "6.700" in Spanish rather than the bare "6700" a raw Number gives
+     you. useGrouping:"always" is deliberate — Spanish defaults to grouping only from five
+     figures, but the brand writes "6.700+" (see the ES franchise one-pager), and a counter
+     that disagrees with the printed collateral reads as a different number. Falls back to the
+     raw number where Intl or the option is unavailable. */
   function formatCount(n) {
-    try { return n.toLocaleString(document.documentElement.lang || "en"); }
-    catch (e) { return String(n); }
+    try { return new Intl.NumberFormat(document.documentElement.lang || "en", { useGrouping: "always" }).format(n); }
+    catch (e) { try { return n.toLocaleString(document.documentElement.lang || "en"); } catch (e2) { return String(n); } }
   }
 
   function animateCount(el) {
