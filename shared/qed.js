@@ -53,6 +53,15 @@
 
   function easeOutCubic(p) { return 1 - Math.pow(1 - p, 3); }
 
+  /* Group thousands the way the current language does, so a four-figure counter lands on
+     "6,700" in English and "6700" in Spanish (Spanish only groups from five figures) rather
+     than the bare "6700" a raw Number gives you. Falls back to the raw number on old
+     browsers without Intl. */
+  function formatCount(n) {
+    try { return n.toLocaleString(document.documentElement.lang || "en"); }
+    catch (e) { return String(n); }
+  }
+
   function animateCount(el) {
     var target = parseInt(el.getAttribute("data-count"), 10);
     if (!isFinite(target)) return;
@@ -60,7 +69,7 @@
     function tick(ts) {
       if (start === null) start = ts;
       var p = Math.min((ts - start) / duration, 1);
-      el.textContent = Math.round(easeOutCubic(p) * target);
+      el.textContent = formatCount(Math.round(easeOutCubic(p) * target));
       if (p < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
