@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.classList.add('js')</script>
 <title data-i18n="p.title">QED Partners · Run trivia nights. Build a real business.</title>
-<meta name="description" data-i18n-content="p.metadesc" content="Become a QED franchise partner. Our platform, content and brand. Your venues and personality. A paying room every week, with onboarding, training and SLA support.">
+<meta name="description" data-i18n-content="p.metadesc" content="Become a QED franchise partner. Our platform, content and brand. Your venues and personality. A paying room every week, with onboarding, training and support that replies in under 24 hours.">
 <meta name="theme-color" content="#1F1A14">
 <meta property="og:title" data-i18n-content="p.title" content="QED Partners · Run trivia nights. Build a real business.">
 <meta property="og:description" data-i18n-content="p.ogdesc" content="A franchise built on weekly quiz nights. Low entry, real unit economics, full support.">
@@ -42,6 +42,11 @@
   @media (max-width:460px){ .tl{ grid-template-columns:1fr; } }
   .maths{ font-weight:900; letter-spacing:-0.03em; line-height:1.05; font-size:clamp(26px,3.4vw,40px); }
   .maths .op{ color:var(--ink-mute); font-weight:700; margin:0 .25em; }
+  /* Revenue share: one rate per line, so no reader can mistake the 17% for a blanket rate. */
+  .rev__list{ list-style:none; margin:0; padding:16px 0 0; border-top:2px dashed rgba(31,26,20,.25); display:flex; flex-direction:column; gap:11px; }
+  .rev__list li{ display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:baseline; }
+  .rev__pct{ font-family:var(--mono); font-weight:700; font-size:20px; letter-spacing:-0.02em; }
+  .rev__d{ font-weight:700; font-size:15px; line-height:1.45; }
 </style>
 <script>window.QED_SITE = "partners";</script>
 <script src="/config.js"></script>
@@ -100,7 +105,7 @@
       <div class="reveal" style="max-width:62ch">
         <span class="eyebrow" data-i18n="p.model.eyebrow">The model</span>
         <h2 class="h2" style="margin-top:14px" data-i18n="p.model.h2">Low to start. Built to compound.</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="p.model.lead">A small setup fee, the platform itself at no extra charge, an ad spend minimum for your first 3 months, and a 17% share of what you earn. No surprises buried in the contract.</p>
+        <p class="lead" style="margin-top:12px" data-i18n="p.model.lead">A small setup fee, the platform itself at no extra charge, €250 a month in ads for your first 3 months, and a 17% share of ticket sales. No surprises buried in the contract.</p>
       </div>
 
       <div class="split reveal" style="--split:1.15fr 0.85fr;--split-align:start;margin-top:30px">
@@ -118,13 +123,13 @@
             <div class="ledger__row">
               <div>
                 <div style="font-family:var(--sans);font-weight:800;font-size:17px"><span data-i18n="p.ledger.2n">Platform access</span> <span class="tag" style="margin-left:6px;vertical-align:middle" data-i18n="p.ledger.included">included</span></div>
-                <div class="muted" style="font-family:var(--sans);font-weight:500;margin-top:5px;font-size:14px" data-i18n="p.ledger.2d">Unlimited events and every platform feature. No monthly fee.</div>
+                <div class="muted" style="font-family:var(--sans);font-weight:500;margin-top:5px;font-size:14px" data-i18n="p.ledger.2d">One weekly night included, with every platform feature. Want to run more? We'll coordinate them with you. No monthly fee.</div>
               </div>
             </div>
             <div class="ledger__row">
               <div>
                 <div style="font-family:var(--sans);font-weight:800;font-size:17px"><span data-i18n="p.ledger.3n">Question packs</span> <span class="tag" style="margin-left:6px;vertical-align:middle" data-i18n="p.ledger.included">included</span></div>
-                <div class="muted" style="font-family:var(--sans);font-weight:500;margin-top:5px;font-size:14px" data-i18n="p.ledger.3d">New content every week — 414+ packs already, each with 4 rounds of 10 questions, written by real humans and checked by both humans and AI.</div>
+                <div class="muted" style="font-family:var(--sans);font-weight:500;margin-top:5px;font-size:14px" data-i18n="p.ledger.3d">New content every week — 400+ packs already, each with 4 rounds of 10 questions, written by real humans and checked by both humans and AI.</div>
               </div>
             </div>
             <div class="ledger__row">
@@ -137,11 +142,18 @@
         </div>
 
         <!-- revenue share -->
-        <div class="card pad" style="background:var(--yellow);display:flex;flex-direction:column;gap:16px;min-height:100%">
+        <div class="card pad" style="background:var(--yellow);display:flex;flex-direction:column;gap:14px;min-height:100%">
           <span class="tag tag--solid" style="align-self:flex-start" data-i18n="p.rev.tag">Revenue share</span>
           <h3 class="h3" style="font-size:clamp(20px,2.2vw,26px)" data-i18n="p.rev.h3">You run the night. We share the upside.</h3>
-          <p style="font-weight:800;font-size:clamp(16px,1.9vw,19px);line-height:1.4;margin:0;border-top:2px dashed rgba(31,26,20,.25);padding-top:16px" data-i18n="p.rev.terms">17% of ticket revenue, sponsorship and private events booked through the platform.</p>
+          <ul class="rev__list">
+            <li><span class="rev__pct">17%</span><span class="rev__d" data-i18n="p.rev.r1">of the tickets for your weekly nights, wherever they were sold.</span></li>
+            <li><span class="rev__pct">25%</span><span class="rev__d" data-i18n="p.rev.r2">of the local sponsorships you land.</span></li>
+            <li><span class="rev__pct">25%</span><span class="rev__d" data-i18n="p.rev.r3">of the private events you close yourself.</span></li>
+            <li><span class="rev__pct">32%</span><span class="rev__d" data-i18n="p.rev.r4">of the private events we bring you.</span></li>
+          </ul>
+          <p style="margin:0;font-weight:700;font-size:14px;line-height:1.5" data-i18n="p.rev.volume">And it comes down with volume: past 1,500 players a month, tickets drop to 15%, and past 10 private events a month, those drop to 30% and 22%.</p>
           <p style="margin:0;font-weight:600;font-size:14px;line-height:1.5" data-i18n="p.rev.note">Everything else from the night is yours. We only grow when you do.</p>
+          <p style="margin:0;font-weight:500;font-size:12px;line-height:1.5;opacity:.72" data-i18n="p.rev.legal">Rates current as of August 2026. The full conditions are set out in the franchise agreement and in the pre-contract information we give you before you sign.</p>
         </div>
       </div>
 
@@ -172,7 +184,7 @@
             <li data-i18n="p.deal.q2">Fresh, themed question content every week</li>
             <li data-i18n="p.deal.q3">A brand players already recognise and trust</li>
             <li data-i18n="p.deal.q4">Full onboarding, training and brand setup</li>
-            <li data-i18n="p.deal.q5">SLA-backed support when you need it</li>
+            <li data-i18n="p.deal.q5">Support that replies in under 24 hours</li>
             <li data-i18n="p.deal.q6">A monthly analytics review of your nights</li>
             <li data-i18n="p.deal.q7">A direct WhatsApp / Telegram support channel</li>
           </ul>
@@ -341,7 +353,10 @@
       <div class="faq reveal" style="margin-top:26px">
         <details open>
           <summary><span data-i18n="p.faq.q1">Do I get exclusive rights to my area?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="p.faq.a1">Yes. Each partner gets a protected 3km radius around their venue for the same day of the week as their event, so we won't sign another partner running trivia that day inside it while you're active.</div>
+          <div class="ans">
+            <p style="margin:0" data-i18n="p.faq.a1">Yes. Each partner gets a protected 2.5km radius around their venue for the same day of the week: while yours is active, we won't sign another partner running a Quiz Eat Drink night that day inside that radius.</p>
+            <p style="margin:10px 0 0" data-i18n="p.faq.a1b">Tardeo de Trivia, our Spanish-language quiz brand, is a different product with a different audience and is run separately.</p>
+          </div>
         </details>
         <details>
           <summary><span data-i18n="p.faq.q2">Can I run more than one city?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -353,7 +368,7 @@
         </details>
         <details>
           <summary><span data-i18n="p.faq.q4">What happens to the ad spend over time?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="p.faq.a4">It's highly recommended for your first 3 months while you build an audience, then it scales down with turnout. Already have a channel that works? Let's talk — our only goal is making the event a success, and we're on the same team.</div>
+          <div class="ans" data-i18n="p.faq.a4">It's €250 a month for your first 3 months, highly recommended while you build an audience, then it scales down with turnout. Already have a channel that works? Let's talk — our only goal is making the event a success, and we're on the same team.</div>
         </details>
       </div>
     </div>
