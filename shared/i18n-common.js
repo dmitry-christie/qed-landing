@@ -13,6 +13,10 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "foot.corporate": "Empresas",
   "foot.celebrations": "Celebraciones",
   "foot.partner": "Franquicia",
+  /* TDT publishes partners/ at /franquicias/ (see BRAND_SLUGS in build.mjs). Every internal
+     link to that page carries data-i18n-href="foot.partnerhref", so the ES site links straight
+     to the new path instead of bouncing through the 301. The two must change together. */
+  "foot.partnerhref": "/franquicias/",
   "foot.venue": "Local anfitrión",
   "foot.privacy": "Política de privacidad",
   "foot.terms": "Términos y aviso legal",
