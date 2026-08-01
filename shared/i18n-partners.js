@@ -12,7 +12,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.nav.apply": "Solicitar",
 
   "p.hero.tag": "Oportunidad de franquicia",
-  "p.hero.h1a": "Monta tardeos de trivia. Crea un ",
+  "p.hero.h1a": "Monta un Tardeo de Trivia. Crea un ",
   "p.hero.h1b": "negocio de verdad.",
   "p.hero.sub": "Te damos la plataforma, el contenido y una marca a la que la gente ya viene. Tú pones los locales y el carácter. Y luego mantienes la sala llena.",
   "p.cta.apply": "Solicítalo ya",
@@ -21,7 +21,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.stat.locations": "ciudades",
   "p.stat.players": "jugadores registrados",
   "p.stat.reply": "para responder",
-  "p.stat.launch": "semanas al primer evento",
 
   "p.model.eyebrow": "El modelo",
   "p.model.h2": "Empiezas con poco. Pensado para crecer.",
