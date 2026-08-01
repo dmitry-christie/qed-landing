@@ -50,7 +50,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.rev.r3": "Los eventos privados que te traigamos nosotros.",
   "p.rev.r4": "Los patrocinios locales que cierres tú.",
   "p.rev.r5": "Los patrocinios que te traigamos nosotros.",
-  "p.rev.scale": "Cada porcentaje baja a medida que creces, con los asistentes que reúnes y los eventos privados que montas.",
+  "p.rev.scale": "Cada comisión baja al alcanzar su hito de volumen mensual: asistentes, eventos privados y patrocinios.",
   "p.rev.note": "Todo lo demás del tardeo es tuyo. Solo crecemos cuando tú creces.",
   "p.rev.legal": "Te pasamos las condiciones económicas completas en la llamada, junto con la información precontractual que se entrega antes de firmar.",
 

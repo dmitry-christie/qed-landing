@@ -58,14 +58,17 @@ const PAGES = ["", "corporate/", "celebrations/", "venues/", "partners/", "priva
 const SEO_MARK = "<!-- build:seo -->";
 
 /* ---- per-brand URL slugs ----
-   PAGES are source folders. A page may be published at a different path on one brand: TDT
-   serves partners/ as /franquicias/ (the word a Spanish franchisee actually searches for)
-   while QED keeps /partners/. Everything URL-shaped goes through slugFor() — sitemap,
-   canonical, hreflang, og:url, the folder written to the publish tree, and the 301 off the
-   old path — so the published URL and the tags pointing at it can't drift apart. The
-   matching internal links are swapped client-side by the foot.partnerhref key in
-   shared/i18n-common.js; both must move together if this map ever changes. */
-const BRAND_SLUGS = { TDT: { "partners/": "franquicias/" } };
+   PAGES are source folders; a page can publish at a different path per brand. partners/ ships
+   as /franchise/ on QED and /franquicias/ on TDT — each brand's audience searches its own
+   word, and neither searches "partners". Everything URL-shaped goes through slugFor() —
+   sitemap, canonical, hreflang, og:url, the folder written to the publish tree, and the 301
+   off the old path — so the published URL and the tags pointing at it can't drift apart.
+   Internal links are baked with the QED path and swapped to the TDT one client-side by the
+   foot.partnerhref key in shared/i18n-common.js; both must move together with this map. */
+const BRAND_SLUGS = {
+  QED: { "partners/": "franchise/" },
+  TDT: { "partners/": "franquicias/" },
+};
 const slugFor = (b, page) => (BRAND_SLUGS[b] && BRAND_SLUGS[b][page]) || page;
 
 // Per-brand favicon / apple-touch-icon / og:image — see CLAUDE.md "Social preview images".
@@ -190,26 +193,34 @@ if (brand) {
 
 /* ---- publish localized page paths (see BRAND_SLUGS) ----
    Runs after every step above, all of which read a page by its SOURCE folder — moving the
-   folder earlier would strand them. On the brand that renames a path the old folder is moved
-   (not copied) and a 301 is written, so the old URL keeps working for inbound links that
-   predate the change (ads, search results, anything already shared) without leaving a
-   duplicate page for crawlers to index. On every other build the page is copied to the alias
-   instead, so the dev language switcher's ES links resolve in local preview rather than 404. */
+   folder earlier would strand them. The folder is moved, not copied, so there's no duplicate
+   for crawlers to index, and every OTHER known path for that page 301s onto this brand's:
+   the source folder (inbound links that predate the rename — ads, search results, anything
+   already shared) and the other brand's slug. That last one matters because internal links
+   are baked with the QED path and only swapped to the TDT one by JS, so without it a crawler
+   or a JS failure on TDT would walk into a 404 on /franchise/. */
 const slugMoves = Object.entries(BRAND_SLUGS[brand] || {});
 if (slugMoves.length) {
   const rules = [];
   for (const [from, to] of slugMoves) {
-    const [fromDir, toDir] = [from.replace(/\/$/, ""), to.replace(/\/$/, "")];
-    renameSync(fromDir, toDir);
-    rules.push(`/${fromDir}      /${to}  301!`, `/${fromDir}/*    /${to}:splat  301!`);
+    renameSync(from.replace(/\/$/, ""), to.replace(/\/$/, ""));
+    const aliases = new Set([from, ...Object.values(BRAND_SLUGS).map((s) => s[from])]);
+    aliases.delete(to);
+    for (const alias of aliases) {
+      const dir = alias.replace(/\/$/, "");
+      rules.push(`/${dir}      /${to}  301!`, `/${dir}/*    /${to}:splat  301!`);
+    }
   }
   writeFileSync("_redirects", rules.join("\n") + "\n");
-  console.log(`[qed build] ${brand}: published ${slugMoves.map(([f, t]) => `${f} as /${t}`).join(", ")} (301 from the old path)`);
+  console.log(`[qed build] ${brand}: published ${slugMoves.map(([f, t]) => `${f} as /${t}`).join(", ")}; 301s from every other path`);
 } else if (!brand) {
-  // Unbranded local/preview build only — never on QED, which must not serve the ES path at
-  // all (robots.txt allows crawling there, so a copy would be indexable duplicate content).
-  for (const [from, to] of Object.entries(BRAND_SLUGS.TDT)) {
-    cpSync(from.replace(/\/$/, ""), to.replace(/\/$/, ""), { recursive: true });
+  // Unbranded local/preview build only: publish every brand's path so both the baked EN links
+  // and the ES ones resolve while reviewing. Never on a branded build, where robots.txt allows
+  // crawling and the other brand's path would be indexable duplicate content.
+  for (const slugs of Object.values(BRAND_SLUGS)) {
+    for (const [from, to] of Object.entries(slugs)) {
+      cpSync(from.replace(/\/$/, ""), to.replace(/\/$/, ""), { recursive: true });
+    }
   }
 }
 

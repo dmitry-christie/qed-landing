@@ -81,8 +81,8 @@ Decisions (so nobody re-litigates them):
 
 | Campaign | Language | Keywords (exact/phrase) | Landing |
 |---|---|---|---|
-| Franchise ES | ES | franquicia de ocio, franquicia eventos, montar negocio ocio nocturno, franquicia rentable pequeña | /partners/ (TDT) |
-| Franchise EN | EN | quiz night franchise, pub quiz business, events franchise spain | /partners/ (QED) |
+| Franchise ES | ES | franquicia de ocio, franquicia eventos, montar negocio ocio nocturno, franquicia rentable pequeña | /franquicias/ (TDT) |
+| Franchise EN | EN | quiz night franchise, pub quiz business, events franchise spain | /franchise/ (QED) |
 | Venues ES | ES | animación para bares, cómo llenar mi bar entre semana, eventos para bares, quiz para bares | /venues/ |
 | Corporate | ES+EN | team building valencia/madrid/murcia, cena de empresa original, actividades team building | /corporate/ |
 | Celebrations | ES | despedida de soltera original valencia, cumpleaños diferente valencia, juegos despedida soltera | /celebrations/ |
