@@ -42,10 +42,11 @@
   @media (max-width:460px){ .tl{ grid-template-columns:1fr; } }
   .maths{ font-weight:900; letter-spacing:-0.03em; line-height:1.05; font-size:clamp(26px,3.4vw,40px); }
   .maths .op{ color:var(--ink-mute); font-weight:700; margin:0 .25em; }
-  /* Revenue share: the five streams are named, the rates aren't. Each stream has its own
-     percentage and they step down with volume, which needs a conversation rather than a card —
-     the founders walk through the numbers on the call (see p.rev.legal). */
-  .rev__intro{ margin:0; padding-top:16px; border-top:2px dashed rgba(31,26,20,.25); font-weight:800; font-size:clamp(15px,1.7vw,17px); line-height:1.4; }
+  /* Revenue share states what is shared, never the rates. Tickets, sponsorship and private
+     events each carry a different percentage and each steps down with volume, so any single
+     figure on the page would be wrong for four of the five streams. The founders give the real
+     numbers on the first call; the contract and pre-contract pack are where they live. */
+  .rev__terms{ margin:0; padding-top:16px; border-top:2px dashed rgba(31,26,20,.25); font-weight:800; font-size:clamp(15px,1.7vw,17px); line-height:1.4; }
 </style>
 <script>window.QED_SITE = "partners";</script>
 <script src="/config.js"></script>
@@ -104,7 +105,7 @@
       <div class="reveal" style="max-width:62ch">
         <span class="eyebrow" data-i18n="p.model.eyebrow">The model</span>
         <h2 class="h2" style="margin-top:14px" data-i18n="p.model.h2">Low to start. Built to compound.</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="p.model.lead">A small setup fee, the platform itself at no extra charge, €250 a month in ads for your first 3 months (optional, and strongly recommended), and a share of what the nights bring in. No surprises buried in the contract.</p>
+        <p class="lead" style="margin-top:12px" data-i18n="p.model.lead">A small setup fee, the platform itself at no extra charge, and a share of what the nights bring in. We recommend spending on ads over the first months, while the room fills. If you already have an audience of your own, or your own channels, you may not need to. No surprises buried in the contract.</p>
       </div>
 
       <div class="split reveal" style="--split:1.15fr 0.85fr;--split-align:start;margin-top:30px">
@@ -144,17 +145,10 @@
         <div class="card pad" style="background:var(--yellow);display:flex;flex-direction:column;gap:14px;min-height:100%">
           <span class="tag tag--solid" style="align-self:flex-start" data-i18n="p.rev.tag">Revenue share</span>
           <h3 class="h3" style="font-size:clamp(20px,2.2vw,26px)" data-i18n="p.rev.h3">You run the night. We share the upside.</h3>
-          <p class="rev__intro" data-i18n="p.rev.intro">We take a share of five things:</p>
-          <ul class="ticks ticks--ink">
-            <li data-i18n="p.rev.r1">The tickets for your weekly nights, wherever they were sold.</li>
-            <li data-i18n="p.rev.r2">The private events you close yourself.</li>
-            <li data-i18n="p.rev.r3">The private events we bring you.</li>
-            <li data-i18n="p.rev.r4">The local sponsorships you close yourself.</li>
-            <li data-i18n="p.rev.r5">The sponsorships we bring you.</li>
-          </ul>
-          <p style="margin:0;font-weight:700;font-size:14px;line-height:1.5" data-i18n="p.rev.scale">Each share comes down once it hits its monthly volume milestone: players through the door, private events, and sponsorship.</p>
+          <p class="rev__terms" data-i18n="p.rev.terms">A share of the tickets for your weekly nights, wherever they were sold, and a different share of sponsorships and private events. It comes down with the volume you do.</p>
+          <p style="margin:0;font-weight:700;font-size:14px;line-height:1.5" data-i18n="p.rev.call">We give you the exact figures on the first call, and the full conditions in writing before you sign anything.</p>
           <p style="margin:0;font-weight:600;font-size:14px;line-height:1.5" data-i18n="p.rev.note">Everything else from the night is yours. We only grow when you do.</p>
-          <p style="margin:0;font-weight:500;font-size:12px;line-height:1.5;opacity:.72" data-i18n="p.rev.legal">Rates and fees current as of 1 August 2026, subject to change. We go through the full numbers on the call, and they are set out in the franchise agreement and in the pre-contract information we give you before you sign.</p>
+          <p style="margin:0;font-weight:500;font-size:12px;line-height:1.5;opacity:.72" data-i18n="p.rev.legal">The full commercial terms are set out in the franchise agreement and in the pre-contract information we give you before you sign.</p>
         </div>
       </div>
 
@@ -375,7 +369,7 @@
         </details>
         <details>
           <summary><span data-i18n="p.faq.q4">What happens to the ad spend over time?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="p.faq.a4">It's €250 a month for your first 3 months, highly recommended while you build an audience, then it scales down with turnout. Already have a channel that works? Let's talk — our only goal is making the event a success, and we're on the same team.</div>
+          <div class="ans" data-i18n="p.faq.a4">We recommend it over the first months, while you build an audience, and it scales down with turnout after that. If you already have an audience of your own, or channels that work, you may not need it. Let's talk: our only goal is making the event a success, and we're on the same team.</div>
         </details>
       </div>
     </div>

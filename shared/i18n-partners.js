@@ -24,7 +24,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.model.eyebrow": "El modelo",
   "p.model.h2": "Empiezas con poco. Pensado para crecer.",
-  "p.model.lead": "Una pequeña cuota de alta, la plataforma sin coste añadido, 250 € al mes en publicidad los primeros 3 meses (opcional, y muy recomendada), y un porcentaje de lo que generan los tardeos. Sin sorpresas escondidas en el contrato.",
+  "p.model.lead": "Una pequeña cuota de alta, la plataforma sin coste añadido, y un porcentaje de lo que generan los tardeos. Recomendamos invertir en publicidad los primeros meses, mientras se llena la sala. Si ya tienes público propio o tus propios canales, puede que no te haga falta. Sin sorpresas escondidas en el contrato.",
 
   "p.ledger.hd": "Plan de franquicia",
   "p.ledger.hdr": "lo que incluye",
@@ -44,15 +44,10 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.rev.tag": "Reparto de ingresos",
   "p.rev.h3": "Tú diriges el tardeo. Compartimos lo que sale bien.",
-  "p.rev.intro": "Compartimos un porcentaje de cinco cosas:",
-  "p.rev.r1": "Las entradas de tus tardeos semanales, vengan de donde vengan.",
-  "p.rev.r2": "Los eventos privados que cierres tú.",
-  "p.rev.r3": "Los eventos privados que te traigamos nosotros.",
-  "p.rev.r4": "Los patrocinios locales que cierres tú.",
-  "p.rev.r5": "Los patrocinios que te traigamos nosotros.",
-  "p.rev.scale": "Cada comisión baja al alcanzar su hito de volumen mensual: asistentes, eventos privados y patrocinios.",
+  "p.rev.terms": "Un porcentaje de las entradas de tus tardeos semanales, vengan de donde vengan, y un porcentaje distinto de los patrocinios y de los eventos privados. Baja según el volumen que hagas.",
+  "p.rev.call": "Te contamos las cifras exactas en la primera llamada, y te entregamos las condiciones completas por escrito antes de que firmes nada.",
   "p.rev.note": "Todo lo demás del tardeo es tuyo. Solo crecemos cuando tú creces.",
-  "p.rev.legal": "Comisiones y cuotas vigentes a 1 de agosto de 2026, sujetas a cambio. Te pasamos las condiciones económicas completas en la llamada, y se recogen en el contrato de franquicia y en la información precontractual que te entregamos antes de firmar.",
+  "p.rev.legal": "Las condiciones económicas completas se recogen en el contrato de franquicia y en la información precontractual que te entregamos antes de firmar.",
 
   "p.maths.eyebrow": "La oportunidad",
   "p.maths.line": "Una sala llena de jugadores que pagan. Cada semana.",
@@ -150,7 +145,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.faq.q3": "¿Necesito experiencia organizando tardeos de trivia?",
   "p.faq.a3": "No. El alta y la formación completas están incluidas. Tú pones los locales y el carácter, nosotros la plataforma, el contenido y la marca.",
   "p.faq.q4": "¿Qué pasa con el gasto en anuncios con el tiempo?",
-  "p.faq.a4": "Son 250 € al mes durante tus primeros 3 meses, muy recomendable mientras construyes audiencia, y luego se ajusta a la baja según el aforo. ¿Ya tienes un canal que te funciona? Hablemos: nuestro único objetivo es que el evento sea un éxito, y estamos en el mismo equipo.",
+  "p.faq.a4": "Lo recomendamos los primeros meses, mientras construyes audiencia, y luego se ajusta a la baja según el aforo. Si ya tienes público propio o tus propios canales, puede que no te haga falta. Hablemos: nuestro único objetivo es que el evento sea un éxito, y estamos en el mismo equipo.",
 
   "p.xsell.venue.h": "¿Buscas organizar eventos puntuales?",
   "p.xsell.venue.d": "Conviértete en local anfitrión en su lugar, sin compromiso de franquicia, sin permanencia.",
