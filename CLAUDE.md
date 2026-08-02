@@ -16,7 +16,8 @@ Each page is a folder with its own `index.html`:
 - `/` (root `index.html`) — the hub/homepage
 - `/corporate/`, `/celebrations/` — event audiences (2-step lead form → `book-event`)
 - `/venues/` — host-venue signup (`venue-apply`)
-- `/partners/` — franchise (`franchise-apply`)
+- `partners/` — franchise (`franchise-apply`). Folder name ≠ URL: published at `/franchise/`
+  on QED and `/franquicias/` on TDT (see "Per-brand URL slugs").
 - `/privacy/`, `/terms/` — legal
 
 Shared CSS/JS/images live in `/shared/`.
@@ -38,10 +39,30 @@ Shared CSS/JS/images live in `/shared/`.
 key in the right i18n file. Every `data-i18n*` key must have a Spanish string, or the ES
 site leaks English — a page renders `key` in English if its ES value is missing. After copy
 changes, confirm every `data-i18n*` key referenced by a page (after the About partial is
-injected) exists in that page's merged `QED_ES` dictionary.
+injected) exists in that page's merged `QED_ES` dictionary. Quickest check — eval the two
+dictionaries into a `window` shim, then diff against every key in the page **plus
+`shared/about.partial.html`** (the partial's keys only appear post-build):
+
+```bash
+node -e 'global.window={};const f=require("fs"),L=p=>new Function("window","Object",f.readFileSync(p,"utf8"))(window,Object);["shared/i18n-common.js","shared/i18n-partners.js"].forEach(L);const h=f.readFileSync("partners/index.html","utf8")+f.readFileSync("shared/about.partial.html","utf8");console.log([...new Set([...h.matchAll(/data-i18n(?:-(?:content|ph|aria|href))?="([^"]+)"/g)].map(m=>m[1]))].filter(k=>!(k in window.QED_ES)))'
+```
+
+It also catches the reverse: keys left orphaned in the dictionary after a section is rewritten.
 
 Conventions: no em dashes in copy. Localize currency and tax (`€99` / `+ VAT` in English,
-`99 €` / `+ IVA` in Spanish).
+`99 €` / `+ IVA` in Spanish). Counters (`data-count`) format via `useGrouping:"always"` so ES
+reads `6.700`; the ES default drops the separator on four digits and would disagree with the
+printed one-pager.
+
+The legal entity differs by brand: baked English names **QED Imperium Ltd** (UK), the ES
+strings name **Tardeo de Trivia SL · CIF B88885199**. TDT must show only the Spanish entity —
+`foot.legal`, `pr.who.p` (privacy controller) and `tm.who.p` (terms) all have to agree.
+
+**The franchise page publishes no revenue-share percentages and no ad-spend figure.** Each
+stream carries a different rate and each steps down with volume, so any single number on the
+page is wrong for the others; the page names what is shared and the founders give figures on
+the first call. This is a decision, not an omission — don't "fix" it by adding numbers back.
+If they ever go up, the transparency line under the block needs its effective date again.
 
 ## Shared About section (single source)
 
@@ -64,7 +85,33 @@ Analytics (Segment) is not build-time config — `shared/consent.js` hardcodes t
 and loads the SDK client-side once consent is granted, the same way on every build.
 
 Committed source keeps the markers; the build fills them. To run locally without dirtying the
-tree: `git add -A`, `node build.mjs`, inspect, then `git checkout -- .` to restore the markers.
+tree: `git add -A`, `node build.mjs`, inspect, then
+`git checkout -- . && rm -rf franchise franquicias _redirects` to restore. The `rm` is needed
+because those are generated and gitignored, so `git checkout` leaves them behind and the next
+build inherits them.
+
+**Never `git add -A` while a built tree is on disk.** The build deletes `CLAUDE.md`,
+`build.mjs` and the other internal files from the working tree, so staging at that point
+records the deletions and can lose uncommitted edits. Recovery: `git fsck --unreachable |
+grep blob`, then `git cat-file -p <sha>` to find the orphaned staged version.
+
+## Per-brand URL slugs
+
+`PAGES` in build.mjs lists **source folders**. `BRAND_SLUGS` gives a page a different
+published path per brand (`partners/` → `/franchise/` on QED, `/franquicias/` on TDT), and
+everything URL-shaped resolves through `slugFor(brand, page)`: sitemap, canonical, **both**
+hreflang alternates, `og:url`, the folder renamed into the publish tree, and the `_redirects`
+301s. Get one side of the hreflang pair wrong and the two pages stop counting as translations.
+
+The rename runs last, after every step that reads a page by its source folder. Each branded
+build 301s **every other known path** onto its own — the source folder (old inbound links,
+ads) *and* the other brand's slug. That second one isn't cosmetic: internal links are baked
+with the **QED** path and only swapped to the TDT one at runtime by `data-i18n-href=
+"foot.partnerhref"`, so without it a crawler or a JS failure on TDT hits a 404 on `/franchise/`.
+**`BRAND_SLUGS` and `foot.partnerhref` must change together.**
+
+Unbranded local builds copy the folder to every brand's path instead of renaming, so both the
+baked EN links and the ES ones resolve in preview.
 
 ## Social preview images (og:image / favicon)
 
