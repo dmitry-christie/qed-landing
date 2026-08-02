@@ -52,7 +52,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.rev.r5": "Los patrocinios que te traigamos nosotros.",
   "p.rev.scale": "Cada comisión baja al alcanzar su hito de volumen mensual: asistentes, eventos privados y patrocinios.",
   "p.rev.note": "Todo lo demás del tardeo es tuyo. Solo crecemos cuando tú creces.",
-  "p.rev.legal": "Te pasamos las condiciones económicas completas en la llamada, junto con la información precontractual que se entrega antes de firmar.",
+  "p.rev.legal": "Comisiones y cuotas vigentes a 1 de agosto de 2026, sujetas a cambio. Te pasamos las condiciones económicas completas en la llamada, y se recogen en el contrato de franquicia y en la información precontractual que te entregamos antes de firmar.",
 
   "p.maths.eyebrow": "La oportunidad",
   "p.maths.line": "Una sala llena de jugadores que pagan. Cada semana.",
