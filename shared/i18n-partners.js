@@ -134,6 +134,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.map.note": "7 ciudades y creciendo",
   "p.map.cta": "Pon tu ciudad en el mapa",
   "p.map.country": "ESPAÑA",
+  "p.map.alt": "Mapa de España con las ciudades donde montamos tardeos de trivia: Valencia (nuestra casa), Madrid, Barcelona, Murcia y Santiago de Compostela.",
 
   "p.faq.eyebrow": "Preguntas",
   "p.faq.h2": "Lo que preguntan los franquiciados.",

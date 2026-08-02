@@ -100,6 +100,9 @@ window.QED_ES = window.QED_ES || {};
     applyAttr("data-i18n-aria", "aria-label", lang);
     applyAttr("data-i18n-content", "content", lang);
     applyAttr("data-i18n-href", "href", lang);
+    // alt text is the image's accessible name and is what image search indexes, so it leaks
+    // English on the ES site exactly like visible copy does.
+    applyAttr("data-i18n-alt", "alt", lang);
 
     document.querySelectorAll(".langsw button").forEach(function (b) {
       var on = b.getAttribute("data-lang") === lang;

@@ -42,6 +42,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "form.optElse": "¿Algo más?",
   "form.phoneCC": "Prefijo del país",
   "form.phoneErr": "Introduce un número de teléfono válido.",
+  "form.hp": "Deja esto vacío",
 
   /* consent banner */
   "consent.msg": "Usamos algunos datos para entender qué funciona y medir campañas publicitarias. Nada de spam ni de venderlos.",
@@ -109,5 +110,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "about.h2": "Mucho más que solo responder preguntas.",
   "about.p1": "Dmitry, Stu y Evgeny montaron Quiz Eat Drink en Valencia para ir más allá del típico quiz de bar: una sala llena de desconocidos que se van hechos amigos, riéndose de rondas que siguen comentando al día siguiente.",
   "about.p2": "En marzo de 2025 se asociaron con Matt para lanzar Tardeo de Trivia y traer esa misma idea a España: trivia ligada a las sobremesas largas, la buena comida y la gente que ya se junta alrededor de la mesa. Ven y pilla sitio, tanto si vienes a ganar como si solo quieres discutir las respuestas.",
-  "about.caption": "Nuestro equipo · Valencia"
+  "about.caption": "Nuestro equipo · Valencia",
+  "about.imgalt": "El equipo de Tardeo de Trivia celebrando un tardeo de trivia en Valencia"
 });
