@@ -197,11 +197,14 @@ function buildDestinations() {
 }
 
 // ---- consent handoff ----
-// Decoupled from shared/consent.js: that file owns the banner + storage and just sets
-// window.__qedConsentCategories (synchronously, on load) and dispatches `qed:consentchange` on a
-// decision. We read the former on init and listen for the latter, then push into walkerOS. This
-// avoids any load-order race with startFlow's async resolution and keeps consent.js walker-agnostic.
-// Until a real grant arrives, destinations hold their events (walkerOS queues per required category).
+// Decoupled from shared/consent.js: that file owns the banner + storage. We read a prior decision
+// straight from localStorage and listen for live decisions via `qed:consentchange`, then push into
+// walkerOS. Reading localStorage directly (NOT window.__qedConsentCategories) is deliberate: walker.js
+// loads before consent.js, and this init runs in a microtask that can fire BEFORE consent.js's
+// synchronous top-level — so __qedConsentCategories may still be undefined, but the persisted
+// "qed-consent" value is already there from the prior visit. Getting this wrong meant returning
+// visitors' consent never reached the collector and nothing ever sent. Until a decision exists,
+// destinations hold their events (walkerOS queues per required category).
 function pushConsent(elb, cats) {
   if (!cats) return;
   elb("walker consent", {
@@ -209,6 +212,19 @@ function pushConsent(elb, cats) {
     analytics: !!cats.analytics,
     marketing: !!cats.marketing,
   });
+}
+
+// The granular consent stored by consent.js ("qed-consent"), handling the same legacy formats it
+// migrates. Returns {functional,analytics,marketing} or null (undecided).
+function storedConsent() {
+  try {
+    var raw = localStorage.getItem("qed-consent");
+    if (raw == null) return null;
+    if (raw === "granted") return { functional: true, analytics: true, marketing: true };
+    if (raw === "denied") return { functional: false, analytics: false, marketing: false };
+    var p = JSON.parse(raw);
+    return { functional: !!p.functional, analytics: !!p.analytics, marketing: !!p.marketing };
+  } catch (e) { return null; }
 }
 
 // ---- start ----
@@ -243,12 +259,13 @@ export async function initWalker() {
   window.QEDWalker = flow.collector;
   queued.forEach(function (args) { try { flow.elb.apply(null, args); } catch (e) {} });
 
-  // Apply consent already decided on a prior visit (consent.js set this synchronously on load),
-  // then react to live decisions from the banner. A fresh decision is also recorded as its own
-  // `consent update` event (reaches Amplitude only if Analytics was granted — a declined update
-  // can't send, which is fine). Not fired for the prior-visit apply, so returning visitors don't
-  // emit one on every page load.
-  pushConsent(flow.elb, window.__qedConsentCategories);
+  // Apply a prior-visit decision straight from localStorage, then react to live banner decisions.
+  // The re-check on the next macrotask covers the cross-domain case where consent.js imports a
+  // ?qedc= value into localStorage during its own (later) run. Pushing the same consent twice is
+  // harmless. No `consent update` event is emitted for these applies — only for a live decision
+  // below — so returning visitors don't emit one on every page load.
+  pushConsent(flow.elb, storedConsent());
+  setTimeout(function () { pushConsent(flow.elb, storedConsent()); }, 0);
   window.addEventListener("qed:consentchange", function (e) {
     var cats = e && e.detail;
     pushConsent(flow.elb, cats);
