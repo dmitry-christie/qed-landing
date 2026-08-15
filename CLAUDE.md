@@ -82,9 +82,10 @@ Reads deploy env vars and rewrites files in the ephemeral build (never committed
   (`BRAND_ASSETS`), and — on TDT — rewrites `<title>`/meta `content` for every tag carrying
   `data-i18n(-content)` to that key's Spanish string (see "Social preview images" below).
 - Reads the per-brand **client-side** ad/analytics ids (`META_PIXEL_ID`, `AMPLITUDE_API_KEY`,
-  optional `WALKER_DEBUG`) into the `config.js` object. Any unset id is omitted, which keeps that
-  destination inert in `shared/walker.js`. Secrets (Meta CAPI token, Google Ads API creds) never
-  come here — they stay as function-runtime env (see Analytics).
+  `GOOGLE_ADS_CONVERSION_ID` + `GOOGLE_ADS_LABEL_COMPLETE`/`GOOGLE_ADS_LABEL_START`, optional
+  `WALKER_DEBUG`) into the `config.js` object. Any unset id is omitted, which keeps that
+  destination inert in `shared/walker.js`. The one secret (Meta CAPI token) never comes here —
+  it stays as function-runtime env (see Analytics).
 
 Committed source keeps the markers; the build fills them. To run locally without dirtying the
 tree: `git add -A`, `node build.mjs`, inspect, then
@@ -164,32 +165,35 @@ auto-fires `page view`; `shared/qed.js` fires engagement (Tier 2/3: `cta click`,
 Pixel `lead complete` (id = the submission's `_event_id`, so it dedups against the server CAPI
 Lead). Every event carries globals (`brand`/`site`/`section`/`product`/`language`/`env`) and a
 `user` seeded from the durable `qed-eid`. Client destinations: **Amplitude** (via the API
-destination → EU HTTP V2; ignores the lead events, which are sent server-side) and the **Meta
-Pixel** (allowlist mapping: only PageView + Lead). Google Ads is server-side only.
+destination → EU HTTP V2; ignores the lead events, which are sent server-side), the **Meta Pixel**
+(allowlist: only PageView + Lead), and **Google Ads** (gtag, allowlist: only the lead conversions,
+with **enhanced conversions for leads** — email + name + city read from the marketing-gated lead
+event `data` and hashed by gtag). `qed.js` fires `lead start` client-side too (Google secondary
+conversion; the Pixel and Amplitude both ignore it).
 
 **Consent.** `shared/consent.js` no longer loads any SDK — it records the choice and dispatches
 `qed:consentchange`; `walker.entry` pushes `elb('walker consent', …)`. Destinations declare the
-category they need: **analytics** → Amplitude; **marketing** → Meta Pixel/CAPI + Google Ads (and
-gates the ad-match identity). Nothing fires before consent.
+category they need: **analytics** → Amplitude; **marketing** → Meta Pixel/CAPI + Google Ads gtag
+(and gates the ad-match identity). Nothing fires before consent.
 
 **Server (`netlify/lib/forms.ts` → `sendLeadEvent`).** The money events (`lead start` step 1 /
 `lead complete` step 2 — two distinct names so a "Lead" conversion can't include abandoners) go
-through a walkerOS server collector to **Meta CAPI** (`@walkeros/server-destination-meta`),
-**Amplitude EU** (`@walkeros/server-destination-api`), and **Google Ads** (a hand-rolled code
-destination — OAuth + `uploadClickConversions`; no walkerOS server Google dest exists).
-Ad-blocker-resistant, and the only place PII is hashed. **PII lives only in the walker `user`
+through a walkerOS server collector to **Meta CAPI** (`@walkeros/server-destination-meta`) and
+**Amplitude EU** (`@walkeros/server-destination-api`). (Google Ads is client-side gtag, not here.)
+Ad-blocker-resistant, and the only place server PII is hashed. **PII lives only in the walker `user`
 object, never in event `data`** — the Meta `user_data` map reads it (Meta hashes em/ph/fn/ln);
 Amplitude's transform reads data+globals+device only, so a lead's email/phone never reaches
 Amplitude. City is normalized to a slug on the event; the raw string stays in Telegram + Brevo.
 Consent-gated: analytics to send at all, marketing to attach identity. GA4 is dropped.
 
-**Env vars per brand's Netlify site (all inert until set):** client ids `META_PIXEL_ID` +
-`AMPLITUDE_API_KEY` come via `config.js` (build.mjs). Server secrets read at function runtime:
-`META_CAPI_TOKEN` (+ `META_TEST_EVENT_CODE` for CAPI smoke tests), and for Google Ads
-`GOOGLE_ADS_DEVELOPER_TOKEN` / `CUSTOMER_ID` / `CLIENT_ID` / `CLIENT_SECRET` / `REFRESH_TOKEN` /
-`CONVERSION_COMPLETE` / `CONVERSION_START` (+ optional `LOGIN_CUSTOMER_ID`). `AMPLITUDE_API_KEY`
-is used both client (config.js) and server. (Leftover `PUBLIC_AMPLITUDE_API_KEY` /
-`PUBLIC_RUDDERSTACK_WRITE_KEY` from earlier stacks are unused — safe to delete.)
+**Env vars per brand's Netlify site (all inert until set):** client ids in `config.js` (build.mjs) —
+`META_PIXEL_ID`, `AMPLITUDE_API_KEY`, and for Google Ads `GOOGLE_ADS_CONVERSION_ID` (`AW-XXXX`) +
+`GOOGLE_ADS_LABEL_COMPLETE` + `GOOGLE_ADS_LABEL_START`. Server secrets read at function runtime:
+`META_CAPI_TOKEN` (+ `META_TEST_EVENT_CODE` for CAPI smoke tests — while set, Meta events go to
+Test Events only). `AMPLITUDE_API_KEY` is used both client (config.js) and server. Google Ads needs
+no secrets (client gtag; enable "enhanced conversions for leads → Google tag method" in the Google
+Ads UI). (Leftover `PUBLIC_AMPLITUDE_API_KEY` / `PUBLIC_RUDDERSTACK_WRITE_KEY` are unused — safe to
+delete.)
 
 ## CRM (Brevo)
 

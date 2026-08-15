@@ -191,6 +191,21 @@
   var LEAD_VALUE = { partners: 10, venues: 3, corporate: 1, celebrations: 1 };
   function leadValue() { return LEAD_VALUE[window.QED_SITE] || 1; }
 
+  // Identity for Google Ads enhanced conversions (client-side gtag) — attached to the lead events
+  // ONLY under marketing consent, read only by the gtag destination's enhancedConversions map
+  // (Amplitude ignores leads; the Meta Pixel only forwards value/currency), and hashed by gtag
+  // before it reaches Google. `d` is the collected form snapshot.
+  function leadIdentity(d) {
+    var cats = window.__qedConsentCategories;
+    if (!cats || !cats.marketing) return {};
+    var id = {};
+    if (d.email) id.email = d.email;
+    if (d.firstName) id.firstName = d.firstName;
+    if (d.lastName) id.lastName = d.lastName;
+    if (d.city) id.city = d.city;
+    return id;
+  }
+
   // Lead funnel — two distinct events (entity-action, MEASUREMENT-PLAN.md), not one name split by
   // a `step` property, so a "Lead" conversion mapped to `lead complete` can never include
   // abandoners:
@@ -399,6 +414,10 @@
           var d1 = collect(form, action, 1, uuid());
           var et = form.elements.eventType;
           pushDataLayer("Lead Started", { step: 1, form: d1.form, eventType: et ? et.value : undefined, event_id: d1._event_id });
+          // Client-side Google Ads secondary conversion (gtag). Only the gtag destination consumes
+          // a client `lead start` — the Pixel and Amplitude both ignore it. id = this step's
+          // _event_id (distinct from step 2's, they're separate conversions).
+          walkerPush("lead start", assign({ funnel: window.QED_SITE || "home", value: leadValue(), currency: "EUR" }, leadIdentity(d1)), d1._event_id);
           // fire-and-forget: partial lead → server (walkerOS, no Telegram). Never blocks the UI.
           try {
             fetch(action, {
@@ -490,7 +509,7 @@
         // Browser-side Meta Pixel Lead — id = the submission's _event_id so it dedups against the
         // server CAPI Lead (netlify/lib/forms.ts). Amplitude ignores this client lead (the server
         // sends it); only the Pixel consumes it, for value/currency + the _fbp/_fbc match.
-        walkerPush("lead complete", { funnel: window.QED_SITE || "home", value: leadValue(), currency: "EUR" }, data._event_id);
+        walkerPush("lead complete", assign({ funnel: window.QED_SITE || "home", value: leadValue(), currency: "EUR" }, leadIdentity(data)), data._event_id);
         form.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
       }).catch(function (err) {
         if (btn) {

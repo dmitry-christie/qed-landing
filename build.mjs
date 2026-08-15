@@ -49,6 +49,11 @@ const devNotice = process.env.DEV_NOTICE != null
 const analyticsEnv = {
   metaPixelId: process.env.META_PIXEL_ID,
   amplitudeKey: process.env.AMPLITUDE_API_KEY,
+  // Google Ads is client-side (gtag, enhanced conversions) — conversion id (AW-XXXX) + the two
+  // conversion labels ship in config.js. No API/OAuth secrets (that was the old server approach).
+  googleAdsConversionId: process.env.GOOGLE_ADS_CONVERSION_ID,
+  googleAdsLabelComplete: process.env.GOOGLE_ADS_LABEL_COMPLETE,
+  googleAdsLabelStart: process.env.GOOGLE_ADS_LABEL_START,
   ...(process.env.WALKER_DEBUG === "true" ? { debug: true } : {}),
 };
 for (const k of Object.keys(analyticsEnv)) {

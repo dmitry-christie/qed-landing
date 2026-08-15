@@ -1,7 +1,6 @@
 // Shared helpers for the QED lead-capture functions.
 // All three functions (book-event, franchise-apply, venue-apply) reuse these:
 // sanitize input, send a plain-text Telegram message, and fire a Meta CAPI event.
-import { createHash } from "node:crypto";
 import { startFlow } from "@walkeros/collector";
 import { destinationMeta } from "@walkeros/server-destination-meta";
 import { destinationAPI } from "@walkeros/server-destination-api";
@@ -131,8 +130,6 @@ export async function sendTelegram(text: string): Promise<boolean> {
   console.error("LOST LEAD (Telegram failed after retries):", text);
   return false;
 }
-
-const sha256 = (s: string) => createHash("sha256").update(s.trim().toLowerCase()).digest("hex");
 
 // The client sends the dial code picked in the phone field's country selector
 // (shared/phone-countries.js) as `phoneDial` — trust it when present. Falls back to the
@@ -403,18 +400,17 @@ const LEAD_VALUE: Record<string, number> = {
   celebrations: 1,
 };
 
-// ---- walkerOS server collector: lead events → Meta CAPI + Amplitude (EU) + Google Ads ----
+// ---- walkerOS server collector: lead events → Meta CAPI + Amplitude (EU) ----
 // Replaces the old Segment forwarder (this repo no longer touches Segment). Same event taxonomy
 // as the browser walker (shared/walker.js) but server-side, so the money events (`lead start` /
 // `lead complete`) are ad-blocker-resistant and can carry hashed PII. Consent-gated exactly as
 // before: nothing sends without analytics consent, and ad-match identity (em/ph/name, IP,
-// click-ids, fbc/fbp, external_id) rides the marketing gate.
+// click-ids, fbc/fbp, external_id) rides the marketing gate. (Google Ads is CLIENT-side — gtag
+// enhanced conversions in shared/walker.js — so it isn't here.)
 //
 // PII SCOPING: identity lives ONLY in the walker `user` object, never in event `data`. The Meta
 // CAPI destination reads it via a user_data map (and hashes em/ph/fn/ln itself); the Amplitude
 // transform reads data+globals+device only, so a lead's email/phone never reaches Amplitude.
-// Google Ads is a custom code destination (walkerOS ships no server Google Ads destination) that
-// reads `user` for hashed identifiers.
 //
 // Each destination is added only when its credentials are present, so a brand/site without them
 // stays inert (nothing sends) — the "add credentials later" path, same as the browser bundle.
@@ -450,99 +446,6 @@ export function normalizeCity(raw: string | undefined): string {
 }
 
 const AMPLITUDE_URL = "https://api.eu.amplitude.com/2/httpapi"; // EU data residency (decided)
-
-// Google Ads OAuth access token, cached in module scope across warm invocations (refreshed ~1min
-// before expiry). Server-side enhanced conversions for leads via the Google Ads API — walkerOS
-// has no server Google Ads destination, so this is hand-rolled. Inert unless the creds are set.
-let googleToken: { token: string; exp: number } | null = null;
-async function googleAccessToken(): Promise<string | undefined> {
-  const id = process.env.GOOGLE_ADS_CLIENT_ID;
-  const secret = process.env.GOOGLE_ADS_CLIENT_SECRET;
-  const refresh = process.env.GOOGLE_ADS_REFRESH_TOKEN;
-  if (!id || !secret || !refresh) return undefined;
-  if (googleToken && googleToken.exp > Date.now() + 60_000) return googleToken.token;
-  try {
-    const res = await fetch("https://oauth2.googleapis.com/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ client_id: id, client_secret: secret, refresh_token: refresh, grant_type: "refresh_token" }),
-      signal: AbortSignal.timeout(4000),
-    });
-    if (!res.ok) { console.error("Google Ads token refresh failed:", res.status, await res.text()); return undefined; }
-    const j = (await res.json()) as { access_token: string; expires_in?: number };
-    googleToken = { token: j.access_token, exp: Date.now() + (j.expires_in || 3600) * 1000 };
-    return googleToken.token;
-  } catch (err) {
-    console.error("Google Ads token refresh threw:", err);
-    return undefined;
-  }
-}
-
-// Google Ads API wants "yyyy-mm-dd hh:mm:ss+00:00".
-function googleAdsDateTime(): string {
-  const d = new Date();
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}+00:00`;
-}
-
-// Google Ads = a custom walkerOS code destination (marketing-gated). Uploads an enhanced
-// conversion for leads with hashed em/ph (+ gclid when present). Needs, per the site's Netlify
-// env: GOOGLE_ADS_DEVELOPER_TOKEN, GOOGLE_ADS_CUSTOMER_ID, GOOGLE_ADS_CLIENT_ID/SECRET/
-// REFRESH_TOKEN, and the per-event conversion action resources GOOGLE_ADS_CONVERSION_COMPLETE /
-// GOOGLE_ADS_CONVERSION_START. Missing any → the destination isn't added (inert).
-function googleAdsDestination() {
-  const dev = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
-  const customer = process.env.GOOGLE_ADS_CUSTOMER_ID;
-  if (!dev || !customer || !process.env.GOOGLE_ADS_REFRESH_TOKEN) return null;
-  const ACTION: Record<string, string | undefined> = {
-    "lead complete": process.env.GOOGLE_ADS_CONVERSION_COMPLETE,
-    "lead start": process.env.GOOGLE_ADS_CONVERSION_START,
-  };
-  const customerId = customer.replace(/\D/g, "");
-  const loginCustomerId = (process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID || "").replace(/\D/g, "");
-  return {
-    code: {
-      type: "google-ads",
-      config: {},
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      push: async (event: any) => {
-        const action = ACTION[event.name];
-        if (!action) return; // no conversion action configured for this event → skip
-        const token = await googleAccessToken();
-        if (!token) return;
-        const u = event.user || {};
-        const userIdentifiers: Array<Record<string, string>> = [];
-        if (u.email) userIdentifiers.push({ hashedEmail: sha256(String(u.email)) });
-        if (u.phone) userIdentifiers.push({ hashedPhoneNumber: sha256(normalizePhone(String(u.phone))) });
-        const conversion: Record<string, unknown> = {
-          conversionAction: action,
-          conversionDateTime: googleAdsDateTime(),
-          orderId: event.id,
-          ...(Number(event.data?.value) ? { conversionValue: Number(event.data.value), currencyCode: event.data?.currency || "EUR" } : {}),
-          ...(u.gclid ? { gclid: u.gclid } : {}),
-          ...(userIdentifiers.length ? { userIdentifiers } : {}),
-        };
-        try {
-          const res = await fetch(`https://googleads.googleapis.com/v18/customers/${customerId}:uploadClickConversions`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "developer-token": dev,
-              ...(loginCustomerId ? { "login-customer-id": loginCustomerId } : {}),
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ conversions: [conversion], partialFailure: true }),
-            signal: AbortSignal.timeout(4000),
-          });
-          if (!res.ok) console.error("Google Ads upload failed:", res.status, await res.text());
-        } catch (err) {
-          console.error("Google Ads upload threw:", err);
-        }
-      },
-    },
-    config: { consent: { marketing: true } },
-  };
-}
 
 // Build the collector's destinations from env — inert-safe (only what's configured is added).
 function serverDestinations(): Record<string, unknown> {
@@ -607,9 +510,7 @@ function serverDestinations(): Record<string, unknown> {
     };
   }
 
-  const googleAds = googleAdsDestination();
-  if (googleAds) dests.googleAds = googleAds;
-
+  // Google Ads is client-side now (gtag enhanced conversions in shared/walker.js), not here.
   return dests;
 }
 
