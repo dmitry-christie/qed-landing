@@ -1,5 +1,11 @@
 # Measurement plan — QED / Tardeo de Trivia
 
+> **Status (2026-08-15): implemented on branch `walkeros-migration`.** Segment is gone; walkerOS
+> is the collection layer (client `shared/walker.js` + server `netlify/lib/forms.ts`), Amplitude
+> (EU) for analytics, Meta Pixel+CAPI and Google Ads (server-side) for ads, GA4 dropped. All
+> destinations are inert until their per-brand env vars are set. See CLAUDE.md "Analytics
+> (walkerOS)" for the as-built summary. This doc is the design of record for the taxonomy.
+
 Target stack after the walkerOS migration:
 
 - **walkerOS** as the single collection layer (browser + server collector), replacing the

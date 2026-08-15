@@ -292,7 +292,7 @@
     data.form = form.getAttribute("name") || action;
     data.title = document.title;
     data.path = location.pathname;
-    data.referrer = document.referrer || "$direct"; // Segment's convention for direct
+    data.referrer = document.referrer || "$direct"; // convention for a direct visit (no referrer)
     data._step = String(step);
     data._event_id = eventId;
     data._url = location.href;
@@ -399,7 +399,7 @@
           var d1 = collect(form, action, 1, uuid());
           var et = form.elements.eventType;
           pushDataLayer("Lead Started", { step: 1, form: d1.form, eventType: et ? et.value : undefined, event_id: d1._event_id });
-          // fire-and-forget: partial lead → Segment (no Telegram). Never blocks the UI.
+          // fire-and-forget: partial lead → server (walkerOS, no Telegram). Never blocks the UI.
           try {
             fetch(action, {
               method: "POST",

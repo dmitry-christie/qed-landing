@@ -23,6 +23,13 @@
 
 ## Part 2 — Measurement architecture (build once, both networks feed from it)
 
+**2026-08-15: SUPERSEDED by the walkerOS migration.** Segment is removed. walkerOS is now the
+collection layer (client `shared/walker.js`, server `netlify/lib/forms.ts` `sendLeadEvent`),
+feeding Amplitude (EU) for analytics and Meta Pixel+CAPI + Google Ads (server-side enhanced
+conversions) for ads; GA4 dropped. Event taxonomy in `MEASUREMENT-PLAN.md`; as-built summary in
+CLAUDE.md "Analytics (walkerOS)". The Segment/RudderStack history below is kept for context only —
+the write keys, data-plane URLs, and dashboard-destination setup no longer apply.
+
 **2026-07-25: Switched from RudderStack to Segment.** Same architecture (consent-gated client
 SDK for page views, server-side HTTP Tracking API call for `Form Submitted` at step 1/step 2),
 just a different vendor — this sidesteps the data-plane-URL/CDN-URL blocker noted in the
