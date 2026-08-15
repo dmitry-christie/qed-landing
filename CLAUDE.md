@@ -199,3 +199,8 @@ within a day or on a hard refresh; a fresh visitor is unaffected.
 **`git push` to `main` auto-deploys BOTH brands** (each Netlify site builds from this repo/branch
 with its own `BRAND`). There is no staging gate — a push is live on both domains within a couple
 of minutes. There is no build/test command beyond `node build.mjs`.
+
+To preview locally (static pages plus the Netlify lead-capture functions), run `npm run dev`
+(`netlify dev`). It serves the unbranded working tree as-is — no `BRAND`, no About-partial
+injection, no SEO tag rewrite — so it won't show per-brand slugs, favicons, or ES-localized
+`<title>`/meta tags; use the `git add -A && node build.mjs` workaround above to check those.
