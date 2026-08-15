@@ -51,7 +51,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.maths.eyebrow": "La oportunidad",
   "p.maths.line": "Una sala llena de jugadores que pagan. Cada semana.",
-  "p.maths.note": "Un público que paga con un solo tardeo de trivia semanal, antes de la barra que se queda el local. Monta más tardeos, suma locales, y se va acumulando.",
+  "p.maths.note": "Un público que paga con un solo tardeo de trivia semanal. Monta más tardeos, suma locales, y se va acumulando.",
   "p.maths.cta": "Solicita para montar tardeos",
 
   "p.deal.eyebrow": "El trato",
@@ -72,7 +72,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.deal.y2": "Llevarlo con dinamismo y con responsabilidad. Que todo el mundo se sienta invitado a jugar",
   "p.deal.y3": "La relación con el local y el montaje de sonido y proyección, coordinado con quien haga de anfitrión",
   "p.deal.y4": "Tu presencia en redes y la difusión local, para que la sala crezca semana a semana",
-  "p.deal.y5": "Invertir en publicidad los primeros meses mientras se llena la sala. Es opcional, y lo recomendamos mucho",
+  "p.deal.y5": "Invertir en publicidad los primeros meses mientras se llena la sala. Es opcional, pero lo recomendamos mucho",
   "p.deal.y6": "Los costes de organizar cada tardeo",
   "p.deal.y7": "Difundir el evento siempre con nuestro logo y nuestra marca, anunciándolo como Tardeo de Trivia",
   "p.deal.y8": "Los permisos y el cumplimiento normativo que aplique en tu local",
@@ -150,7 +150,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.xsell.venue.h": "¿Buscas organizar eventos puntuales?",
   "p.xsell.venue.d": "Conviértete en local anfitrión en su lugar, sin compromiso de franquicia, sin permanencia.",
-  "p.xsell.venue.cta": "Descubre locales anfitriones",
+  "p.xsell.venue.cta": "Descubre cómo funciona",
 
   "p.foot.tagline": "Monta tardeos de trivia. Crea un negocio de verdad. Una franquicia de Tardeo de Trivia, impulsada por nuestra plataforma y nuestra marca."
 });
