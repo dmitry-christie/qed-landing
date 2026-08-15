@@ -34,6 +34,15 @@
   [headers.values]
     Cache-Control = "public, max-age=86400"
 
+# walker.js is the analytics brain (vendored, hand-rebuilt) and changes more often than the other
+# shared assets — a bug in it (e.g. the consent-handoff race) must propagate fast, not sit in a
+# day-old cache. Shorter 1h cache (more specific path wins over /shared/* above). Still cached
+# enough to spare repeat page views a refetch; the etag makes the hourly revalidation a cheap 304.
+[[headers]]
+  for = "/shared/walker.js"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
 # config.js is regenerated per-brand at build time — must never be served stale.
 [[headers]]
   for = "/config.js"
