@@ -1,30 +1,26 @@
-/* Consent banner — gates Segment loading (Spain/AEPD: denied by default).
-   The Segment write key is a public client-side value (like a GA measurement id), so it's
-   baked in here directly — no build-time env vars. Analytics loads only on the production
-   brand domains (never localhost / *.netlify.app deploy previews, so dev traffic stays out
-   of the live ad-conversion data) and only after the visitor grants consent. qed.js forwards
-   lead events server-side; consent.js fires the page view (analytics.page()) once the SDK
-   is up.
+/* Consent banner — owns the granular consent UI + storage. It no longer loads any analytics
+   SDK itself: walkerOS (shared/walker.js) is the collection layer now. This file just records
+   the visitor's choice and hands it off — it sets window.__qedConsent* (read by walker.entry,
+   i18n.js and brevo.js) and dispatches a "qed:consentchange" event on every decision;
+   scripts/walker.entry.mjs reads the stored categories on init and listens for that event, then
+   pushes elb('walker consent', …). No write key, no SDK snippet, and no page() call here — the
+   walker browser source fires `page view` itself, gated on Analytics consent.
 
-   Consent is granular (Necessary / Functional / Analytics / Marketing), stored as a JSON
-   object under "qed-consent". Only Analytics gates whether the Segment SDK loads at all —
-   nothing (not even a page view) fires before that's granted. Marketing additionally gates
-   which visitor identity gets attached server-side (see netlify/lib/forms.ts): hashed
-   em/ph/name, IP, click-ids. Necessary is always granted and never sent to Segment.
-   Functional is a first-party preference gate (language memory, dismissed notices — see
-   i18n.js) and likewise never sent to Segment; it only decides whether we may persist those
-   preference values.
+   Consent is granular (Necessary / Functional / Analytics / Marketing), stored as a JSON object
+   under "qed-consent". walkerOS destinations declare the category they need, so nothing fires
+   before it's granted: Amplitude + measurement need Analytics; Meta Pixel/CAPI + Google Ads need
+   Marketing. Marketing additionally gates the ad-match identity attached server-side (see
+   netlify/lib/forms.ts): hashed em/ph/name, IP, click-ids. Necessary is always on and never sent.
+   Functional is a first-party preference gate (language memory, dismissed notices — see i18n.js);
+   it only decides whether we may persist those preference values.
 
-   Analytics = measurement (is the site/campaign working — GA4, Meta/Google in reporting-only
-   mode). Marketing = ad campaign optimization/targeting (full Meta Conversions API + Google
-   Ads destinations, configured as Segment connections). Meta's Limited Data Use / Google's
-   Restricted Data Processing belong on those "marketing" destinations once configured on the
-   dashboard (see netlify/lib/forms.ts). */
+   Analytics = measurement (is the site/campaign working). Marketing = ad optimization/targeting
+   (Meta Conversions API + Google Ads). The production-domain gate (analyticsEnabled below, mirrored
+   in walker.entry) keeps localhost / *.netlify.app previews out of live ad/analytics data. */
 (function () {
   "use strict";
 
   var KEY = "qed-consent";
-  var WRITE_KEY = "WcDzJkXhvepcJqsfDdaEKFPv2uyjKafd";
   var PRIVACY_URL = "/privacy/";
 
   // Only measure on the real production domains — keeps localhost `netlify dev` and
@@ -95,93 +91,16 @@
 
   function assign(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
 
-  function loadSegment(cats) {
-    if (!analyticsEnabled()) return;
-    if (!cats.analytics) return; // strongest guarantee: don't even fetch the SDK
-    if (window.__qedSegmentLoading) return;
-    window.__qedSegmentLoading = true;
-
-    /* Official Segment analytics.js (v1) snippet, invoked only after consent. Stubs
-       window.analytics so queued page()/track() calls survive until the async SDK finishes
-       loading, then flushes the queue. */
-    !function () {
-      var i = "analytics", analytics = window[i] = window[i] || [];
-      if (!analytics.initialize) {
-        if (analytics.invoked) {
-          window.console && console.error && console.error("Segment snippet included twice.");
-        } else {
-          analytics.invoked = true;
-          analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "screen", "once", "off", "on", "addSourceMiddleware", "addIntegrationMiddleware", "setAnonymousId", "addDestinationMiddleware", "register"];
-          analytics.factory = function (e) {
-            return function () {
-              if (window[i].initialized) return window[i][e].apply(window[i], arguments);
-              var n = Array.prototype.slice.call(arguments);
-              if (["track", "screen", "alias", "group", "page", "identify"].indexOf(e) > -1) {
-                var c = document.querySelector("link[rel='canonical']");
-                n.push({ __t: "bpc", c: c && c.getAttribute("href") || undefined, p: location.pathname, u: location.href, s: location.search, t: document.title, r: document.referrer });
-              }
-              n.unshift(e);
-              analytics.push(n);
-              return analytics;
-            };
-          };
-          for (var n = 0; n < analytics.methods.length; n++) {
-            var key = analytics.methods[n];
-            analytics[key] = analytics.factory(key);
-          }
-          analytics.load = function (key, n) {
-            var t = document.createElement("script");
-            t.type = "text/javascript";
-            t.async = true;
-            t.setAttribute("data-global-segment-analytics-key", i);
-            t.src = "https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";
-            var r = document.getElementsByTagName("script")[0];
-            r.parentNode.insertBefore(t, r);
-            analytics._loadOptions = n;
-          };
-          analytics._writeKey = WRITE_KEY;
-          analytics.SNIPPET_VERSION = "5.2.0";
-          analytics.load(WRITE_KEY);
-        }
-      }
-    }();
-
-    // The snippet's own page() would fire a bare pageview — instead send one enriched call
-    // (queued, flushed once the async SDK is ready). Schema matches the main site's own
-    // conventions so both client- and server-side (netlify/lib/forms.ts) events roll up
-    // together downstream: site/product/language use the same values and casing as the
-    // server-side "Form Submitted" track calls.
-    var pvSection = window.QED_SITE || "home";
-    var pvLang = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
-    var PRODUCTS = {
-      corporate: "corporate-event",
-      celebrations: "celebration-event",
-      venues: "venue-partnership",
-      partners: "franchise-partnership"
-    };
-    var NAMES = {
-      home: "Home", corporate: "Corporate", celebrations: "Celebrations",
-      venues: "Venues", partners: "Partners", privacy: "Privacy", terms: "Terms"
-    };
-    window.analytics.page(NAMES[pvSection] || pvSection, {
-      page_type: "landing",
-      section: pvSection,
-      language: pvLang,
-      site: pvLang === "es" ? "tardeo-de-trivia" : "quiz-eat-drink",
-      product: PRODUCTS[pvSection] || null
-    });
-
-    window.__qedSegmentReady = true;
-  }
-
-  if (categories) loadSegment(categories);
+  // Analytics loading lives in walkerOS now (shared/walker.js). This file no longer fetches an
+  // SDK or fires a page view — walker.entry reads window.__qedConsentCategories (set above by
+  // applyCategories) on init and listens for the "qed:consentchange" dispatched in decide().
 
   function decide(cats) {
     categories = cats;
     saveCategories(cats);
     applyCategories(cats);
-    loadSegment(cats);
-    // Let consent-gated features (e.g. shared/brevo.js) react to a fresh grant on this page.
+    // Hand the fresh decision to walkerOS and to other consent-gated features (shared/brevo.js).
+    // walker.entry pushes elb('walker consent', …) from this; nothing analytics fired before it.
     try { window.dispatchEvent(new CustomEvent("qed:consentchange", { detail: cats })); } catch (e) {}
   }
 
@@ -237,7 +156,7 @@
     var catDefs = [
       { id: "necessary", labelKey: "consent.cat.necessary", label: "Necessary", descKey: "consent.cat.necessaryd", desc: "Essential for the site to work and to remember this choice. Always on.", locked: true },
       { id: "functional", labelKey: "consent.cat.functional", label: "Functional", descKey: "consent.cat.functionald", desc: "Remembers your preferences (like language) and powers the live chat. Without them the site still works, but forgets you." },
-      { id: "analytics", labelKey: "consent.cat.analytics", label: "Analytics", descKey: "consent.cat.analyticsd", desc: "Measurement: how the site and ad campaigns are performing (Segment, Meta, Google)." },
+      { id: "analytics", labelKey: "consent.cat.analytics", label: "Analytics", descKey: "consent.cat.analyticsd", desc: "Measurement: how the site and ad campaigns are performing (Amplitude, Meta, Google)." },
       { id: "marketing", labelKey: "consent.cat.marketing", label: "Marketing", descKey: "consent.cat.marketingd", desc: "Ad campaign optimization and targeting (Meta, Google)." }
     ];
     var checkboxes = {};

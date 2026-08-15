@@ -1,7 +1,7 @@
 /* Spanish: Corporate page. English is baked into corporate/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.title": "Tardeo de Trivia para Empresas · Team building que de verdad se disfruta",
-  "c.metadesc": "La cena de empresa que tu equipo pedirá repetir: tardeos de trivia para offsites y eventos con clientes en Valencia, Madrid, Murcia y Santiago de Compostela.",
+  "c.metadesc": "La cena de empresa que tu equipo pedirá repetir: tardeos de trivia para offsites y eventos con clientes en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela.",
 
   "c.nav.kicker": "Empresas",
   "c.nav.formats": "Formatos",
@@ -11,7 +11,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.cta.how": "Ver cómo funciona",
   "c.cta.express": "Empieza con Express",
 
-  "c.hero.tag": "Presencial en Valencia, Madrid, Murcia y Santiago de Compostela",
+  "c.hero.tag": "Presencial en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela",
   "c.hero.h1a": "Team building que de verdad ",
   "c.hero.h1b": "se disfruta.",
   "c.hero.sub": "Olvídate de las dinámicas de confianza y la diversión forzada. Montamos un tardeo de trivia afilado y de verdad divertido, del que tu equipo habla durante semanas en vez de aguantarlo en silencio.",
@@ -44,7 +44,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.fmt.byquote": "A presupuesto",
   "c.fmt.fulltag": "· adaptado a tu grupo",
   "c.fmt.fulldesc": "Un anfitrión profesional dirige todo el tardeo. Nos ocupamos de la sala, la técnica y el contenido de principio a fin. ",
-  "c.fmt.cities": "Valencia, Madrid, Murcia y Santiago de Compostela.",
+  "c.fmt.cities": "Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela.",
   "c.fmt.f1": "Anfitrión profesional que anima la sala",
   "c.fmt.f2": "Recomendación y coordinación del local",
   "c.fmt.f3": "Contenido a medida y montaje audiovisual completo",
@@ -116,7 +116,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.faq.q2": "¿Cuánto dura?",
   "c.faq.a2": "Unos 90 minutos el tardeo completo, aunque lo ajustamos a tu horario. Funciona igual en un hueco corto tras un taller que en una velada larga.",
   "c.faq.q3": "¿Vais hasta donde estemos?",
-  "c.faq.a3": "El Full Experience es presencial en Valencia, Madrid, Murcia y Santiago de Compostela. Una versión Express autogestionada, para cualquier otro sitio, llegará pronto.",
+  "c.faq.a3": "El Full Experience es presencial en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela. Una versión Express autogestionada, para cualquier otro sitio, llegará pronto.",
   "c.faq.q4": "¿En nuestra oficina o en un local?",
   "c.faq.a4": "Donde quieras. Lo montamos en tu espacio con nuestra técnica, o te recomendamos y coordinamos un local que encaje con tu grupo y tu presupuesto.",
   "c.faq.q5": "¿Inglés o español?",
@@ -152,5 +152,5 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.form.successh": "Presupuesto en camino.",
   "c.form.successp": "Gracias. Tenemos tu solicitud y te escribirá una persona de verdad de nuestro equipo, normalmente el mismo día.",
 
-  "c.foot.tagline": "Team building que de verdad se disfruta. Presencial en Valencia, Madrid, Murcia y Santiago de Compostela."
+  "c.foot.tagline": "Team building que de verdad se disfruta. Presencial en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela."
 });

@@ -1,7 +1,7 @@
 /* Spanish: Hub / homepage. English is baked into /index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.title": "Tardeo de Trivia · Tardeos de trivia por toda España",
-  "h.metadesc": "Montamos y presentamos tardeos de trivia que la gente recuerda de verdad: para empresas, celebraciones, locales y franquicias en Valencia, Madrid, Murcia y Santiago de Compostela.",
+  "h.metadesc": "Montamos y presentamos tardeos de trivia que la gente recuerda de verdad: para empresas, celebraciones, locales y franquicias en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela.",
   "h.ogtitle": "Tardeo de Trivia",
   "h.ogdesc": "La empresa de tardeos de trivia para noches que no aburren. Elige tu sala.",
 
@@ -16,7 +16,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "h.plan.eyebrow": "Reserva un tardeo",
   "h.plan.h2": "¿Montas algo? Nosotros ponemos la trivia.",
-  "h.plan.lead": "Presencial en Valencia, Madrid, Murcia y Santiago de Compostela, o por tu cuenta en cualquier parte del mundo con nuestro kit Express.",
+  "h.plan.lead": "Presencial en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela, o por tu cuenta en cualquier parte del mundo con nuestro kit Express.",
   "h.plan.corp.kicker": "Para empresas",
   "h.plan.corp.ta": "Team building que de verdad ",
   "h.plan.corp.tb": "se disfruta.",
@@ -43,5 +43,5 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.work.flat.stampb": "Tarifa",
   "h.work.flat.stamp": "plana",
 
-  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Murcia y Santiago de Compostela."
+  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela."
 });

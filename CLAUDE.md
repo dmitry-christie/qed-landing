@@ -81,8 +81,10 @@ Reads deploy env vars and rewrites files in the ephemeral build (never committed
   `<html lang>`, swaps the favicon/apple-touch-icon/`og:image` to the brand's asset
   (`BRAND_ASSETS`), and — on TDT — rewrites `<title>`/meta `content` for every tag carrying
   `data-i18n(-content)` to that key's Spanish string (see "Social preview images" below).
-Analytics (Segment) is not build-time config — `shared/consent.js` hardcodes the write key
-and loads the SDK client-side once consent is granted, the same way on every build.
+- Reads the per-brand **client-side** ad/analytics ids (`META_PIXEL_ID`, `AMPLITUDE_API_KEY`,
+  optional `WALKER_DEBUG`) into the `config.js` object. Any unset id is omitted, which keeps that
+  destination inert in `shared/walker.js`. Secrets (Meta CAPI token, Google Ads API creds) never
+  come here — they stay as function-runtime env (see Analytics).
 
 Committed source keeps the markers; the build fills them. To run locally without dirtying the
 tree: `git add -A`, `node build.mjs`, inspect, then
@@ -139,26 +141,62 @@ Regenerate it with `python3 shared/make-og-image-tdt.py` (needs Pillow + `rsvg-c
 There's no equivalent regen step for the QED image (`og-image.png`) — it was hand-made; if QED's
 city list changes, it needs manual editing or a comparable script.
 
-## Analytics
+## Analytics (walkerOS)
 
-Consent-gated Segment (`shared/consent.js`, official `analytics.js` v1 snippet, write key
-hardcoded client-side like a GA measurement id — same key used server-side in
-`netlify/lib/forms.ts`). Nothing loads until the visitor grants Analytics consent, and never
-on `*.netlify.app` previews. The page view (`analytics.page()`) carries `page_type: "landing"`,
-`section` (`window.QED_SITE`; hub = `"home"`), and `language`. Forms fire two distinct event
-names — `Lead Started` at step 1, `Form Submitted` at step 2 — rather than one name split by
-a `step` property, so a Lead conversion mapped to `Form Submitted` in Google Ads / Meta can't
-accidentally include abandoners. Sent server-side via Segment's HTTP Tracking API
-(`sendToSegment`) — not the client SDK, so it isn't blocked by an ad blocker and still fires
-on the fire-and-forget step-1 partial. Segment fans events out to Meta Conversions API / Google Ads / GA4 via
-destinations configured once in the Segment dashboard.
+**walkerOS** is the collection layer (it replaced Segment). The full event taxonomy — event
+names, snake_case properties, the redundant Pixel+CAPI setup, city normalization — is specified
+in **`MEASUREMENT-PLAN.md`**; read it before changing any event.
+
+**The bundle.** `shared/walker.js` is a vendored IIFE built from `scripts/walker.entry.mjs` by
+`npm run walker:build` (esbuild, not the walkerOS CLI — the CLI crashes under this Node). It is
+**committed**, not built on Netlify, so a bundling failure can't break the live deploy.
+**Rebuild it and commit whenever `scripts/walker.entry.mjs` or a `@walkeros/*` version changes.**
+`scripts/` is stripped from the publish tree by `build.mjs`; only `shared/walker.js` ships.
+
+**Brand-agnostic.** QED and TDT have SEPARATE Meta / Google Ads / Amplitude accounts, so no id
+is baked into `walker.js` — it reads them from `window.QED_CONFIG` (per-brand `config.js`, from
+`build.mjs` env vars). Inert-safe: a destination loads only when its id is set AND the host is a
+real production domain (never localhost / `*.netlify.app`).
+
+**Client (`shared/walker.js`, loaded on all 7 pages before `consent.js`).** The browser source
+auto-fires `page view`; `shared/qed.js` fires engagement (Tier 2/3: `cta click`, `form view`,
+`crosssell click`, `faq open`, `scroll reach`, `nav click`, `outbound click`) and the browser
+Pixel `lead complete` (id = the submission's `_event_id`, so it dedups against the server CAPI
+Lead). Every event carries globals (`brand`/`site`/`section`/`product`/`language`/`env`) and a
+`user` seeded from the durable `qed-eid`. Client destinations: **Amplitude** (via the API
+destination → EU HTTP V2; ignores the lead events, which are sent server-side) and the **Meta
+Pixel** (allowlist mapping: only PageView + Lead). Google Ads is server-side only.
+
+**Consent.** `shared/consent.js` no longer loads any SDK — it records the choice and dispatches
+`qed:consentchange`; `walker.entry` pushes `elb('walker consent', …)`. Destinations declare the
+category they need: **analytics** → Amplitude; **marketing** → Meta Pixel/CAPI + Google Ads (and
+gates the ad-match identity). Nothing fires before consent.
+
+**Server (`netlify/lib/forms.ts` → `sendLeadEvent`).** The money events (`lead start` step 1 /
+`lead complete` step 2 — two distinct names so a "Lead" conversion can't include abandoners) go
+through a walkerOS server collector to **Meta CAPI** (`@walkeros/server-destination-meta`),
+**Amplitude EU** (`@walkeros/server-destination-api`), and **Google Ads** (a hand-rolled code
+destination — OAuth + `uploadClickConversions`; no walkerOS server Google dest exists).
+Ad-blocker-resistant, and the only place PII is hashed. **PII lives only in the walker `user`
+object, never in event `data`** — the Meta `user_data` map reads it (Meta hashes em/ph/fn/ln);
+Amplitude's transform reads data+globals+device only, so a lead's email/phone never reaches
+Amplitude. City is normalized to a slug on the event; the raw string stays in Telegram + Brevo.
+Consent-gated: analytics to send at all, marketing to attach identity. GA4 is dropped.
+
+**Env vars per brand's Netlify site (all inert until set):** client ids `META_PIXEL_ID` +
+`AMPLITUDE_API_KEY` come via `config.js` (build.mjs). Server secrets read at function runtime:
+`META_CAPI_TOKEN` (+ `META_TEST_EVENT_CODE` for CAPI smoke tests), and for Google Ads
+`GOOGLE_ADS_DEVELOPER_TOKEN` / `CUSTOMER_ID` / `CLIENT_ID` / `CLIENT_SECRET` / `REFRESH_TOKEN` /
+`CONVERSION_COMPLETE` / `CONVERSION_START` (+ optional `LOGIN_CUSTOMER_ID`). `AMPLITUDE_API_KEY`
+is used both client (config.js) and server. (Leftover `PUBLIC_AMPLITUDE_API_KEY` /
+`PUBLIC_RUDDERSTACK_WRITE_KEY` from earlier stacks are unused — safe to delete.)
 
 ## CRM (Brevo)
 
 The three lead functions (`book-event`, `venue-apply`, `franchise-apply`) upsert the lead
 into Brevo as a contact via `sendToBrevo` (`netlify/lib/forms.ts`), alongside Telegram and
-Segment. Only fires on the full (step 2) submission, not the step-1 partial. Failures are
-logged and non-blocking, same as Segment — a Brevo outage never breaks the form.
+walkerOS. Only fires on the full (step 2) submission, not the step-1 partial. Failures are
+logged and non-blocking, same as the walkerOS send — a Brevo outage never breaks the form.
 
 Env vars (set on both Netlify sites, since both brands' leads go to the same Brevo account):
 `BREVO_API_KEY` (required), `BREVO_LIST_ID` (default numeric list id) and/or
@@ -199,3 +237,8 @@ within a day or on a hard refresh; a fresh visitor is unaffected.
 **`git push` to `main` auto-deploys BOTH brands** (each Netlify site builds from this repo/branch
 with its own `BRAND`). There is no staging gate — a push is live on both domains within a couple
 of minutes. There is no build/test command beyond `node build.mjs`.
+
+To preview locally (static pages plus the Netlify lead-capture functions), run `npm run dev`
+(`netlify dev`). It serves the unbranded working tree as-is — no `BRAND`, no About-partial
+injection, no SEO tag rewrite — so it won't show per-brand slugs, favicons, or ES-localized
+`<title>`/meta tags; use the `git add -A && node build.mjs` workaround above to check those.

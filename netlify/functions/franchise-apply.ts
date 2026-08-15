@@ -1,6 +1,6 @@
-// Partners (franchise) application. Forwards to Telegram + Segment + Brevo.
+// Partners (franchise) application. Forwards to Telegram + walkerOS (Meta CAPI + Amplitude + Google Ads) + Brevo.
 import type { Handler } from "@netlify/functions";
-import { clean, displayPhone, isEmail, isTooFast, json, MAX_BODY, metaLine, sendTelegram, sendToBrevo, sendToSegment } from "../lib/forms";
+import { clean, displayPhone, isEmail, isTooFast, json, MAX_BODY, metaLine, sendTelegram, sendToBrevo, sendLeadEvent } from "../lib/forms";
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { ok: false, error: "Method not allowed" });
@@ -28,11 +28,11 @@ export const handler: Handler = async (event) => {
   const page = d.page || "partners";
 
   // step 1 = partial submit, fire-and-forget from the client (shared/qed.js): forward to
-  // Segment for the retargeting audience, but don't ping the founders' Telegram. Distinct
-  // event name from step 2's "Form Submitted" so a Lead conversion mapped to that name in
+  // walkerOS server-side (Amplitude + Meta CAPI) for the retargeting audience, but don't ping the founders' Telegram. Distinct
+  // event name from step 2 (`lead complete`) so a Lead conversion mapped to it in
   // Google Ads / Meta can never accidentally include abandoners — see CLAUDE.md Analytics.
   if (d._step === "1") {
-    await sendToSegment("Lead Started", d, page);
+    await sendLeadEvent("lead start", d, page);
     return json(200, { ok: true });
   }
 
@@ -51,7 +51,7 @@ export const handler: Handler = async (event) => {
 
   const [telegramResult] = await Promise.allSettled([
     sendTelegram(text),
-    sendToSegment("Form Submitted", d, page),
+    sendLeadEvent("lead complete", d, page),
     sendToBrevo(d, page, text),
   ]);
   const sent = telegramResult.status === "fulfilled" && telegramResult.value;

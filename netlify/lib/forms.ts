@@ -2,6 +2,9 @@
 // All three functions (book-event, franchise-apply, venue-apply) reuse these:
 // sanitize input, send a plain-text Telegram message, and fire a Meta CAPI event.
 import { createHash } from "node:crypto";
+import { startFlow } from "@walkeros/collector";
+import { destinationMeta } from "@walkeros/server-destination-meta";
+import { destinationAPI } from "@walkeros/server-destination-api";
 
 export type Dict = Record<string, string>;
 
@@ -144,13 +147,13 @@ function normalizePhone(phone: string, dial?: string): string {
 }
 
 // Push the lead into Brevo (our CRM, starter plan) as a contact + a pipeline deal —
-// Telegram is a transient ping the founders can miss/scroll past, Segment only feeds
-// ad platforms, so Brevo is the only durable, searchable, trackable-through-a-sales-
+// Telegram is a transient ping the founders can miss/scroll past, and walkerOS only
+// feeds the ad + analytics platforms, so Brevo is the only durable, searchable, trackable-through-a-sales-
 // pipeline place a lead lives.
 // Env: BREVO_API_KEY (required) + BREVO_LIST_ID (default list) and/or
 // BREVO_LIST_ID_<PAGE> (e.g. BREVO_LIST_ID_PARTNERS) to route funnels to separate lists.
 // Only called on the full (step 2) submission — a step-1 partial abandon isn't a
-// qualified lead yet; Segment already covers that audience for retargeting.
+// qualified lead yet; walkerOS already covers that audience for retargeting.
 //
 // NOTE: Brevo rejects unknown custom attributes, so before this goes live create these
 // contact attributes in Brevo (Contacts > Settings > Contact attributes, type "Text"):
@@ -167,7 +170,7 @@ function brevoListId(page: string): number | undefined {
 const BREVO_TIMEOUT_MS = 4000;
 
 // This account only has the one default pipeline/stage Brevo creates on signup — hardcoded
-// like Segment's WRITE_KEY above, since these are internal Brevo ids for this account,
+// (internal Brevo ids for this account, not secrets or per-deploy config), since they are
 // not secrets or per-deploy config. Update both if the pipeline is ever rebuilt in Brevo.
 const BREVO_PIPELINE_ID = "6a0e00d16662659f87dcaf97"; // "Deals Pipeline"
 const BREVO_STAGE_NEW_ID = "14486bd2-629d-46d8-b65f-6dc6019339ea"; // "New" stage
@@ -368,13 +371,6 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
   }
 }
 
-// Same write key as shared/consent.js — a public client-side value (like a GA measurement
-// id), not a secret, so both sides hardcode it directly rather than depend on a Netlify env
-// var. Segment's HTTP Tracking API endpoint is fixed (no per-workspace data plane URL to
-// configure, unlike the RudderStack setup this replaced).
-const WRITE_KEY = "WcDzJkXhvepcJqsfDdaEKFPv2uyjKafd";
-const SEGMENT_API_URL = "https://api.segment.io";
-
 // Mirrors consent.js's analyticsEnabled() — keeps localhost / *.netlify.app deploy
 // previews out of production analytics. Reads the page URL the client posted rather
 // than a request header, since this is a same-origin fetch() from that exact page.
@@ -387,7 +383,7 @@ function analyticsEnabled(url: string | undefined): boolean {
   }
 }
 
-// page → Segment "product" property. Each funnel is a genuinely different
+// page -> walker "product" global/property. Each funnel is a genuinely different
 // product line (not just a variant of one), so these are distinct rather than a single
 // shared value — the main site's "product" (e.g. "quiz-night") doesn't map cleanly here.
 const PRODUCT_BY_PAGE: Record<string, string> = {
@@ -396,19 +392,6 @@ const PRODUCT_BY_PAGE: Record<string, string> = {
   venues: "venue-partnership",
   partners: "franchise-partnership",
 };
-
-// Fields already promoted into named properties below, or internal/control fields —
-// excluded from the catch-all so they don't appear twice or leak PII into properties
-// (PII belongs hashed in traits, handled separately above).
-const PROPERTY_OMIT = new Set([
-  "email", "phone", "firstName", "lastName",
-  "page", "form", "lang", "country", "title", "referrer", "path",
-  "_ua", "_ip", "_event_id", "_url", "_consent", "_consentCategories", "_fbc", "_honey", "_step", "_t",
-  // attribution + identity — promoted to clean-named properties / context below, so keep
-  // the raw underscore-prefixed versions out of the catch-all (no duplicates).
-  "_utm_source", "_utm_medium", "_utm_campaign", "_utm_term", "_utm_content",
-  "_gclid", "_wbraid", "_gbraid", "_fbclid", "_msclkid", "_ttclid", "_ref", "_eid",
-]);
 
 // Relative lead value (EUR) for value-based bidding (Meta value optimization / Google
 // tROAS). Proxy weights until real pricing lands — a franchise lead is worth far more than
@@ -420,138 +403,298 @@ const LEAD_VALUE: Record<string, number> = {
   celebrations: 1,
 };
 
-// Consent categories the visitor granted (shared/consent.js), sent as a custom context
-// field on every event. Segment's plain analytics.js snippet has no built-in consent
-// manager to hand this to (that needs a CMP integration like OneTrust, not set up here) —
-// this is our own record of what was granted, in case a downstream destination mapping
-// ever needs to filter on it. The real, currently-enforced gates are: sendToSegment()
-// below no-ops without analytics consent, and traits/IP/click-ids are only attached with
-// marketing consent.
+// ---- walkerOS server collector: lead events → Meta CAPI + Amplitude (EU) + Google Ads ----
+// Replaces the old Segment forwarder (this repo no longer touches Segment). Same event taxonomy
+// as the browser walker (shared/walker.js) but server-side, so the money events (`lead start` /
+// `lead complete`) are ad-blocker-resistant and can carry hashed PII. Consent-gated exactly as
+// before: nothing sends without analytics consent, and ad-match identity (em/ph/name, IP,
+// click-ids, fbc/fbp, external_id) rides the marketing gate.
 //
-// Category split: "analytics" = measurement (did the campaign work — GA4, Meta/Google
-// in reporting-only mode); "marketing" = ad campaign optimization/targeting (full Meta
-// Conversions API + Google Ads destinations used to bid and target). Meta's Limited Data
-// Use and Google's Restricted Data Processing flags belong on those "marketing"-tagged
-// destinations specifically (dashboard-side, once configured) — not on this payload.
-function consentContextFrom(d: Dict): { categoryPreferences: Record<string, boolean> } | undefined {
-  if (!d._consentCategories) return undefined;
-  let categories: Record<string, boolean>;
-  try {
-    categories = JSON.parse(d._consentCategories);
-  } catch {
-    return undefined;
-  }
-  const categoryPreferences: Record<string, boolean> = {};
-  for (const id of Object.keys(categories)) {
-    if (id === "necessary") continue; // matches consent.js: not a real gate on either side
-    categoryPreferences[id] = !!categories[id];
-  }
-  return { categoryPreferences };
+// PII SCOPING: identity lives ONLY in the walker `user` object, never in event `data`. The Meta
+// CAPI destination reads it via a user_data map (and hashes em/ph/fn/ln itself); the Amplitude
+// transform reads data+globals+device only, so a lead's email/phone never reaches Amplitude.
+// Google Ads is a custom code destination (walkerOS ships no server Google Ads destination) that
+// reads `user` for hashed identifiers.
+//
+// Each destination is added only when its credentials are present, so a brand/site without them
+// stays inert (nothing sends) — the "add credentials later" path, same as the browser bundle.
+
+// walker event name → Meta CAPI standard event. lead start and lead complete MUST differ, or two
+// events with different ids would both post as "Lead" and inflate the conversion. complete = the
+// primary Lead; start = InitiateCheckout (upper-funnel; wire as a secondary conversion in Meta).
+const META_EVENT_NAME: Record<string, string> = {
+  "lead complete": "Lead",
+  "lead start": "InitiateCheckout",
+};
+
+// walker event name → Amplitude event_type (Title Case, matches the browser destination matrix).
+const AMPLITUDE_EVENT_NAME: Record<string, string> = {
+  "lead complete": "Lead Submitted",
+  "lead start": "Lead Started",
+};
+
+// City normalization (MEASUREMENT-PLAN.md): the forms collect free-text city, which fragments
+// audiences (Madrid/madrid/"Madrid "). The event carries a normalized slug; the raw string stays
+// in Telegram + Brevo's LEAD_CITY only. Slugs match Brevo's built-in CITY enum. Unknown → other.
+const CITY_ALIASES: Record<string, string> = {
+  "santiago de compostela": "santiago", compostela: "santiago",
+  barna: "barcelona", bcn: "barcelona",
+};
+const KNOWN_CITIES = ["madrid", "valencia", "murcia", "santiago", "barcelona"];
+export function normalizeCity(raw: string | undefined): string {
+  if (!raw) return "other";
+  const s = raw.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  if (CITY_ALIASES[s]) return CITY_ALIASES[s];
+  for (const city of KNOWN_CITIES) if (s.includes(city)) return city;
+  return "other";
 }
 
-// Forward a lead event to Segment, which fans it out to Meta Conversions API / Google Ads
-// / GA4 via cloud-mode destinations (connections) configured once in the Segment dashboard
-// — this repo no longer calls the Facebook Graph API (or any ad platform) directly. No-op
-// off the production domains, and unless the visitor granted analytics consent (qed.js
-// sends d._consent / d._consentCategories; see shared/consent.js).
-export async function sendToSegment(event: string, d: Dict, page: string): Promise<void> {
+const AMPLITUDE_URL = "https://api.eu.amplitude.com/2/httpapi"; // EU data residency (decided)
+
+// Google Ads OAuth access token, cached in module scope across warm invocations (refreshed ~1min
+// before expiry). Server-side enhanced conversions for leads via the Google Ads API — walkerOS
+// has no server Google Ads destination, so this is hand-rolled. Inert unless the creds are set.
+let googleToken: { token: string; exp: number } | null = null;
+async function googleAccessToken(): Promise<string | undefined> {
+  const id = process.env.GOOGLE_ADS_CLIENT_ID;
+  const secret = process.env.GOOGLE_ADS_CLIENT_SECRET;
+  const refresh = process.env.GOOGLE_ADS_REFRESH_TOKEN;
+  if (!id || !secret || !refresh) return undefined;
+  if (googleToken && googleToken.exp > Date.now() + 60_000) return googleToken.token;
+  try {
+    const res = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ client_id: id, client_secret: secret, refresh_token: refresh, grant_type: "refresh_token" }),
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!res.ok) { console.error("Google Ads token refresh failed:", res.status, await res.text()); return undefined; }
+    const j = (await res.json()) as { access_token: string; expires_in?: number };
+    googleToken = { token: j.access_token, exp: Date.now() + (j.expires_in || 3600) * 1000 };
+    return googleToken.token;
+  } catch (err) {
+    console.error("Google Ads token refresh threw:", err);
+    return undefined;
+  }
+}
+
+// Google Ads API wants "yyyy-mm-dd hh:mm:ss+00:00".
+function googleAdsDateTime(): string {
+  const d = new Date();
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}+00:00`;
+}
+
+// Google Ads = a custom walkerOS code destination (marketing-gated). Uploads an enhanced
+// conversion for leads with hashed em/ph (+ gclid when present). Needs, per the site's Netlify
+// env: GOOGLE_ADS_DEVELOPER_TOKEN, GOOGLE_ADS_CUSTOMER_ID, GOOGLE_ADS_CLIENT_ID/SECRET/
+// REFRESH_TOKEN, and the per-event conversion action resources GOOGLE_ADS_CONVERSION_COMPLETE /
+// GOOGLE_ADS_CONVERSION_START. Missing any → the destination isn't added (inert).
+function googleAdsDestination() {
+  const dev = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
+  const customer = process.env.GOOGLE_ADS_CUSTOMER_ID;
+  if (!dev || !customer || !process.env.GOOGLE_ADS_REFRESH_TOKEN) return null;
+  const ACTION: Record<string, string | undefined> = {
+    "lead complete": process.env.GOOGLE_ADS_CONVERSION_COMPLETE,
+    "lead start": process.env.GOOGLE_ADS_CONVERSION_START,
+  };
+  const customerId = customer.replace(/\D/g, "");
+  const loginCustomerId = (process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID || "").replace(/\D/g, "");
+  return {
+    code: {
+      type: "google-ads",
+      config: {},
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      push: async (event: any) => {
+        const action = ACTION[event.name];
+        if (!action) return; // no conversion action configured for this event → skip
+        const token = await googleAccessToken();
+        if (!token) return;
+        const u = event.user || {};
+        const userIdentifiers: Array<Record<string, string>> = [];
+        if (u.email) userIdentifiers.push({ hashedEmail: sha256(String(u.email)) });
+        if (u.phone) userIdentifiers.push({ hashedPhoneNumber: sha256(normalizePhone(String(u.phone))) });
+        const conversion: Record<string, unknown> = {
+          conversionAction: action,
+          conversionDateTime: googleAdsDateTime(),
+          orderId: event.id,
+          ...(Number(event.data?.value) ? { conversionValue: Number(event.data.value), currencyCode: event.data?.currency || "EUR" } : {}),
+          ...(u.gclid ? { gclid: u.gclid } : {}),
+          ...(userIdentifiers.length ? { userIdentifiers } : {}),
+        };
+        try {
+          const res = await fetch(`https://googleads.googleapis.com/v18/customers/${customerId}:uploadClickConversions`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "developer-token": dev,
+              ...(loginCustomerId ? { "login-customer-id": loginCustomerId } : {}),
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ conversions: [conversion], partialFailure: true }),
+            signal: AbortSignal.timeout(4000),
+          });
+          if (!res.ok) console.error("Google Ads upload failed:", res.status, await res.text());
+        } catch (err) {
+          console.error("Google Ads upload threw:", err);
+        }
+      },
+    },
+    config: { consent: { marketing: true } },
+  };
+}
+
+// Build the collector's destinations from env — inert-safe (only what's configured is added).
+function serverDestinations(): Record<string, unknown> {
+  const dests: Record<string, unknown> = {};
+
+  const metaPixelId = process.env.META_PIXEL_ID;
+  const metaToken = process.env.META_CAPI_TOKEN;
+  if (metaPixelId && metaToken) {
+    dests.meta = {
+      code: destinationMeta,
+      config: {
+        consent: { marketing: true },
+        settings: {
+          pixelId: metaPixelId,
+          accessToken: metaToken,
+          action_source: "website",
+          ...(process.env.META_TEST_EVENT_CODE ? { test_event_code: process.env.META_TEST_EVENT_CODE } : {}),
+          // Identity pulled from the walker `user` object (never `data`). Meta hashes
+          // em/ph/fn/ln/external_id/ct itself; fbc/fbp/ip/ua are sent raw per Meta's spec.
+          user_data: {
+            em: "user.email", ph: "user.phone", fn: "user.firstName", ln: "user.lastName",
+            external_id: "user.id", ct: "user.city",
+            fbc: "user.fbc", fbp: "user.fbp", fbclid: "user.fbclid",
+            client_ip_address: "user.ip", client_user_agent: "user.ua",
+          },
+        },
+        mapping: {
+          "*": { "*": { ignore: true } }, // allowlist: only the lead events post to CAPI
+          lead: {
+            complete: { name: META_EVENT_NAME["lead complete"], data: { value: "data.value", currency: "data.currency" } },
+            start: { name: META_EVENT_NAME["lead start"], data: { value: "data.value", currency: "data.currency" } },
+          },
+        },
+      },
+    };
+  }
+
+  const amplitudeKey = process.env.AMPLITUDE_API_KEY;
+  if (amplitudeKey) {
+    dests.amplitude = {
+      code: destinationAPI,
+      config: {
+        consent: { analytics: true },
+        settings: {
+          url: AMPLITUDE_URL,
+          headers: { "Content-Type": "application/json" },
+          // Full event → Amplitude HTTP V2. event_properties = globals + data only, so the PII
+          // living in event.user never reaches Amplitude. device_id from the durable eid.
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          transform: (ev: any) => JSON.stringify({
+            api_key: amplitudeKey,
+            events: [{
+              event_type: AMPLITUDE_EVENT_NAME[ev.name] || ev.name,
+              device_id: ev.user?.device || ev.user?.id,
+              insert_id: ev.id,
+              time: Date.now(),
+              event_properties: Object.assign({}, ev.globals, ev.data),
+            }],
+          }),
+        },
+      },
+    };
+  }
+
+  const googleAds = googleAdsDestination();
+  if (googleAds) dests.googleAds = googleAds;
+
+  return dests;
+}
+
+// Forward a lead event through the walkerOS server collector to Meta CAPI / Amplitude / Google
+// Ads. No-op off the production domains and unless the visitor granted analytics consent (qed.js
+// sends d._consent / d._consentCategories; see shared/consent.js). `event` is a walker name:
+// "lead start" (step 1 partial) or "lead complete" (step 2 full).
+export async function sendLeadEvent(event: string, d: Dict, page: string): Promise<void> {
   if (!analyticsEnabled(d._url)) return;
   if (d._consent !== "granted") return; // analytics gate — measurement
 
-  // Marketing gate: identity used for AD MATCHING (hashed em/ph/name, IP, click-id,
-  // external_id) is attached ONLY when the visitor granted the "marketing" category —
-  // belt-and-braces on top of the dashboard's per-destination Consent Category mapping,
-  // so an analytics-only visitor is still measured but never matched/targeted for ads.
+  const dests = serverDestinations();
+  if (!Object.keys(dests).length) return; // nothing configured for this site → inert
+
+  // Marketing gate: ad-match identity is attached ONLY when the "marketing" category was granted
+  // — belt-and-braces on top of each destination's own marketing consent requirement.
   let marketing = false;
-  try { marketing = !!JSON.parse(d._consentCategories || "{}").marketing; } catch { /* no categories → treat as denied */ }
+  try { marketing = !!JSON.parse(d._consentCategories || "{}").marketing; } catch { /* no categories → denied */ }
 
-  // Hashed client-side per Meta/Google's PII-matching requirements — if the
-  // Segment destination(s) already hash em/ph/fn/ln themselves, hashing
-  // twice is harmless (still a stable one-way match), so this stays defensive.
-  const traits: Record<string, string> = {};
-  if (marketing) {
-    if (d.email) traits.email = sha256(d.email);
-    if (d.phone) traits.phone = sha256(normalizePhone(d.phone, d.phoneDial));
-    if (d.firstName) traits.firstName = sha256(d.firstName);
-    if (d.lastName) traits.lastName = sha256(d.lastName);
-    if (d.city) traits.city = d.city;
-  }
-
-  // "site" / "language" / "product" naming matches the main site's own Segment
-  // properties so both sources roll up consistently downstream.
-  const properties: Record<string, unknown> = {
-    // step 1 = partial (name + email captured, may not finish, event name "Lead Started") ·
-    // step 2 = full lead (event name "Form Submitted"). Kept as its own property too — on
-    // top of the distinct event names — so a single retargeting-audience query can still
-    // split started-but-not-finished vs completed without re-deriving it from the event
-    // name. Defaults to 2 for older callers.
-    step: Number(d._step) === 1 ? 1 : 2,
-    site: (d.lang || "EN").toUpperCase() === "ES" ? "tardeo-de-trivia" : "quiz-eat-drink",
-    language: (d.lang || "EN").toLowerCase(),
+  const language = (d.lang || "EN").toLowerCase();
+  // globals: same values + casing as the browser walker so client and server roll up together.
+  const globals = {
+    brand: (process.env.BRAND || "DEV").toUpperCase(),
+    site: language === "es" ? "tardeo-de-trivia" : "quiz-eat-drink",
+    language,
+    page_type: "landing",
+    section: page,
     product: PRODUCT_BY_PAGE[page] || page,
-    // Relative lead value for value-based bidding (dashboard may override per action).
+    env: "production",
+  };
+
+  // data: NON-PII only (reaches Amplitude + Meta value/currency). snake_case per the plan.
+  const data: Record<string, unknown> = {
+    funnel: page,
+    product: PRODUCT_BY_PAGE[page] || page,
+    step: event === "lead start" ? 1 : 2,
     value: LEAD_VALUE[page] || 1,
     currency: "EUR",
-    form: d.form,
-    path: d.path,
-    url: d._url,
-    title: d.title,
-    referrer: d.referrer,
-    country: d.country,
-    event_id: d._event_id,
+    city: normalizeCity(d.city),
+    event_type: d.eventType,
+    format: d.format,
+    group_size: d.groupSize,
+    date: d.date,
+    guest_of_honour: d.guestOfHonour,
+    venue_name: d.venueName,
+    nights: d.nights,
+    venue_situation: d.venueSituation,
+    premises_location: d.premisesLocation,
   };
-
-  // First-touch attribution (captured client-side). Click-ids drive offline/enhanced
-  // conversion matching: gclid/wbraid/gbraid → Google Ads, fbclid → Meta. These are
-  // campaign identifiers, not personal data, so they ride the analytics gate (needed to
-  // attribute the conversion at all) rather than the marketing gate.
-  const ATTR = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "wbraid", "gbraid", "fbclid", "msclkid", "ttclid", "ref"];
-  for (const k of ATTR) { const v = d["_" + k]; if (v) properties[k] = v; }
-
-  if (marketing && d._fbc) properties.fbc = d._fbc;
-
-  // Every other field the form actually collected (event type, format, group size,
-  // date, guest of honour, venue name, nights, message, ...) — whatever properties
-  // we have access to for this particular form, without re-listing each one by name.
-  for (const key of Object.keys(d)) {
-    if (!PROPERTY_OMIT.has(key) && d[key]) properties[key] = d[key];
+  // First-touch attribution — campaign ids, not personal data, so they ride the analytics gate.
+  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "wbraid", "gbraid", "fbclid", "msclkid", "ttclid", "ref"]) {
+    const v = d["_" + k]; if (v) data[k] = v;
   }
+  for (const k of Object.keys(data)) if (data[k] == null || data[k] === "") delete data[k];
 
-  const consent = consentContextFrom(d);
-
-  const context: Record<string, unknown> = {
-    userAgent: d._ua,
-    ...(consent ? { consent } : {}),
-  };
+  // user: identity for ad matching, attached ONLY under marketing consent. Raw values — Meta and
+  // Google hash em/ph themselves. device/id = the durable eid (Amplitude device_id / CAPI
+  // external_id). Amplitude ignores everything here except device/id.
+  const user: Record<string, unknown> = {};
+  if (d._eid) { user.id = d._eid; user.device = d._eid; }
   if (marketing) {
-    if (Object.keys(traits).length) context.traits = traits;
-    if (d._ip) context.ip = d._ip;
-    if (d._eid) context.externalId = d._eid; // pseudonymous match key → CAPI external_id
+    if (d.email) user.email = d.email;
+    if (d.phone) user.phone = normalizePhone(d.phone, d.phoneDial);
+    if (d.firstName) user.firstName = d.firstName;
+    if (d.lastName) user.lastName = d.lastName;
+    if (d.city) user.city = normalizeCity(d.city);
+    if (d._fbc) user.fbc = d._fbc;
+    if (d._fbp) user.fbp = d._fbp;
+    if (d._fbclid) user.fbclid = d._fbclid;
+    if (d._gclid) user.gclid = d._gclid;
+    if (d._ip) user.ip = d._ip;
+    if (d._ua) user.ua = d._ua;
   }
 
-  const payload = {
-    event,
-    // A durable per-visitor id (shared/qed.js's externalId(), stable across sessions in
-    // localStorage), not the per-submission _event_id — anonymousId is what Segment
-    // uses to stitch events into one visitor timeline, so a fresh id per event (the old
-    // fallback) meant step 1 and step 2 of the same visit, or a repeat visit, could never
-    // be linked together. _event_id still does its own job as messageId (per-event dedupe).
-    anonymousId: d._eid || d._event_id || `${page}-${Date.now()}`,
-    ...(d._event_id ? { messageId: d._event_id } : {}),
-    properties,
-    context,
-  };
-
-  const auth = Buffer.from(`${WRITE_KEY}:`).toString("base64");
   try {
-    const res = await fetch(`${SEGMENT_API_URL}/v1/track`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Basic ${auth}` },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(2000),
+    // Per-request collector (low lead volume). Consent set here gates destinations; the event id
+    // is the submission's _event_id so the Meta CAPI Lead dedups against the browser Pixel Lead.
+    const flow = await startFlow({
+      consent: { analytics: true, marketing },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      destinations: dests as any,
     });
-    if (!res.ok) console.error("Segment track failed:", res.status, await res.text());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (flow.elb as any)({ name: event, id: d._event_id, data, user, globals });
   } catch (err) {
-    console.error("Segment track threw:", err);
+    console.error("walker server send threw:", err);
   }
 }

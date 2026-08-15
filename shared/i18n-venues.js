@@ -45,7 +45,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "v.plan.classic": "QED Classic",
   "v.plan.clasamt": "150 €",
-  "v.plan.clasprice": "+ IVA/mes · hasta 5 eventos",
+  "v.plan.clasprice": "+ IVA/mes · hasta 5 eventos al mes",
   "v.plan.clasoneoff": "o 50 € + IVA por evento suelto",
   "v.plan.clasdesc": "La experiencia completa de trivia clásica: cuatro rondas, dirigidas por tu propio equipo.",
   "v.plan.clasf1": "Cuatro rondas, 40 preguntas cada una",

@@ -174,24 +174,34 @@
   function pushDataLayer(name, detail) {
     try { (window.dataLayer = window.dataLayer || []).push(assign({ event: name }, detail || {})); } catch (e) {}
   }
-  function track(name, detail) {
-    pushDataLayer(name, detail);
+  // Push an event into walkerOS (shared/walker.js). window.elb is a queuing stub until the async
+  // collector finishes loading (walker.entry), so early calls aren't lost. Resilient by design —
+  // a tracking failure must never break a form submit.
+  function walkerPush(name, data, id) {
     try {
-      if (window.__qedConsent === "granted" && window.__qedSegmentReady && window.analytics && window.analytics.track) {
-        window.analytics.track(name, detail || {});
-      }
+      if (!window.elb) return;
+      window.elb(id ? { name: name, data: data || {}, id: id } : { name: name, data: data || {} });
     } catch (e) {}
   }
-  // Lead funnel — Segment naming spec (Title Case, Object + Action). Two distinct event
-  // names, not one name split by a `step` property, so a Lead conversion mapped to
-  // "Form Submitted" in Google Ads / Meta can never accidentally include abandoners:
-  //   "Lead Started"   = the visitor cleared step 1 (name + email captured) — may not finish.
-  //   "Form Submitted" = the full lead, carrying every step-1 property plus the step-2 fields.
-  // Both go to Segment server-side (netlify/lib/forms.ts) for hashed traits + ad-blocker
-  // resistance: the step-1 POST is fire-and-forget (no Telegram, no UI wait); the step-2
-  // POST is the real submit. dataLayer gets both here for GTM parity — Segment is only
-  // touched server-side, so there's no double-counting. step 1 and step 2 use different
-  // event ids (they are distinct conversions, not a client/server pair to dedupe).
+
+  // Relative lead value (EUR) for the browser Pixel Lead — mirrors LEAD_VALUE in
+  // netlify/lib/forms.ts (a franchise lead is worth far more than a birthday enquiry). Proxy
+  // weights until real pricing lands; client Pixel value and server value stay in sync so
+  // value-based bidding agrees across the Pixel/CAPI pair.
+  var LEAD_VALUE = { partners: 10, venues: 3, corporate: 1, celebrations: 1 };
+  function leadValue() { return LEAD_VALUE[window.QED_SITE] || 1; }
+
+  // Lead funnel — two distinct events (entity-action, MEASUREMENT-PLAN.md), not one name split by
+  // a `step` property, so a "Lead" conversion mapped to `lead complete` can never include
+  // abandoners:
+  //   `lead start`    = visitor cleared step 1 (name + email) — may not finish. SERVER-side only
+  //                     (Amplitude + Meta CAPI secondary + Google), fired from the step-1 POST; the
+  //                     browser Pixel and client Amplitude both ignore it.
+  //   `lead complete` = the full lead. Fired SERVER-side (CAPI primary + Amplitude + Google) AND
+  //                     here as the browser Pixel Lead, sharing the submission's _event_id so Meta
+  //                     dedups the pair. step 1 and step 2 use different event ids (distinct
+  //                     conversions, not a client/server pair to dedupe).
+  // The pushDataLayer calls below are harmless GTM-parity leftovers (nothing consumes dataLayer).
 
   function uuid() {
     return (window.crypto && window.crypto.randomUUID)
@@ -282,7 +292,7 @@
     data.form = form.getAttribute("name") || action;
     data.title = document.title;
     data.path = location.pathname;
-    data.referrer = document.referrer || "$direct"; // Segment's convention for direct
+    data.referrer = document.referrer || "$direct"; // convention for a direct visit (no referrer)
     data._step = String(step);
     data._event_id = eventId;
     data._url = location.href;
@@ -290,6 +300,10 @@
     if (window.__qedConsentCategories) { try { data._consentCategories = JSON.stringify(window.__qedConsentCategories); } catch (e) {} }
     var f = fbc();
     if (f) data._fbc = f;
+    // _fbp is set by the Meta Pixel (loaded by walker under marketing consent). Read it live at
+    // submit — freshest value, and a hidden field would predate Pixel init. Forwarded to CAPI.
+    var fp = readCookie("_fbp");
+    if (fp) data._fbp = fp;
     // first-touch attribution + durable pseudonymous id (forwarded only under consent)
     var attr = storedAttr();
     ATTR_FIELDS.forEach(function (k) { if (attr[k]) data["_" + k] = attr[k]; });
@@ -385,7 +399,7 @@
           var d1 = collect(form, action, 1, uuid());
           var et = form.elements.eventType;
           pushDataLayer("Lead Started", { step: 1, form: d1.form, eventType: et ? et.value : undefined, event_id: d1._event_id });
-          // fire-and-forget: partial lead → Segment (no Telegram). Never blocks the UI.
+          // fire-and-forget: partial lead → server (walkerOS, no Telegram). Never blocks the UI.
           try {
             fetch(action, {
               method: "POST",
@@ -473,6 +487,10 @@
         var s = form.querySelector(".form-success");
         if (s) { s.setAttribute("role", "status"); if (s.focus) s.focus(); }
         pushDataLayer("Form Submitted", { step: 2, form: data.form, event_id: data._event_id });
+        // Browser-side Meta Pixel Lead — id = the submission's _event_id so it dedups against the
+        // server CAPI Lead (netlify/lib/forms.ts). Amplitude ignores this client lead (the server
+        // sends it); only the Pixel consumes it, for value/currency + the _fbp/_fbc match.
+        walkerPush("lead complete", { funnel: window.QED_SITE || "home", value: leadValue(), currency: "EUR" }, data._event_id);
         form.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
       }).catch(function (err) {
         if (btn) {
@@ -703,6 +721,81 @@
   }
 
   enhanceSelects();
+
+  /* ---------- engagement instrumentation (Tier 2/3, MEASUREMENT-PLAN.md) ----------
+     Centralized here (via walkerPush → walkerOS) instead of data-elb attributes sprinkled across
+     7 pages: qed.js already owns the nav/FAQ/form listeners, so one block is easier to keep right.
+     Every event carries the walker globals (brand/section/product/language) automatically; these
+     `data` payloads only add the event-specific bits. All are consent-gated at the destination and
+     never sent off the production domains, same as page view. */
+  function initEngagement() {
+    var section = window.QED_SITE || "home";
+
+    // Delegated clicks → cta / nav / crosssell / outbound. Classified by class + link target so a
+    // hero CTA (.btn--cta) and an in-body cross-sell card (.card → another funnel) don't collide.
+    var FUNNEL_HREF = /^\/(corporate|celebrations|venues|partners|franchise|franquicias)\/?($|[?#])/;
+    function placement(el) {
+      if (el.closest(".hero")) return "hero";
+      var withId = el.closest("[id]");
+      return (withId && withId.id) || "body";
+    }
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href], button.btn");
+      if (!a) return;
+      var href = a.getAttribute("href") || "";
+      var label = (a.textContent || "").trim().replace(/\s+/g, " ").slice(0, 80);
+      // External link → outbound (skip in-page #anchors and same-host links).
+      if (a.tagName === "A" && a.hostname && a.hostname !== location.hostname && /^https?:/i.test(a.protocol)) {
+        walkerPush("outbound click", { href: href, label: label });
+        return;
+      }
+      if (a.closest(".nav__links")) { walkerPush("nav click", { href: href, label: label }); return; }
+      if (a.classList.contains("btn--cta") || a.classList.contains("btn--soft")) {
+        // A form's own submit button is not a CTA click — the lead events cover that.
+        if (a.type !== "submit") walkerPush("cta click", { placement: placement(a), label: label, href: href });
+        return;
+      }
+      if (a.tagName === "A" && !a.closest("footer") && FUNNEL_HREF.test(href)) {
+        walkerPush("crosssell click", { to: href.replace(/[?#].*$/, "").replace(/\//g, ""), href: href, label: label });
+        return;
+      }
+    });
+
+    // form view — the denominator for start-rate (view → lead start → lead complete).
+    if ("IntersectionObserver" in window) {
+      var seen = "WeakSet" in window ? new WeakSet() : null;
+      var fio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          if (seen) { if (seen.has(en.target)) return; seen.add(en.target); }
+          fio.unobserve(en.target);
+          walkerPush("form view", { funnel: section, form: en.target.getAttribute("name") || "" });
+        });
+      }, { threshold: 0.3 });
+      document.querySelectorAll("form[data-action]").forEach(function (f) { fio.observe(f); });
+    }
+
+    // faq open — native `toggle` fires in both the animated and reduced-motion paths.
+    document.querySelectorAll(".faq details").forEach(function (d) {
+      d.addEventListener("toggle", function () {
+        if (!d.open) return;
+        var s = d.querySelector("summary");
+        walkerPush("faq open", { question: s ? (s.textContent || "").trim().slice(0, 120) : "" });
+      });
+    });
+
+    // scroll reach — 25/50/75/100%, once each, then detach.
+    var sent = {}, DEPTHS = [25, 50, 75, 100];
+    function onScroll() {
+      var scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollable <= 0) return;
+      var pct = Math.min(100, Math.round((window.scrollY / scrollable) * 100));
+      DEPTHS.forEach(function (dp) { if (pct >= dp && !sent[dp]) { sent[dp] = 1; walkerPush("scroll reach", { depth: dp }); } });
+      if (sent[100]) window.removeEventListener("scroll", onScroll);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+  initEngagement();
 
   /* re-open the cookie banner to review/update consent (privacy/legal page button) */
   document.querySelectorAll("[data-consent-open]").forEach(function (el) {

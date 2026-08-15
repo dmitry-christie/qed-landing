@@ -67,6 +67,10 @@ window.QED_ES = window.QED_ES || {};
   // On a branded deployment, switching language navigates to the other brand's site.
   // On local/preview (no cfg.brand), swap in-page as before.
   function switchLang(lang) {
+    // Best-effort `language switch` (walkerOS). On a branded build the next line navigates to the
+    // other brand domain, so this may not flush before unload — reliable only for the in-page
+    // (unbranded/preview) switch below. Never blocks the switch.
+    try { if (window.elb) window.elb("language switch", { to: String(lang).toLowerCase() }); } catch (e) {}
     if (cfg.brand) {
       var target = lang === "ES" ? BRAND_DOMAINS.TDT : BRAND_DOMAINS.QED;
       var url = "https://" + target + window.location.pathname + window.location.search;
