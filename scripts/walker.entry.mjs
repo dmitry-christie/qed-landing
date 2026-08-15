@@ -21,12 +21,15 @@
 import { startFlow } from "@walkeros/collector";
 import { sourceBrowser } from "@walkeros/web-source-browser";
 import { destinationMeta } from "@walkeros/web-destination-meta";
+import { destinationGtag } from "@walkeros/web-destination-gtag";
 import { destinationAPI } from "@walkeros/web-destination-api";
 
-// Google Ads is SERVER-side only in v1 (full enhanced conversions from the Netlify collector,
-// Phase 3) — no client gtag here, so browser and server can't double-count a conversion. Meta
-// retargeting audiences come from the Meta Pixel below; a client Google remarketing tag is a
-// deliberate fast-follow, not part of this bundle.
+// Google Ads is CLIENT-side (gtag) with enhanced conversions for leads — simpler than the server
+// API (no developer token / OAuth). It fires only the lead conversions (allowlisted below) and is
+// the only client destination that consumes the lead events, so there's no double count: Amplitude
+// ignores leads (sent server-side) and the Meta Pixel only forwards value/currency. PII for
+// enhanced matching (email + name + city) rides in the lead event data under marketing consent and
+// is read ONLY by this destination's enhancedConversions map; gtag hashes it before sending.
 
 var cfg = (typeof window !== "undefined" && window.QED_CONFIG) || {};
 
@@ -166,6 +169,43 @@ function metaDestination() {
   };
 }
 
+// ---- Google Ads (gtag, client-side) ----
+// Loads the Google tag and fires the lead conversions with enhanced conversions for leads.
+// Marketing-gated. Allowlist floor like the Pixel, so only the lead conversions fire (not the
+// engagement events). Conversion value comes from data.value; the label per action from config.
+// enhancedConversions maps email + name + city out of the (marketing-gated) lead event data — gtag
+// hashes them before sending. Needs GOOGLE_ADS_CONVERSION_ID (AW-XXXX) + the two labels in config.
+function googleAdsDestination() {
+  if (!cfg.googleAdsConversionId) return null;
+  return {
+    code: destinationGtag,
+    config: {
+      consent: { marketing: true },
+      settings: {
+        ads: {
+          conversionId: cfg.googleAdsConversionId,
+          currency: "EUR",
+          enhancedConversions: {
+            email: "data.email",
+            address: {
+              first_name: "data.firstName",
+              last_name: "data.lastName",
+              city: "data.city",
+            },
+          },
+        },
+      },
+      mapping: {
+        "*": { "*": { ignore: true } }, // allowlist floor — only the lead conversions fire
+        lead: {
+          complete: { settings: { ads: { label: cfg.googleAdsLabelComplete } }, data: { value: "data.value" } },
+          start: { settings: { ads: { label: cfg.googleAdsLabelStart } }, data: { value: "data.value" } },
+        },
+      },
+    },
+  };
+}
+
 // Local/preview debug destination — logs the events walker builds so `netlify dev` can verify
 // event construction without sending anything (production-domain gate keeps real destinations off
 // previews). Off entirely on production. Off unless QED_CONFIG.debug is truthy, so it's opt-in.
@@ -190,6 +230,8 @@ function buildDestinations() {
   if (LIVE) {
     var meta = metaDestination();
     if (meta) out.meta = meta;
+    var gads = googleAdsDestination();
+    if (gads) out.googleAds = gads;
   }
   var dbg = debugDestination();
   if (dbg) out.debug = dbg;

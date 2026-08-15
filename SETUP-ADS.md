@@ -14,17 +14,17 @@ code no-ops, nothing breaks.
 
 ---
 
-## 0. Order of operations (what blocks what)
+## 0. Order of operations
 
-1. **Google Ads developer token first** — it needs approval (often 1–3 business days for Basic
-   access). Apply on day 1 so it isn't the bottleneck; everything else you can do while you wait.
-2. Amplitude (fast) and Meta (fast) can be done any time.
-3. Set Netlify env vars per site.
-4. Deploy (merge the PR) and run the verification section.
-5. Wire the conversions into live campaigns (last — after data is flowing).
+All three platforms are quick now (Google moved to client-side — no developer-token approval to
+wait on). Any order:
 
-The full env-var checklist is in section 5; each platform section below tells you where each value
-comes from.
+1. Amplitude, Meta, Google Ads — create the accounts/ids (sections 1–3).
+2. Set the Netlify env vars per site (section 4).
+3. Deploy (or, if already deployed, a redeploy picks the vars up) and run the verification (section 5).
+4. Wire the conversions into live campaigns — last, after data is flowing (section 6).
+
+Each platform section tells you where each value comes from.
 
 ---
 
@@ -74,54 +74,37 @@ Per brand. The browser Pixel and the server CAPI share one Pixel/dataset per bra
 
 ---
 
-## 3. Google Ads → server-side enhanced conversions for leads
+## 3. Google Ads → client-side gtag with enhanced conversions for leads
 
-The heaviest setup. Seven env vars per brand, but several pieces are **shareable** across both
-brands if both Ads accounts sit under one Google login / manager account.
+Client-side (the browser gtag fires the conversions with enhanced conversions for leads). No
+developer token, no OAuth, no API — just three client ids per brand plus a toggle in the Google
+Ads UI. Three env vars per brand.
 
-### 3a. Developer token (apply first — has a lead time) → `GOOGLE_ADS_DEVELOPER_TOKEN`
-- In a Google Ads **manager (MCC) account**: **Tools → API Center**. Apply for API access; you
-  need at least **Basic access** to upload conversions to production. **Shareable** across both
-  brands if they're under the same MCC.
+### 3a. Conversion ID → `GOOGLE_ADS_CONVERSION_ID`
+- The account's Google Ads tag id, format **`AW-XXXXXXXXXX`**. Google Ads →
+  **Goals → Conversions → Google tag / Diagnostics**, or shown when you create a conversion action.
+  **Per brand** (different accounts → different `AW-` ids).
 
-### 3b. OAuth2 client → `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_REFRESH_TOKEN`
-- **Google Cloud Console → new project → APIs & Services → Enable "Google Ads API"**.
-- **Credentials → Create OAuth client ID → Desktop app**. Copy client id → `GOOGLE_ADS_CLIENT_ID`,
-  client secret → `GOOGLE_ADS_CLIENT_SECRET`. **Shareable** across both brands.
-- **Refresh token:** authorize the Google account that can access the Ads account(s), with scope
-  `https://www.googleapis.com/auth/adwords`. Easiest path: **OAuth 2.0 Playground**
-  (developers.google.com/oauthplayground) → gear icon → "Use your own OAuth credentials" → paste
-  client id/secret → authorize the adwords scope → exchange for a **refresh token**. Copy →
-  `GOOGLE_ADS_REFRESH_TOKEN`. If one Google login has access to BOTH Ads accounts, one refresh
-  token works for both; only `CUSTOMER_ID` differs.
+### 3b. Two conversion actions → `GOOGLE_ADS_LABEL_COMPLETE`, `GOOGLE_ADS_LABEL_START`
+- **Goals → Conversions → New conversion action → Website.** Create **two**, per brand:
+  - full lead → **primary** (used for bidding) → its **conversion label** → `GOOGLE_ADS_LABEL_COMPLETE`
+  - partial lead → **secondary** (not for bidding) → its **conversion label** → `GOOGLE_ADS_LABEL_START`
+- The **label** is the short string paired with the `AW-` id in a conversion's `send_to`
+  (`AW-XXXX/`**`the-label`**). It's shown in the action's tag setup ("Use Google tag manager / Use
+  the Google tag" → the `send_to` value). The code combines it with `GOOGLE_ADS_CONVERSION_ID`.
+- Let the sent `value`/`currency` drive value-based bidding (the code sends both:
+  partners 10 / venues 3 / corporate 1 / celebrations 1 EUR — proxy weights until real pricing).
 
-### 3c. Account ids → `GOOGLE_ADS_CUSTOMER_ID`, `GOOGLE_ADS_LOGIN_CUSTOMER_ID`
-- `GOOGLE_ADS_CUSTOMER_ID` = the **10-digit Ads account id** of the brand (top-right in Google
-  Ads, digits only — the code strips dashes). **Per brand.**
-- `GOOGLE_ADS_LOGIN_CUSTOMER_ID` = the **MCC id** (digits only), only if the account is accessed
-  through a manager account. Optional; omit if not using an MCC. **Shareable.**
+### 3c. Turn on Enhanced Conversions for Leads (the Google tag method)
+- **Goals → Conversions → Settings** → accept the **customer-data terms** → enable
+  **Enhanced conversions for leads** and choose the **Google tag** method (not the API — the page's
+  gtag sends the user data). Do this per brand account. The code already provides the hashed
+  email + name + city on each lead (gtag hashes them client-side); you just enable the feature.
 
-### 3d. Enable Enhanced Conversions for Leads
-- **Google Ads → Goals → Conversions → Settings → Customer data terms**, accept, then enable
-  **Enhanced conversions for leads** and choose the **Google Ads API** method (not gtag/GTM — the
-  server uploads via the API). Do this per brand account.
-
-### 3e. Conversion actions → `GOOGLE_ADS_CONVERSION_COMPLETE`, `GOOGLE_ADS_CONVERSION_START`
-- Create **two conversion actions** per brand (**Goals → Conversions → New → Import → skip the
-  gtag/manual, you'll upload via API**):
-  - one for the full lead → **primary** (used for bidding). Its resource name →
-    `GOOGLE_ADS_CONVERSION_COMPLETE`.
-  - one for the partial lead → **secondary** (not for bidding). Its resource name →
-    `GOOGLE_ADS_CONVERSION_START`.
-- The **resource name** format is `customers/<CUSTOMER_ID>/conversionActions/<ACTION_ID>` — get
-  the action id from the conversion action's URL or via the API; the code passes it verbatim as
-  `conversionAction`. **Per brand** (different accounts → different ids).
-- Set a value/currency on the actions or let the uploaded `conversionValue`/`currencyCode` drive
-  value-based bidding (the code sends both).
-
-> If the API/developer-token approval is slow and you want Google live sooner, the alternative is
-> a client-side Google Ads tag — but that's a separate change (this migration deliberately does
-> Google server-side only). Flag me if you want that fallback.
+> **No developer-token wait, no OAuth.** This replaced the earlier server-side API plan to keep
+> setup simple. The trade-off: conversions are client-side, so an adblocker on a visitor's browser
+> can block the gtag beacon for that visit (the same visitor's Meta conversion still lands via the
+> server CAPI). Fine for a lead-gen site; revisit server-side only if adblock loss looks material.
 
 ---
 
@@ -136,16 +119,12 @@ Set on **each brand's site**: Netlify → **Site configuration → Environment v
 | `AMPLITUDE_API_KEY` | client + server | yes | Amplitude §3 |
 | `META_CAPI_TOKEN` | server secret | yes | Meta §2 |
 | `META_TEST_EVENT_CODE` | server (testing only) | yes | Meta §3 — **remove after verifying** |
-| `GOOGLE_ADS_DEVELOPER_TOKEN` | server secret | shareable | Google §3a |
-| `GOOGLE_ADS_CLIENT_ID` | server secret | shareable | Google §3b |
-| `GOOGLE_ADS_CLIENT_SECRET` | server secret | shareable | Google §3b |
-| `GOOGLE_ADS_REFRESH_TOKEN` | server secret | shareable* | Google §3b |
-| `GOOGLE_ADS_CUSTOMER_ID` | server | yes | Google §3c |
-| `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | server | shareable (optional) | Google §3c |
-| `GOOGLE_ADS_CONVERSION_COMPLETE` | server | yes | Google §3e |
-| `GOOGLE_ADS_CONVERSION_START` | server | yes | Google §3e |
+| `GOOGLE_ADS_CONVERSION_ID` | client (config.js) | yes | Google §3a |
+| `GOOGLE_ADS_LABEL_COMPLETE` | client (config.js) | yes | Google §3b |
+| `GOOGLE_ADS_LABEL_START` | client (config.js) | yes | Google §3b |
 
-\* the refresh token is shareable only if one Google login has access to both Ads accounts.
+Google Ads is client-side now — no secrets, no per-account API creds. Just the `AW-` id + the two
+conversion labels, plus enabling enhanced conversions (Google tag method) in the Google Ads UI (§3c).
 
 **Delete the unused leftovers:** `PUBLIC_AMPLITUDE_API_KEY`, `PUBLIC_RUDDERSTACK_WRITE_KEY`.
 
@@ -168,9 +147,10 @@ independently as its ids appear.
    deduplicated to one. Check `InitiateCheckout` fires on step 1. Then **remove
    `META_TEST_EVENT_CODE`** and redeploy.
 5. **Lead → Google Ads:** Google Ads → **Goals → Conversions** → your two actions should leave
-   "No recent conversions" within a few hours of a real test lead. Function logs (Netlify →
-   Functions → book-event) will show `Google Ads upload failed:` with a reason if a credential is
-   off — check there first.
+   "No recent conversions" within a few hours of a real test lead. It's client-side (gtag), so use
+   **Google Tag Assistant** (or the browser's Network tab, with adblock off) on the live page to see
+   the `googleads.g.doubleclick.net` / `google.com/pagead` conversion fire on submit. Enhanced
+   conversions show as "recording" in the conversion action's diagnostics once matches come in.
 6. **Lead → Amplitude:** `Lead Submitted` appears (sent server-side, once per lead — the client
    Amplitude deliberately ignores leads so there's no double count).
 7. Do a real submit on **each of the four funnels** (corporate, celebrations, venues, partners) —
@@ -203,6 +183,7 @@ independently as its ids appear.
   secret/deletion key rather than the ingestion API key.
 - **Meta events but no match / low EMQ:** marketing consent wasn't granted in your test, so no
   `_fbp`/hashed identity was attached.
-- **Google upload errors:** read the Netlify function log line — common causes are a developer
-  token still in "test" access (can't write to production), a stale/rescoped refresh token, or a
-  conversion action resource name from the wrong account.
+- **Google conversion not firing:** it's client-side gtag — check with Google Tag Assistant on the
+  live page (adblock off). Common causes: `GOOGLE_ADS_CONVERSION_ID` / label not set on that brand's
+  site, marketing consent not granted, an adblocker, or enhanced conversions not enabled (Google tag
+  method) in the Google Ads UI.
