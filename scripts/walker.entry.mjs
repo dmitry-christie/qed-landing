@@ -21,8 +21,12 @@
 import { startFlow } from "@walkeros/collector";
 import { sourceBrowser } from "@walkeros/web-source-browser";
 import { destinationMeta } from "@walkeros/web-destination-meta";
-import { destinationGtag } from "@walkeros/web-destination-gtag";
 import { destinationAPI } from "@walkeros/web-destination-api";
+
+// Google Ads is SERVER-side only in v1 (full enhanced conversions from the Netlify collector,
+// Phase 3) — no client gtag here, so browser and server can't double-count a conversion. Meta
+// retargeting audiences come from the Meta Pixel below; a client Google remarketing tag is a
+// deliberate fast-follow, not part of this bundle.
 
 var cfg = (typeof window !== "undefined" && window.QED_CONFIG) || {};
 
@@ -34,6 +38,23 @@ function analyticsEnabled() {
   return /(^|\.)quizeatdrink\.com$/.test(h) || /(^|\.)tardeodetrivia\.com$/.test(h);
 }
 var LIVE = analyticsEnabled();
+
+// Durable first-party pseudonymous id — the SAME localStorage key qed.js uses (externalId()),
+// so the walker user, the server CAPI external_id, and the lead's _eid are one stable id per
+// visitor. Seed it here on load so every event (incl. Amplitude, which requires a device_id) has
+// an identity, and qed.js later reads the same value. Best-effort: no storage → undefined id.
+function durableId() {
+  try {
+    var id = localStorage.getItem("qed-eid");
+    if (!id) {
+      id = (window.crypto && window.crypto.randomUUID)
+        ? window.crypto.randomUUID()
+        : Date.now() + "-" + Math.random().toString(16).slice(2);
+      localStorage.setItem("qed-eid", id);
+    }
+    return id;
+  } catch (e) { return undefined; }
+}
 
 // ---- globals: stamped on every event (walkerOS `globals`) ----
 // Values + casing match the server side (netlify/lib/forms.ts) so both sources roll up together
@@ -98,6 +119,10 @@ function amplitudeDestination() {
     code: destinationAPI,
     config: {
       consent: { analytics: true }, // measurement gate
+      // Amplitude gets `page view` + all engagement, but NOT the lead events — those are sent
+      // SERVER-side (hybrid split, MEASUREMENT-PLAN.md), so ignore them here to avoid double
+      // counting a lead in Amplitude. Every other event passes through by default.
+      mapping: { lead: { start: { ignore: true }, complete: { ignore: true } } },
       settings: {
         url: "https://api.eu.amplitude.com/2/httpapi", // EU data residency (decided)
         headers: { "Content-Type": "application/json" },
@@ -110,10 +135,14 @@ function amplitudeDestination() {
 }
 
 // ---- Meta Pixel (browser) ----
-// Sets _fbp/_fbc and fires PageView + the redundant browser-side Lead. The server CAPI Lead
-// (Phase 3) reuses the same event_id → Meta dedups the pair. Marketing-gated.
-// TODO(Phase 2): finalize `data` maps — Lead value/currency + eventID for CAPI dedup, and confirm
-// how web-destination-meta threads eventID into fbq's {eventID} option.
+// Loads fbq (sets _fbp/_fbc) and fires exactly PageView + the redundant browser-side Lead. The
+// server CAPI Lead (Phase 3) reuses the same event_id → Meta dedups the pair. Marketing-gated.
+//
+// walkerOS delivers ALL events to a destination by default (a mapping only shapes matched ones),
+// so the `"*": { "*": { ignore: true } }` wildcard is an allowlist floor — without it every
+// engagement event would fire as a noisy custom fbq event. The Meta destination sets
+// fbq(..., { eventID: event.id }) automatically, and qed.js (Phase 2) pushes the lead event with
+// id = the submission's _event_id, so the browser eventID == the server CAPI event_id (dedup).
 function metaDestination() {
   if (!cfg.metaPixelId) return null;
   return {
@@ -122,30 +151,15 @@ function metaDestination() {
       consent: { marketing: true },
       settings: { pixelId: cfg.metaPixelId },
       mapping: {
-        page: { view: { name: "PageView" } },
-        // `lead complete` on the browser side = Pixel Lead (dedup vs server CAPI by event_id).
-        // `lead start` stays off the Pixel; it's a server-side secondary conversion only.
-        lead: { complete: { name: "Lead" } },
-      },
-    },
-  };
-}
-
-// ---- Google Ads (gtag) ----
-// Browser-side conversion tag. Marketing-gated. Server-side enhanced conversions (Phase 3) are
-// the higher-match-quality path; this is the on-page tag + gclid capture.
-// TODO(Phase 2): wire enhancedConversions (hashed user_data) + confirm per-event label mapping.
-function googleAdsDestination() {
-  if (!cfg.googleAdsConversionId) return null;
-  return {
-    code: destinationGtag,
-    config: {
-      consent: { marketing: true },
-      settings: { ads: { conversionId: cfg.googleAdsConversionId, currency: "EUR" } },
-      mapping: {
+        "*": { "*": { ignore: true } }, // allowlist floor — only the rules below reach the Pixel
+        page: { view: {} }, // the Meta destination auto-maps "page view" → standard "PageView"
         lead: {
-          start: { settings: { ads: { label: cfg.googleAdsLabelStart } } },
-          complete: { settings: { ads: { label: cfg.googleAdsLabelComplete } } },
+          // `lead complete` → standard Lead with value/currency. `lead start` intentionally stays
+          // off the Pixel (it's a server-side secondary conversion only), so the wildcard drops it.
+          complete: {
+            settings: { track: "Lead" },
+            data: { value: "data.value", currency: "data.currency" },
+          },
         },
       },
     },
@@ -176,24 +190,46 @@ function buildDestinations() {
   if (LIVE) {
     var meta = metaDestination();
     if (meta) out.meta = meta;
-    var ads = googleAdsDestination();
-    if (ads) out.googleAds = ads;
   }
   var dbg = debugDestination();
   if (dbg) out.debug = dbg;
   return out;
 }
 
+// ---- consent handoff ----
+// Decoupled from shared/consent.js: that file owns the banner + storage and just sets
+// window.__qedConsentCategories (synchronously, on load) and dispatches `qed:consentchange` on a
+// decision. We read the former on init and listen for the latter, then push into walkerOS. This
+// avoids any load-order race with startFlow's async resolution and keeps consent.js walker-agnostic.
+// Until a real grant arrives, destinations hold their events (walkerOS queues per required category).
+function pushConsent(elb, cats) {
+  if (!cats) return;
+  elb("walker consent", {
+    functional: !!cats.functional,
+    analytics: !!cats.analytics,
+    marketing: !!cats.marketing,
+  });
+}
+
 // ---- start ----
-// Exposes window.elb (push fn) + window.QEDWalker (collector). shared/consent.js (Phase 2) drives
-// consent via elb('walker consent', {functional, analytics, marketing}); until then destinations
-// hold their events. The browser source auto-fires `page view` (queued behind consent).
+// Exposes window.elb (push fn) + window.QEDWalker (collector). The browser source auto-fires
+// `page view`; it (and every other event) stays queued until pushConsent releases the categories.
 export async function initWalker() {
   if (typeof window === "undefined") return null;
   if (window.QEDWalker) return window.QEDWalker; // idempotent
 
+  // Queue stub so any elb() call before startFlow resolves (e.g. an early lead event from qed.js)
+  // is captured, then flushed into the real elb below — nothing fires into the void.
+  if (!window.elb) {
+    window.elb = function () { (window.elb.q = window.elb.q || []).push(arguments); };
+  }
+  var queued = (window.elb && window.elb.q) || [];
+
+  var eid = durableId();
   var flow = await startFlow({
     globals: globals,
+    // device carries into Amplitude's device_id (required); id is the CAPI external_id match key.
+    user: eid ? { id: eid, device: eid } : undefined,
     sources: {
       browser: {
         code: sourceBrowser,
@@ -205,6 +241,26 @@ export async function initWalker() {
 
   window.elb = flow.elb;
   window.QEDWalker = flow.collector;
+  queued.forEach(function (args) { try { flow.elb.apply(null, args); } catch (e) {} });
+
+  // Apply consent already decided on a prior visit (consent.js set this synchronously on load),
+  // then react to live decisions from the banner. A fresh decision is also recorded as its own
+  // `consent update` event (reaches Amplitude only if Analytics was granted — a declined update
+  // can't send, which is fine). Not fired for the prior-visit apply, so returning visitors don't
+  // emit one on every page load.
+  pushConsent(flow.elb, window.__qedConsentCategories);
+  window.addEventListener("qed:consentchange", function (e) {
+    var cats = e && e.detail;
+    pushConsent(flow.elb, cats);
+    if (cats) {
+      flow.elb("consent update", {
+        functional: !!cats.functional,
+        analytics: !!cats.analytics,
+        marketing: !!cats.marketing,
+      });
+    }
+  });
+
   return flow;
 }
 

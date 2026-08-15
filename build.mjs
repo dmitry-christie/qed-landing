@@ -43,11 +43,11 @@ const devNotice = process.env.DEV_NOTICE != null
 // Pixel id), not secrets: the Meta CAPI token and Google Ads API credentials are secrets and stay
 // as function-runtime env (netlify/lib/forms.ts), never written here. Any id left unset is omitted,
 // which keeps that destination inert in scripts/walker.entry.mjs — the "add credentials later" path.
+// Only client-side ids belong here (they ship in config.js). The browser bundle uses the Meta
+// Pixel id + Amplitude key; Google Ads is server-side only (Phase 3, its own function env vars),
+// so no Google id is exposed client-side. debug=true turns on the local console destination.
 const analyticsEnv = {
   metaPixelId: process.env.META_PIXEL_ID,
-  googleAdsConversionId: process.env.GOOGLE_ADS_CONVERSION_ID,
-  googleAdsLabelStart: process.env.GOOGLE_ADS_LABEL_START,
-  googleAdsLabelComplete: process.env.GOOGLE_ADS_LABEL_COMPLETE,
   amplitudeKey: process.env.AMPLITUDE_API_KEY,
   ...(process.env.WALKER_DEBUG === "true" ? { debug: true } : {}),
 };

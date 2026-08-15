@@ -56,7 +56,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "consent.cat.functional": "Funcionales",
   "consent.cat.functionald": "Recuerdan tus preferencias (como el idioma) y hacen funcionar el chat en directo. Sin ellas el sitio funciona, pero no te recuerda.",
   "consent.cat.analytics": "Analítica",
-  "consent.cat.analyticsd": "Medición: cómo funcionan el sitio y las campañas publicitarias (Segment, Meta, Google).",
+  "consent.cat.analyticsd": "Medición: cómo funcionan el sitio y las campañas publicitarias (Amplitude, Meta, Google).",
   "consent.cat.marketing": "Marketing",
   "consent.cat.marketingd": "Optimización y segmentación de campañas publicitarias (Meta, Google).",
 
