@@ -7,7 +7,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "h.nav.work": "Organiza un tardeo",
   "h.nav.partners": "Franquicias",
-  "h.nav.venues": "Locales",
+  "h.nav.venues": "Marca blanca",
 
   "h.hero.h1a": "Tardeos de trivia que ",
   "h.hero.h1b": "se recuerdan de verdad.",

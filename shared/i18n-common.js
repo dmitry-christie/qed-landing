@@ -18,7 +18,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
      one, so the ES site links straight there instead of bouncing through the 301. The two
      must change together. */
   "foot.partnerhref": "/franquicias/",
-  "foot.venue": "Local anfitrión",
+  "foot.venue": "Marca blanca",
   "foot.privacy": "Política de privacidad",
   "foot.terms": "Términos y aviso legal",
   "foot.cookies": "Preferencias de cookies",
@@ -71,7 +71,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "os.fran.t": "Franquicia",
   "os.fran.d": "Monta tardeos de trivia recurrentes y crea un negocio en expansión.",
   "os.fran.link": "Descubre la franquicia",
-  "os.venue.t": "Local anfitrión",
+  "os.venue.t": "Marca blanca",
   "os.venue.d": "Llena tu local con tu propio tardeo de trivia. Sin comisiones.",
   "os.venue.link": "Descubre Locales",
 
@@ -80,7 +80,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cmp.h2": "¿Franquicia o local anfitrión?",
   "cmp.lead": "Dos formas de montar tardeos de trivia con nosotros. Elige la que encaja contigo.",
   "cmp.col1": "Franquicia",
-  "cmp.col2": "Local anfitrión",
+  "cmp.col2": "Marca blanca",
   "cmp.r1l": "Ideal para",
   "cmp.r1a": "Montar un negocio con potencial de expansión",
   "cmp.r1b": "Llenar tu local a tu manera",
@@ -97,7 +97,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cmp.r5a": "Incluida · gestionamos tus anuncios con nuestro equipo experto; las redes orgánicas básicas son, al final, cosa tuya",
   "cmp.r5b": "Complemento opcional de redes sociales",
   "cmp.cta1": "Descubre la franquicia",
-  "cmp.cta2": "Ver locales anfitriones",
+  "cmp.cta2": "Ver marca blanca",
 
   /* ---- cross-sell headings ---- */
   "xsell.event.h": "¿Solo quieres un evento puntual?",
