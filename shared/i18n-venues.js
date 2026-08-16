@@ -1,8 +1,8 @@
 /* Spanish: Venues page. English is baked into venues/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
-  "v.title": "Tardeo de Trivia para Locales · Llena tu local cada semana con trivia",
-  "v.metadesc": "Nosotros ponemos la trivia. Tú pones las bebidas. Un tardeo de trivia semanal que llena tu local, 0% de comisión sobre barra y comida, con términos flexibles.",
-  "v.ogdesc": "Un tardeo de trivia semanal que llena tu sala. 0% de comisión, términos flexibles.",
+  "v.title": "Tardeo de Trivia para Locales · Llena tu local con tu propio tardeo de trivia",
+  "v.metadesc": "Nosotros ponemos la trivia, tú la montas con tu propia marca cuando te venga bien. Llena tu local con 0% de comisión sobre barra y comida y términos flexibles.",
+  "v.ogdesc": "Tu propio tardeo de trivia, con nuestro motor detrás. Llena tu sala. 0% de comisión, términos flexibles.",
 
   "v.nav.kicker": "Locales",
   "v.nav.plans": "Planes",
@@ -14,10 +14,10 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.cta.expstart": "Empieza con Express",
   "v.cta.classtart": "Empieza con Classic",
 
-  "v.hero.tag": "Términos flexibles · No es una franquicia",
-  "v.hero.h1a": "Llena tu local cada semana con ",
+  "v.hero.tag": "Con tu marca · No es una franquicia",
+  "v.hero.h1a": "Tu local, tu propio tardeo de ",
   "v.hero.h1b": "trivia.",
-  "v.hero.sub": "Nosotros ponemos la trivia. Tú pones las bebidas. Un tardeo semanal que convierte tus tardes de mesa para dos en una sala llena de clientes habituales, y te quedas con cada céntimo de la barra.",
+  "v.hero.sub": "Nosotros ponemos la trivia, tú la montas con tu propia marca. Convierte tus tardes de mesa para dos en una sala llena de habituales, y cada céntimo de la barra es tuyo.",
 
   "v.stat.commission": "comisión",
   "v.stat.players": "jugadores por tardeo",
@@ -27,7 +27,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "v.plans.eyebrow": "Dos formas de montarlo",
   "v.plans.h2": "Elige tu formato. Quédate tu barra.",
-  "v.plans.lead": "Las dos son semanales, las dos se sienten como tu tardeo, y las dos se llevan el 0% de comida y bebida. La diferencia es quién coge el micro.",
+  "v.plans.lead": "Las dos van con tu marca, las dos se sienten como tu tardeo, y las dos se llevan el 0% de comida y bebida. La diferencia es quién coge el micro.",
   "v.plans.note": "Pensado para los locales y eventos que quieras llenar cuando te venga bien, no es un compromiso de franquicia. ¿Buscas montar un negocio propio en crecimiento?",
   "v.plans.notelink": "Mira cómo funciona la franquicia",
   "v.plans.addon": "Añade Gestión de Redes Sociales: anuncios de eventos, momentos destacados de la clasificación y plantillas de reels y stories.",
@@ -41,7 +41,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.plan.expf1": "Alrededor de una hora, de principio a fin",
   "v.plan.expf2": "Rondas tipo test desde la app",
   "v.plan.expf3": "Tu local pone el anfitrión",
-  "v.plan.expf4": "Contenido nuevo cada semana",
+  "v.plan.expf4": "Contenido nuevo para cada evento",
 
   "v.plan.classic": "QED Classic",
   "v.plan.clasamt": "150 €",
@@ -51,26 +51,26 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.plan.clasf1": "Cuatro rondas, 40 preguntas cada una",
   "v.plan.clasf2": "Hojas de respuestas en papel de toda la vida",
   "v.plan.clasf3": "Anfitrión QED disponible como extra en ciudades seleccionadas",
-  "v.plan.clasf4": "Contenido nuevo cada semana",
+  "v.plan.clasf4": "Contenido nuevo para cada evento",
   "v.plan.clasf5": "Los planes mensuales incluyen un número fijo de tardeos",
 
   "v.calc.eyebrow": "Por qué funciona",
-  "v.calc.h2": "Lo que un tardeo semanal hace por tu local.",
+  "v.calc.h2": "Lo que tu propio tardeo hace por tu local.",
   "v.calc.lead": "Un motivo para venir en tu tardeo más flojo, y un motivo para quedarse a una ronda más.",
   "v.calc.c1t": "Una sala más llena",
   "v.calc.c1d": "Los equipos reservan y llegan pronto para pillar buena mesa. Tu tardeo más flojo entre semana empieza a llenarse.",
   "v.calc.c2t": "Una barra más activa",
   "v.calc.c2d": "La gente se queda todo el tardeo, bebiendo y picando mientras juega. Cada céntimo de la barra es tuyo.",
   "v.calc.c3t": "Habituales que vuelven",
-  "v.calc.c3d": "Preguntas nuevas cada semana y una clasificación en directo convierten visitas sueltas en un público que planifica la semana alrededor de ti.",
+  "v.calc.c3d": "Preguntas nuevas para cada evento y una clasificación en directo convierten visitas sueltas en un público que organiza sus salidas en torno a ti.",
 
   "v.get.eyebrow": "Qué te llevas",
   "v.get.h2": "Un tardeo que se dirige solo, montado junto a ti.",
   "v.get.f0tag": "Colaboración",
   "v.get.f0t": "Tu local, nuestra experiencia",
-  "v.get.f0d": "Tu logo sigue en las pantallas: esto es una colaboración de verdad, no un servicio de marca blanca en el que desaparecemos.",
-  "v.get.f1t": "Contenido nuevo cada semana",
-  "v.get.f1d": "Una trivia nueva cada semana, para que tus habituales no repitan nunca y siempre vuelvan.",
+  "v.get.f0d": "Va con tu marca, en tus pantallas. Nosotros ponemos el motor de la trivia entre bastidores; el tardeo es tuyo.",
+  "v.get.f1t": "Contenido nuevo en cada evento",
+  "v.get.f1d": "Una trivia nueva en cada evento, para que tus habituales no repitan nunca y siempre vuelvan.",
   "v.get.f2t": "Clasificación en tus pantallas",
   "v.get.f2d": "Una clasificación digital en directo en las teles del local, alimentando esa energía de una ronda más.",
   "v.get.f3t": "Material de promoción",
@@ -82,9 +82,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.faq.eyebrow": "Preguntas",
   "v.faq.h2": "Lo que preguntan los dueños de locales.",
   "v.faq.q1": "¿Con qué frecuencia hay que montarlo?",
-  "v.faq.a1": "Un tardeo a la semana es lo que mejor llena un local, pero es flexible. También funciona con menos frecuencia, lo que mejor encaje en tu calendario.",
+  "v.faq.a1": "Con la frecuencia que quieras. Un hueco fijo es lo que mejor llena, pero es totalmente flexible, lo que encaje en tu calendario.",
   "v.faq.q2": "¿Se repiten las preguntas para los habituales?",
-  "v.faq.a2": "No. Sacamos un pack de preguntas nuevo cada semana, así que tus habituales nunca repiten trivia.",
+  "v.faq.a2": "No. Sacamos un pack de preguntas nuevo para cada evento, así que tus habituales nunca repiten trivia.",
   "v.faq.q3": "¿Quién se encarga de promocionar el tardeo para llenar la sala?",
   "v.faq.a3": "Podemos gestionar anuncios en Instagram por ti, es algo que se nos da muy bien. Aunque es opcional: si ya sabes promocionar eventos o tienes tus propios canales, puedes encargarte tú mismo.",
 
@@ -112,5 +112,5 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "v.cmp.cta": "Apunta mi local",
 
-  "v.foot.tagline": "Nosotros ponemos la trivia. Tú pones las bebidas. Un tardeo de trivia semanal que llena tu local, sin comisiones."
+  "v.foot.tagline": "Nosotros ponemos la trivia, tú la montas con tu propia marca. Un tardeo de trivia que llena tu local, sin comisiones."
 });

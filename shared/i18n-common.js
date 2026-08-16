@@ -72,7 +72,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "os.fran.d": "Monta tardeos de trivia recurrentes y crea un negocio en expansión.",
   "os.fran.link": "Descubre la franquicia",
   "os.venue.t": "Local anfitrión",
-  "os.venue.d": "Llena tu local cada semana con un tardeo de trivia. Sin comisiones.",
+  "os.venue.d": "Llena tu local con tu propio tardeo de trivia. Sin comisiones.",
   "os.venue.link": "Descubre Locales",
 
   /* ---- comparison table: Franchise vs Host venue (partners + venues pages) ---- */
@@ -83,7 +83,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cmp.col2": "Local anfitrión",
   "cmp.r1l": "Ideal para",
   "cmp.r1a": "Montar un negocio con potencial de expansión",
-  "cmp.r1b": "Llenar tu local un tardeo a la semana",
+  "cmp.r1b": "Llenar tu local a tu manera",
   "cmp.r2l": "Compromiso",
   "cmp.r2a": "Recurrente · construyes tu marca con la nuestra",
   "cmp.r2b": "Flexible · lo organizas cuando quieras, sin permanencia",
@@ -103,7 +103,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "xsell.event.h": "¿Solo quieres un evento puntual?",
   "xsell.event.d": "También montamos tardeos de trivia para empresas y celebraciones, sin compromiso.",
   "xsell.work.h": "¿Tienes un local o quieres tu propio negocio?",
-  "xsell.work.d": "Llena tu local cada semana o abre tu propia franquicia de tardeos de trivia.",
+  "xsell.work.d": "Llena tu local con trivia o abre tu propia franquicia de tardeos de trivia.",
 
   /* ---- About us (shared story, present on every page) ---- */
   "about.eyebrow": "Quiénes somos",
