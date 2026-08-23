@@ -1,6 +1,6 @@
 // Partners (franchise) application. Forwards to Telegram + walkerOS (Meta CAPI + Amplitude + Google Ads) + Brevo.
 import type { Handler } from "@netlify/functions";
-import { clean, displayPhone, isEmail, isTooFast, json, MAX_BODY, metaLine, sendTelegram, sendToBrevo, sendLeadEvent } from "../lib/forms";
+import { clean, displayPhone, isEmail, isTooFast, json, MAX_BODY, metaLine, sendTelegram, sendToBrevo, sendLeadEvent, sendToPortal } from "../lib/forms";
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { ok: false, error: "Method not allowed" });
@@ -53,6 +53,8 @@ export const handler: Handler = async (event) => {
     sendTelegram(text),
     sendLeadEvent("lead complete", d, page),
     sendToBrevo(d, page, text),
+    // The CRM record. Non-blocking and inert without env; see sendToPortal.
+    sendToPortal(d, page),
   ]);
   const sent = telegramResult.status === "fulfilled" && telegramResult.value;
   if (!sent) return json(500, { ok: false, error: "Could not send right now. Please email info@quizeatdrink.com." });

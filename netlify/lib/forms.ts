@@ -599,3 +599,62 @@ export async function sendLeadEvent(event: string, d: Dict, page: string): Promi
     console.error("walker server send threw:", err);
   }
 }
+
+// ---- QED client portal: the CRM record --------------------------------------
+// Telegram is an alert and Brevo is a mailing list. Neither is a record anybody can
+// filter, assign an owner to, or count, which is why "did we ever reply to that venue
+// in Murcia" has until now been answered by scrolling a chat. This posts the same lead
+// to the portal, which keeps it in portal_lead behind the CRM's permission levels.
+//
+// Non-blocking and inert-safe, exactly like the walker destinations: with no env set
+// nothing sends and nothing throws. It joins the existing Promise.allSettled, and only
+// the Telegram result is ever inspected, so a portal outage can never fail a real
+// submission. The 2.5s timeout sits well inside Netlify's 10s budget.
+//
+// PRIVACY: _fbc, _fbp and _eid are stripped before sending and are NOT forwarded. They
+// are cross-site advertising identifiers whose only purpose is conversion matching, and
+// that matching has already happened above, in sendLeadEvent. Copying them into a CRM
+// that city and venue staff can open would turn ad data into a person-level tracking
+// record held longer and read by more people, for no sales purpose.
+const PORTAL_TIMEOUT_MS = 2500;
+const PORTAL_DROP_FIELDS = ["_fbc", "_fbp", "_eid"];
+
+export async function sendToPortal(d: Dict, page: string): Promise<void> {
+  const url = process.env.PORTAL_INTAKE_URL;
+  const secret = process.env.PORTAL_INTAKE_SECRET;
+  // Inert when unconfigured. Deliberately not an error: a brand or a preview deploy
+  // without portal credentials should keep working exactly as it did before.
+  if (!url || !secret) return;
+
+  const payload: Dict = {};
+  for (const [k, v] of Object.entries(d)) {
+    if (!PORTAL_DROP_FIELDS.includes(k)) payload[k] = v;
+  }
+
+  // Derived once, here, rather than a third time in the portal. forms.ts already owns
+  // these three for the walker event and they should not drift into two answers.
+  payload.page = page;
+  payload.product = PRODUCT_BY_PAGE[page] || page;
+  payload.citySlug = normalizeCity(d.city);
+  // LEAD_VALUE is a relative bidding weight in euros, not a deal size. The portal keeps
+  // it in integer cents, because every money column in that codebase is integer cents.
+  payload.bidWeightCents = String((LEAD_VALUE[page] || 1) * 100);
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-portal-intake-secret": secret,
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(PORTAL_TIMEOUT_MS),
+    });
+    if (!res.ok) {
+      console.error("Portal intake failed:", res.status, await res.text());
+    }
+  } catch (err) {
+    // Logged, never rethrown. The lead is already safely in Telegram and Brevo.
+    console.error("Portal intake threw:", err);
+  }
+}
