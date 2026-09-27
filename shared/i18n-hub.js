@@ -1,7 +1,7 @@
 /* Spanish: Hub / homepage. English is baked into /index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.title": "Tardeo de Trivia · Tardeos de trivia por toda España",
-  "h.metadesc": "Montamos y presentamos tardeos de trivia que la gente recuerda de verdad: para empresas, celebraciones, locales y franquicias en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela.",
+  "h.metadesc": "Montamos y presentamos tardeos de trivia que la gente recuerda de verdad: para empresas, celebraciones, locales y franquicias. Eventos en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela, y tardeos también en A Coruña.",
   "h.ogtitle": "Tardeo de Trivia",
   "h.ogdesc": "La empresa de tardeos de trivia para noches que no aburren. Elige tu sala.",
 
@@ -43,5 +43,5 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.work.flat.stampb": "Tarifa",
   "h.work.flat.stamp": "plana",
 
-  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela."
+  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Barcelona, Murcia, Santiago de Compostela y A Coruña."
 });

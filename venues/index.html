@@ -295,6 +295,7 @@
                   </div>
                   <div class="full">
                     <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="v.form.continue">Continue</span> <span class="arr">&rarr;</span></button>
+                    <p class="form__privacy"><span data-i18n="form.privacy">We only use your details to answer your request. If you stop after this step, we may send you one reminder email.</span> <a href="/privacy/" data-i18n="form.privacylink">Privacy policy</a></p>
                   </div>
                 </div>
               </div>
@@ -302,6 +303,17 @@
                 <div class="form-step2__in">
                   <button type="button" class="form-back" data-back><span class="arr">&rarr;</span> <span data-i18n="form.back">Back</span></button>
                   <div class="form-grid">
+                    <div class="full">
+                      <label class="label" for="v-phone" data-i18n="v.form.phone">Phone / WhatsApp (optional)</label>
+                      <div class="tel-field">
+                        <label class="sr-only" for="v-phone-cc" data-i18n="form.phoneCC">Country code</label>
+                        <select class="input" id="v-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
+                          <option value="ES" data-dial="34" selected>Spain +34</option>
+                        </select>
+                        <input class="input tel-field__num" id="v-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
+                      </div>
+                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
+                    </div>
                     <div>
                       <label class="label" for="v-city" data-i18n="form.city">City</label>
                       <input class="input" id="v-city" name="city" data-i18n-ph="v.ph.city" placeholder="e.g. Valencia">
@@ -317,17 +329,6 @@
                     <div class="full">
                       <label class="label" for="v-nights" data-i18n="v.form.nights">Nights per week you could host</label>
                       <input class="input" id="v-nights" type="number" min="1" name="nights" data-i18n-ph="v.ph.nights" placeholder="e.g. 1">
-                    </div>
-                    <div class="full">
-                      <label class="label" for="v-phone" data-i18n="v.form.phone">Phone / WhatsApp (optional)</label>
-                      <div class="tel-field">
-                        <label class="sr-only" for="v-phone-cc" data-i18n="form.phoneCC">Country code</label>
-                        <select class="input" id="v-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
-                          <option value="ES" data-dial="34" selected>Spain +34</option>
-                        </select>
-                        <input class="input tel-field__num" id="v-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
-                      </div>
-                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
                     </div>
                     <div class="full">
                       <label class="label" for="v-msg" data-i18n="v.form.else">Anything else?</label>

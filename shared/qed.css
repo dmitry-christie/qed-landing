@@ -96,6 +96,15 @@ a{ color:inherit; }
 .btn--sm{ height:44px; font-size:14.5px; padding:0 18px; box-shadow:3px 3px 0 0 var(--ink); }
 .btn--ghost{ background:transparent; box-shadow:none; }
 .btn--block{ width:100%; }
+/* Full-width buttons (form Continue / Submit, card CTAs) and, on narrow phones, the large hero
+   buttons may wrap to a second line instead of forcing their row wider than the screen: a long
+   label such as "Quiero hablar con los fundadores" is wider than a 320px phone. min-height keeps
+   the one-line height exactly as before. */
+.btn--block{ white-space:normal; text-align:center; height:auto; min-height:52px; padding-top:8px; padding-bottom:8px; }
+.btn--lg.btn--block{ min-height:60px; }
+@media (max-width:380px){
+  .btn--lg{ max-width:100%; padding:8px 22px; white-space:normal; text-align:center; height:auto; min-height:60px; }
+}
 .btn .arr{ font-size:1.15em; line-height:0; transform:translateY(1px); transition:transform .15s; }
 .btn:hover .arr{ transform:translate(3px,1px); }
 
@@ -249,9 +258,12 @@ button.consent__manage{ background:none; border:0; padding:0; margin:0; font:inh
 .hero__glow{ position:absolute; inset:0; pointer-events:none; z-index:0; }
 
 /* ---------- forms ---------- */
-.form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+/* minmax(0,1fr) and min-width:0: a grid track otherwise grows to its widest child's min-content
+   (a long button label), and the step-2 panel then overflows the card on phones. */
+.form-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; }
+.form-grid > *{ min-width:0; }
 .form-grid .full{ grid-column:1 / -1; }
-@media (max-width:560px){ .form-grid{ grid-template-columns:1fr; } }
+@media (max-width:560px){ .form-grid{ grid-template-columns:minmax(0,1fr); } }
 .label{ display:block; font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px; }
 .label .req{ color:var(--accent); }
 .input{
@@ -264,6 +276,11 @@ select.input{ appearance:none; background-image:url("data:image/svg+xml,%3Csvg x
 .input:focus{ outline:none; border-color:var(--accent-deep); box-shadow:0 0 0 4px var(--accent-soft); }
 .input:focus-visible{ outline:3px solid var(--accent-deep); outline-offset:1px; }
 .form-note{ font-family:var(--mono); font-size:11.5px; color:var(--ink-mute); letter-spacing:0.02em; }
+/* privacy line under each step-1 Continue button. Inherits the panel's text colour and fades
+   it, so it reads on the white form panels and on a dark (ink) panel alike. */
+.form__privacy{ margin:12px 0 0; text-align:center; font-family:var(--mono); font-size:11.5px; line-height:1.55; letter-spacing:0.02em; color:inherit; opacity:.75; }
+.form__privacy a{ color:inherit; font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+.form__privacy a:hover{ text-decoration-thickness:2px; }
 .hp{ position:absolute; left:-9999px; opacity:0; height:0; width:0; }
 .form-success{ display:none; }
 .form-success.show{ display:block; }

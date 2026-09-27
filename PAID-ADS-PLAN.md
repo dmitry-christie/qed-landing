@@ -17,7 +17,7 @@
 6. **Enter/mobile-Go submits step 1 directly**, bypassing all qualification; server errors render inside the *collapsed* step-2 container — an invisible, silently dead form. *(high)*
 7. **Stranded work:** build-time ES rendering exists as *uncommitted* changes in worktree `.claude/worktrees/friendly-babbage-770ce6` (`build.mjs`, +98 lines, verified working per session notes) but was never committed. TDT currently serves English HTML translated at runtime — bad for LCP, Spanish paid clicks, and social scrapers.
 
-**Real numbers allowed in copy** (Dmitry-confirmed): 7 locations · 78% retention · Valencia case study (4 venues / 16 events/mo) · 48h reply · 2 weeks to first event. Never invent stats ("12 active partners" was removed — don't reintroduce).
+**Real numbers allowed in copy** (Dmitry-confirmed): 7 locations · 7,510+ registered players · 78% retention · Valencia case study (4 venues / 16 events/mo) · 48h reply · nothing signed or paid until the franchise contract, after 20 business days of pre-contractual information. ("2 weeks to first event" was withdrawn on 2026-09-27: the contract can't be signed before those 20 business days.) Never invent stats ("12 active partners" was removed — don't reintroduce).
 
 ---
 
@@ -100,7 +100,7 @@ Negatives: gratis/free, online, app, trabajo/empleo (franchise attracts job seek
 ### Meta Ads — generate demand + retargeting. ~60% of budget.
 
 - **C1 Venues (Lead objective, landing page):** target bar/restaurant owners — interests (hospitality, TPV/hostelería tools) + geo. Creative: the dead-Tuesday → full-room story; "0% commission, no contracts" is the hook. Optimize on `Lead` filtered `lead_type=venue`.
-- **C2 Franchise (Lead objective):** broad + interest (emprendimiento, franquicias) in target cities. Creative: "Run trivia nights. Build a real business." + the 7 locations / 2-weeks-to-launch stat. Expect lower volume, higher value — the value-based conversion setup handles bidding.
+- **C2 Franchise (Lead objective):** broad + interest (emprendimiento, franquicias) in target cities. Creative: "Run trivia nights. Build a real business." + the 7 locations stat and "nothing signed or paid until the contract". Expect lower volume, higher value — the value-based conversion setup handles bidding.
 - **C3 Private events:** corporate (job-title/interest targeting weekdays) + celebrations (engaged-shortly, birthday-soon audiences; despedida creative Jul–Sep).
 - **C4 Retargeting:** website visitors 30/180d who fired `lead_intent` but not `lead_complete` — the two-step form gives you this segment for free. Cross-sell venue↔franchise audiences.
 - **Custom audiences from leads:** export Telegram leads monthly (hashed email) → seed lookalikes per persona once >100 leads each.
@@ -148,8 +148,10 @@ Hard rules:
 - Forms are novalidate and the submit handler in shared/qed.js does NO validation —
   adding `required` to a step-2 field does nothing unless the submit handler is
   also taught to check it.
-- Real numbers only: 7 locations, 78% retention, Valencia case (4 venues /
-  16 events/mo), 48h reply, 2 weeks to first event. NEVER invent stats, quotes,
+- Real numbers only: 7 locations, 7,510+ registered players, 78% retention,
+  Valencia case (4 venues / 16 events/mo), 48h reply, nothing signed or paid
+  until the franchise contract (after 20 business days of pre-contractual
+  information). No launch-time claims. NEVER invent stats, quotes,
   or testimonials.
 - Design is deliberately non-uniform ("handmade over systematic", PRODUCT.md):
   keep the scorecard motif, varied layouts, tag/stamp styling. No uniform card grids.
@@ -544,7 +546,7 @@ shared/i18n-hub.js):
    time per week?', 'What does it cost to start?' (conceptual — no invented
    numbers), 'Am I locked in?', 'What if my first night is quiet?'. DRAFT
    answers from what the page already claims (platform/content/training/48h
-   SLA/2-weeks) and mark each answer with an HTML comment
+   SLA) and mark each answer with an HTML comment
    <!-- CONFIRM WITH DMITRY --> — do not invent facts. EN baked + p.faq.* ES keys.
 3. Hero scorecard strings ('Friday · full house', 'Players in', 'Tables
    booked', 'Regulars returning', 'most of them') and the stamp's 'reply' are

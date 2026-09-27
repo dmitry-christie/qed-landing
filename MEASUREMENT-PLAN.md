@@ -95,6 +95,16 @@ conversions get hashed PII from the server. `gclid`/`wbraid`/`gbraid` already fl
 walkerOS consent keys: `{ functional, analytics, marketing }` — 1:1 with today's model, so
 the banner in `shared/consent.js` stays as-is; only the plumbing under it changes.
 
+**Late consent and the server-side lead events.** The banner is held back while a lead form is
+on screen, so a visitor can send step 1 (and step 2) before choosing. Client events wait in
+walkerOS's queue and flush on a later grant; the server events can't wait, and the functions
+drop any lead whose `_consent` isn't `"granted"`. So `qed.js` keeps each lead payload sent
+without consent and, on a later analytics grant, POSTs it again with `_replay:"consent"` and the
+fresh `_consent` / `_consentCategories`. The functions answer a replay with `sendLeadEvent`
+only (no Telegram, Brevo or portal). Same `_event_id`: Meta dedups it against the Pixel Lead and
+Amplitude against `insert_id`. Held in memory, so a visitor who leaves before choosing is never
+replayed (nor ever measured, which is what no consent means).
+
 ---
 
 ## 3. Event taxonomy
@@ -160,7 +170,7 @@ Shared `data` (superset — each funnel sends the subset it collects):
 | `funnel` | enum `corporate/celebrations/venues/partners` | all | `page` | the clean funnel dimension |
 | `product` | enum (see globals) | all | derived | value-bidding + audience |
 | `step` | `1` / `2` | all | `_step` | redundant with event name, kept for single-query splits |
-| `value` | number (EUR) | all | derived | bid weight: partners 10, venues 3, corporate 1, celebrations 1 (`forms.ts` `LEAD_VALUE`) |
+| `value` | number (EUR) | all | derived | expected value per lead, `forms.ts` `leadValue(page, city)`: see section 6. `lead start` carries 20% of the complete value |
 | `currency` | `EUR` | all | const | |
 | `event_id` | uuid | all | `_event_id` | pixel⇄CAPI + client⇄server dedup key |
 | `city` | **enum** `madrid/valencia/murcia/santiago/barcelona/other` | all | `city` (normalized) | see below — the raw string never leaves the server |
@@ -223,16 +233,41 @@ Notes:
   destination** to POST Amplitude's HTTP V2 API server-side (mirrors how the funnel events
   already run server-side), or wrap the Amplitude Browser SDK as a web destination for
   Tier 2/3 engagement events. Decision in section 9.
-- `value` + `currency` flow to Meta value optimization and Google tROAS. They are proxy
-  weights until real pricing lands — same caveat as `forms.ts` today.
+- `value` + `currency` flow to Meta value optimization and Google tROAS: Meta as
+  `custom_data.value/currency` (CAPI) and the Pixel's Lead params, Google as the gtag
+  conversion `value` (+ `transaction_id` = event id). Expected-value estimates, see section 6.
 
 ---
 
 ## 6. Value & deduplication
 
-- **Value:** carried on `lead start` / `lead complete` as `value`/`currency`. Relative bid
-  weights, dashboard-overridable per conversion action. Revisit once real deal values exist
-  in Brevo.
+- **Value:** carried on `lead start` / `lead complete` as `value`/`currency` (EUR). Since
+  2026-09 it is an expected value per completed lead, typical deal size x an ASSUMED
+  lead-to-deal rate (`leadValue(page, city)` in `netlify/lib/forms.ts`):
+
+  | Funnel | `lead complete` | `lead start` (20%) | Basis |
+  |---|---|---|---|
+  | corporate | 125 | 25 | B2B event ~500 € x 25% |
+  | celebrations | 75 | 15 | B2C private event ~300 € x 25% |
+  | venues | 50 | 10 | parked product, placeholder |
+  | partners, large city (≥500k: Madrid, Barcelona, Valencia, Sevilla, Zaragoza, Málaga) | 250 | 50 | ~5% signed x 5,000 € first year |
+  | partners, medium city (100k-500k, list in `forms.ts`) | 150 | 30 | ~5% x 3,000 € |
+  | partners, small / unknown | 100 | 20 | ~5% x 2,000 € |
+
+  The city tier is scored server-side from the typed city (accent-stripped, whole-word match,
+  large before medium). The step-2 response returns `{ok:true, value}` and `shared/qed.js`
+  sends that same number on the browser Pixel `lead complete`, so the deduped Pixel/CAPI pair
+  agrees; the client `lead start` uses the page default (partners = 150 x 20% = 30).
+  **Recalibrate** once Brevo has a few months of won deals: value = average won deal x won /
+  completed leads, per funnel. Only the ratios between funnels steer the bidding.
+- **Mapping fix (2026-09).** In walkerOS 4.3.2 a rule `data` written as `{ value: "data.value" }`
+  is a static value: it resolved to the literal string `"data.value"`, so Meta (Pixel + CAPI)
+  got Leads with no value. Rules now use `{ map: { ... } }` (CAPI nests it under
+  `custom_data`). The same audit found the client Pixel and gtag never loaded (`loadScript`
+  unset) and gtag never sent a conversion (its push requires a rule `name`); both fixed in
+  `scripts/walker.entry.mjs`. The CAPI `user_data` map no longer passes `fbclid` (the
+  destination turned it into an `fbc` stamped with the send time, overwriting the click-time
+  `fbc` from `qed.js`); `event_source_url` = the page URL without its query string.
 - **Dedup:** every lead event carries `event_id` (uuid). The browser Pixel event and the
   server CAPI event for the *same* submission share it (Meta `event_id`, Google
   `transaction_id`/order-id equivalent). Step 1 and step 2 use **different** ids — they are

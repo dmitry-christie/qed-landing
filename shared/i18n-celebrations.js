@@ -150,7 +150,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.form.guests": "Invitados",
   "cel.ph.guests": "p. ej. 30",
   "cel.form.elsewhere": "Otro sitio",
-  "cel.form.phone": "Teléfono (opcional)",
+  "cel.form.phone": "Teléfono / WhatsApp (opcional)",
   "cel.ph.msg": "¿A quién celebramos y sobre qué tenemos que preguntar sí o sí?",
   "cel.form.submit": "Organiza mi evento",
   "cel.form.sent": "enviado",

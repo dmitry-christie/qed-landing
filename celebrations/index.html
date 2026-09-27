@@ -63,7 +63,7 @@
     <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
       <div class="card card--flat reveal statbar4" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)"><span data-count="100">100</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.custom">about them</div></div>
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff" data-count="4">4</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.cities">host cities</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff" data-count="5">5</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.cities">host cities</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="90">90</span><span style="font-size:.5em">min</span></div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.run">of carnage</div></div>
         <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--accent)">2–200</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.guests">guests</div></div>
       </div>
@@ -358,6 +358,7 @@
                   </div>
                   <div class="full">
                     <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="cel.form.continue">Continue</span> <span class="arr">&rarr;</span></button>
+                    <p class="form__privacy"><span data-i18n="form.privacy">We only use your details to answer your request. If you stop after this step, we may send you one reminder email.</span> <a href="/privacy/" data-i18n="form.privacylink">Privacy policy</a></p>
                   </div>
                 </div>
               </div>
@@ -365,6 +366,17 @@
                 <div class="form-step2__in">
                   <button type="button" class="form-back" data-back><span class="arr">&rarr;</span> <span data-i18n="form.back">Back</span></button>
                   <div class="form-grid">
+                    <div class="full">
+                      <label class="label" for="e-phone" data-i18n="cel.form.phone">Phone / WhatsApp (optional)</label>
+                      <div class="tel-field">
+                        <label class="sr-only" for="e-phone-cc" data-i18n="form.phoneCC">Country code</label>
+                        <select class="input" id="e-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
+                          <option value="ES" data-dial="34" selected>Spain +34</option>
+                        </select>
+                        <input class="input tel-field__num" id="e-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
+                      </div>
+                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
+                    </div>
                     <div class="full">
                       <label class="label" for="e-guest" data-i18n="cel.form.guest">Guest of honour</label>
                       <input class="input" id="e-guest" name="guestOfHonour" data-i18n-ph="cel.ph.guest" placeholder="Whose big day is it?">
@@ -382,17 +394,6 @@
                       <select class="input" id="e-city" name="city">
                         <option value="" data-i18n="form.cityph">Choose a city…</option><option>Valencia</option><option>Madrid</option><option>Barcelona</option><option>Murcia</option><option>Santiago de Compostela</option><option data-i18n="cel.form.elsewhere">Elsewhere</option>
                       </select>
-                    </div>
-                    <div class="full">
-                      <label class="label" for="e-phone" data-i18n="cel.form.phone">Phone (optional)</label>
-                      <div class="tel-field">
-                        <label class="sr-only" for="e-phone-cc" data-i18n="form.phoneCC">Country code</label>
-                        <select class="input" id="e-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
-                          <option value="ES" data-dial="34" selected>Spain +34</option>
-                        </select>
-                        <input class="input tel-field__num" id="e-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
-                      </div>
-                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
                     </div>
                     <div class="full">
                       <label class="label" for="e-msg" data-i18n="form.else">Anything else?</label>

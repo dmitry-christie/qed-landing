@@ -49,9 +49,11 @@
   <section class="hero">
     <div class="wrap">
       <div class="reveal">
-        <span class="tag tag--accent tag--shadow" data-i18n="c.hero.tag">Hosted in Valencia, Madrid, Barcelona, Murcia &amp; Santiago de Compostela</span>
-        <h1 class="h-display" style="margin-top:20px;max-width:13ch"><span data-i18n="c.hero.h1a">Team building people </span><span class="accent" data-i18n="c.hero.h1b">actually enjoy.</span></h1>
-        <p class="lead" style="margin:20px 0 0;max-width:46ch" data-i18n="c.hero.sub">Forget trust falls and forced fun. We run a sharp, genuinely funny quiz night your team talks about for weeks, not one they quietly endure.</p>
+        <!-- SEASONAL (Sep-Dec 2026): c.hero.tag is the Christmas / cenas de empresa version.
+             Revert it (EN here + ES in i18n-corporate.js) to the plain "Hosted in <cities>" tag after mid-December. -->
+        <span class="tag tag--accent tag--shadow" data-i18n="c.hero.tag">Christmas &amp; end-of-year parties 2026 · Valencia, Madrid, Barcelona, Murcia &amp; Santiago</span>
+        <h1 class="h-display" id="c-hero-h1" style="margin-top:20px;max-width:13ch"><span data-i18n="c.hero.h1a">Team building people </span><span class="accent" data-i18n="c.hero.h1b">actually enjoy.</span></h1>
+        <p class="lead" id="c-hero-sub" style="margin:20px 0 0;max-width:46ch" data-i18n="c.hero.sub">Forget trust falls and forced fun. 90 minutes of trivia with a live host and rounds about your company, before or after the company dinner: at your office, at the dinner's restaurant or at a venue we find. From 10 to 300 people.</p>
         <div class="row" style="gap:12px;margin-top:26px">
           <a class="btn btn--cta btn--lg" href="#quote"><span data-i18n="c.cta.quote">Get a quote</span> <span class="arr">&rarr;</span></a>
           <a class="btn btn--lg" href="#how" data-i18n="c.cta.how">See how it works</a>
@@ -62,10 +64,10 @@
     <!-- stat strip -->
     <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
       <div class="card card--flat reveal statbar4" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff" data-count="4">4</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.cities">host cities</div></div>
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="90">90</span><span style="font-size:.5em">min</span></div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.run">run time</div></div>
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--accent)">10–300</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.players">players</div></div>
-        <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--yellow)"><span data-count="100">100</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.custom">custom rounds</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff" data-count="5">5</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.cities">host cities</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--accent)">10–300</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.players">people</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="7510">7,510</span>+</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.players2">registered players</div></div>
+        <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--yellow)"><span data-count="78">78</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.repeat">of players come back</div></div>
       </div>
     </div>
   </section>
@@ -111,8 +113,8 @@
     <div class="wrap">
       <div class="reveal" style="max-width:60ch">
         <span class="eyebrow" data-i18n="c.fmt.eyebrow">Two ways to play</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="c.fmt.h2">Fully hosted, or run it yourself.</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="c.fmt.lead">Same sharp quiz. Pick how hands-on you want to be.</p>
+        <h2 class="h2" style="margin-top:14px" data-i18n="c.fmt.h2">A night of its own, or part of the company dinner.</h2>
+        <p class="lead" style="margin-top:12px" data-i18n="c.fmt.lead">Same sharp quiz, same live host. Pick whether it's the whole plan or the best part of the dinner.</p>
       </div>
 
       <div class="formats reveal" style="margin-top:30px">
@@ -137,23 +139,26 @@
           </div>
         </div>
 
-        <div class="card fmt fmt--soon">
-          <div class="fmt__hd" style="background:var(--ink)">
-            <h3 data-i18n="c.fmt.express">Express</h3>
-            <span class="tag soon-tag" data-i18n="c.fmt.soon">Coming soon</span>
+        <div class="card fmt">
+          <div class="fmt__hd" style="background:var(--ink);flex-wrap:wrap">
+            <h3 data-i18n="c.fmt.dinner">Trivia + company dinner</h3>
+            <!-- SEASONAL: "Christmas 2026" tag (c.fmt.season). Drop or reword it after mid-December. -->
+            <span class="tag" style="background:var(--yellow);border-color:var(--yellow);color:var(--ink);white-space:nowrap" data-i18n="c.fmt.season">Christmas 2026</span>
           </div>
           <div class="fmt__price">
-            <span class="price-sm" data-i18n="c.fmt.expsoon">Self-run, anywhere. Launching soon.</span>
+            <span class="price" style="font-size:26px" data-i18n="c.fmt.byquote">By quote</span>
+            <span class="price-sm" data-i18n="c.fmt.dinnertag">· before or after dinner</span>
           </div>
           <div class="fmt__body">
-            <p class="muted" style="margin:0;line-height:1.5" data-i18n="c.fmt.expdesc">Everything you'll need to host it yourself, anywhere in the world. One of your own makes a surprisingly good host.</p>
-            <ul class="ticks ticks--ink">
-              <li data-i18n="c.fmt.e1">Platform access with live digital scoring</li>
-              <li data-i18n="c.fmt.e2">Curated question packs, ready to go</li>
-              <li data-i18n="c.fmt.e3">Automated leaderboards &amp; tie-breakers</li>
-              <li data-i18n="c.fmt.e4">Step-by-step host guide</li>
+            <p class="muted" style="margin:0;line-height:1.5" data-i18n="c.fmt.dinnerdesc">90 minutes of team trivia right before or after the company dinner, at the restaurant or at a venue we find for you.</p>
+            <ul class="ticks" style="--tick-dot:var(--ink)">
+              <li data-i18n="c.fmt.d1">Live host who runs the whole quiz</li>
+              <li data-i18n="c.fmt.d2">Custom rounds about your company</li>
+              <li data-i18n="c.fmt.d3">Live scoreboard and a winning team</li>
+              <li data-i18n="c.fmt.d4">Optional extras: photographer, custom trophies</li>
             </ul>
-            <span class="btn btn--soon btn--block" data-i18n="c.fmt.soon">Coming soon</span>
+            <p class="muted" style="margin:0;font-size:14px;line-height:1.5" data-i18n="c.fmt.dinnerprice">Price depends on headcount, city and whether we provide the venue. You get one fixed quote, no surprises.</p>
+            <a class="btn btn--cta btn--block" href="#quote" style="margin-top:auto" data-preselect-event="christmas-dinner" data-i18n="c.cta.quote">Get a quote</a>
           </div>
         </div>
       </div>
@@ -176,7 +181,7 @@
         <div>
           <div class="step__n">01</div><div class="step__bar"></div>
           <h3 class="h3" data-i18n="c.how.1t">Tell us the brief</h3>
-          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.1d">Headcount, date, city, and the vibe. Two minutes by form or a quick call.</p>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.1d">Headcount, date, city, and the vibe. Two minutes by form, and leave a phone number if you'd rather we call you.</p>
         </div>
         <div>
           <div class="step__n">02</div><div class="step__bar"></div>
@@ -264,7 +269,7 @@
         </div>
         <div class="card b-half pad lift" style="background:var(--cream-soft)">
           <h3 class="h3" data-i18n="c.feat.f2t">Professional hosting</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="c.feat.f2d">A real host who reads the room and keeps it moving. Full Experience only.</p>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="c.feat.f2d">A real host who reads the room and keeps it moving, whichever format you pick.</p>
         </div>
         <div class="card b-half pad lift">
           <h3 class="h3" data-i18n="c.feat.f3t">Branded slides</h3>
@@ -286,7 +291,14 @@
         <h2 class="h2" style="margin-top:14px" data-i18n="c.faq.h2">The stuff people ask.</h2>
       </div>
       <div class="faq reveal" style="margin-top:26px">
+        <!-- SEASONAL (Sep-Dec 2026): the booking-lead-time item sits first and open for Christmas season.
+             After mid-December, move it back to the end, drop its "open", put "open" back on the
+             "How many people can play?" item, and revert c.faq.a6 to the year-round answer. -->
         <details open>
+          <summary><span data-i18n="c.faq.q6">How far ahead should we book?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a6">For November and December, as early as you can: December Thursdays and Fridays go first, and so do rooms for big groups. The rest of the year, two weeks is usually enough. Tighter than that? Ask anyway.</div>
+        </details>
+        <details>
           <summary><span data-i18n="c.faq.q1">How many people can play?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
           <div class="ans" data-i18n="c.faq.a1">Anywhere from 10 to 300+. Smaller teams play as individuals or pairs; bigger groups split into tables. Big groups are no trouble at all.</div>
         </details>
@@ -296,7 +308,7 @@
         </details>
         <details>
           <summary><span data-i18n="c.faq.q3">Do you travel to us?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a3">The Full Experience is hosted in person across Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela. A self-run Express version, for everywhere else, is coming soon.</div>
+          <div class="ans" data-i18n="c.faq.a3">Both formats are hosted in person across Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela. Somewhere else? Pick "Elsewhere" in the form and tell us where.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q4">Our office, or a venue?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -305,10 +317,6 @@
         <details>
           <summary><span data-i18n="c.faq.q5">English or Spanish?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
           <div class="ans" data-i18n="c.faq.a5">Both, and we mix them for international teams. Tell us your room and we'll pitch it right.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="c.faq.q6">How far ahead should we book?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a6">Two weeks is comfortable for a fully custom hosted night. Tighter than that? Ask anyway, we'll always try to make it work.</div>
         </details>
       </div>
     </div>
@@ -321,7 +329,8 @@
         <div class="pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
           <span class="eyebrow" style="color:rgba(255,255,255,.6)" data-i18n="c.cta.quote">Get a quote</span>
           <h2 class="h2" style="color:#fff" data-i18n="c.form.h2">Tell us about your team.</h2>
-          <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="c.form.sub">Quick form, real human reply, usually same day. No sales gauntlet.</p>
+          <!-- SEASONAL: drop the "Booking for December?" opener from c.form.sub (EN + ES) after mid-December. -->
+          <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="c.form.sub">Booking for December? We'll hold your date for 7 days, no commitment, while you get sign-off. A real person replies, usually the same day.</p>
         </div>
         <div class="pad">
           <form id="event-form" name="corporate-event" novalidate data-action="/.netlify/functions/book-event">
@@ -334,6 +343,10 @@
                     <label class="label" for="c-event"><span data-i18n="c.form.eventType">What kind of night?</span> <span class="req">*</span></label>
                     <select class="input" id="c-event" name="eventType" required>
                       <option value="" data-i18n="c.form.etph">Choose one…</option>
+                      <!-- SEASONAL: listed first Sep-Dec; move it below the others (or drop it) after mid-December.
+                           No value= on purpose: like its siblings it submits its (localized) label, so Telegram and the
+                           Brevo deal read "Company dinner / Christmas"; data-key is only for the preselect script below. -->
+                      <option data-key="christmas-dinner" data-i18n="c.form.et0">Company dinner / Christmas</option>
                       <option data-i18n="c.form.et1">Team building</option>
                       <option data-i18n="c.form.et2">Company offsite</option>
                       <option data-i18n="c.form.et3">Client entertainment</option>
@@ -353,6 +366,7 @@
                   </div>
                   <div class="full">
                     <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="c.form.continue">Continue</span> <span class="arr">&rarr;</span></button>
+                    <p class="form__privacy"><span data-i18n="form.privacy">We only use your details to answer your request. If you stop after this step, we may send you one reminder email.</span> <a href="/privacy/" data-i18n="form.privacylink">Privacy policy</a></p>
                   </div>
                 </div>
               </div>
@@ -360,12 +374,23 @@
                 <div class="form-step2__in">
                   <button type="button" class="form-back" data-back><span class="arr">&rarr;</span> <span data-i18n="form.back">Back</span></button>
                   <div class="form-grid">
+                    <div class="full">
+                      <label class="label" for="c-phone" data-i18n="c.form.phone">Phone / WhatsApp (optional)</label>
+                      <div class="tel-field">
+                        <label class="sr-only" for="c-phone-cc" data-i18n="form.phoneCC">Country code</label>
+                        <select class="input" id="c-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
+                          <option value="ES" data-dial="34" selected>Spain +34</option>
+                        </select>
+                        <input class="input tel-field__num" id="c-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
+                      </div>
+                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
+                    </div>
                     <div>
                       <label class="label" for="c-format" data-i18n="c.form.format">Format</label>
                       <select class="input" id="c-format" name="format">
                         <option data-i18n="c.form.opt1">Full Experience (hosted)</option>
+                        <option data-key="christmas-dinner" data-i18n="c.fmt.dinner">Trivia + company dinner</option>
                         <option data-i18n="c.form.opt3">Not sure yet</option>
-                        <option data-i18n="c.form.opt2">Express (coming soon)</option>
                       </select>
                     </div>
                     <div>
@@ -383,23 +408,12 @@
                       </select>
                     </div>
                     <div class="full">
-                      <label class="label" for="c-phone" data-i18n="c.form.phone">Phone (optional)</label>
-                      <div class="tel-field">
-                        <label class="sr-only" for="c-phone-cc" data-i18n="form.phoneCC">Country code</label>
-                        <select class="input" id="c-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
-                          <option value="ES" data-dial="34" selected>Spain +34</option>
-                        </select>
-                        <input class="input tel-field__num" id="c-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
-                      </div>
-                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
-                    </div>
-                    <div class="full">
                       <label class="label" for="c-msg" data-i18n="form.else">Anything else?</label>
                       <textarea class="input" id="c-msg" name="message" data-i18n-ph="c.ph.msg" placeholder="Occasion, venue, what a great night looks like for you…"></textarea>
                     </div>
                     <div class="full">
                       <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="c.form.submit">Get my quote</span> <span class="arr">&rarr;</span></button>
-                      <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="form.note">We reply by email, usually same day. No spam, ever.</p>
+                      <p class="form-note" style="margin:12px 0 0;text-align:center"><span data-i18n="c.form.nocommit">Asking for a quote commits you to nothing.</span> <span data-i18n="form.note">We reply by email, usually same day. No spam, ever.</span></p>
                     </div>
                   </div>
                 </div>
@@ -495,6 +509,66 @@
   </div>
 </footer>
 
+<!-- Christmas ad-group variant: ?v=cena, or a utm_campaign containing "cena" (from the URL, else the
+     first-touch record qed.js keeps in localStorage "qed-attr"). Must run BEFORE i18n.js: it re-points
+     the hero's data-i18n attributes to the c.hero.*cena keys and bakes their English, so i18n.js caches
+     that English as the EN text and swaps in the matching ES string, on load and on any language toggle.
+     It also preselects the "christmas-dinner" event type and format, and wires [data-preselect-event]
+     buttons (each select picks its option whose data-key matches, if it has one). -->
+<script>
+(function () {
+  var sels = [document.getElementById("c-event"), document.getElementById("c-format")];
+  function preselect(v) {
+    sels.forEach(function (sel) {
+      if (!sel) return;
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].getAttribute("data-key") !== v) continue;
+        sel.selectedIndex = i;
+        // qed.js's custom dropdown listens for "change" to refresh its visible label
+        try { sel.dispatchEvent(new Event("change", { bubbles: true })); } catch (e) {}
+        return;
+      }
+    });
+  }
+  document.querySelectorAll("[data-preselect-event]").forEach(function (el) {
+    el.addEventListener("click", function () { preselect(el.getAttribute("data-preselect-event")); });
+  });
+
+  var cena = false;
+  try {
+    var q = new URLSearchParams(location.search);
+    cena = (q.get("v") || "").toLowerCase() === "cena";
+    if (!cena) {
+      // Same precedence as qed.js captureAttribution(), which runs later and has not touched the
+      // stored record yet: click/UTM params on this URL replace the stored touch, except a link in
+      // one of our own Brevo emails (utm_source=sendinblue|brevo, no ad click id), which keeps a
+      // stored touch that is still inside its 30-day window. With no params, the stored touch
+      // counts while it is inside that window.
+      var a = null;
+      try { a = JSON.parse(localStorage.getItem("qed-attr") || "null"); } catch (e) {}
+      var fresh = !!(a && a.ts && Date.now() - a.ts < 30 * 24 * 60 * 60 * 1000);
+      var hasParams = /[?&](utm_[a-z]+|gclid|wbraid|gbraid|fbclid|msclkid|ttclid)=/i.test(location.search);
+      var ownEmail = /^(sendinblue|brevo)$/i.test(q.get("utm_source") || "") &&
+        !q.get("gclid") && !q.get("wbraid") && !q.get("gbraid") && !q.get("fbclid");
+      var camp = hasParams && !(ownEmail && fresh) ? (q.get("utm_campaign") || "") : (fresh ? (a.utm_campaign || "") : "");
+      cena = /cena/i.test(camp);
+    }
+  } catch (e) {}
+  if (!cena) return;
+
+  function swap(el, key, en) { if (el) { el.setAttribute("data-i18n", key); el.textContent = en; } }
+  var h1 = document.getElementById("c-hero-h1");
+  if (h1) {
+    var parts = h1.querySelectorAll("[data-i18n]");
+    swap(parts[0], "c.hero.h1cenaa", "The company dinner, ");
+    swap(parts[1], "c.hero.h1cenab", "with a plan people remember.");
+    h1.style.maxWidth = "17ch"; // longer line than the default H1; keeps it to ~4 lines
+  }
+  swap(document.getElementById("c-hero-sub"), "c.hero.subcena", "Right before or after the dinner: 90 minutes of team trivia with a live host and rounds about your company. At the dinner's restaurant, at your office or at a venue we find, for 10 to 300 people.");
+  preselect("christmas-dinner");
+  document.documentElement.setAttribute("data-variant", "cena");
+})();
+</script>
 <script src="/shared/i18n-common.js"></script>
 <script src="/shared/i18n-corporate.js"></script>
 <script src="/shared/i18n.js"></script>

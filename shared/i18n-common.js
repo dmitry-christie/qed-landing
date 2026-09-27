@@ -42,7 +42,12 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "form.optElse": "¿Algo más?",
   "form.phoneCC": "Prefijo del país",
   "form.phoneErr": "Introduce un número de teléfono válido.",
+  /* inline hint created by qed.js when the email fails the server's shape check (e.g. juan@gmail) */
+  "form.emailErr": "Revisa tu email (por ejemplo, nombre@gmail.com).",
   "form.hp": "Deja esto vacío",
+  /* privacy line under every step-1 Continue button (step-1 details may get one reminder) */
+  "form.privacy": "Usamos tus datos solo para responder a tu solicitud. Si te quedas en este paso, puede que te enviemos un único email de recordatorio.",
+  "form.privacylink": "Política de privacidad",
 
   /* consent banner */
   "consent.msg": "Usamos algunos datos para entender qué funciona y medir campañas publicitarias. Nada de spam ni de venderlos.",

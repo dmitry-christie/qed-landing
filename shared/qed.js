@@ -131,6 +131,12 @@
       counters.forEach(function (el) { io.observe(el); });
     } else {
       reveals.forEach(function (el) { el.classList.add("in"); });
+      // No count-up here, but still format the final value for the page language: the baked
+      // English "7,510+" reads as 7.51 in Spanish. i18n.js has already set <html lang> by now.
+      counters.forEach(function (el) {
+        var n = parseInt(el.getAttribute("data-count"), 10);
+        if (isFinite(n)) el.textContent = formatCount(n);
+      });
     }
   }
 
@@ -184,12 +190,16 @@
     } catch (e) {}
   }
 
-  // Relative lead value (EUR) for the browser Pixel Lead — mirrors LEAD_VALUE in
-  // netlify/lib/forms.ts (a franchise lead is worth far more than a birthday enquiry). Proxy
-  // weights until real pricing lands; client Pixel value and server value stay in sync so
-  // value-based bidding agrees across the Pixel/CAPI pair.
-  var LEAD_VALUE = { partners: 10, venues: 3, corporate: 1, celebrations: 1 };
-  function leadValue() { return LEAD_VALUE[window.QED_SITE] || 1; }
+  // Expected lead value (EUR) for the browser lead events: the per-page defaults of
+  // leadValue() in netlify/lib/forms.ts (deal size x assumed close rate; the reasoning lives
+  // there). The franchise value really depends on the lead's city, which only the server
+  // scores, so `lead complete` uses the value the step-2 response returns (the same number
+  // the server CAPI Lead carries, so the deduped Pixel/CAPI pair agrees) and falls back to
+  // the medium-city default here. `lead start` = 20% of the page default.
+  var LEAD_VALUE = { corporate: 125, celebrations: 75, venues: 50, partners: 150 };
+  var LEAD_START_SHARE = 0.2;
+  function leadValue() { return LEAD_VALUE[window.QED_SITE] || LEAD_VALUE.venues; }
+  function leadStartValue() { return Math.round(leadValue() * LEAD_START_SHARE); }
 
   // Identity for Google Ads enhanced conversions (client-side gtag) — attached to the lead events
   // ONLY under marketing consent, read only by the gtag destination's enhancedConversions map
@@ -218,11 +228,75 @@
   //                     conversions, not a client/server pair to dedupe).
   // The pushDataLayer calls below are harmless GTM-parity leftovers (nothing consumes dataLayer).
 
+  // RFC 4122 v4 shape even on the fallback path: the server only accepts a well-formed UUID as
+  // a reminder id (_nudge), and uses these as event ids too.
   function uuid() {
-    return (window.crypto && window.crypto.randomUUID)
-      ? window.crypto.randomUUID()
-      : (Date.now() + "-" + Math.random().toString(16).slice(2));
+    if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0;
+      return (c === "x" ? r : (r & 3 | 8)).toString(16);
+    });
   }
+
+  function postLead(action, data) {
+    try {
+      return fetch(action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) { return Promise.resolve(); }
+  }
+
+  // How long a submit waits for step 1's request to finish (see the submit handler). Step 1's
+  // function runs a few Brevo calls; this only bites when step 1 is still in flight at submit.
+  var STEP1_WAIT_MS = 6000;
+
+  // Resolves when `p` settles or after `ms`, whichever comes first. Never rejects.
+  function settleWithin(p, ms) {
+    return new Promise(function (resolve) {
+      if (!p) { resolve(); return; }
+      var t = setTimeout(resolve, ms);
+      p.then(function () { clearTimeout(t); resolve(); }, function () { clearTimeout(t); resolve(); });
+    });
+  }
+
+  /* ---------- consent replay for lead events ----------
+     consent.js holds the first-visit banner back while a lead form is on screen, so a quick
+     visitor often sends step 1, and sometimes step 2, before choosing. Those POSTs carry
+     _consent "denied" and the function drops their walkerOS event (Meta CAPI + Amplitude, and
+     Amplitude gets leads ONLY from the server). Nothing else can send them later, so keep each
+     such payload in memory and, once the visitor grants analytics, POST it again marked
+     _replay:"consent". The functions answer a replay with the analytics send alone (no
+     Telegram, Brevo or portal), under the same _event_id, so Meta dedups it against the Pixel
+     Lead that walkerOS releases from its own consent queue and Amplitude dedups on insert_id.
+     Lost on navigation, like anything in memory: the banner shows right after a lead is sent. */
+  var consentReplays = [];
+  function queueConsentReplay(action, data) {
+    if (data._consent === "granted") return;
+    // A re-sent step 1 (corrected email) replaces the earlier one: same event id, so only the
+    // first to arrive would count, and it should carry the corrected address.
+    consentReplays = consentReplays.filter(function (r) { return !(r.data.form === data.form && r.data._step === data._step); });
+    consentReplays.push({ action: action, data: data });
+  }
+  window.addEventListener("qed:consentchange", function () {
+    if (window.__qedConsent !== "granted" || !consentReplays.length) return;
+    var batch = consentReplays.splice(0);
+    // Next tick, so walker.js has taken the decision first and the Amplitude session exists.
+    setTimeout(function () {
+      batch.forEach(function (r) {
+        var d = assign({}, r.data);
+        d._replay = "consent";
+        d._consent = "granted";
+        try { d._consentCategories = JSON.stringify(window.__qedConsentCategories || {}); } catch (e) {}
+        try { var sid = window.__qedAmpSession && window.__qedAmpSession(); if (sid) d._sid = String(sid); } catch (e) {}
+        var fp = readCookie("_fbp");
+        if (fp) d._fbp = fp;
+        postLead(r.action, d);
+      });
+    }, 0);
+  });
 
   /* ---------- first-touch attribution ----------
      Capture ad click-ids + UTMs the moment the visitor lands, BEFORE any internal click
@@ -247,7 +321,13 @@
       var existing = null;
       try { existing = JSON.parse(localStorage.getItem(ATTR_KEY) || "null"); } catch (e) {}
       var fresh = existing && existing.ts && (Date.now() - existing.ts < ATTR_TTL);
-      if (Object.keys(found).length) {
+      // Our own follow-up emails (Brevo tags their links utm_source=sendinblue) are not a new
+      // acquisition source: a lead finishing the form from the reminder must keep the ad or
+      // organic touch that brought them, not be re-attributed to the email.
+      var ownEmail = /^(sendinblue|brevo)$/i.test(found.utm_source || "") && !found.gclid && !found.wbraid && !found.gbraid && !found.fbclid;
+      if (ownEmail && fresh) {
+        // keep the existing record untouched
+      } else if (Object.keys(found).length) {
         // A click param on the URL always overwrites, regardless of how fresh the stored
         // record is — last non-direct touch wins. Without this, a visitor who browsed
         // organically (or clicked a different ad) within the last 30 days would have this
@@ -351,6 +431,9 @@
     function focusFirst(scope) {
       var first = scope && scope.querySelector("input:not(.cselect__native), textarea, select:not(.cselect__native), .cselect__btn");
       if (!first) return;
+      // Phone is step 2's first field: land on the number box, not its country-code dropdown.
+      var tel = first.closest && first.closest(".tel-field");
+      if (tel) first = tel.querySelector("[data-role='phone-number']") || first;
       if (reduce) first.focus(); else setTimeout(function () { first.focus(); }, 360);
     }
 
@@ -386,6 +469,48 @@
       phoneInput.setAttribute("aria-invalid", show ? "true" : "false");
     }
 
+    /* email: the browser's own type=email check passes "juan@gmail" (no dot in the domain),
+       which isEmail() in netlify/lib/forms.ts then rejects, so the lead would die with a 400 at
+       step 2. Same shape check here, shown inline like the phone hint. The hint is created on
+       first use (data-i18n "form.emailErr", Spanish from i18n-common.js) so the pages' HTML
+       doesn't have to carry it. */
+    var EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,24}$/;
+    var EMAIL_ERR_EN = "Please check your email address (e.g. name@gmail.com).";
+    var emailInput = form.querySelector("input[type='email']");
+    var emailErr = null;
+
+    function emailValid() {
+      var v = emailInput ? emailInput.value.trim() : "";
+      return !v || EMAIL_RE.test(v); // empty is the `required` check's job
+    }
+    function setEmailError(show) {
+      if (!emailInput) return;
+      if (show && !emailErr) {
+        emailErr = document.createElement("p");
+        emailErr.className = "field-error";
+        emailErr.setAttribute("role", "alert");
+        emailErr.setAttribute("data-i18n", "form.emailErr");
+        emailErr.id = (emailInput.id || "email") + "-err";
+        emailErr.__en = EMAIL_ERR_EN; // i18n.js's English fallback when the language flips
+        var lang = window.QEDi18n ? window.QEDi18n.current() : "EN";
+        emailErr.textContent = (lang === "ES" && window.QED_ES && window.QED_ES["form.emailErr"] != null) ? window.QED_ES["form.emailErr"] : EMAIL_ERR_EN;
+        emailInput.insertAdjacentElement("afterend", emailErr);
+      }
+      if (emailErr) emailErr.style.display = show ? "block" : "none";
+      emailInput.setAttribute("aria-invalid", show ? "true" : "false");
+      // Point at the hint only while it shows: a screen reader reads an aria-describedby target
+      // even when it's hidden, so a fixed address would still be announced as wrong.
+      if (show && emailErr) emailInput.setAttribute("aria-describedby", emailErr.id);
+      else emailInput.removeAttribute("aria-describedby");
+    }
+
+    if (emailInput) {
+      emailInput.addEventListener("input", function () {
+        if (emailErr && emailErr.style.display === "block" && emailValid()) setEmailError(false);
+      });
+      emailInput.addEventListener("blur", function () { if (!emailValid()) setEmailError(true); });
+    }
+
     if (phoneInput) {
       phoneInput.addEventListener("input", function () {
         var v = phoneInput.value.replace(/[^\d +]/g, "");
@@ -411,25 +536,43 @@
           else invalid.focus();
           return;
         }
+        if (emailInput && scope.contains(emailInput) && !emailValid()) {
+          setEmailError(true);
+          emailInput.focus();
+          return;
+        }
         form.classList.add("at-step2");
-        if (!form.__step1Sent) {
+        // Step 1 goes out once, and again only if the email changed since (Back, fix a typo,
+        // Continue): otherwise the reminder would go to the mistyped address and the corrected
+        // one would never be saved as a partial.
+        var email1 = emailInput ? emailInput.value.trim().toLowerCase() : "";
+        if (!form.__step1Sent || email1 !== form.__step1Email) {
+          var firstSend = !form.__step1Sent;
           form.__step1Sent = true;
-          var d1 = collect(form, action, 1, uuid());
-          var et = form.elements.eventType;
-          pushDataLayer("Lead Started", { step: 1, form: d1.form, eventType: et ? et.value : undefined, event_id: d1._event_id });
-          // Client-side Google Ads secondary conversion (gtag). Only the gtag destination consumes
-          // a client `lead start` — the Pixel and Amplitude both ignore it. id = this step's
-          // _event_id (distinct from step 2's, they're separate conversions).
-          walkerPush("lead start", assign({ funnel: window.QED_SITE || "home", value: leadValue(), currency: "EUR" }, leadIdentity(d1)), d1._event_id);
-          // fire-and-forget: partial lead → server (walkerOS, no Telegram). Never blocks the UI.
-          try {
-            fetch(action, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(d1),
-              keepalive: true
-            }).catch(function () {});
-          } catch (e) {}
+          form.__step1Email = email1;
+          // A re-send keeps the first send's event id, so Meta and Amplitude dedup it: one
+          // `lead start` per form, however many times the address is corrected.
+          if (firstSend) form.__step1EventId = uuid();
+          var d1 = collect(form, action, 1, form.__step1EventId);
+          // Id of the one reminder email this step 1 schedules (the server uses it as Brevo's
+          // batchId). Step 2 sends it back to cancel that reminder directly, and a re-send
+          // cancels the one scheduled for the previous address.
+          if (form.__nudge) d1._nudgeCancel = form.__nudge;
+          form.__nudge = uuid();
+          d1._nudge = form.__nudge;
+          if (firstSend) {
+            var et = form.elements.eventType;
+            pushDataLayer("Lead Started", { step: 1, form: d1.form, eventType: et ? et.value : undefined, event_id: d1._event_id });
+            // Client-side Google Ads secondary conversion (gtag). Only the gtag destination consumes
+            // a client `lead start` — the Pixel and Amplitude both ignore it. id = this step's
+            // _event_id (distinct from step 2's, they're separate conversions).
+            walkerPush("lead start", assign({ funnel: window.QED_SITE || "home", value: leadStartValue(), currency: "EUR" }, leadIdentity(d1)), d1._event_id);
+          }
+          // fire-and-forget: partial lead → server (walkerOS `lead start`, a short "not finished"
+          // Telegram ping, Brevo contact + one reminder email in 2h that step 2 cancels). Never
+          // blocks the UI; submit waits for it (briefly) so step 2 can't overtake it.
+          form.__step1Promise = postLead(action, d1);
+          queueConsentReplay(action, d1);
         }
         focusFirst(step2);
       });
@@ -473,12 +616,21 @@
         else invalid.focus();
         return;
       }
+      // Same email shape check as Continue (the server would 400 it). The field lives in step 1,
+      // so bring that step back into view first.
+      if (emailInput && !emailValid()) {
+        form.classList.remove("at-step2");
+        setEmailError(true);
+        emailInput.focus();
+        return;
+      }
 
       // Phone is optional — an invalid-looking number shows the inline hint but never
       // blocks submission of an otherwise-valid lead.
       if (phoneInput) setPhoneError(!phoneValid());
 
       var data = collect(form, action, 2, uuid());
+      if (form.__nudge) data._nudge = form.__nudge; // the reminder step 1 scheduled: cancel it
 
       if (btn) {
         btn.disabled = true;
@@ -488,10 +640,15 @@
         }
       }
 
-      fetch(action, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+      // Let step 1's request finish first (capped): a double Enter, or a quick Submit (every step-2
+      // field is optional), would otherwise reach the server while step 1 is still saving the
+      // contact and scheduling its reminder, and step 2 would miss both.
+      settleWithin(form.__step1Promise, STEP1_WAIT_MS).then(function () {
+        return fetch(action, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
       }).then(function (r) {
         return r.text().then(function (t) {
           var j = {}; try { j = JSON.parse(t); } catch (e) {}
@@ -506,14 +663,20 @@
           throw new Error((res.body && res.body.error) || "Server returned an error response.");
         }
         form.classList.add("sent");
+        queueConsentReplay(action, data);
         var s = form.querySelector(".form-success");
         if (s) { s.setAttribute("role", "status"); if (s.focus) s.focus(); }
         pushDataLayer("Form Submitted", { step: 2, form: data.form, event_id: data._event_id });
         // Browser-side Meta Pixel Lead — id = the submission's _event_id so it dedups against the
         // server CAPI Lead (netlify/lib/forms.ts). Amplitude ignores this client lead (the server
         // sends it); only the Pixel consumes it, for value/currency + the _fbp/_fbc match.
-        walkerPush("lead complete", assign({ funnel: window.QED_SITE || "home", value: leadValue(), currency: "EUR" }, leadIdentity(data)), data._event_id);
+        var serverValue = res.body.value;
+        var value = (typeof serverValue === "number" && isFinite(serverValue)) ? serverValue : leadValue();
+        walkerPush("lead complete", assign({ funnel: window.QED_SITE || "home", value: value, currency: "EUR" }, leadIdentity(data)), data._event_id);
         form.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+        // consent.js holds the first-visit banner back while a lead form is on screen; a sent
+        // lead is its cue to show it.
+        try { window.dispatchEvent(new CustomEvent("qed:leadsent")); } catch (e) {}
       }).catch(function (err) {
         if (btn) {
           btn.disabled = false;

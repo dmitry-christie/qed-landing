@@ -1,6 +1,7 @@
 // Shared helpers for the QED lead-capture functions.
 // All three functions (book-event, franchise-apply, venue-apply) reuse these:
 // sanitize input, send a plain-text Telegram message, and fire a Meta CAPI event.
+import { randomUUID } from "node:crypto";
 import { startFlow } from "@walkeros/collector";
 import { destinationMeta } from "@walkeros/server-destination-meta";
 import { destinationAPI } from "@walkeros/server-destination-api";
@@ -108,27 +109,54 @@ async function sendTelegramOnce(token: string, chatId: string, text: string): Pr
 // up. On final failure, logs the full message under a distinct "LOST LEAD" marker —
 // this is the only durable copy of the alert at that point, so it needs to be grep/
 // alertable from Netlify function logs rather than silently swallowed.
-export async function sendTelegram(text: string): Promise<boolean> {
+// The step-1 "started, not finished" ping passes attempts=1 and its own marker: it's a
+// heads-up, the partial also lands in Brevo, and it must not trip a LOST LEAD alert.
+export async function sendTelegram(text: string, attempts = TELEGRAM_MAX_ATTEMPTS, lostMarker = "LOST LEAD"): Promise<boolean> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) {
     console.error("Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env vars.");
-    console.error("LOST LEAD (Telegram not configured):", text);
+    console.error(`${lostMarker} (Telegram not configured):`, text);
     return false;
   }
   if (text.length > 4000) text = text.slice(0, 4000) + "…";
 
-  for (let attempt = 1; attempt <= TELEGRAM_MAX_ATTEMPTS; attempt++) {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
       if (await sendTelegramOnce(token, chatId, text)) return true;
     } catch (err) {
-      console.error(`Telegram sendMessage threw (attempt ${attempt}/${TELEGRAM_MAX_ATTEMPTS}):`, err);
+      console.error(`Telegram sendMessage threw (attempt ${attempt}/${attempts}):`, err);
     }
-    if (attempt < TELEGRAM_MAX_ATTEMPTS) await sleep(TELEGRAM_RETRY_DELAY_MS * attempt);
+    if (attempt < attempts) await sleep(TELEGRAM_RETRY_DELAY_MS * attempt);
   }
 
-  console.error("LOST LEAD (Telegram failed after retries):", text);
+  console.error(`${lostMarker} (Telegram failed after retries):`, text);
   return false;
+}
+
+// Step 1 = name + email (+ city on the franchise form, event type on the events forms).
+// One short message, clearly not a lead yet, so the founders can tell it apart from the
+// full "New ..." alert that follows if the visitor finishes. `detail` is the one funnel-
+// specific line (event type / city / venue).
+const PARTIAL_LABEL: Record<string, string> = {
+  corporate: "Corporate event",
+  celebrations: "Celebration",
+  venues: "Venue",
+  partners: "Franchise",
+};
+
+export function partialLeadText(d: Dict, page: string, detail: string): string {
+  return [
+    `⏳ Started, not finished (step 1): ${PARTIAL_LABEL[page] || page}`,
+    `👤 Name: ${d.firstName} ${d.lastName}`,
+    `📧 Email: ${d.email}`,
+    detail,
+    metaLine(d, page),
+  ].join("\n");
+}
+
+export function sendPartialTelegram(text: string): Promise<boolean> {
+  return sendTelegram(text, 1, "LOST PARTIAL");
 }
 
 // The client sends the dial code picked in the phone field's country selector
@@ -149,15 +177,16 @@ function normalizePhone(phone: string, dial?: string): string {
 // pipeline place a lead lives.
 // Env: BREVO_API_KEY (required) + BREVO_LIST_ID (default list) and/or
 // BREVO_LIST_ID_<PAGE> (e.g. BREVO_LIST_ID_PARTNERS) to route funnels to separate lists.
-// Only called on the full (step 2) submission — a step-1 partial abandon isn't a
-// qualified lead yet; walkerOS already covers that audience for retargeting.
+// sendToBrevo runs on the full (step 2) submission: contact + deal + confirmation email.
+// A step-1 partial goes through sendPartialToBrevo instead (contact + one scheduled
+// reminder, no deal, never the funnel list) — see the partial-lead section below.
 //
 // NOTE: Brevo rejects unknown custom attributes, so before this goes live create these
 // contact attributes in Brevo (Contacts > Settings > Contact attributes, type "Text"):
-// LEAD_CITY, LANG, LEAD_SOURCE, UTM_SOURCE, UTM_CAMPAIGN, NOTES, LAST_DEAL. FIRSTNAME/
-// LASTNAME/SMS are built in. A missing list/attribute makes this fail silently (logged,
-// non-blocking) — check Netlify function logs after setup to confirm it's actually
-// landing contacts.
+// LEAD_CITY, LANG, LEAD_SOURCE, UTM_SOURCE, UTM_CAMPAIGN, NOTES, LAST_DEAL, LEAD_STAGE,
+// PARTIAL_NUDGE. FIRSTNAME/LASTNAME/SMS are built in. A missing list/attribute makes this
+// fail silently (logged, non-blocking) — check Netlify function logs after setup to
+// confirm it's actually landing contacts.
 function brevoListId(page: string): number | undefined {
   const perPage = process.env[`BREVO_LIST_ID_${page.toUpperCase()}`];
   const id = Number(perPage || process.env.BREVO_LIST_ID);
@@ -197,9 +226,9 @@ function dealName(d: Dict, page: string): string {
   }
 }
 
-// No monetary "amount" is set — LEAD_VALUE above is a relative ad-bidding weight, not a
-// real deal size, and we don't have real average deal values yet. Founders can fill amount
-// in once a lead is qualified, same as they'd do with a deal from any other source.
+// No monetary "amount" is set — leadValue() below is an expected-value bidding signal
+// (deal size x an assumed close rate), not this deal's size. Founders fill amount in once
+// a lead is qualified, same as they'd do with a deal from any other source.
 async function createBrevoDeal(apiKey: string, d: Dict, page: string, notes: string, contactId?: number): Promise<boolean> {
   try {
     const res = await fetch("https://api.brevo.com/v3/crm/deals", {
@@ -239,12 +268,17 @@ async function createBrevoDeal(apiKey: string, d: Dict, page: string, notes: str
 // so the contact still lands — better than silently losing the entire lead over one
 // misconfigured field. Whatever's dropped still survives in NOTES, since the alert text
 // always includes every field the form collected.
+// Returns ok (the contact was saved, possibly minus `dropped` attributes) and the id,
+// which Brevo only returns on create (201), not on update (204).
+type BrevoUpsert = { ok: boolean; id?: number; dropped: string[] };
+
 async function upsertBrevoContact(
   headers: Record<string, string>,
   email: string,
   attributes: Record<string, string>,
   listId: number | undefined,
-): Promise<number | undefined> {
+  dropped: string[] = [],
+): Promise<BrevoUpsert> {
   try {
     const res = await fetch("https://api.brevo.com/v3/contacts", {
       method: "POST",
@@ -258,23 +292,22 @@ async function upsertBrevoContact(
       signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
     });
     if (res.status === 201) {
-      return (await res.json().catch(() => null))?.id;
+      return { ok: true, id: (await res.json().catch(() => null))?.id, dropped };
     }
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("Brevo contact upsert failed:", res.status, errText);
-      const badAttr = Object.keys(attributes).find((k) => new RegExp(k, "i").test(errText));
-      if (badAttr) {
-        console.error(`Retrying Brevo contact upsert without ${badAttr} (attribute type mismatch in Brevo dashboard — fix its type there).`);
-        const rest = { ...attributes };
-        delete rest[badAttr];
-        return upsertBrevoContact(headers, email, rest, listId);
-      }
+    if (res.ok) return { ok: true, dropped };
+    const errText = await res.text();
+    console.error("Brevo contact upsert failed:", res.status, errText);
+    const badAttr = Object.keys(attributes).find((k) => new RegExp(k, "i").test(errText));
+    if (badAttr) {
+      console.error(`Retrying Brevo contact upsert without ${badAttr} (attribute type mismatch in Brevo dashboard — fix its type there).`);
+      const rest = { ...attributes };
+      delete rest[badAttr];
+      return upsertBrevoContact(headers, email, rest, listId, [...dropped, badAttr]);
     }
   } catch (err) {
     console.error("Brevo contact upsert threw:", err);
   }
-  return undefined;
+  return { ok: false, dropped };
 }
 
 // Deals aren't deduplicated by Brevo, and paid traffic draws bots that render JS/CSS well
@@ -286,7 +319,9 @@ async function upsertBrevoContact(
 // then this attribute is just dropped same as any other misconfigured one, and dedupe no-ops.
 const DEAL_DEDUPE_WINDOW_MS = 30 * 60 * 1000;
 
-async function getBrevoContact(headers: Record<string, string>, email: string): Promise<{ id?: number; attributes?: Record<string, unknown> } | undefined> {
+type BrevoContact = { id?: number; attributes?: Record<string, unknown> };
+
+async function getBrevoContact(headers: Record<string, string>, email: string): Promise<BrevoContact | undefined> {
   try {
     const res = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
       headers,
@@ -297,6 +332,21 @@ async function getBrevoContact(headers: Record<string, string>, email: string): 
     console.error("Brevo contact lookup threw:", err);
   }
   return undefined;
+}
+
+function brevoAttr(contact: BrevoContact | undefined, key: string): string {
+  const v = contact?.attributes?.[key];
+  return typeof v === "string" ? v : "";
+}
+
+// True when this contact got a deal for `page` within DEAL_DEDUPE_WINDOW_MS (LAST_DEAL is
+// "<page>:<epoch ms>"). Step 2 uses it to skip a duplicate deal; step 1 uses it to skip
+// the reminder for someone who has just finished that same form.
+function recentDealFor(contact: BrevoContact | undefined, page: string): boolean {
+  const lastDeal = brevoAttr(contact, "LAST_DEAL");
+  const cut = lastDeal.lastIndexOf(":");
+  const ts = Number(lastDeal.slice(cut + 1));
+  return cut > 0 && lastDeal.slice(0, cut) === page && Number.isFinite(ts) && Date.now() - ts < DEAL_DEDUPE_WINDOW_MS;
 }
 
 // Templates #7 (EN, "QED Lead Follow-up") and #8 (ES, "TdT Lead Follow-up") in Brevo,
@@ -333,11 +383,18 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
 
   const headers = { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey };
   const existing = await getBrevoContact(headers, d.email);
-  const lastDeal = typeof existing?.attributes?.LAST_DEAL === "string" ? existing.attributes.LAST_DEAL : "";
-  const [lastDealPage, lastDealTs] = [lastDeal.slice(0, lastDeal.lastIndexOf(":")), Number(lastDeal.slice(lastDeal.lastIndexOf(":") + 1))];
-  const dupeDeal = lastDealPage === page && Number.isFinite(lastDealTs) && Date.now() - lastDealTs < DEAL_DEDUPE_WINDOW_MS;
+  const dupeDeal = recentDealFor(existing, page);
+  // They finished, so the step-1 reminder scheduled by sendPartialToBrevo must not go out: the
+  // one this form's step 1 scheduled (the client sends its id back as _nudge, so this works even
+  // when the lookup above found nothing) and any other still stored on the contact.
+  const storedNudge = brevoAttr(existing, "PARTIAL_NUDGE");
+  const nudges = [...new Set([nudgeId(d._nudge), storedNudge].filter((v): v is string => !!v))];
+  const cancelled = await Promise.all(nudges.map((id) => cancelBrevoNudge(apiKey, id)));
 
-  const attributes: Record<string, string> = { LEAD_SOURCE: page };
+  const attributes: Record<string, string> = { LEAD_SOURCE: page, LEAD_STAGE: "complete" };
+  // Clear the stored id only once its reminder is gone (cancelled, or already sent). After a
+  // failed cancel (timeout / 5xx) it stays, so a later submission can still cancel it.
+  if (storedNudge && cancelled[nudges.indexOf(storedNudge)]) attributes.PARTIAL_NUDGE = "";
   if (d.firstName) attributes.FIRSTNAME = d.firstName;
   if (d.lastName) attributes.LASTNAME = d.lastName;
   if (d.phone) {
@@ -351,8 +408,12 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
   attributes.NOTES = notes.slice(0, 1800);
 
   const listId = brevoListId(page);
-  const upsertedId = await upsertBrevoContact(headers, d.email, attributes, listId);
-  const contactId = existing?.id ?? upsertedId;
+  const upserted = await upsertBrevoContact(headers, d.email, attributes, listId);
+  let contactId = existing?.id ?? upserted.id;
+  // Brevo returns the id only on create (201). A contact that appeared between the lookup above
+  // and the upsert (a step 1 landing in between) comes back 204 without one: look it up again,
+  // or the confirmation email is skipped and the deal is created unlinked.
+  if (!contactId && upserted.ok) contactId = (await getBrevoContact(headers, d.email))?.id;
 
   if (dupeDeal) {
     console.error("Skipping duplicate Brevo deal:", page, d.email);
@@ -365,6 +426,123 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
   // resubmission that would otherwise retry it within the dedupe window.
   if (dealCreated) {
     await upsertBrevoContact(headers, d.email, { LAST_DEAL: `${page}:${Date.now()}` }, listId);
+  }
+}
+
+// ---- Step-1 partial leads: contact + ONE reminder email ----------------------
+// Step 1 already has name + email (+ city / event type). Someone who stops there gets one
+// reminder 2 hours later, and step 2 cancels it if they finish first. Legal basis: steps
+// taken at the person's request / legitimate interest, disclosed by the form.privacy line
+// under every step-1 Continue button. No deal, no confirmation email, no portal record,
+// and never the funnel's main list (that list means "a real enquiry").
+//
+// The reminder is a Brevo transactional email sent with scheduledAt. Its batchId (UUIDv4) is
+// ours, not Brevo's: the browser generates it at step 1 and sends it as _nudge on both steps
+// (a random one here if it's missing or malformed), and it is stored on the contact as
+// PARTIAL_NUDGE BEFORE scheduling. DELETE /v3/smtp/email/{identifier} accepts either the
+// batchId or the messageId, and the scheduled-send response body is undocumented ("202: any"),
+// so owning the id up front is the only way to be sure step 2 can always cancel it, even when
+// step 2's contact lookup runs before step 1 has saved anything. If scheduling then fails,
+// the id points at nothing and the cancel just 404s (ignored).
+//
+// Templates #10 "TdT Partial Nudge - ES" (TDT sender) and #11 "QED Partial Nudge - EN"
+// (QED sender) branch on contact.LEAD_SOURCE and read FIRSTNAME / LEAD_CITY, so the
+// contact is upserted first. Picked by LANG, same rule as the confirmation email.
+// Optional env: BREVO_LIST_ID_PARTIAL_<PAGE> or BREVO_LIST_ID_PARTIAL (no list if unset).
+const BREVO_NUDGE_TEMPLATE_ID_ES = 10;
+const BREVO_NUDGE_TEMPLATE_ID_EN = 11;
+const PARTIAL_NUDGE_DELAY_MS = 2 * 60 * 60 * 1000; // Brevo allows scheduling up to 72h ahead
+
+function brevoPartialListId(page: string): number | undefined {
+  const id = Number(process.env[`BREVO_LIST_ID_PARTIAL_${page.toUpperCase()}`] || process.env.BREVO_LIST_ID_PARTIAL);
+  return Number.isFinite(id) && id > 0 ? id : undefined;
+}
+
+// Cancel a scheduled reminder by its batchId (PARTIAL_NUDGE, or the client's _nudge). 404 =
+// already sent or never scheduled, which is fine. Returns true when the reminder is gone either
+// way, false when the cancel itself failed. Logged, never thrown.
+async function cancelBrevoNudge(apiKey: string, id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`https://api.brevo.com/v3/smtp/email/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      headers: { Accept: "application/json", "api-key": apiKey },
+      signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
+    });
+    if (res.ok || res.status === 404) return true;
+    console.error("Brevo reminder cancel failed:", res.status, await res.text());
+  } catch (err) {
+    console.error("Brevo reminder cancel threw:", err);
+  }
+  return false;
+}
+
+// The client (shared/qed.js) generates the reminder's batchId at step 1 and sends it as _nudge
+// on both steps (and the previous one as _nudgeCancel after an email correction). Only a
+// well-formed UUID is used, as the batchId or in a cancel URL.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+function nudgeId(v: string | undefined): string | undefined {
+  return v && UUID_RE.test(v) ? v.toLowerCase() : undefined;
+}
+
+export async function sendPartialToBrevo(d: Dict, page: string): Promise<void> {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
+    console.error("Missing BREVO_API_KEY env var.");
+    return;
+  }
+  if (!d.email) return;
+
+  try {
+    const headers = { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey };
+    const existing = await getBrevoContact(headers, d.email);
+
+    // Re-starting resets the clock: drop the reminder from an earlier step 1 on this contact
+    // and, after an email correction, the one scheduled for the previous (mistyped) address.
+    const batchId = nudgeId(d._nudge) || randomUUID();
+    const stale = new Set([brevoAttr(existing, "PARTIAL_NUDGE"), nudgeId(d._nudgeCancel)].filter((v): v is string => !!v && v !== batchId));
+    await Promise.all([...stale].map((id) => cancelBrevoNudge(apiKey, id)));
+
+    // Just finished this same form (step 2 landed first, or they came back to it): no reminder.
+    if (recentDealFor(existing, page)) return;
+
+    const attributes: Record<string, string> = { LEAD_SOURCE: page, LEAD_STAGE: "partial", PARTIAL_NUDGE: batchId };
+    if (d.firstName) attributes.FIRSTNAME = d.firstName;
+    if (d.lastName) attributes.LASTNAME = d.lastName;
+    if (d.city) attributes.LEAD_CITY = d.city;
+    if (d.lang) attributes.LANG = d.lang.toUpperCase();
+    if (d._utm_source) attributes.UTM_SOURCE = d._utm_source;
+    if (d._utm_campaign) attributes.UTM_CAMPAIGN = d._utm_campaign;
+
+    const saved = await upsertBrevoContact(headers, d.email, attributes, brevoPartialListId(page));
+    // Without a stored PARTIAL_NUDGE, step 2 couldn't cancel it: better no reminder than
+    // one that lands after they've finished.
+    if (!saved.ok || saved.dropped.includes("PARTIAL_NUDGE")) {
+      console.error("Skipping partial reminder: contact not saved with PARTIAL_NUDGE.", page);
+      return;
+    }
+
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        templateId: d.lang?.toUpperCase() === "ES" ? BREVO_NUDGE_TEMPLATE_ID_ES : BREVO_NUDGE_TEMPLATE_ID_EN,
+        to: [{ email: d.email }],
+        scheduledAt: new Date(Date.now() + PARTIAL_NUDGE_DELAY_MS).toISOString(),
+        batchId,
+      }),
+      signal: AbortSignal.timeout(BREVO_TIMEOUT_MS),
+    });
+    if (!res.ok) {
+      console.error("Brevo reminder schedule failed:", res.status, await res.text());
+      return;
+    }
+    // Step 2 can still overtake this one (the client waits for step 1, but only so long): if the
+    // same lead has finished in the meantime, its cancel may have come before this schedule.
+    const after = await getBrevoContact(headers, d.email);
+    const finished = (!saved.dropped.includes("LEAD_STAGE") && brevoAttr(after, "LEAD_STAGE") === "complete") || recentDealFor(after, page);
+    if (finished) await cancelBrevoNudge(apiKey, batchId);
+  } catch (err) {
+    console.error("Brevo partial lead threw:", err);
   }
 }
 
@@ -390,15 +568,82 @@ const PRODUCT_BY_PAGE: Record<string, string> = {
   partners: "franchise-partnership",
 };
 
-// Relative lead value (EUR) for value-based bidding (Meta value optimization / Google
-// tROAS). Proxy weights until real pricing lands — a franchise lead is worth far more than
-// a birthday enquiry; a venue partnership sits between. Dashboard can override per action.
-const LEAD_VALUE: Record<string, number> = {
-  partners: 10,
-  venues: 3,
-  corporate: 1,
-  celebrations: 1,
-};
+// ---- Lead value (EUR) for value-based bidding (Meta value optimization / Google tROAS) ----
+// value = expected euros per COMPLETED lead = typical deal value x assumed lead-to-deal rate.
+//   corporate     125 = B2B event ~500 € x 25%
+//   celebrations   75 = B2C private event ~300 € x 25%
+//   venues         50 = parked product, placeholder
+//   partners      by the lead's city, ~5% lead-to-signed x first-year value per tier:
+//                 large 250 (5,000 €) / medium 150 (3,000 €) / small or unknown 100 (2,000 €)
+// `lead start` (step 1) carries LEAD_START_SHARE (20%) of the complete value.
+// The close rates are ASSUMPTIONS, not measured. Recalibrate once Brevo has a few months
+// of won deals per funnel (value = average won deal x won / completed leads). Only the
+// ratios between funnels steer the bidding, so keep them honest relative to each other.
+// shared/qed.js mirrors the page defaults (partners -> the medium 150) for the browser
+// events and prefers the value this function returns in the step-2 response.
+const LEAD_START_SHARE = 0.2;
+const PAGE_LEAD_VALUE: Record<string, number> = { corporate: 125, celebrations: 75, venues: 50 };
+const PARTNER_TIER_VALUE = { large: 250, medium: 150, small: 100 };
+
+// Spanish municipalities by population (INE padrón). Written accent-free, lowercase, with
+// the usual Spanish / co-official / English variants. Matched as whole words inside the
+// typed city, so "Madrid centro" and "L'Hospitalet de Llobregat" hit, "Lugones" doesn't
+// read as Lugo. Anything containing a large name counts as large (the metro market).
+const LARGE_CITIES = [ // >= 500k
+  "madrid", "barcelona", "bcn", "barna", "valencia", "sevilla", "seville", "zaragoza", "saragossa", "malaga",
+];
+const MEDIUM_CITIES = [ // 100k-500k, plus the capitals just under the line (Lugo, Caceres, Santiago)
+  "murcia", "palma", "mallorca", "majorca", "las palmas", "gran canaria", "bilbao", "bilbo", "alicante", "alacant",
+  "cordoba", "valladolid", "vigo", "gijon", "xixon", "hospitalet", "hospitalet de llobregat", "vitoria", "gasteiz",
+  "coruna", "corunna", "elche", "elx", "granada", "oviedo", "uvieu", "cartagena", "jerez", "jerez de la frontera",
+  "santa cruz de tenerife", "tenerife", "pamplona", "iruna", "almeria", "san sebastian", "donostia",
+  "burgos", "albacete", "castellon", "castello", "castellon de la plana", "castello de la plana", "santander", "la laguna", "logrono", "badajoz",
+  "marbella", "salamanca", "huelva", "lleida", "lerida", "tarragona", "leon", "cadiz", "jaen",
+  "ourense", "orense", "girona", "gerona", "lugo", "caceres", "santiago", "compostela", "algeciras",
+  "reus", "telde", "barakaldo", "baracaldo", "roquetas", "roquetas de mar", "dos hermanas",
+  // Madrid metro
+  "mostoles", "alcala de henares", "fuenlabrada", "leganes", "getafe", "alcorcon", "torrejon", "torrejon de ardoz", "parla", "alcobendas",
+  // Barcelona metro
+  "badalona", "terrassa", "tarrasa", "sabadell", "mataro", "santa coloma de gramenet", "gramenet",
+];
+
+function cityWords(raw: string | undefined): string {
+  if (!raw) return " ";
+  return ` ${raw.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()} `;
+}
+
+// Small towns named after a big city: "Valencia de Alcántara", "Sevilla la Nueva", "Palma del
+// Río", "Jerez de los Caballeros". A name followed by de / del / la + another word is taken as
+// one of those, unless the whole longer name is listed itself ("jerez de la frontera", "alcala
+// de henares"). The few that can't be told apart that way are listed as exceptions.
+const HOMONYM_TAIL = /^(de|del|la) \S/;
+const SMALL_HOMONYMS = ["la granada"]; // La Granada (Penedès), not Granada
+
+function hasCity(s: string, c: string): boolean {
+  const needle = ` ${c} `;
+  for (let i = s.indexOf(needle); i !== -1; i = s.indexOf(needle, i + 1)) {
+    if (!HOMONYM_TAIL.test(s.slice(i + needle.length))) return true;
+  }
+  return false;
+}
+
+export function partnerCityTier(city: string | undefined): "large" | "medium" | "small" {
+  const s = cityWords(city);
+  if (SMALL_HOMONYMS.some((c) => s.trim() === c)) return "small";
+  if (LARGE_CITIES.some((c) => hasCity(s, c))) return "large";
+  if (MEDIUM_CITIES.some((c) => hasCity(s, c))) return "medium";
+  return "small";
+}
+
+// Expected value (EUR) of a completed lead on `page` from `city` (city only matters for partners).
+export function leadValue(page: string, city?: string): number {
+  if (page === "partners") return PARTNER_TIER_VALUE[partnerCityTier(city)];
+  return PAGE_LEAD_VALUE[page] ?? PAGE_LEAD_VALUE.venues; // unknown page: lowest placeholder
+}
+
+export function leadStartValue(page: string, city?: string): number {
+  return Math.round(leadValue(page, city) * LEAD_START_SHARE);
+}
 
 // ---- walkerOS server collector: lead events → Meta CAPI + Amplitude (EU) ----
 // Replaces the old Segment forwarder (this repo no longer touches Segment). Same event taxonomy
@@ -447,6 +692,19 @@ export function normalizeCity(raw: string | undefined): string {
 
 const AMPLITUDE_URL = "https://api.eu.amplitude.com/2/httpapi"; // EU data residency (decided)
 
+const META_CUSTOM_DATA = { map: { custom_data: { map: { value: "data.value", currency: "data.currency" } } } };
+
+// The page the lead was sent from, for Meta's event_source_url. Query string and hash are
+// dropped: they carry click ids and UTMs, which Meta gets through fbc and the event data.
+function sourceUrl(url: string | undefined): string | undefined {
+  try {
+    const u = new URL(url || "");
+    return `${u.origin}${u.pathname}`;
+  } catch {
+    return undefined;
+  }
+}
+
 // Build the collector's destinations from env — inert-safe (only what's configured is added).
 function serverDestinations(): Record<string, unknown> {
   const dests: Record<string, unknown> = {};
@@ -465,18 +723,26 @@ function serverDestinations(): Record<string, unknown> {
           ...(process.env.META_TEST_EVENT_CODE ? { test_event_code: process.env.META_TEST_EVENT_CODE } : {}),
           // Identity pulled from the walker `user` object (never `data`). Meta hashes
           // em/ph/fn/ln/external_id/ct itself; fbc/fbp/ip/ua are sent raw per Meta's spec.
+          // No fbclid here on purpose: the destination turns a user_data.fbclid into a
+          // fresh fbc stamped with the SEND time, overwriting the fbc qed.js already built
+          // from the real click timestamp.
           user_data: {
             em: "user.email", ph: "user.phone", fn: "user.firstName", ln: "user.lastName",
             external_id: "user.id", ct: "user.city",
-            fbc: "user.fbc", fbp: "user.fbp", fbclid: "user.fbclid",
+            fbc: "user.fbc", fbp: "user.fbp",
             client_ip_address: "user.ip", client_user_agent: "user.ua",
           },
         },
+        // A rule's `data` must be a { map: {...} }: a bare { value: "data.value" } is read by
+        // walkerOS as a STATIC value and resolves to the literal string "data.value", so the
+        // conversion went out with no value. The destination spreads the mapped object into
+        // the CAPI event, so value/currency go under custom_data, where Meta reads them.
+        // event_source_url comes from event.source.url (set in sendLeadEvent).
         mapping: {
           "*": { "*": { ignore: true } }, // allowlist: only the lead events post to CAPI
           lead: {
-            complete: { name: META_EVENT_NAME["lead complete"], data: { value: "data.value", currency: "data.currency" } },
-            start: { name: META_EVENT_NAME["lead start"], data: { value: "data.value", currency: "data.currency" } },
+            complete: { name: META_EVENT_NAME["lead complete"], data: META_CUSTOM_DATA },
+            start: { name: META_EVENT_NAME["lead start"], data: META_CUSTOM_DATA },
           },
         },
       },
@@ -553,7 +819,7 @@ export async function sendLeadEvent(event: string, d: Dict, page: string): Promi
     product: PRODUCT_BY_PAGE[page] || page,
     page_path: d.path, // same property the browser events carry
     step: event === "lead start" ? 1 : 2,
-    value: LEAD_VALUE[page] || 1,
+    value: event === "lead start" ? leadStartValue(page, d.city) : leadValue(page, d.city),
     currency: "EUR",
     city: normalizeCity(d.city),
     event_type: d.eventType,
@@ -588,7 +854,6 @@ export async function sendLeadEvent(event: string, d: Dict, page: string): Promi
     if (d.city) user.city = normalizeCity(d.city);
     if (d._fbc) user.fbc = d._fbc;
     if (d._fbp) user.fbp = d._fbp;
-    if (d._fbclid) user.fbclid = d._fbclid;
     if (d._gclid) user.gclid = d._gclid;
     if (d._ip) user.ip = d._ip;
     if (d._ua) user.ua = d._ua;
@@ -602,11 +867,27 @@ export async function sendLeadEvent(event: string, d: Dict, page: string): Promi
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       destinations: dests as any,
     });
+    // source.url becomes Meta's event_source_url (the server destination reads it natively).
+    const url = sourceUrl(d._url);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (flow.elb as any)({ name: event, id: d._event_id, data, user, globals });
+    await (flow.elb as any)({ name: event, id: d._event_id, data, user, globals, source: { type: "collector", schema: "4", ...(url ? { url } : {}) } });
   } catch (err) {
     console.error("walker server send threw:", err);
   }
+}
+
+// A lead the visitor sent before choosing in the consent banner (consent.js holds it back while
+// a lead form is on screen) reached its function with _consent "denied", so sendLeadEvent dropped
+// its event. qed.js re-sends the same payload marked _replay:"consent" once they grant analytics;
+// the functions answer it with this alone: no Telegram, Brevo or portal, which already ran. Same
+// _event_id as the first POST, so Meta dedups it against the browser Pixel Lead and Amplitude on
+// insert_id.
+export function isConsentReplay(d: Dict): boolean {
+  return d._replay === "consent";
+}
+
+export async function sendConsentReplay(d: Dict, page: string): Promise<void> {
+  await sendLeadEvent(d._step === "1" ? "lead start" : "lead complete", d, page);
 }
 
 // ---- QED client portal: the CRM record --------------------------------------
@@ -626,7 +907,8 @@ export async function sendLeadEvent(event: string, d: Dict, page: string): Promi
 // that city and venue staff can open would turn ad data into a person-level tracking
 // record held longer and read by more people, for no sales purpose.
 const PORTAL_TIMEOUT_MS = 2500;
-const PORTAL_DROP_FIELDS = ["_fbc", "_fbp", "_eid"];
+// _nudge / _nudgeCancel are Brevo reminder ids (see sendPartialToBrevo), internal plumbing only.
+const PORTAL_DROP_FIELDS = ["_fbc", "_fbp", "_eid", "_nudge", "_nudgeCancel"];
 
 export async function sendToPortal(d: Dict, page: string): Promise<void> {
   const url = process.env.PORTAL_INTAKE_URL;
@@ -645,9 +927,9 @@ export async function sendToPortal(d: Dict, page: string): Promise<void> {
   payload.page = page;
   payload.product = PRODUCT_BY_PAGE[page] || page;
   payload.citySlug = normalizeCity(d.city);
-  // LEAD_VALUE is a relative bidding weight in euros, not a deal size. The portal keeps
-  // it in integer cents, because every money column in that codebase is integer cents.
-  payload.bidWeightCents = String((LEAD_VALUE[page] || 1) * 100);
+  // leadValue() is an expected-value bidding weight in euros, not a deal size. The portal
+  // keeps it in integer cents, because every money column in that codebase is integer cents.
+  payload.bidWeightCents = String(leadValue(page, d.city) * 100);
 
   try {
     const res = await fetch(url, {

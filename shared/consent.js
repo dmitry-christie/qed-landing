@@ -110,7 +110,7 @@
     if (!force && !analyticsEnabled()) return; // nothing to measure off production domains
     if (!force && categories != null) return;  // already decided, on this or an earlier page
     var existing = document.querySelector(".consent");
-    if (existing) { if (!force) return; existing.remove(); }
+    if (existing) { if (!force) return; closeBar(existing); }
 
     var bar = document.createElement("div");
     bar.className = "consent";
@@ -209,16 +209,16 @@
       if (!open) { setOpen(true); return; }
       setOpen(false);
       decide({ functional: checkboxes.functional.checked, analytics: checkboxes.analytics.checked, marketing: checkboxes.marketing.checked });
-      bar.remove();
+      closeBar(bar);
     });
 
     reject.addEventListener("click", function () {
       decide({ functional: false, analytics: false, marketing: false });
-      bar.remove();
+      closeBar(bar);
     });
     accept.addEventListener("click", function () {
       decide({ functional: true, analytics: true, marketing: true });
-      bar.remove();
+      closeBar(bar);
     });
 
     actions.appendChild(reject);
@@ -227,10 +227,40 @@
     bar.appendChild(cats);
     bar.appendChild(actions);
     document.body.appendChild(bar);
+    reserveSpace(bar);
 
     if (force) setOpen(true); // reopened from the privacy page → show the toggles straight away
 
     if (window.QEDi18n) window.QEDi18n.apply(window.QEDi18n.current());
+  }
+
+  // While the banner is up, reserve its height at the bottom of the page so nothing (a form's
+  // Continue button above all) is stuck underneath it: body padding lets the last content
+  // scroll clear of it, scroll-padding keeps anchor jumps and focus() scrolls above it.
+  // Re-measured when the banner changes size (Manage expands it).
+  var spaceObserver = null;
+  function reserveSpace(bar) {
+    function apply() {
+      if (!bar.parentNode) return;
+      var gap = parseFloat(window.getComputedStyle(bar).bottom) || 0; // it floats above the edge
+      var h = Math.ceil(bar.offsetHeight + gap) + "px";
+      document.body.style.paddingBottom = h;
+      document.documentElement.style.scrollPaddingBottom = h;
+    }
+    apply();
+    if ("ResizeObserver" in window) {
+      spaceObserver = new ResizeObserver(apply);
+      spaceObserver.observe(bar);
+    } else {
+      window.addEventListener("resize", apply);
+      bar.addEventListener("transitionend", apply);
+    }
+  }
+  function closeBar(bar) {
+    bar.remove();
+    if (spaceObserver) { spaceObserver.disconnect(); spaceObserver = null; }
+    document.body.style.paddingBottom = "";
+    document.documentElement.style.scrollPaddingBottom = "";
   }
 
   // Re-open the banner to review/update consent (wired to the button on /privacy/).
@@ -240,17 +270,75 @@
   // anyone who never scrolls) instead of slapping it over the hero CTAs on load. Doesn't
   // affect the consent gate itself — nothing analytics-related loads until a real decision
   // is made either way, this just delays when the prompt appears.
+  //
+  // It also stays back while a lead form is on screen or being typed in. The hero CTA
+  // smooth-scrolls to the form, that scroll used to open the banner, and on a phone the
+  // banner then sat on step 1's Continue button. So a scroll is judged once it settles (the
+  // CTA scroll starts with the form below the fold and ends on it), and the banner opens on
+  // the first check that finds no form in view and no focus inside one: a later scroll that
+  // leaves the form behind, focus leaving the form, or right after a lead is sent (qed.js
+  // fires "qed:leadsent"). The client-side lead events wait in walkerOS's consent queue in
+  // the meantime and go out if the visitor then accepts; qed.js re-sends the server-side lead
+  // events itself on that accept (the functions drop them while _consent is "denied").
+  //
+  // A lead-form section counts only if it holds a real lead form: the hub's #plan is two link
+  // cards right under the hero, not a form, and counting it kept the banner away from nearly
+  // every hub visitor.
+  var LEAD_FORMS = "#apply, #quote, #plan, #start, form[data-action]";
+
+  function leadSections() {
+    var out = [];
+    var els = document.querySelectorAll(LEAD_FORMS);
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if ((el.matches && el.matches("form[data-action]")) || (el.querySelector && el.querySelector("form[data-action]"))) out.push(el);
+    }
+    return out;
+  }
+  function leadFormInView() {
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    var els = leadSections();
+    for (var i = 0; i < els.length; i++) {
+      var r = els[i].getBoundingClientRect();
+      if (r.height > 0 && r.bottom > 0 && r.top < vh) return true;
+    }
+    return false;
+  }
+  function focusInLeadForm() {
+    var a = document.activeElement;
+    if (!a || a === document.body) return false;
+    var els = leadSections();
+    for (var i = 0; i < els.length; i++) if (els[i] === a || (els[i].contains && els[i].contains(a))) return true;
+    return false;
+  }
+
   function deferredShow() {
-    var shown = false;
-    function trigger() {
-      if (shown) return;
-      shown = true;
-      window.removeEventListener("scroll", trigger);
+    if (categories != null || !analyticsEnabled()) return; // decided already, or nothing to ask
+    var armed = false, done = false, settle = null;
+    function show() {
+      if (done) return;
+      done = true;
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("focusout", onFocusOut, true);
+      window.removeEventListener("qed:leadsent", show);
       clearTimeout(timer);
+      clearTimeout(settle);
       showBanner(false);
     }
-    window.addEventListener("scroll", trigger, { passive: true, once: true });
-    var timer = setTimeout(trigger, 4000);
+    function check() {
+      armed = true;
+      if (!leadFormInView() && !focusInLeadForm()) show();
+    }
+    function onScroll() {
+      clearTimeout(settle);
+      settle = setTimeout(function () { settle = null; check(); }, 250);
+    }
+    // focusout fires before focus lands on the next element, so look a tick later.
+    function onFocusOut() { if (armed) setTimeout(check, 0); }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("focusout", onFocusOut, true);
+    window.addEventListener("qed:leadsent", show);
+    var timer = setTimeout(function () { if (!settle) check(); }, 4000); // mid-scroll: the settle checks
   }
 
   if (document.readyState === "loading") {

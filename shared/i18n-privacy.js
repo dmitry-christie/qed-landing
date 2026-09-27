@@ -5,7 +5,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "pr.eyebrow": "Legal",
   "pr.h1": "Política de Privacidad y Cookies",
-  "pr.updated": "Última actualización: julio de 2026",
+  "pr.updated": "Última actualización: septiembre de 2026",
   "pr.intro": "Esta política explica qué datos personales recogemos cuando usas este sitio, por qué los recogemos, con quién los compartimos y qué opciones tienes, incluido cómo cambiar tu consentimiento de cookies en cualquier momento.",
 
   "pr.who.h": "Quiénes somos",
@@ -17,6 +17,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.data.li2": "Datos de uso y de campaña: páginas vistas y formularios enviados, para medir qué funciona. Se recogen solo con tu consentimiento de Analítica.",
   "pr.data.li3": "Datos técnicos: dirección IP e información del navegador/dispositivo, tratados al enviar un formulario (por seguridad y, con consentimiento, para medición publicitaria).",
   "pr.data.li4": "Identificadores publicitarios: un identificador de clic (por ejemplo, de Meta) para relacionar las campañas con los resultados. Solo con tu consentimiento de Marketing.",
+  "pr.data.partial": "Solicitudes sin terminar: si rellenas el primer paso de uno de nuestros formularios (tu nombre, email y, según el formulario, tu ciudad, el tipo de evento o el nombre del local) pero no lo terminas, conservamos esos datos para dar seguimiento a tu solicitud y puede que te enviemos un único email de recordatorio. Lo hacemos para dar los pasos que nos pides y por nuestro interés legítimo en responderte, y conservamos esos datos solo el tiempo necesario para gestionar tu petición; luego se eliminan o anonimizan.",
 
   "pr.basis.h": "Base jurídica",
   "pr.basis.p": "Tratamos los datos de solicitudes para dar los pasos que nos pides y por nuestro interés legítimo en responderte. Los datos de analítica y marketing se tratan únicamente sobre la base de tu consentimiento, que puedes retirar en cualquier momento.",
@@ -63,5 +64,5 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.contact.h": "Contacto",
   "pr.contact.p": "¿Dudas sobre esta política o tus datos? Escríbenos a ",
 
-  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela."
+  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Barcelona, Murcia, Santiago de Compostela y A Coruña."
 });

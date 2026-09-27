@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 HERE = Path(__file__).parent
 TAGLINE = "Tardeos de trivia, hechos como Dios manda."  # keep in sync with h.foot.tagline (i18n-hub.js)
-CITIES = "VALENCIA · MADRID · MURCIA · SANTIAGO DE COMPOSTELA"  # keep in sync with the city list shown across the site
+CITIES = "VALENCIA · MADRID · MURCIA · SANTIAGO DE COMPOSTELA · A CORUÑA"  # TDT-brand active cities only (Barcelona is QED-only for now); update when a TDT city launches or closes
 
 W, H = 1200, 630
 BG = (251, 246, 234)

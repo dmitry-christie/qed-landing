@@ -65,8 +65,8 @@ Per brand. The browser Pixel and the server CAPI share one Pixel/dataset per bra
    browser Pixel and server CAPI is automatic (both send the same `event_id`).
 5. **When you build campaigns:** optimize for **Lead**. Optionally add **InitiateCheckout** as a
    secondary/custom conversion for upper-funnel signal while lead volume is thin. Value-based
-   bidding reads the `value`/`currency` the code sends (partners 10 / venues 3 / corporate 1 /
-   celebrations 1 EUR — proxy weights until real pricing).
+   bidding reads the `value`/`currency` the code sends: expected lead value in EUR, corporate 125 /
+   celebrations 75 / venues 50 / partners 250, 150 or 100 by city size (`lead start` sends 20%).
 6. **EMQ:** after real leads flow, check the dataset's **Event Match Quality** for `Lead`. The
    code sends hashed email/phone/name + `fbc`/`fbp` + IP + user-agent + `external_id`, so EMQ
    should be healthy (target > 6). Low EMQ usually means the Pixel isn't setting `_fbp` (check
@@ -92,8 +92,8 @@ Ads UI. Three env vars per brand.
 - The **label** is the short string paired with the `AW-` id in a conversion's `send_to`
   (`AW-XXXX/`**`the-label`**). It's shown in the action's tag setup ("Use Google tag manager / Use
   the Google tag" → the `send_to` value). The code combines it with `GOOGLE_ADS_CONVERSION_ID`.
-- Let the sent `value`/`currency` drive value-based bidding (the code sends both:
-  partners 10 / venues 3 / corporate 1 / celebrations 1 EUR — proxy weights until real pricing).
+- Let the sent `value`/`currency` drive value-based bidding (the code sends both: expected lead
+  value in EUR, corporate 125 / celebrations 75 / venues 50 / partners 250, 150 or 100 by city size).
 
 ### 3c. Turn on Enhanced Conversions for Leads (the Google tag method)
 - **Goals → Conversions → Settings** → accept the **customer-data terms** → enable
@@ -167,10 +167,11 @@ independently as its ids appear.
   Consider tROAS/value-based bidding on the sent conversion value.
 - **Amplitude:** build the funnel `Lead Form Viewed → Lead Started → Lead Submitted` per `funnel`
   to see step-1→step-2 drop-off, and a retention/engagement view from the Tier 2/3 events.
-- **Real values:** the `value` weights (partners 10 / venues 3 / corporate 1 / celebrations 1) are
-  proxies. When you have real average deal values, update `LEAD_VALUE` in `netlify/lib/forms.ts`
-  (server) and `LEAD_VALUE` in `shared/qed.js` (client Pixel) together, and rebuild
-  `shared/walker.js` if the client one changed (`npm run walker:build`).
+- **Real values:** the `value` is typical deal size x an assumed close rate (the reasoning is in the
+  comment above `leadValue()` in `netlify/lib/forms.ts`). Once real close rates are known, update
+  `PAGE_LEAD_VALUE` / `PARTNER_TIER_VALUE` in `netlify/lib/forms.ts` (server, and the step-2 response
+  the browser `lead complete` uses) and `LEAD_VALUE` in `shared/qed.js` (client fallback and
+  `lead start`) together.
 
 ---
 
