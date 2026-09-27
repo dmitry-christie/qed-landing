@@ -324,6 +324,9 @@
     ATTR_FIELDS.forEach(function (k) { if (attr[k]) data["_" + k] = attr[k]; });
     if (attr.ref) data._ref = attr.ref;
     data._eid = externalId();
+    // Amplitude session (walker.js, consent-gated there) so the server-side lead event joins the
+    // visitor's browser session instead of landing as a session-less event.
+    try { var sid = window.__qedAmpSession && window.__qedAmpSession(); if (sid) data._sid = String(sid); } catch (e) {}
     data._t = String(PAGE_LOAD_TS);
     return data;
   }

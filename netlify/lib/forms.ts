@@ -500,8 +500,13 @@ function serverDestinations(): Record<string, unknown> {
             events: [{
               event_type: AMPLITUDE_EVENT_NAME[ev.name] || ev.name,
               device_id: ev.user?.device || ev.user?.id,
+              // Browser session start (epoch ms) from qed.js, so the lead joins the visitor's session.
+              session_id: Number(ev.user?.session) || undefined,
               insert_id: ev.id,
               time: Date.now(),
+              platform: "Web",
+              library: "walkeros-server/4",
+              user_agent: ev.user?.userAgent, // the visitor's browser UA, not the function's
               event_properties: Object.assign({}, ev.globals, ev.data),
             }],
           }),
@@ -546,6 +551,7 @@ export async function sendLeadEvent(event: string, d: Dict, page: string): Promi
   const data: Record<string, unknown> = {
     funnel: page,
     product: PRODUCT_BY_PAGE[page] || page,
+    page_path: d.path, // same property the browser events carry
     step: event === "lead start" ? 1 : 2,
     value: LEAD_VALUE[page] || 1,
     currency: "EUR",
@@ -568,9 +574,12 @@ export async function sendLeadEvent(event: string, d: Dict, page: string): Promi
 
   // user: identity for ad matching, attached ONLY under marketing consent. Raw values — Meta and
   // Google hash em/ph themselves. device/id = the durable eid (Amplitude device_id / CAPI
-  // external_id). Amplitude ignores everything here except device/id.
+  // external_id). Amplitude reads only device/id, session and userAgent (analytics-level, set
+  // before the marketing gate); Meta's user_data map never reads session/userAgent.
   const user: Record<string, unknown> = {};
   if (d._eid) { user.id = d._eid; user.device = d._eid; }
+  if (d._sid) user.session = d._sid;
+  if (d._ua) user.userAgent = d._ua;
   if (marketing) {
     if (d.email) user.email = d.email;
     if (d.phone) user.phone = normalizePhone(d.phone, d.phoneDial);

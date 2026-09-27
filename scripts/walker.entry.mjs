@@ -101,17 +101,61 @@ var AMPLITUDE_NAMES = {
   "outbound click": "Outbound Clicked",
 };
 
+// ---- Amplitude session ----
+// Amplitude wants session_id = the session's start time in epoch ms (a number). walkerOS v4's
+// browser source does not produce one (its `session: true` setting is a no-op in this bundle, and
+// user.session would be a string anyway), so we keep Amplitude's own rule here: a session ends
+// after 30 min without an event. Stored in localStorage so it spans the 7 pages and both form
+// steps. `n` is the per-device event counter Amplitude uses as event_id. Only touched from the
+// Amplitude transform (analytics consent already granted) or by qed.js under the same consent.
+var SESSION_KEY = "qed-amp-session";
+var SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+function touchSession(t) {
+  t = t || Date.now();
+  var s = null;
+  try { s = JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch (e) {}
+  if (!s || typeof s.id !== "number" || t - (s.last || 0) > SESSION_TIMEOUT_MS) {
+    s = { id: t, last: t, n: (s && s.n) || 0 };
+  }
+  s.last = Math.max(s.last || 0, t);
+  s.n = (s.n || 0) + 1;
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch (e) {}
+  return s;
+}
+// For qed.js: the server-side lead events land in the visitor's current browser session.
+if (typeof window !== "undefined") {
+  window.__qedAmpSession = function () {
+    if (window.__qedConsent !== "granted") return undefined;
+    return touchSession().id;
+  };
+}
+
+function pagePath() {
+  try { return location.pathname; } catch (e) { return undefined; }
+}
+
 function toAmplitudeEvent(event) {
   var user = event.user || {};
+  // Real event time, not send time: page view queues until consent lands, and the session has to
+  // be judged on when the visitor actually acted.
+  var t = typeof event.timestamp === "number" ? event.timestamp : Date.now();
+  var session = touchSession(t);
+  var nav = typeof navigator !== "undefined" ? navigator : {};
   var amp = {
     event_type: AMPLITUDE_NAMES[event.name] || event.name,
     // device_id is required by Amplitude when user_id is absent (anonymous lead-gen). walker's
     // persistent device id, else the durable qed-eid (user.id), keeps a visitor's timeline stitched.
     device_id: user.device || user.id || undefined,
-    session_id: typeof user.session === "number" ? user.session : undefined,
+    session_id: session.id,
+    event_id: session.n,
     insert_id: event.id, // Amplitude idempotency = walkerOS event id (same key as CAPI/Pixel dedup)
-    time: Date.now(),
-    event_properties: Object.assign({}, event.globals, event.data),
+    time: t,
+    platform: "Web",
+    library: "walkeros-web/4",
+    user_agent: nav.userAgent, // Amplitude parses this into OS / browser / device type
+    language: nav.language,
+    ip: "$remote", // geo (country/city) from the request IP. The IP is stored too unless the Amplitude project turns that off
+    event_properties: Object.assign({ page_path: pagePath() }, event.globals, event.data),
   };
   return amp;
 }
