@@ -64,5 +64,5 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.contact.h": "Contacto",
   "pr.contact.p": "¿Dudas sobre esta política o tus datos? Escríbenos a ",
 
-  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Barcelona, Murcia, Santiago de Compostela y A Coruña."
+  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Murcia, Santiago de Compostela y A Coruña."
 });

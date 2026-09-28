@@ -54,6 +54,16 @@ Conventions: no em dashes in copy. Localize currency and tax (`€99` / `+ VAT` 
 reads `6.700`; the ES default drops the separator on four digits and would disagree with the
 printed one-pager.
 
+**ES is the TDT brand, EN is QED, and they don't run in the same places** (TDT has no
+Barcelona: 6 locations and 4 event cities in ES, against QED's 7 and 5). So city lists and counts
+are facts per language, not translations. ES strings name only TDT cities; for markup that exists
+in one language only, use `data-lang-hide="es"` (the element is removed while the page is in ES and
+restored on toggle: `<option>`s are detached, since iOS Safari lists a hidden option anyway, and
+everything else, SVG included, gets `display:none`). A counter whose value differs gets
+`data-count-es="N"` beside `data-count`. Both are handled in `shared/i18n.js` (`applyLangHide`,
+`applyCounts`) and `shared/qed.js` (`countTarget`); pages only add the attributes. When TDT opens or
+closes a city, update the ES strings, these attributes, and the TDT OG image.
+
 The legal entity differs by brand: baked English names **QED Imperium Ltd** (UK), the ES
 strings name **Tardeo de Trivia SL · CIF B88885199**. TDT must show only the Spanish entity —
 `foot.legal`, `pr.who.p` (privacy controller) and `tm.who.p` (terms) all have to agree.
@@ -132,15 +142,19 @@ Brand-specific image/icon assets, swapped by `BRAND_ASSETS` in build.mjs:
 | favicon / apple-touch-icon | `shared/qed-logo.png` | `shared/tardeo-logo.png` |
 | `og:image` (1200×630) | `shared/og-image.png` | `shared/og-image-tdt.png` |
 
-**`shared/og-image-tdt.png` bakes the tagline and city list as pixels, not live text.**
-Regenerate it with `python3 shared/make-og-image-tdt.py` (needs Pillow + `rsvg-convert`,
-`brew install librsvg`) whenever:
-- a new city launches or the city list changes,
-- the `h.foot.tagline` copy changes (keep the script's `TAGLINE` constant in sync with it),
-- the Tardeo logo (`shared/tardeo-logo.svg`) changes.
-
-There's no equivalent regen step for the QED image (`og-image.png`) — it was hand-made; if QED's
-city list changes, it needs manual editing or a comparable script.
+**Both og:images bake the tagline and city list as pixels, not live text.** One script draws
+both from its per-brand `BRANDS` table: `python3 shared/make-og-image-tdt.py` (TDT →
+`og-image-tdt.png`) and `python3 shared/make-og-image-tdt.py --brand QED` (→ `og-image.png`; the
+QED geometry was measured off the original hand-made image, so only the text band changes).
+Needs Pillow + `rsvg-convert` (`brew install librsvg`) + HarfBuzz's `hb-shape` (installed with
+librsvg; this Pillow has no raqm, so HarfBuzz supplies the tagline's kerning). `--out <path>`
+writes elsewhere so you can compare before overwriting, and the first run downloads its two fonts
+into `shared/` (gitignored). Regenerate a brand's image whenever:
+- one of that brand's cities launches or closes (TDT's list has no Barcelona; QED's is
+  company-wide, in the order of the EN `h.foot.tagline`),
+- its tagline changes (`h.foot.tagline`: the ES string for TDT, the baked EN in `index.html` for
+  QED; keep the brand's `tagline` in the script in sync),
+- its logo changes (`shared/tardeo-logo.svg` / `shared/qed-logo.png`).
 
 ## Analytics (walkerOS)
 
@@ -273,6 +287,12 @@ that in once a lead is qualified.
 a returning visitor can briefly see English on the ES site because their browser still holds a
 day-old `i18n-common.js` without the new keys, while the HTML revalidates fresh. It self-heals
 within a day or on a hard refresh; a fresh visitor is unaffected.
+
+The same window applies to corrected facts and new mechanisms: for up to a day a returning visitor
+can run new HTML against yesterday's `i18n-*.js` / `i18n.js` / `qed.js` (e.g. the TDT city lists
+still naming Barcelona, `data-lang-hide` ignored). Don't hand-add `?v=` queries to fix it: the
+pending hashed-asset build rewrites the exact string `"/shared/<file>.js"`, so a versioned URL
+would slip past it and 404.
 
 ## Deploy
 

@@ -5,6 +5,8 @@
    - Spanish lives in window.QED_ES, filled by the per-page /shared/i18n-<page>.js files.
    - Attribute translations: data-i18n-ph (placeholder), data-i18n-aria (aria-label),
      data-i18n-content (meta content).
+   - Per-language content (ES = TDT, EN = QED): data-lang-hide and data-count-es, see
+     applyLangHide() / applyCounts().
    - Injects the EN/ES switcher into the nav and the "in development" banner.
    - Persists the choice in localStorage so it carries across pages.            */
 window.QED_ES = window.QED_ES || {};
@@ -91,8 +93,106 @@ window.QED_ES = window.QED_ES || {};
     return (lang === "ES" && window.QED_ES[key] != null) ? window.QED_ES[key] : null;
   }
 
+  /* Brand-specific content. ES is the TDT site and EN is QED, and the two brands don't run in
+     the same cities (TDT has no Barcelona), so some copy is not a translation but a different
+     fact per language:
+     - data-lang-hide="es" (space-separated list allowed): the element is gone while the page is
+       in that language and comes back in the other. Used for the Barcelona map pin/label/arrow
+       and the Barcelona <option> in the city pickers.
+     - data-count-es="N" next to data-count="N": a counter whose Spanish value differs. qed.js
+       owns the count-up; applyCounts() below only fixes the resting text before qed.js runs.
+     Both run on every apply(), so repeated toggles are idempotent. */
+  var langDetached = [];
+
+  function hiddenIn(el, lang) {
+    var list = String(el.getAttribute("data-lang-hide") || "").toLowerCase().split(/[\s,]+/);
+    return list.indexOf(lang.toLowerCase()) > -1;
+  }
+
+  // <option>s leave the DOM instead of being styled away: iOS Safari still lists a
+  // display:none/[hidden] option in its native picker. A comment keeps the slot so the option
+  // goes back where it was. A selected option is deselected on the way out and the select falls
+  // back to its default option, or failing that its empty-value placeholder ("Choose a city…"),
+  // rather than whatever the browser picks on its own (the first enabled option, which can be a
+  // real city when the placeholder is disabled).
+  function detachOption(opt) {
+    var parent = opt.parentNode;
+    if (!parent) return;
+    var sel = opt.closest ? opt.closest("select") : null;
+    var wasSelected = opt.selected;
+    var marker = document.createComment(" lang-hide ");
+    parent.insertBefore(marker, opt);
+    parent.removeChild(opt);
+    opt.__lhMarker = marker;
+    langDetached.push(opt);
+    if (!wasSelected) return;
+    opt.selected = false;
+    if (!sel || sel.multiple) return;
+    var def = -1, blank = -1;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (def < 0 && sel.options[i].defaultSelected) def = i;
+      if (blank < 0 && sel.options[i].value === "") blank = i;
+    }
+    if (def > -1 || blank > -1) sel.selectedIndex = def > -1 ? def : blank;
+    try { sel.dispatchEvent(new Event("change", { bubbles: true })); } catch (e) {}
+  }
+
+  // Everything else (HTML or SVG) gets an inline display:none !important: it beats any author
+  // display rule, and the [hidden] attribute does nothing on SVG. The element's own inline
+  // display, if it had one, is put back when it shows again.
+  function hideEl(el) {
+    if (el.__lhHidden) return;
+    el.__lhHidden = true;
+    el.__lhDisplay = [el.style.getPropertyValue("display"), el.style.getPropertyPriority("display")];
+    el.style.setProperty("display", "none", "important");
+  }
+  function showEl(el) {
+    if (!el.__lhHidden) return;
+    el.__lhHidden = false;
+    var d = el.__lhDisplay || ["", ""];
+    if (d[0]) el.style.setProperty("display", d[0], d[1]); else el.style.removeProperty("display");
+  }
+
+  function applyLangHide(lang) {
+    // Options detached for another language go back first, so the translation pass that follows
+    // in apply() also refreshes their text.
+    langDetached = langDetached.filter(function (opt) {
+      if (hiddenIn(opt, lang)) return true;
+      var m = opt.__lhMarker;
+      opt.__lhMarker = null;
+      if (m && m.parentNode) m.parentNode.replaceChild(opt, m);
+      return false;
+    });
+    document.querySelectorAll("[data-lang-hide]").forEach(function (el) {
+      var hide = hiddenIn(el, lang);
+      if (String(el.tagName).toUpperCase() === "OPTION") { if (hide) detachOption(el); return; }
+      if (hide) hideEl(el); else showEl(el);
+    });
+  }
+
+  // Same grouping as qed.js formatCount(): "always", so ES reads 7.510 like the printed one-pager.
+  function fmtCount(n, lang) {
+    try { return new Intl.NumberFormat(lang.toLowerCase(), { useGrouping: "always" }).format(n); }
+    catch (e) { try { return n.toLocaleString(lang.toLowerCase()); } catch (e2) { return String(n); } }
+  }
+
+  // Counters qed.js hasn't picked up yet show the right number for the language, so a slow
+  // script load after the veil lifts can't flash the English "7" on the Spanish site. Once
+  // qed.js has claimed a counter (__qedCount) it keeps it in sync itself.
+  function applyCounts(lang) {
+    var es = lang === "ES";
+    document.querySelectorAll("[data-count]").forEach(function (el) {
+      if (el.__qedCount) return;
+      var n = parseInt(el.getAttribute(es && el.hasAttribute("data-count-es") ? "data-count-es" : "data-count"), 10);
+      if (isFinite(n)) el.textContent = fmtCount(n, lang);
+    });
+  }
+
   function apply(lang, persist) {
     document.documentElement.setAttribute("lang", lang.toLowerCase());
+
+    applyLangHide(lang);
+    applyCounts(lang);
 
     document.querySelectorAll("[data-i18n]").forEach(function (el) {
       if (el.__en == null) el.__en = el.textContent;

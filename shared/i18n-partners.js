@@ -142,14 +142,16 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.form.successp": "Gracias. Una persona de verdad de nuestro equipo te escribirá en menos de 48 horas para cuadrar una llamada sobre tu ciudad.",
   "p.form.generr": "Algo ha fallado. Escríbenos a info@tardeodetrivia.com.",
 
+  // TDT (ES) runs in 6 places, QED (EN) in 7: no Barcelona here. The map pin and the hero
+  // counter follow via data-lang-hide / data-count-es in partners/index.html.
   "p.map.eyebrow": "Dónde estamos",
   "p.map.h2": "Con la misión de llegar a toda España.",
-  "p.map.lead": "Desde nuestra casa en Valencia, con La Cañada al lado, hasta Madrid, Barcelona, Murcia, Santiago de Compostela y A Coruña. Tu ciudad puede ser el próximo punto del mapa.",
+  "p.map.lead": "Desde nuestra casa en Valencia, con La Cañada al lado, hasta Madrid, Murcia, Santiago de Compostela y A Coruña. Tu ciudad puede ser el próximo punto del mapa.",
   "p.map.home": "casa",
-  "p.map.note": "7 localidades y creciendo",
+  "p.map.note": "6 localidades y creciendo",
   "p.map.cta": "Pon tu ciudad en el mapa",
   "p.map.country": "ESPAÑA",
-  "p.map.alt": "Mapa de España con las 7 localidades donde montamos tardeos de trivia: Valencia (nuestra casa), La Cañada, Madrid, Barcelona, Murcia, Santiago de Compostela y A Coruña.",
+  "p.map.alt": "Mapa de España con las 6 localidades donde montamos tardeos de trivia: Valencia (nuestra casa), La Cañada, Madrid, Murcia, Santiago de Compostela y A Coruña.",
 
   "p.faq.eyebrow": "Preguntas",
   "p.faq.h2": "Lo que preguntan los franquiciados.",

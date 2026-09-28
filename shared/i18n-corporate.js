@@ -1,7 +1,7 @@
 /* Spanish: Corporate page. English is baked into corporate/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.title": "Tardeo de Trivia para Empresas · Team building que de verdad se disfruta",
-  "c.metadesc": "La cena de empresa que tu equipo pedirá repetir: tardeos de trivia para offsites y eventos con clientes en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela.",
+  "c.metadesc": "La cena de empresa que tu equipo pedirá repetir: tardeos de trivia desde 7 € + IVA por persona en Valencia, Madrid, Murcia y Santiago de Compostela.",
 
   "c.nav.kicker": "Empresas",
   "c.nav.formats": "Formatos",
@@ -11,7 +11,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.cta.how": "Ver cómo funciona",
 
   // SEASONAL (Sep-Dec 2026): revert c.hero.tag to "Presencial en <ciudades>" after mid-December.
-  "c.hero.tag": "Cenas de empresa y Navidad 2026 · Valencia, Madrid, Barcelona, Murcia y Santiago",
+  // ES city lists name only TDT's 4 host cities (Valencia, Madrid, Murcia, Santiago); the baked EN is QED's longer list.
+  "c.hero.tag": "Cenas de empresa y Navidad 2026 · Valencia, Madrid, Murcia y Santiago",
   "c.hero.h1a": "Team building que de verdad ",
   "c.hero.h1b": "se disfruta.",
   "c.hero.sub": "Olvídate de las dinámicas de confianza y la diversión forzada. 90 minutos de trivia con anfitrión en directo y rondas sobre tu empresa, antes o después de la cena de empresa: en tu oficina, en el restaurante de la cena o en un local que buscamos nosotros. De 10 a 300 personas.",
@@ -45,10 +46,11 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.fmt.lead": "La misma trivia afilada, el mismo anfitrión en directo. Tú eliges si es el plan entero o lo mejor de la cena.",
   "c.fmt.full": "Full Experience",
   "c.fmt.hosted": "Con anfitrión",
-  "c.fmt.byquote": "A presupuesto",
+  "c.fmt.from": "Desde 7 €",
+  "c.fmt.fromvat": "+ IVA por persona",
   "c.fmt.fulltag": "· adaptado a tu grupo",
   "c.fmt.fulldesc": "Un anfitrión profesional dirige todo el tardeo. Nos ocupamos de la sala, la técnica y el contenido de principio a fin. ",
-  "c.fmt.cities": "Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela.",
+  "c.fmt.cities": "Valencia, Madrid, Murcia y Santiago de Compostela.",
   "c.fmt.f1": "Anfitrión profesional que anima la sala",
   "c.fmt.f2": "Recomendación y coordinación del local",
   "c.fmt.f3": "Contenido a medida y montaje audiovisual completo",
@@ -61,7 +63,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.fmt.d2": "Rondas a medida sobre tu empresa",
   "c.fmt.d3": "Marcador en directo y un equipo ganador",
   "c.fmt.d4": "Extras opcionales: fotógrafo, trofeos personalizados",
-  "c.fmt.dinnerprice": "El precio depende de cuántos sois, la ciudad y si ponemos el local. Te lo pasamos cerrado y sin sorpresas.",
+  "c.fmt.dinnerprice": "El precio final depende de cuántos sois, la ciudad y si ponemos el local. Te lo pasamos cerrado y sin sorpresas.",
   "c.fmt.groupnote": "¿Venís en cuadrilla grande? Los grupos grandes son justo lo nuestro, desde un equipo de 10 hasta más de 300.",
   "c.fmt.grouplink": "Pide presupuesto",
 
@@ -121,7 +123,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.faq.q2": "¿Cuánto dura?",
   "c.faq.a2": "Unos 90 minutos el tardeo completo, aunque lo ajustamos a tu horario. Funciona igual en un hueco corto tras un taller que en una velada larga.",
   "c.faq.q3": "¿Vais hasta donde estemos?",
-  "c.faq.a3": "Los dos formatos son presenciales en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela. ¿Es en otro sitio? Elige «Otro sitio» en el formulario y cuéntanos dónde.",
+  "c.faq.a3": "Los dos formatos son presenciales en Valencia, Madrid, Murcia y Santiago de Compostela. ¿Es en otro sitio? Elige «Otro sitio» en el formulario y cuéntanos dónde.",
   "c.faq.q4": "¿En nuestra oficina o en un local?",
   "c.faq.a4": "Donde quieras. Lo montamos en tu espacio con nuestra técnica, o te recomendamos y coordinamos un local que encaje con tu grupo y tu presupuesto.",
   "c.faq.q5": "¿Inglés o español?",
@@ -129,6 +131,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.faq.q6": "¿Con cuánta antelación reservamos?",
   // SEASONAL (Sep-Dec 2026): revert to the year-round answer after mid-December.
   "c.faq.a6": "Para noviembre y diciembre, cuanto antes: los jueves y viernes de diciembre son lo primero que se llena, y los locales para grupos grandes también. Para el resto del año, con dos semanas suele bastar. ¿Lo tienes más justo? Pregunta igualmente.",
+  "c.faq.q7": "¿Cuánto cuesta?",
+  "c.faq.a7": "Desde 7 € + IVA por persona. El precio final depende de cuántos sois, la ciudad y si ponemos el local, y te lo pasamos cerrado y sin sorpresas.",
 
   "c.form.h2": "Cuéntanos sobre tu equipo.",
   // SEASONAL (Sep-Dec 2026): drop the "¿Es para diciembre?" opener after mid-December.
@@ -160,5 +164,5 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.form.successh": "Presupuesto en camino.",
   "c.form.successp": "Gracias. Tenemos tu solicitud y te escribirá una persona de verdad de nuestro equipo, normalmente el mismo día.",
 
-  "c.foot.tagline": "Team building que de verdad se disfruta. Presencial en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela."
+  "c.foot.tagline": "Team building que de verdad se disfruta. Presencial en Valencia, Madrid, Murcia y Santiago de Compostela."
 });

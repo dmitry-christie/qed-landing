@@ -10,3 +10,7 @@ node_modules/
 *.log
 npm-debug.log*
 *.env
+
+# Fonts shared/make-og-image-tdt.py downloads on first run (image tooling, not site assets)
+/shared/pjs800.ttf
+/shared/jbm700.ttf
