@@ -899,16 +899,28 @@ export async function sendConsentReplay(d: Dict, page: string): Promise<void> {
 // Non-blocking and inert-safe, exactly like the walker destinations: with no env set
 // nothing sends and nothing throws. It joins the existing Promise.allSettled, and only
 // the Telegram result is ever inspected, so a portal outage can never fail a real
-// submission. The 2.5s timeout sits well inside Netlify's 10s budget.
+// submission. The timeout is explained under TIMING below.
 //
 // PRIVACY: _fbc, _fbp and _eid are stripped before sending and are NOT forwarded. They
 // are cross-site advertising identifiers whose only purpose is conversion matching, and
 // that matching has already happened above, in sendLeadEvent. Copying them into a CRM
 // that city and venue staff can open would turn ad data into a person-level tracking
-// record held longer and read by more people, for no sales purpose.
-const PORTAL_TIMEOUT_MS = 2500;
+// record held longer and read by more people, for no sales purpose. _ip goes too: the
+// portal refuses to store it, so there is no reason to send a visitor's address to a
+// third system at all. The portal drops all four itself as well, so this is not the
+// only line holding the refusal.
+//
+// TIMING: the intake makes four or five round trips to a database in Frankfurt, and a
+// Supabase function runs in the region nearest its caller unless told otherwise, which
+// for a Netlify function is usually the US. PORTAL_INTAKE_REGION (e.g. eu-central-1)
+// pins it next to the database. The timeout is 6s rather than 2.5s because a cold start
+// plus those round trips can pass 2.5s, and a lead that times out here is a lead missing
+// from the CRM. It only bites when the portal is slow, and allSettled already waits on
+// Brevo's sequential calls, each with its own 4s timeout, so this line does not set the
+// worst case a visitor waits.
+const PORTAL_TIMEOUT_MS = 6000;
 // _nudge / _nudgeCancel are Brevo reminder ids (see sendPartialToBrevo), internal plumbing only.
-const PORTAL_DROP_FIELDS = ["_fbc", "_fbp", "_eid", "_nudge", "_nudgeCancel"];
+const PORTAL_DROP_FIELDS = ["_fbc", "_fbp", "_eid", "_ip", "_nudge", "_nudgeCancel"];
 
 export async function sendToPortal(d: Dict, page: string): Promise<void> {
   const url = process.env.PORTAL_INTAKE_URL;
@@ -916,6 +928,7 @@ export async function sendToPortal(d: Dict, page: string): Promise<void> {
   // Inert when unconfigured. Deliberately not an error: a brand or a preview deploy
   // without portal credentials should keep working exactly as it did before.
   if (!url || !secret) return;
+  const region = process.env.PORTAL_INTAKE_REGION;
 
   const payload: Dict = {};
   for (const [k, v] of Object.entries(d)) {
@@ -937,6 +950,7 @@ export async function sendToPortal(d: Dict, page: string): Promise<void> {
       headers: {
         "Content-Type": "application/json",
         "x-portal-intake-secret": secret,
+        ...(region ? { "x-region": region } : {}),
       },
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(PORTAL_TIMEOUT_MS),
