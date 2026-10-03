@@ -36,7 +36,12 @@ reason to invent parallel event names in the code.
 4. **Keep the two-touch split.** `lead start` (step 1 partial) and `lead complete` (step 2
    full) stay distinct events, exactly as today's `Lead Started` / `Form Submitted`. A
    Google Ads / Meta "Lead" conversion mapped to `lead complete` must never include
-   abandoners.
+   abandoners. **Exception, corporate (Oct 2026):** the corporate form is contact-first
+   (`data-contact-first`). Its step 1 (event type, first name, phone, email) is the whole lead
+   and fires `lead complete` (data `step: 1`); there is no `lead start` on it. Its optional
+   step 2 fires `lead details` (Amplitude only) and never a second Lead. One Lead per person:
+   Pixel, CAPI and gtag share the step-1 event id. Amplitude funnel for it: `Page Viewed` →
+   `Lead Form Viewed` → `Lead Submitted` → `Lead Details Added`.
 5. **Client for behaviour, server for conversions.** Pageviews and engagement fire from the
    browser walker (fast, cheap, fine to lose a few). The money events (`lead start`,
    `lead complete`) fire **server-side** from the Netlify functions via a walkerOS server
@@ -116,7 +121,9 @@ Tiered so we can ship Tier 1 first and add the rest without re-architecting.
 |---|---|---|
 | `page view` | Every page load, post analytics-consent | client |
 | `lead start` | Visitor clears step 1 (name + email) and advances | **server** (+ client pixel for dedup) |
-| `lead complete` | Full step-2 submission accepted | **server** (+ client pixel for dedup) |
+| `lead complete` | Full step-2 submission accepted (corporate: step 1, contact-first) | **server** (+ client pixel for dedup) |
+| `lead details` | Corporate only: the optional step-2 details after a contact-first `lead complete` | **server**, Amplitude only |
+| `lead skip` | Corporate only: the visitor skipped step 2 (nothing is posted) | client, Amplitude only |
 
 ### Tier 2 — engagement (high value, fast follow)
 | walkerOS event | Fires when |
@@ -215,7 +222,9 @@ code names.
 | `page view` | `Page Viewed` | `PageView` (standard) | page load / remarketing tag |
 | `form view` | `Lead Form Viewed` | `ViewContent` | — |
 | `lead start` | `Lead Started` | `Lead` *(or `InitiateCheckout`)* — **step-1 conversion action** | conversion: `Lead Started` |
-| `lead complete` | `Lead Submitted` | `Lead` / `CompleteRegistration` — **step-2 conversion action** | conversion: `Lead Submitted` (primary) |
+| `lead complete` | `Lead Submitted` | `Lead` / `CompleteRegistration` — **step-2 conversion action** (corporate: step 1) | conversion: `Lead Submitted` (primary) |
+| `lead details` | `Lead Details Added` | — (allowlist drops it) | — |
+| `lead skip` | `lead skip` (raw name; add it to `AMPLITUDE_NAMES` on the next `walker:build`) | — | — |
 | `cta click` | `CTA Clicked` | (optional custom `CTAClick`) | — |
 | `crosssell click` | `Cross-sell Clicked` | — | — |
 | `faq open` | `FAQ Opened` | — | — |
@@ -247,8 +256,8 @@ Notes:
 
   | Funnel | `lead complete` | `lead start` (20%) | Basis |
   |---|---|---|---|
-  | corporate | 125 | 25 | B2B event ~500 € x 25% |
-  | celebrations | 75 | 15 | B2C private event ~300 € x 25% |
+  | corporate | 40 | none (contact-first, step 1 is the `lead complete`) | ~270 € ticket x ~12-15% paid close |
+  | celebrations | 30 | 6 | B2C private event ~150 € x ~20% |
   | venues | 50 | 10 | parked product, placeholder |
   | partners, large city (≥500k: Madrid, Barcelona, Valencia, Sevilla, Zaragoza, Málaga) | 250 | 50 | ~5% signed x 5,000 € first year |
   | partners, medium city (100k-500k, list in `forms.ts`) | 150 | 30 | ~5% x 3,000 € |
@@ -257,8 +266,9 @@ Notes:
   The city tier is scored server-side from the typed city (accent-stripped, whole-word match,
   large before medium). The step-2 response returns `{ok:true, value}` and `shared/qed.js`
   sends that same number on the browser Pixel `lead complete`, so the deduped Pixel/CAPI pair
-  agrees; the client `lead start` uses the page default (partners = 150 x 20% = 30).
-  **Recalibrate** once Brevo has a few months of won deals: value = average won deal x won /
+  agrees (corporate: the step-1 response, `{ok:true, value, tgRef}`); the client `lead start` uses the page default (partners = 150 x 20% = 30).
+  Corporate and celebrations were cut from 125 / 75 in Oct 2026 for the cenas push; recalibrate
+  both after the first 20 ad leads. **Recalibrate** once Brevo has a few months of won deals: value = average won deal x won /
   completed leads, per funnel. Only the ratios between funnels steer the bidding.
 - **Mapping fix (2026-09).** In walkerOS 4.3.2 a rule `data` written as `{ value: "data.value" }`
   is a static value: it resolved to the literal string `"data.value"`, so Meta (Pixel + CAPI)

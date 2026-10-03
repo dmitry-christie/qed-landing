@@ -186,12 +186,31 @@ event `data` and hashed by gtag). `qed.js` fires `lead start` client-side too (G
 conversion; the Pixel and Amplitude both ignore it).
 
 **Lead value** (`leadValue(page, city)` in `forms.ts`, EUR per completed lead = typical deal x
-assumed close rate; assumptions, recalibrate from real Brevo close rates): corporate 125
-(500 € x 25%), celebrations 75 (300 € x 25%), venues 50 (placeholder), partners by city
+assumed close rate; assumptions, recalibrate from real Brevo close rates): corporate 40
+(~270 € x ~12-15% paid close), celebrations 30 (~150 € x ~20%), both cut in Oct 2026 for the
+cenas push and due a recalibration after 20 ad leads; venues 50 (placeholder), partners by city
 population tier: large ≥500k 250, medium 100k-500k 150, small/unknown 100 (~5% signed x
 first-year 5,000 / 3,000 / 2,000 €). `lead start` = 20% of that. The step-2 response is
 `{ok:true, value}` and `qed.js` sends that value on the Pixel `lead complete` so the deduped
 Pixel/CAPI pair agrees; its fallback and `lead start` use the page default (partners 150).
+Corporate gets its value from the step-1 response instead (see Contact-first below).
+
+**Contact-first corporate form (Oct 2026).** `<form data-contact-first>` (corporate only;
+celebrations keeps the classic flow) makes step 1 (event type, first name, phone, email; phone
+required and checked by `isPhone()`, Spain = 9 digits starting 6-9) the whole lead. `qed.js`
+posts it with `_capture:"contact"`, `_variant` and event id E1, waits up to 2.5 s, then shows
+the optional step 2; `book-event` answers `{ok, value, tgRef}` after a "📞 LLAMAR" Telegram
+alert (call-by time in Europe/Madrid, to `TELEGRAM_CALL_CHAT_ID` if set, mentioning
+`TELEGRAM_CALL_MENTION_ES` / `_EN`), the walkerOS `lead complete` (data `step: 1`), Brevo at
+`LEAD_STAGE=contact` with list, deal and template #7/#8 but no reminder, and the portal with
+`_e1`. The browser Pixel `lead complete` fires on that response under E1; there is no `lead
+start`. Step 2 posts `_step:2` + `_e1` + `_tgRef` and only enriches: a "➕ Detalles" reply to
+the alert, Brevo attributes via `enrichBrevo` (never a deal or an email), `lead details` to
+Amplitude, the portal row. Skip posts nothing (client `lead skip`, Amplitude only). Edit goes
+back to step 1 and re-posts only if the phone or email changed (`_correction:"1"`, same E1,
+`_prevEmail`): a "✏️" reply, the contact and confirmation under the new address, no new deal.
+Consent replays map step 1 → `lead complete`, step 2 → `lead details`. A post without
+`_capture` takes the classic path.
 
 **walkerOS mapping gotchas (4.3.2).** A rule's `data` must be `{ map: { value: "data.value" } }`;
 a bare `{ value: "data.value" }` is a static value and resolves to the literal string (every
@@ -260,8 +279,9 @@ Env vars (set on both Netlify sites, since both brands' leads go to the same Bre
 
 Brevo rejects unknown custom attributes, so these must exist in Brevo first (Contacts >
 Settings > Contact attributes, type "Text"): `LEAD_CITY`, `LANG`, `LEAD_SOURCE`, `UTM_SOURCE`,
-`UTM_CAMPAIGN`, `NOTES`, `LAST_DEAL`, `LEAD_STAGE`, `PARTIAL_NUDGE`. (`FIRSTNAME`/`LASTNAME`/`SMS`
-are built in.) Until that setup is done, contacts silently fail to save — check Netlify function logs, not just the form's success state.
+`UTM_CAMPAIGN`, `UTM_CONTENT`, `NOTES`, `LAST_DEAL`, `LEAD_STAGE`, `PARTIAL_NUDGE`.
+(`FIRSTNAME`/`LASTNAME`/`SMS`/`OPT_IN` are built in.) `LEAD_STAGE` is `partial`, `contact`
+(corporate step 1, which templates #7/#8 branch on for the call-back wording) or `complete`. Until that setup is done, contacts silently fail to save — check Netlify function logs, not just the form's success state.
 City is sent as `LEAD_CITY`, not Brevo's built-in `CITY` — that one is a "Category" enum
 (madrid/valencia/murcia/santiago/barcelona) in this account, and the free text this site
 collects (e.g. "Santiago de Compostela") 400ed the whole contact against it. Brevo validates
@@ -286,7 +306,10 @@ that in once a lead is qualified.
 `/shared/*` is served `max-age=86400` (see `netlify.toml`). After adding new `data-i18n` keys,
 a returning visitor can briefly see English on the ES site because their browser still holds a
 day-old `i18n-common.js` without the new keys, while the HTML revalidates fresh. It self-heals
-within a day or on a hard refresh; a fresh visitor is unaffected.
+within a day or on a hard refresh; a fresh visitor is unaffected. When a change must not be
+mixed with yesterday's cached file (new HTML needing new JS, like the contact-first form), add a
+`?v=YYYYMMDD` to that page's `/shared/` URLs, as corporate, the hub and privacy carry since
+`?v=20261008`.
 
 The same window applies to corrected facts and new mechanisms: for up to a day a returning visitor
 can run new HTML against yesterday's `i18n-*.js` / `i18n.js` / `qed.js` (e.g. the TDT city lists

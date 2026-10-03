@@ -19,7 +19,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "h.plan.eyebrow": "Reserva un tardeo",
   "h.plan.h2": "¿Montas algo? Nosotros ponemos la trivia.",
-  "h.plan.lead": "Presencial en Valencia, Madrid, Murcia y Santiago de Compostela, o por tu cuenta en cualquier parte del mundo con nuestro kit Express.",
+  "h.plan.lead": "Presencial en Valencia, Madrid, Murcia y Santiago de Compostela. Una versión Express autogestionada, para cualquier otro sitio, llegará pronto.",
   "h.plan.corp.kicker": "Para empresas",
   "h.plan.corp.ta": "Team building que de verdad ",
   "h.plan.corp.tb": "se disfruta.",

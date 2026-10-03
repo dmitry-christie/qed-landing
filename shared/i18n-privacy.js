@@ -13,11 +13,11 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "pr.data.h": "Qué recogemos y para qué",
   "pr.data.p": "Solo recogemos lo necesario para responder a tu solicitud y entender cómo funcionan el sitio y nuestras campañas publicitarias.",
-  "pr.data.li1": "Lo que nos envías en un formulario: tu nombre, email y, según el formulario, teléfono, ciudad y detalles del evento o negocio por el que preguntas. Se usa únicamente para responderte y organizar tu evento o solicitud.",
+  "pr.data.li1": "Lo que nos envías en un formulario: tu nombre, email y, según el formulario, teléfono, ciudad y detalles del evento o negocio por el que preguntas. Se usa únicamente para responderte y organizar tu evento o solicitud. Si nos das tu teléfono, lo usamos para llamarte sobre tu solicitud.",
   "pr.data.li2": "Datos de uso y de campaña: páginas vistas y formularios enviados, para medir qué funciona. Se recogen solo con tu consentimiento de Analítica.",
   "pr.data.li3": "Datos técnicos: dirección IP e información del navegador/dispositivo, tratados al enviar un formulario (por seguridad y, con consentimiento, para medición publicitaria).",
   "pr.data.li4": "Identificadores publicitarios: un identificador de clic (por ejemplo, de Meta) para relacionar las campañas con los resultados. Solo con tu consentimiento de Marketing.",
-  "pr.data.partial": "Solicitudes sin terminar: si rellenas el primer paso de uno de nuestros formularios (tu nombre, email y, según el formulario, tu ciudad, el tipo de evento o el nombre del local) pero no lo terminas, conservamos esos datos para dar seguimiento a tu solicitud y puede que te enviemos un único email de recordatorio. Lo hacemos para dar los pasos que nos pides y por nuestro interés legítimo en responderte, y conservamos esos datos solo el tiempo necesario para gestionar tu petición; luego se eliminan o anonimizan.",
+  "pr.data.partial": "Solicitudes sin terminar: si rellenas el primer paso de uno de nuestros formularios (tu nombre, email y, según el formulario, tu ciudad, el tipo de evento o el nombre del local) pero no lo terminas, conservamos esos datos para dar seguimiento a tu solicitud y puede que te enviemos un único email de recordatorio. Lo hacemos para dar los pasos que nos pides y por nuestro interés legítimo en responderte, y conservamos esos datos solo el tiempo necesario para gestionar tu petición; luego se eliminan o anonimizan. En el formulario de empresas, el primer paso (nombre, teléfono, email y tipo de evento) ya es una solicitud completa: te llamamos y no enviamos recordatorio.",
 
   "pr.basis.h": "Base jurídica",
   "pr.basis.p": "Tratamos los datos de solicitudes para dar los pasos que nos pides y por nuestro interés legítimo en responderte. Los datos de analítica y marketing se tratan únicamente sobre la base de tu consentimiento, que puedes retirar en cualquier momento.",
@@ -50,10 +50,11 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.share.h": "Con quién compartimos los datos",
   "pr.share.p": "Nunca vendemos tus datos. Solo los compartimos con los proveedores que hacen funcionar este sitio y nuestra medición, cada uno bajo un contrato de encargo de tratamiento:",
   "pr.share.li1": "Netlify: alojamiento y entrega de formularios.",
-  "pr.share.li2": "Telegram: tu solicitud llega a nuestro equipo como un mensaje para poder responderte.",
+  "pr.share.li2": "Telegram: tu solicitud, con tu teléfono si nos lo das, llega como un mensaje a las personas de nuestro equipo que te llaman. Telegram es un destinatario fuera del Espacio Económico Europeo.",
   "pr.share.li3": "Amplitude: analítica de producto sobre cómo funcionan el sitio y las campañas.",
   "pr.share.li4": "Meta y Google: medición y segmentación publicitaria, solo con tu consentimiento de Marketing.",
   "pr.share.li5": "Brevo: el chat en directo y el seguimiento de tu solicitud.",
+  "pr.share.li6": "Supabase: nuestro sistema de gestión de clientes (CRM), alojado en la UE, donde nuestro equipo gestiona tu solicitud.",
 
   "pr.retention.h": "Cuánto tiempo los conservamos",
   "pr.retention.p": "Los datos de solicitudes se conservan solo el tiempo necesario para gestionar tu petición y nuestra relación contigo, y luego se eliminan o anonimizan. La duración de las cookies figura en la tabla de arriba.",

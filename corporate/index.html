@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.classList.add('js')</script>
-<title data-i18n="c.title">QED for Corporate · Team building people actually enjoy</title>
+<title data-i18n="c.title">QED for Corporate · Christmas parties &amp; team building people enjoy</title>
 <meta name="description" data-i18n-content="c.metadesc" content="A genuinely funny quiz night for your team, from €7 + VAT per person. Offsites, client events and team days in Valencia, Madrid, Barcelona, Murcia & Santiago.">
 <meta name="theme-color" content="#FBF6EA">
-<meta property="og:title" data-i18n-content="c.title" content="QED for Corporate · Team building people actually enjoy">
+<meta property="og:title" data-i18n-content="c.title" content="QED for Corporate · Christmas parties &amp; team building people enjoy">
 <meta property="og:description" data-i18n-content="c.metadesc" content="A genuinely funny quiz night for your team, from €7 + VAT per person. Offsites, client events and team days in Valencia, Madrid, Barcelona, Murcia & Santiago.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared/qed.css">
+<link rel="stylesheet" href="/shared/qed.css?v=20261008">
 <script>window.QED_SITE = "corporate";</script>
 <script src="/config.js"></script>
 <script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
@@ -54,8 +54,11 @@
         <span class="tag tag--accent tag--shadow" data-i18n="c.hero.tag">Christmas &amp; end-of-year parties 2026 · Valencia, Madrid, Barcelona, Murcia &amp; Santiago</span>
         <h1 class="h-display" id="c-hero-h1" style="margin-top:20px;max-width:13ch"><span data-i18n="c.hero.h1a">Team building people </span><span class="accent" data-i18n="c.hero.h1b">actually enjoy.</span></h1>
         <p class="lead" id="c-hero-sub" style="margin:20px 0 0;max-width:46ch" data-i18n="c.hero.sub">Forget trust falls and forced fun. 90 minutes of trivia with a live host and rounds about your company, before or after the company dinner: at your office, at the dinner's restaurant or at a venue we find. From 10 to 300 people.</p>
-        <div class="row" style="gap:12px;margin-top:26px">
-          <a class="btn btn--cta btn--lg" href="#quote"><span data-i18n="c.cta.quote">Get a quote</span> <span class="arr">&rarr;</span></a>
+        <p class="hero-price"><strong data-i18n="c.hero.price">From €7 + VAT per person · minimum €250 + VAT</strong></p>
+        <!-- SEASONAL (Sep-Dec 2026): drop c.hero.hold (EN here + ES) after mid-December. -->
+        <p class="hero-hold" data-i18n="c.hero.hold">We hold your date for up to 7 days, no commitment</p>
+        <div class="row" style="gap:12px;margin-top:22px">
+          <a class="btn btn--cta btn--lg" href="#quote"><span id="c-hero-cta" data-i18n="c.cta.quote">Get a quote</span> <span class="arr">&rarr;</span></a>
           <a class="btn btn--lg" href="#how" data-i18n="c.cta.how">See how it works</a>
         </div>
       </div>
@@ -180,8 +183,8 @@
       <div class="steps reveal" style="margin-top:34px">
         <div>
           <div class="step__n">01</div><div class="step__bar"></div>
-          <h3 class="h3" data-i18n="c.how.1t">Tell us the brief</h3>
-          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.1d">Headcount, date, city, and the vibe. Two minutes by form, and leave a phone number if you'd rather we call you.</p>
+          <h3 class="h3" data-i18n="c.how.1t">Leave your number</h3>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.1d">Name, phone and email: 30 seconds. We call you, you tell us headcount, date and city, and we send one fixed price.</p>
         </div>
         <div>
           <div class="step__n">02</div><div class="step__bar"></div>
@@ -301,7 +304,23 @@
         </details>
         <details>
           <summary><span data-i18n="c.faq.q7">How much does it cost?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a7">From €7 + VAT per person. The final price depends on headcount, city and whether we provide the venue, and you get it as one fixed quote with no surprises.</div>
+          <div class="ans" data-i18n="c.faq.a7">From €7 + VAT per person, with a minimum of €250 + VAT per event. The final price depends on headcount, city and whether we provide the venue, and you get it as one fixed quote with no surprises.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="c.faq.q8">What's included?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a8">A live host, our AV kit (sound, a screen or projector and live scoring), custom rounds about your company and prizes for the winning team, plus an operator for larger groups. Extras on request: custom trophies and a photographer.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="c.faq.q9">Can it be a lunch or an afternoon?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a9">Yes. Plenty of teams prefer a company lunch or an afternoon plan. Same quiz, same host, just earlier.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="c.faq.q10">We've booked the restaurant. Do you come there?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a10">Yes, that's the usual setup. We play before or after the meal, sort the space out with the restaurant and bring our own kit if needed.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="c.faq.q11">How does the date hold work?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a11">After the call we hold the date for up to 7 days at no cost (72 h on December Fridays and Saturday 12th, which go fast). To confirm, just accept the quote.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q1">How many people can play?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -328,24 +347,26 @@
   </section>
 
   <!-- ============ QUOTE FORM ============ -->
+  <!-- Contact-first (data-contact-first, shared/qed.js): step 1 (event type, first name, phone,
+       email) is the whole lead, and step 2 only enriches it. Celebrations keeps the classic flow. -->
   <section id="quote" class="section section--tight">
     <div class="wrap">
       <div class="card reveal split split--flush" style="--split:0.85fr 1.15fr;overflow:hidden">
-        <div class="pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
-          <span class="eyebrow" style="color:rgba(255,255,255,.6)" data-i18n="c.cta.quote">Get a quote</span>
-          <h2 class="h2" style="color:#fff" data-i18n="c.form.h2">Tell us about your team.</h2>
+        <div class="pad quote-intro" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
+          <span class="eyebrow quote-intro__more" style="color:rgba(255,255,255,.6)" data-i18n="c.cta.quote">Get a quote</span>
+          <h2 class="h2" style="color:#fff" data-i18n="c.form.h2">Leave your number. We'll call you.</h2>
           <!-- SEASONAL: drop the "Booking for December?" opener from c.form.sub (EN + ES) after mid-December. -->
-          <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="c.form.sub">Booking for December? We'll hold your date for 7 days, no commitment, while you get sign-off. A real person replies, usually the same day.</p>
+          <p class="quote-intro__more" style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="c.form.sub">Booking for December? We'll hold your date for up to 7 days, no commitment, while you get sign-off. A real person calls you, usually the same working day.</p>
         </div>
         <div class="pad">
-          <form id="event-form" name="corporate-event" novalidate data-action="/.netlify/functions/book-event">
+          <form id="event-form" name="corporate-event" novalidate data-action="/.netlify/functions/book-event" data-contact-first>
             <input type="hidden" name="page" value="corporate">
             <p class="hp"><label><span data-i18n="form.hp">Leave this empty</span> <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
             <div class="form-body">
               <div data-step="1">
                 <div class="form-grid">
                   <div class="full">
-                    <label class="label" for="c-event"><span data-i18n="c.form.eventType">What kind of night?</span> <span class="req">*</span></label>
+                    <label class="label" for="c-event"><span data-i18n="c.form.eventType">What kind of event?</span> <span class="req">*</span></label>
                     <select class="input" id="c-event" name="eventType" required>
                       <option value="" data-i18n="c.form.etph">Choose one…</option>
                       <!-- SEASONAL: listed first Sep-Dec; move it below the others (or drop it) after mid-December.
@@ -356,39 +377,63 @@
                       <option data-i18n="c.form.et2">Company offsite</option>
                       <option data-i18n="c.form.et3">Client entertainment</option>
                     </select>
+                    <p class="field-error" id="c-event-err" role="alert" data-i18n="c.form.etReq">Choose the type of event.</p>
                   </div>
-                  <div>
+                  <div class="full">
                     <label class="label" for="c-first"><span data-i18n="c.form.first">First name</span> <span class="req">*</span></label>
-                    <input class="input" id="c-first" name="firstName" autocomplete="given-name" required>
+                    <input class="input" id="c-first" name="firstName" autocomplete="given-name" enterkeyhint="next" maxlength="60" required>
+                    <p class="field-error" id="c-first-err" role="alert" data-i18n="c.form.firstReq">Tell us your first name.</p>
                   </div>
-                  <div>
-                    <label class="label" for="c-last"><span data-i18n="c.form.last">Last name</span> <span class="req">*</span></label>
-                    <input class="input" id="c-last" name="lastName" autocomplete="family-name" required>
+                  <div class="full">
+                    <label class="label" for="c-phone"><span data-i18n="c.form.phone">Phone</span> <span class="req">*</span></label>
+                    <div class="tel-field">
+                      <label class="sr-only" for="c-phone-cc" data-i18n="form.phoneCC">Country code</label>
+                      <select class="input" id="c-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
+                        <option value="ES" data-dial="34" selected>Spain +34</option>
+                      </select>
+                      <input class="input tel-field__num" id="c-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" enterkeyhint="next" data-role="phone-number" placeholder="600 12 34 56" aria-describedby="c-phone-hint" required>
+                    </div>
+                    <p class="field-error" id="c-phone-err" role="alert" data-role="phone-error" data-i18n="c.form.phoneReq">Add a phone number so we can call you.</p>
+                    <p class="form-hint" id="c-phone-hint" data-i18n="c.form.phonehint">So we can call you about the details. Only used for this request.</p>
                   </div>
                   <div class="full">
                     <label class="label" for="c-email"><span data-i18n="c.form.workemail">Work email</span> <span class="req">*</span></label>
-                    <input class="input" id="c-email" type="email" name="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" required>
+                    <input class="input" id="c-email" type="email" name="email" autocomplete="email" inputmode="email" enterkeyhint="send" autocapitalize="none" spellcheck="false" data-i18n-ph="c.ph.email" placeholder="name@company.com" required>
                   </div>
                   <div class="full">
-                    <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="c.form.continue">Continue</span> <span class="arr">&rarr;</span></button>
-                    <p class="form__privacy"><span data-i18n="form.privacy">We only use your details to answer your request. If you stop after this step, we may send you one reminder email.</span> <a href="/privacy/" data-i18n="form.privacylink">Privacy policy</a></p>
+                    <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="c.form.callme">Call me back</span> <span class="arr">&rarr;</span></button>
+                    <p class="form__privacy"><span data-i18n="c.form.privacy1">We use your details only to call or email you about this request.</span> <a href="/privacy/" data-i18n="form.privacylink">Privacy policy</a></p>
                   </div>
                 </div>
               </div>
               <div class="form-step2" data-step="2">
                 <div class="form-step2__in">
-                  <button type="button" class="form-back" data-back><span class="arr">&rarr;</span> <span data-i18n="form.back">Back</span></button>
+                  <button type="button" class="form-back" data-back><span class="arr">&rarr;</span> <span data-i18n="c.form.edit">Wrong phone or email? Fix it</span></button>
+                  <h3 class="h3" id="c-s2h" tabindex="-1" data-i18n="c.form.s2h">Got it. Want to share the details? (optional)</h3>
+                  <p class="muted" style="margin:6px 0 18px;line-height:1.5" data-i18n="c.form.s2p">We'll call you either way. With these we can give you a price on the call.</p>
                   <div class="form-grid">
-                    <div class="full">
-                      <label class="label" for="c-phone" data-i18n="c.form.phone">Phone / WhatsApp (optional)</label>
-                      <div class="tel-field">
-                        <label class="sr-only" for="c-phone-cc" data-i18n="form.phoneCC">Country code</label>
-                        <select class="input" id="c-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
-                          <option value="ES" data-dial="34" selected>Spain +34</option>
-                        </select>
-                        <input class="input tel-field__num" id="c-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
-                      </div>
-                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
+                    <div>
+                      <label class="label" for="c-size" data-i18n="c.form.size">Number of people</label>
+                      <input class="input" id="c-size" type="number" min="2" name="groupSize" inputmode="numeric" data-i18n-ph="c.ph.size" placeholder="e.g. 40">
+                    </div>
+                    <div>
+                      <label class="label" for="c-date" data-i18n="c.form.date">Approximate date</label>
+                      <input class="input" id="c-date" type="date" name="date">
+                    </div>
+                    <div>
+                      <label class="label" for="c-city" data-i18n="form.city">City</label>
+                      <select class="input" id="c-city" name="city">
+                        <option value="" data-i18n="form.cityph">Choose a city…</option><option>Valencia</option><option>Madrid</option><option data-lang-hide="es">Barcelona</option><option>Murcia</option><option>Santiago de Compostela</option><option data-i18n="c.form.elsewhere">Elsewhere</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="label" for="c-rest" data-i18n="c.form.rest">Restaurant already booked?</label>
+                      <select class="input" id="c-rest" name="restaurant">
+                        <option value="" data-i18n="c.form.etph">Choose one…</option>
+                        <option data-i18n="c.form.rest1">Yes</option>
+                        <option data-i18n="c.form.rest2">Not yet</option>
+                        <option data-i18n="c.form.rest3">No, we need a venue</option>
+                      </select>
                     </div>
                     <div>
                       <label class="label" for="c-format" data-i18n="c.form.format">Format</label>
@@ -399,26 +444,21 @@
                       </select>
                     </div>
                     <div>
-                      <label class="label" for="c-size" data-i18n="c.form.size">Group size</label>
-                      <input class="input" id="c-size" type="number" min="2" name="groupSize" data-i18n-ph="c.ph.size" placeholder="e.g. 40">
+                      <label class="label" for="c-company" data-i18n="c.form.company">Company</label>
+                      <input class="input" id="c-company" name="company" autocomplete="organization">
                     </div>
-                    <div>
-                      <label class="label" for="c-date" data-i18n="c.form.date">Preferred date</label>
-                      <input class="input" id="c-date" type="date" name="date">
-                    </div>
-                    <div>
-                      <label class="label" for="c-city" data-i18n="form.city">City</label>
-                      <select class="input" id="c-city" name="city">
-                        <option value="" data-i18n="form.cityph">Choose a city…</option><option>Valencia</option><option>Madrid</option><option data-lang-hide="es">Barcelona</option><option>Murcia</option><option>Santiago de Compostela</option><option data-i18n="c.form.elsewhere">Elsewhere</option>
-                      </select>
+                    <div class="full">
+                      <label class="label" for="c-last" data-i18n="c.form.last">Last name</label>
+                      <input class="input" id="c-last" name="lastName" autocomplete="family-name">
                     </div>
                     <div class="full">
                       <label class="label" for="c-msg" data-i18n="form.else">Anything else?</label>
                       <textarea class="input" id="c-msg" name="message" data-i18n-ph="c.ph.msg" placeholder="Occasion, venue, what a great night looks like for you…"></textarea>
                     </div>
                     <div class="full">
-                      <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="c.form.submit">Get my quote</span> <span class="arr">&rarr;</span></button>
-                      <p class="form-note" style="margin:12px 0 0;text-align:center"><span data-i18n="c.form.nocommit">Asking for a quote commits you to nothing.</span> <span data-i18n="form.note">We reply by email, usually same day. No spam, ever.</span></p>
+                      <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="c.form.senddetails">Send details</span> <span class="arr">&rarr;</span></button>
+                      <p style="margin:12px 0 0;text-align:center"><button type="button" class="form-skip" data-skip data-i18n="c.form.skip">Skip, just call me</button></p>
+                      <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="c.form.note">No commitment. No spam, ever.</p>
                     </div>
                   </div>
                 </div>
@@ -428,8 +468,8 @@
             <div class="form-success" tabindex="-1">
               <div style="text-align:center;padding:24px 8px">
                 <span class="stamp" style="background:var(--accent-deep);color:#fff"><b style="color:#fff">✓</b><span style="color:#fff" data-i18n="c.form.sent">sent</span></span>
-                <h3 class="h2" style="margin-top:18px" data-i18n="c.form.successh">Quote on the way.</h3>
-                <p class="lead" style="margin-top:10px" data-i18n="c.form.successp">Thanks. We've got your brief and you'll hear from a real person at QED, usually within the day.</p>
+                <h3 class="h2" style="margin-top:18px" data-i18n="c.form.successh">Done. We'll call you.</h3>
+                <p class="lead" style="margin-top:10px" data-i18n="c.form.successp">We'll call you during working hours (Mon to Fri, 10:00 to 19:00 Spanish time), usually the same working day. On the call we'll hold your date for up to 7 days, no commitment.</p>
               </div>
             </div>
           </form>
@@ -569,18 +609,19 @@
     swap(parts[1], "c.hero.h1cenab", "with a plan people remember.");
     h1.style.maxWidth = "17ch"; // longer line than the default H1; keeps it to ~4 lines
   }
-  swap(document.getElementById("c-hero-sub"), "c.hero.subcena", "Right before or after the dinner: 90 minutes of team trivia with a live host and rounds about your company. At the dinner's restaurant, at your office or at a venue we find, for 10 to 300 people.");
+  swap(document.getElementById("c-hero-sub"), "c.hero.subcena", "Before or after the company dinner or lunch: 90 minutes of team trivia with a live host and rounds about your company. We come to your restaurant, your office or a venue we find. For 10 to 300 people.");
+  swap(document.getElementById("c-hero-cta"), "c.cta.holdcena", "Hold your date");
   preselect("christmas-dinner");
   document.documentElement.setAttribute("data-variant", "cena");
 })();
 </script>
-<script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-corporate.js"></script>
-<script src="/shared/i18n.js"></script>
+<script src="/shared/i18n-common.js?v=20261008"></script>
+<script src="/shared/i18n-corporate.js?v=20261008"></script>
+<script src="/shared/i18n.js?v=20261008"></script>
 <script src="/shared/walker.js"></script>
-<script src="/shared/consent.js"></script>
+<script src="/shared/consent.js?v=20261008"></script>
 <script src="/shared/brevo.js"></script>
 <script src="/shared/phone-countries.js"></script>
-<script src="/shared/qed.js"></script>
+<script src="/shared/qed.js?v=20261008"></script>
 </body>
 </html>

@@ -136,7 +136,15 @@
 
   if (reveals.length || counters.length) {
     if ("IntersectionObserver" in window && !reduce) {
-      counters.forEach(function (el) { el.textContent = "0"; el.__qedCount = "pending"; });
+      // A counter already on screen at load (the hero stat strip) shows its final value straight
+      // away: blanking it to "0" first flashed "0 CIUDADES" before the count-up began.
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      counters = Array.prototype.filter.call(counters, function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.height > 0 && r.top < vh && r.bottom > 0) { showFinalCount(el); return false; }
+        el.textContent = "0"; el.__qedCount = "pending";
+        return true;
+      });
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
@@ -220,13 +228,24 @@
     } catch (e) {}
   }
 
+  // Point a message element at another i18n key at runtime and show it in the page language.
+  // `en` becomes the element's English fallback for i18n.js (el.__en) on a language toggle.
+  function setKeyText(el, key, en) {
+    if (el.getAttribute("data-i18n") === key && el.__en === en) return;
+    el.setAttribute("data-i18n", key);
+    el.__en = en;
+    var lang = window.QEDi18n ? window.QEDi18n.current() : "EN";
+    el.textContent = (lang === "ES" && window.QED_ES && window.QED_ES[key] != null) ? window.QED_ES[key] : en;
+  }
+
   // Expected lead value (EUR) for the browser lead events: the per-page defaults of
   // leadValue() in netlify/lib/forms.ts (deal size x assumed close rate; the reasoning lives
   // there). The franchise value really depends on the lead's city, which only the server
   // scores, so `lead complete` uses the value the step-2 response returns (the same number
   // the server CAPI Lead carries, so the deduped Pixel/CAPI pair agrees) and falls back to
-  // the medium-city default here. `lead start` = 20% of the page default.
-  var LEAD_VALUE = { corporate: 125, celebrations: 75, venues: 50, partners: 150 };
+  // the medium-city default here. `lead start` = 20% of the page default. Corporate is
+  // contact-first: its `lead complete` is step 1, and the step-1 response carries the value.
+  var LEAD_VALUE = { corporate: 40, celebrations: 30, venues: 50, partners: 150 };
   var LEAD_START_SHARE = 0.2;
   function leadValue() { return LEAD_VALUE[window.QED_SITE] || LEAD_VALUE.venues; }
   function leadStartValue() { return Math.round(leadValue() * LEAD_START_SHARE); }
@@ -484,19 +503,39 @@
       // the national number.
       var dialOpt = phoneCC && phoneCC.selectedOptions && phoneCC.selectedOptions[0];
       var dial = dialOpt ? dialOpt.getAttribute("data-dial") : "";
-      if (dial && digits.indexOf(dial) === 0) digits = digits.slice(dial.length);
+      if (dial && digits.indexOf("00" + dial) === 0) digits = digits.slice(dial.length + 2);
+      else if (dial && digits.indexOf(dial) === 0) digits = digits.slice(dial.length);
       return digits;
     }
+    // A required phone (the contact-first corporate form) is invalid when empty, and its hint
+    // names what's wrong: missing, a Spanish number of the wrong shape, or any other country.
+    // Spanish numbers are 9 digits starting with 6, 7, 8 or 9 (same rule as isPhone() server-side).
+    var phoneRequired = !!(phoneInput && phoneInput.required);
+    function phoneIso() { return phoneCC ? phoneCC.value : "ES"; }
     function phoneValid() {
       var digits = phoneDigits();
-      if (!digits) return true;
-      var iso = phoneCC ? phoneCC.value : "ES";
-      return iso === "ES" ? digits.length === 9 : (digits.length >= 7 && digits.length <= 14);
+      if (!digits) return !phoneRequired;
+      return phoneIso() === "ES" ? /^[6-9]\d{8}$/.test(digits) : (digits.length >= 7 && digits.length <= 14);
     }
+    var PHONE_MSG = {
+      "c.form.phoneReq": "Add a phone number so we can call you.",
+      "c.form.phoneErrES": "Spanish numbers have 9 digits and start with 6, 7, 8 or 9.",
+      "form.phoneErr": "Please enter a valid phone number."
+    };
     function setPhoneError(show) {
       if (!phoneErr || !phoneInput) return;
+      if (show && phoneRequired) {
+        var key = !phoneDigits() ? "c.form.phoneReq" : phoneIso() === "ES" ? "c.form.phoneErrES" : "form.phoneErr";
+        setKeyText(phoneErr, key, PHONE_MSG[key]);
+      }
       phoneErr.style.display = show ? "block" : "none";
       phoneInput.setAttribute("aria-invalid", show ? "true" : "false");
+      if (phoneErr.id) {
+        var hint = form.querySelector("#" + phoneInput.id + "-hint");
+        var ids = (show ? [phoneErr.id] : []).concat(hint ? [hint.id] : []);
+        if (ids.length) phoneInput.setAttribute("aria-describedby", ids.join(" "));
+        else phoneInput.removeAttribute("aria-describedby");
+      }
     }
 
     /* email: the browser's own type=email check passes "juan@gmail" (no dot in the domain),
@@ -549,6 +588,241 @@
       });
       phoneInput.addEventListener("blur", function () { setPhoneError(!phoneValid()); });
       if (phoneCC) phoneCC.addEventListener("change", function () { if (phoneErr && phoneErr.style.display === "block") setPhoneError(!phoneValid()); });
+    }
+
+    if (form.hasAttribute("data-contact-first")) { initContactFirst(); return; }
+
+    /* ---------- contact-first flow (corporate) ----------
+       Step 1 (event type, first name, phone, email) IS the lead: it posts _capture "contact",
+       and the server sends the call alert, the Brevo contact + deal + confirmation, the portal
+       record and the walkerOS `lead complete`. The browser Pixel `lead complete` fires here on
+       step 1's success under the same event id (E1), so Pixel and CAPI dedup: one Lead per
+       person. Step 2 is optional enrichment (`lead details`, Amplitude only) that the server
+       attaches to the same record by _e1, and Skip posts nothing. No `lead start` on this form.
+       Continue waits up to STEP1_SHOW_MS for step 1: a failure inside that window keeps the
+       visitor on step 1 with the error; after it, step 2 shows anyway, and a late failure shows
+       the error there and makes Send / Skip re-post step 1 (same E1) first. Edit goes back to
+       step 1, and Continue re-posts only when the phone or email changed (_correction "1",
+       same E1, _prevEmail), which the server handles as a correction, not a new lead. */
+    function initContactFirst() {
+      var STEP1_SHOW_MS = 2500;
+      var skipBtn = form.querySelector("[data-skip]");
+      var submitBtn = form.querySelector("[type=submit]");
+      var E1 = null, sent = null, tgRef = "", serverValue = null, pixelFired = false;
+      var step1P = null, step1Failed = false, lastExtra = {}, busy = false;
+
+      // Inline error under a required field: its #<id>-err element (baked in the HTML with its
+      // data-i18n key, so the Spanish comes from the dictionary like any other copy).
+      function fieldError(el, show) {
+        if (!el) return;
+        var err = form.querySelector("#" + el.id + "-err");
+        if (err) err.style.display = show ? "block" : "none";
+        el.setAttribute("aria-invalid", show ? "true" : "false");
+        if (show && err) el.setAttribute("aria-describedby", err.id);
+        else el.removeAttribute("aria-describedby");
+        if (el.__cselectBtn) el.__cselectBtn.setAttribute("aria-invalid", show ? "true" : "false");
+      }
+      function focusField(el) {
+        if (el.__cselectBtn) el.__cselectBtn.focus(); else el.focus();
+      }
+      var et = form.elements.eventType, fn = form.elements.firstName;
+      function etValid() { return !et || !!et.value; }
+      function fnValid() { var v = fn ? fn.value.trim() : "x"; return v.length >= 1 && v.length <= 60; }
+      function emValid() { var v = emailInput ? emailInput.value.trim() : ""; return !!v && EMAIL_RE.test(v); }
+      if (et) et.addEventListener("change", function () { if (etValid()) fieldError(et, false); });
+      if (fn) {
+        fn.addEventListener("input", function () { if (fnValid()) fieldError(fn, false); });
+        fn.addEventListener("blur", function () { fieldError(fn, !fnValid()); });
+      }
+
+      // Every field is checked so all errors show at once; returns the first invalid one.
+      function validate() {
+        var bad = [];
+        fieldError(et, !etValid()); if (!etValid()) bad.push(et);
+        fieldError(fn, !fnValid()); if (!fnValid()) bad.push(fn);
+        setPhoneError(!phoneValid()); if (phoneInput && !phoneValid()) bad.push(phoneInput);
+        setEmailError(!emValid()); if (emailInput && !emValid()) bad.push(emailInput);
+        return bad[0] || null;
+      }
+
+      function setBusy(btn, on, label) {
+        if (!btn) return;
+        var lab = btn.querySelector("[data-i18n]");
+        btn.disabled = on;
+        if (!lab) return;
+        if (on) {
+          btn.__label = lab.textContent;
+          var lang = window.QEDi18n ? window.QEDi18n.current() : "EN";
+          lab.textContent = (lang === "ES" && window.QED_ES["form.sending"] != null) ? window.QED_ES["form.sending"] : "Sending…";
+        } else if (btn.__label != null) {
+          lab.textContent = btn.__label;
+        }
+      }
+      function hideError() { if (errEl) errEl.style.display = "none"; }
+      function variant() { return document.documentElement.getAttribute("data-variant") || ""; }
+      function phoneKey() { return phoneIso() + ":" + phoneDigits(); }
+
+      function post(data) {
+        return fetch(action, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          keepalive: true
+        }).then(function (r) {
+          return r.text().then(function (t) {
+            var j = {}; try { j = JSON.parse(t); } catch (e) {}
+            return { ok: r.ok && !!j.ok, status: r.status, body: j };
+          });
+        }).catch(function () { return { ok: false, status: 0, body: {} }; });
+      }
+
+      // POST step 1 (or its correction / re-send) under E1 and keep what the response says.
+      function sendStep1(extra) {
+        lastExtra = extra || {};
+        var d = collect(form, action, 1, E1);
+        d._capture = "contact";
+        if (variant()) d._variant = variant();
+        assign(d, lastExtra);
+        var email = emailInput ? emailInput.value.trim().toLowerCase() : "";
+        var phone = phoneKey();
+        step1P = post(d).then(function (res) {
+          if (!res.ok) { step1Failed = true; return res; }
+          step1Failed = false;
+          sent = { email: email, phone: phone };
+          if (res.body.tgRef != null) tgRef = String(res.body.tgRef);
+          if (typeof res.body.value === "number" && isFinite(res.body.value)) serverValue = res.body.value;
+          queueConsentReplay(action, d);
+          if (!pixelFired) {
+            pixelFired = true;
+            // Browser Pixel Lead (+ Google Ads gtag), id E1 = the server CAPI Lead's id.
+            var value = serverValue != null ? serverValue : leadValue();
+            walkerPush("lead complete", assign({ funnel: window.QED_SITE || "home", value: value, currency: "EUR" }, leadIdentity(d)), E1);
+            try { window.dispatchEvent(new CustomEvent("qed:leadsent")); } catch (e) {}
+          }
+          return res;
+        });
+        return step1P;
+      }
+
+      // Before Send / Skip: wait for step 1 (capped), and re-post it if it failed.
+      function ensureStep1() {
+        return settleWithin(step1P, STEP1_WAIT_MS).then(function () {
+          if (!step1Failed) return true;
+          return sendStep1(lastExtra).then(function (res) { return res.ok; });
+        });
+      }
+
+      function goStep2() {
+        form.classList.add("at-step2");
+        var h = step2.querySelector("h3") || step2;
+        // Scroll to the Edit link above the header (its scroll-margin clears the sticky nav), so
+        // "Wrong phone or email? Fix it" is the first thing in view; focus goes to the header.
+        var top = backBtn || h;
+        setTimeout(function () {
+          top.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+          try { h.focus({ preventScroll: true }); } catch (e) {}
+        }, reduce ? 0 : 360);
+      }
+
+      function finish() {
+        form.classList.add("sent");
+        var s = form.querySelector(".form-success");
+        if (s) { s.setAttribute("role", "status"); if (s.focus) s.focus(); }
+        form.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+        try { window.dispatchEvent(new CustomEvent("qed:leadsent")); } catch (e) {}
+      }
+
+      continueBtn.addEventListener("click", function () {
+        if (busy) return;
+        hideError();
+        var bad = validate();
+        if (bad) { focusField(bad); return; }
+        var email = emailInput.value.trim().toLowerCase();
+        var correction = !!sent && (email !== sent.email || phoneKey() !== sent.phone);
+        if (sent && !correction && !step1Failed) { goStep2(); return; }
+        var extra = {};
+        if (correction) {
+          extra._correction = "1";
+          extra._prevEmail = sent.email;
+          if (tgRef) extra._tgRef = tgRef;
+        } else if (step1Failed) {
+          extra = lastExtra;
+        }
+        if (!E1) E1 = uuid();
+        busy = true;
+        setBusy(continueBtn, true);
+        var p = sendStep1(extra);
+        var timer = new Promise(function (resolve) { setTimeout(function () { resolve(null); }, STEP1_SHOW_MS); });
+        Promise.race([p, timer]).then(function (res) {
+          busy = false;
+          setBusy(continueBtn, false);
+          if (!res || res.ok) { goStep2(); return; }
+          // Failed inside the window: stay on step 1. A 400 "phone" means the server disagreed
+          // with our check: show the phone hint, never the server's raw string.
+          if (res.status === 400 && res.body && res.body.error === "phone") {
+            setPhoneError(true);
+            phoneInput.focus();
+          } else {
+            showError();
+          }
+        });
+        p.then(function (res) {
+          if (!res.ok && form.classList.contains("at-step2") && !form.classList.contains("sent")) showError();
+        });
+      });
+
+      if (backBtn) {
+        backBtn.addEventListener("click", function () {
+          hideError();
+          form.classList.remove("at-step2");
+          if (phoneInput) setTimeout(function () { phoneInput.focus(); }, reduce ? 0 : 360);
+        });
+      }
+
+      form.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        // Enter on a step-1 field (email has enterkeyhint="send") means "Call me back".
+        if (!form.classList.contains("at-step2")) { continueBtn.click(); return; }
+        if (busy) return;
+        busy = true;
+        hideError();
+        setBusy(submitBtn, true);
+        var d2 = null;
+        ensureStep1().then(function (ok) {
+          if (!ok) throw new Error("step 1 failed");
+          d2 = collect(form, action, 2, uuid());
+          d2._capture = "contact";
+          d2._e1 = E1;
+          if (tgRef) d2._tgRef = tgRef;
+          if (variant()) d2._variant = variant();
+          return post(d2);
+        }).then(function (res) {
+          if (!res.ok) throw new Error((res.body && res.body.error) || "Server returned an error response.");
+          busy = false;
+          queueConsentReplay(action, d2);
+          finish();
+        }).catch(function (err) {
+          busy = false;
+          setBusy(submitBtn, false);
+          if (window.console && console.error) console.error("Form submit failed:", err);
+          showError();
+        });
+      });
+
+      if (skipBtn) {
+        skipBtn.addEventListener("click", function () {
+          if (busy) return;
+          busy = true;
+          hideError();
+          ensureStep1().then(function (ok) {
+            busy = false;
+            if (!ok) { showError(); return; }
+            // Amplitude only: the Pixel and gtag allowlists drop it, and nothing goes to the server.
+            walkerPush("lead skip", { funnel: window.QED_SITE || "home" });
+            finish();
+          });
+        });
+      }
     }
 
     /* step 1 → step 2: validate required fields, fire the partial "Lead Started" (step 1),

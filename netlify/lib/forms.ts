@@ -65,14 +65,15 @@ export function json(statusCode: number, body: unknown) {
 // "📣 Source:" line when the lead carries campaign attribution — the founders' per-lead
 // lead-quality feedback loop (tell a €50-CPC paid lead from an organic one at a glance).
 export function metaLine(d: Dict, page: string): string {
-  const base = `🌐 Lang: ${d.lang || "—"} | Country: ${d.country || "—"} | Page: ${page}`;
-  const hasAttr = d._utm_source || d._utm_campaign || d._gclid || d._wbraid || d._gbraid || d._fbclid || d._ref;
+  const base = `🌐 Lang: ${d.lang || "—"} | Country: ${d.country || "—"} | Page: ${page}${d._variant ? ` | v=${d._variant}` : ""}`;
+  const hasAttr = d._utm_source || d._utm_campaign || d._utm_content || d._gclid || d._wbraid || d._gbraid || d._fbclid || d._ref;
   if (!hasAttr) return base;
   const src = d._utm_source || d._ref || "direct";
   const medium = d._utm_medium || (d._gclid || d._wbraid || d._gbraid ? "cpc" : d._fbclid ? "paid_social" : "—");
   const campaign = d._utm_campaign || "—";
   const clicks = [d._gclid && "gclid", (d._wbraid || d._gbraid) && "wbraid", d._fbclid && "fbclid"].filter(Boolean).join("·");
-  return `${base}\n📣 Source: ${src} / ${medium} / ${campaign}${clicks ? ` · ${clicks}` : ""}`;
+  const ad = d._utm_content ? ` | ad: ${d._utm_content}` : "";
+  return `${base}\n📣 Source: ${src} / ${medium} / ${campaign}${clicks ? ` · ${clicks}` : ""}${ad}`;
 }
 
 // "+34 963 12 34 56" for the Telegram message — same best-effort spirit as
@@ -80,7 +81,36 @@ export function metaLine(d: Dict, page: string): string {
 // country selector, so this just degrades to the raw digits when it's missing.
 export function displayPhone(d: Dict): string {
   if (!d.phone) return "—";
-  return d.phoneDial ? `+${d.phoneDial} ${d.phone}` : d.phone;
+  const n = nationalDigits(d.phone, d.phoneDial);
+  if (d.phoneDial === "34" && n.length === 9) return `+34 ${n.slice(0, 3)} ${n.slice(3, 5)} ${n.slice(5, 7)} ${n.slice(7)}`;
+  return d.phoneDial ? `+${d.phoneDial} ${n}` : d.phone;
+}
+
+// The national number: digits only, minus a typed or autofilled "+<dial>" / "00<dial>" prefix.
+// Mirrors phoneDigits() in shared/qed.js, so the client check and this one agree.
+export function nationalDigits(phone: string, dial?: string): string {
+  let digits = (phone || "").replace(/\D/g, "");
+  if (dial && /^\d{1,4}$/.test(dial)) {
+    if (digits.startsWith(`00${dial}`)) digits = digits.slice(dial.length + 2);
+    else if (digits.startsWith(dial)) digits = digits.slice(dial.length);
+  }
+  return digits;
+}
+
+// Required phone on the contact-first corporate form. Spain: 9 digits starting with 6, 7, 8 or
+// 9. Anywhere else: 7-14 digits. A missing dial code is read as Spain (the default selector).
+export function isPhone(phone: string, dial?: string): boolean {
+  const d = dial && /^\d{1,4}$/.test(dial) ? dial : "34";
+  const n = nationalDigits(phone, d);
+  return d === "34" ? /^[6-9]\d{8}$/.test(n) : n.length >= 7 && n.length <= 14;
+}
+
+// E.164 ("+34600123456") for Brevo's SMS attribute; "" when there is no usable number.
+function e164Phone(d: Dict): string {
+  const n = nationalDigits(d.phone || "", d.phoneDial);
+  if (!n) return "";
+  const dial = d.phoneDial && /^\d{1,4}$/.test(d.phoneDial) ? d.phoneDial : n.length === 9 ? "34" : "";
+  return `+${dial}${n}`;
 }
 
 // Worst case (all attempts fail) must fit under Netlify's 10s synchronous function
@@ -92,15 +122,25 @@ const TELEGRAM_RETRY_DELAY_MS = 500;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function sendTelegramOnce(token: string, chatId: string, text: string): Promise<boolean> {
+// Resolves to the sent message's id (0 if Telegram didn't return one), or null on failure.
+async function sendTelegramOnce(token: string, chatId: string, text: string, replyTo?: number): Promise<number | null> {
   const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text }),
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      // A reply to a message that's gone still sends, just unthreaded.
+      ...(replyTo ? { reply_parameters: { message_id: replyTo, allow_sending_without_reply: true } } : {}),
+    }),
     signal: AbortSignal.timeout(TELEGRAM_TIMEOUT_MS),
   });
-  if (!res.ok) console.error("Telegram sendMessage failed:", res.status, await res.text());
-  return res.ok;
+  if (!res.ok) {
+    console.error("Telegram sendMessage failed:", res.status, await res.text());
+    return null;
+  }
+  const j = await res.json().catch(() => null);
+  return Number(j?.result?.message_id) || 0;
 }
 
 // POST a plain-text message to the Telegram group. No parse_mode (plain text).
@@ -112,18 +152,30 @@ async function sendTelegramOnce(token: string, chatId: string, text: string): Pr
 // The step-1 "started, not finished" ping passes attempts=1 and its own marker: it's a
 // heads-up, the partial also lands in Brevo, and it must not trip a LOST LEAD alert.
 export async function sendTelegram(text: string, attempts = TELEGRAM_MAX_ATTEMPTS, lostMarker = "LOST LEAD"): Promise<boolean> {
+  return (await sendTelegramMessage(text, { attempts, lostMarker })) !== null;
+}
+
+type TelegramOpts = { attempts?: number; lostMarker?: string; chatId?: string; replyTo?: number };
+
+// sendTelegram, but resolves to the message id (null on failure), with an optional chat and a
+// message to reply to. The contact-first call alerts use it: the step-2 details and any
+// correction thread under the first alert, whose id the client holds as _tgRef.
+export async function sendTelegramMessage(text: string, opts: TelegramOpts = {}): Promise<number | null> {
+  const attempts = opts.attempts ?? TELEGRAM_MAX_ATTEMPTS;
+  const lostMarker = opts.lostMarker ?? "LOST LEAD";
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const chatId = opts.chatId || process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) {
     console.error("Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env vars.");
     console.error(`${lostMarker} (Telegram not configured):`, text);
-    return false;
+    return null;
   }
   if (text.length > 4000) text = text.slice(0, 4000) + "…";
 
   for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
-      if (await sendTelegramOnce(token, chatId, text)) return true;
+      const id = await sendTelegramOnce(token, chatId, text, opts.replyTo);
+      if (id !== null) return id;
     } catch (err) {
       console.error(`Telegram sendMessage threw (attempt ${attempt}/${attempts}):`, err);
     }
@@ -131,7 +183,7 @@ export async function sendTelegram(text: string, attempts = TELEGRAM_MAX_ATTEMPT
   }
 
   console.error(`${lostMarker} (Telegram failed after retries):`, text);
-  return false;
+  return null;
 }
 
 // Step 1 = name + email (+ city on the franchise form, event type on the events forms).
@@ -159,6 +211,101 @@ export function sendPartialTelegram(text: string): Promise<boolean> {
   return sendTelegram(text, 1, "LOST PARTIAL");
 }
 
+// ---- Contact-first call alerts (corporate) ----------------------------------
+// Step 1 of the corporate form is a call-back request: name, phone, email, event type. The alert
+// is the call queue until the portal takes over, so it leads with who to call and by when, and
+// mentions whoever calls that language (TELEGRAM_CALL_MENTION_ES / _EN, e.g. "@handle", kept in
+// env rather than code). It goes to TELEGRAM_CALL_CHAT_ID when set (keep that chat to the people
+// who call: it holds phone numbers), else the usual TELEGRAM_CHAT_ID.
+
+// Call-by target, Madrid time: two hours after the lead inside working hours (Mon-Fri
+// 10:00-19:00), never later than 19:00; before 10:00 it's 11:00 that day; after 19:00 or at the
+// weekend it's 11:00 the next working day. Public holidays aren't known here. The copy promises
+// "the same working day"; this is only the internal target the alert shows.
+const CALL_TZ = "Europe/Madrid";
+const CALL_OPEN = 10 * 60, CALL_CLOSE = 19 * 60, CALL_NEXT_DAY = 11 * 60, CALL_SLA = 120;
+const DOW_ES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const DOW_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function madridNow(now: Date): { y: number; m: number; d: number; dow: number; min: number } {
+  const p: Record<string, string> = {};
+  for (const x of new Intl.DateTimeFormat("en-GB", {
+    timeZone: CALL_TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  }).formatToParts(now)) p[x.type] = x.value;
+  const y = Number(p.year), m = Number(p.month), d = Number(p.day);
+  return { y, m, d, dow: new Date(Date.UTC(y, m - 1, d)).getUTCDay(), min: Number(p.hour) * 60 + Number(p.minute) };
+}
+
+export function callByLine(es: boolean, now = new Date()): string {
+  const t = madridNow(now);
+  const hhmm = (min: number) => `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
+  const hours = es ? "(L-V 10-19 h)" : "(Mon-Fri 10:00-19:00 Spain)";
+  const workday = t.dow >= 1 && t.dow <= 5;
+  if (workday && t.min < CALL_CLOSE) {
+    const by = t.min < CALL_OPEN ? CALL_NEXT_DAY : Math.min(t.min + CALL_SLA, CALL_CLOSE);
+    return es ? `Llamar antes de las ${hhmm(by)} ${hours}` : `Call by ${hhmm(by)} ${hours}`;
+  }
+  const next = new Date(Date.UTC(t.y, t.m - 1, t.d));
+  do next.setUTCDate(next.getUTCDate() + 1); while (next.getUTCDay() === 0 || next.getUTCDay() === 6);
+  const day = next.getUTCDate(), dow = next.getUTCDay();
+  return es
+    ? `Llamar antes de las ${hhmm(CALL_NEXT_DAY)} del ${DOW_ES[dow]} ${day} ${hours}`
+    : `Call by ${hhmm(CALL_NEXT_DAY)} on ${DOW_EN[dow]} ${day} ${hours}`;
+}
+
+function isEs(d: Dict): boolean {
+  return (d.lang || "").toUpperCase() === "ES";
+}
+
+export function callChatId(): string | undefined {
+  return process.env.TELEGRAM_CALL_CHAT_ID || undefined;
+}
+
+export function callAlertText(d: Dict, page: string, now = new Date()): string {
+  const es = isEs(d);
+  const label = page === "corporate" ? (es ? "Empresa" : "Corporate") : (PARTIAL_LABEL[page] || page);
+  const mention = process.env[es ? "TELEGRAM_CALL_MENTION_ES" : "TELEGRAM_CALL_MENTION_EN"];
+  return [
+    `📞 ${es ? "LLAMAR" : "CALL"} [${brandTag()}] ${label} · ${d.eventType}`,
+    `👤 ${d.firstName}   📱 ${displayPhone(d)}`,
+    `📧 ${d.email}`,
+    `⏱ ${callByLine(es, now)}`,
+    ...(mention ? [mention] : []),
+    metaLine(d, page),
+  ].join("\n");
+}
+
+// Reply under the call alert: the visitor fixed their phone or email from step 2's Edit link.
+export function correctionText(d: Dict): string {
+  const es = isEs(d);
+  const prev = d._prevEmail && d._prevEmail !== (d.email || "").toLowerCase() ? ` (${es ? "antes" : "was"}: ${d._prevEmail})` : "";
+  return [
+    `✏️ ${es ? "Corrección" : "Correction"}`,
+    `👤 ${d.firstName}   📱 ${displayPhone(d)}`,
+    `📧 ${d.email}${prev}`,
+  ].join("\n");
+}
+
+// Reply under the call alert with whatever step 2 filled in.
+export function detailsText(d: Dict): string {
+  const es = isEs(d);
+  const rows: [string, string, string | undefined][] = [
+    ["👥", es ? "Personas" : "People", d.groupSize],
+    ["📅", es ? "Fecha" : "Date", d.date],
+    ["📍", es ? "Ciudad" : "City", d.city],
+    ["🍽", es ? "Restaurante" : "Restaurant", d.restaurant],
+    ["🎭", es ? "Formato" : "Format", d.format],
+    ["🏢", es ? "Empresa" : "Company", d.company],
+    ["👤", es ? "Apellidos" : "Last name", d.lastName],
+    ["💬", es ? "Mensaje" : "Message", d.message],
+  ];
+  const filled = rows.filter(([, , v]) => v);
+  return [
+    `➕ ${es ? "Detalles" : "Details"}: ${d.firstName} · ${d.email}`,
+    ...(filled.length ? filled.map(([i, k, v]) => `${i} ${k}: ${v}`) : [es ? "(nada más)" : "(nothing else)"]),
+  ].join("\n");
+}
+
 // The client sends the dial code picked in the phone field's country selector
 // (shared/phone-countries.js) as `phoneDial` — trust it when present. Falls back to the
 // old Spain heuristic for any submission without it (e.g. a cached page pre-dating the
@@ -183,8 +330,8 @@ function normalizePhone(phone: string, dial?: string): string {
 //
 // NOTE: Brevo rejects unknown custom attributes, so before this goes live create these
 // contact attributes in Brevo (Contacts > Settings > Contact attributes, type "Text"):
-// LEAD_CITY, LANG, LEAD_SOURCE, UTM_SOURCE, UTM_CAMPAIGN, NOTES, LAST_DEAL, LEAD_STAGE,
-// PARTIAL_NUDGE. FIRSTNAME/LASTNAME/SMS are built in. A missing list/attribute makes this
+// LEAD_CITY, LANG, LEAD_SOURCE, UTM_SOURCE, UTM_CAMPAIGN, UTM_CONTENT, NOTES, LAST_DEAL,
+// LEAD_STAGE, PARTIAL_NUDGE. FIRSTNAME/LASTNAME/SMS are built in (OPT_IN too, boolean). A missing list/attribute makes this
 // fail silently (logged, non-blocking) — check Netlify function logs after setup to
 // confirm it's actually landing contacts.
 function brevoListId(page: string): number | undefined {
@@ -373,7 +520,13 @@ async function sendBrevoFollowupEmail(apiKey: string, d: Dict, contactId: number
   }
 }
 
-export async function sendToBrevo(d: Dict, page: string, notes: string): Promise<void> {
+// opts.stage: LEAD_STAGE to write ("complete" by default; the contact-first corporate step 1
+// writes "contact", which templates #7/#8 branch on for the call-back wording).
+// opts.deal = false: no deal and no LAST_DEAL bump, only the contact and the confirmation. A
+// contact-first correction uses it: the deal already exists under the mistyped address.
+type BrevoOpts = { stage?: string; deal?: boolean };
+
+export async function sendToBrevo(d: Dict, page: string, notes: string, opts: BrevoOpts = {}): Promise<void> {
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
     console.error("Missing BREVO_API_KEY env var.");
@@ -391,20 +544,19 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
   const nudges = [...new Set([nudgeId(d._nudge), storedNudge].filter((v): v is string => !!v))];
   const cancelled = await Promise.all(nudges.map((id) => cancelBrevoNudge(apiKey, id)));
 
-  const attributes: Record<string, string> = { LEAD_SOURCE: page, LEAD_STAGE: "complete" };
+  const attributes: Record<string, string> = { LEAD_SOURCE: page, LEAD_STAGE: opts.stage || "complete" };
   // Clear the stored id only once its reminder is gone (cancelled, or already sent). After a
   // failed cancel (timeout / 5xx) it stays, so a later submission can still cancel it.
   if (storedNudge && cancelled[nudges.indexOf(storedNudge)]) attributes.PARTIAL_NUDGE = "";
   if (d.firstName) attributes.FIRSTNAME = d.firstName;
   if (d.lastName) attributes.LASTNAME = d.lastName;
-  if (d.phone) {
-    const digits = d.phone.replace(/\D/g, "");
-    if (digits) attributes.SMS = `+${d.phoneDial && /^\d{1,4}$/.test(d.phoneDial) ? d.phoneDial : digits.length === 9 ? "34" : ""}${digits}`;
-  }
+  const sms = e164Phone(d);
+  if (sms) attributes.SMS = sms;
   if (d.city) attributes.LEAD_CITY = d.city;
   if (d.lang) attributes.LANG = d.lang.toUpperCase();
   if (d._utm_source) attributes.UTM_SOURCE = d._utm_source;
   if (d._utm_campaign) attributes.UTM_CAMPAIGN = d._utm_campaign;
+  if (d._utm_content) attributes.UTM_CONTENT = d._utm_content;
   attributes.NOTES = notes.slice(0, 1800);
 
   const listId = brevoListId(page);
@@ -420,6 +572,7 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
     return;
   }
   await sendBrevoFollowupEmail(apiKey, d, contactId);
+  if (opts.deal === false) return;
   const dealCreated = await createBrevoDeal(apiKey, d, page, notes, contactId);
   // Only bump LAST_DEAL once the deal actually exists — bumping it up front would make a
   // failed deal create (timeout/5xx) look like a real one, silently suppressing the
@@ -427,6 +580,24 @@ export async function sendToBrevo(d: Dict, page: string, notes: string): Promise
   if (dealCreated) {
     await upsertBrevoContact(headers, d.email, { LAST_DEAL: `${page}:${Date.now()}` }, listId);
   }
+}
+
+// Contact-first step 2 (corporate): the optional details, onto the contact step 1 created.
+// Only updates attributes: never a deal, a list or an email, whatever the timing (the 30-minute
+// deal dedupe above would not cover a visitor who comes back later). Resolves true when Brevo
+// saved it, so the function can answer 200 if either this or Telegram worked.
+export async function enrichBrevo(d: Dict, notes: string): Promise<boolean> {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
+    console.error("Missing BREVO_API_KEY env var.");
+    return false;
+  }
+  if (!d.email) return false;
+  const headers = { "Content-Type": "application/json", Accept: "application/json", "api-key": apiKey };
+  const attributes: Record<string, string> = { LEAD_STAGE: "complete", NOTES: notes.slice(0, 1800) };
+  if (d.lastName) attributes.LASTNAME = d.lastName;
+  if (d.city) attributes.LEAD_CITY = d.city;
+  return (await upsertBrevoContact(headers, d.email, attributes, undefined)).ok;
 }
 
 // ---- Step-1 partial leads: contact + ONE reminder email ----------------------
@@ -512,6 +683,7 @@ export async function sendPartialToBrevo(d: Dict, page: string): Promise<void> {
     if (d.lang) attributes.LANG = d.lang.toUpperCase();
     if (d._utm_source) attributes.UTM_SOURCE = d._utm_source;
     if (d._utm_campaign) attributes.UTM_CAMPAIGN = d._utm_campaign;
+    if (d._utm_content) attributes.UTM_CONTENT = d._utm_content;
 
     const saved = await upsertBrevoContact(headers, d.email, attributes, brevoPartialListId(page));
     // Without a stored PARTIAL_NUDGE, step 2 couldn't cancel it: better no reminder than
@@ -570,19 +742,21 @@ const PRODUCT_BY_PAGE: Record<string, string> = {
 
 // ---- Lead value (EUR) for value-based bidding (Meta value optimization / Google tROAS) ----
 // value = expected euros per COMPLETED lead = typical deal value x assumed lead-to-deal rate.
-//   corporate     125 = B2B event ~500 € x 25%
-//   celebrations   75 = B2C private event ~300 € x 25%
+//   corporate      40 = B2B event ~270 € x ~12-15% paid close. Contact-first since Oct 2026:
+//                       the lead is step 1 (name, phone, email, event type), not the full brief.
+//   celebrations   30 = B2C private event ~150 € x ~20%
 //   venues         50 = parked product, placeholder
 //   partners      by the lead's city, ~5% lead-to-signed x first-year value per tier:
 //                 large 250 (5,000 €) / medium 150 (3,000 €) / small or unknown 100 (2,000 €)
 // `lead start` (step 1) carries LEAD_START_SHARE (20%) of the complete value.
-// The close rates are ASSUMPTIONS, not measured. Recalibrate once Brevo has a few months
+// The close rates are ASSUMPTIONS, not measured; corporate and celebrations get recalibrated
+// after the first 20 ad leads. Recalibrate once Brevo has a few months
 // of won deals per funnel (value = average won deal x won / completed leads). Only the
 // ratios between funnels steer the bidding, so keep them honest relative to each other.
 // shared/qed.js mirrors the page defaults (partners -> the medium 150) for the browser
 // events and prefers the value this function returns in the step-2 response.
 const LEAD_START_SHARE = 0.2;
-const PAGE_LEAD_VALUE: Record<string, number> = { corporate: 125, celebrations: 75, venues: 50 };
+const PAGE_LEAD_VALUE: Record<string, number> = { corporate: 40, celebrations: 30, venues: 50 };
 const PARTNER_TIER_VALUE = { large: 250, medium: 150, small: 100 };
 
 // Spanish municipalities by population (INE padrón). Written accent-free, lowercase, with
@@ -672,6 +846,9 @@ const META_EVENT_NAME: Record<string, string> = {
 const AMPLITUDE_EVENT_NAME: Record<string, string> = {
   "lead complete": "Lead Submitted",
   "lead start": "Lead Started",
+  // contact-first step 2 (corporate). Meta's mapping is an allowlist of start/complete, so only
+  // Amplitude gets it.
+  "lead details": "Lead Details Added",
 };
 
 // City normalization (MEASUREMENT-PLAN.md): the forms collect free-text city, which fragments
@@ -788,7 +965,8 @@ function serverDestinations(): Record<string, unknown> {
 // Forward a lead event through the walkerOS server collector to Meta CAPI / Amplitude / Google
 // Ads. No-op off the production domains and unless the visitor granted analytics consent (qed.js
 // sends d._consent / d._consentCategories; see shared/consent.js). `event` is a walker name:
-// "lead start" (step 1 partial) or "lead complete" (step 2 full).
+// "lead start" (step 1 partial) or "lead complete" (step 2 full; step 1 on a contact-first form,
+// d._capture "contact"), or "lead details" (contact-first step 2, Amplitude only).
 export async function sendLeadEvent(event: string, d: Dict, page: string): Promise<void> {
   if (!analyticsEnabled(d._url)) return;
   if (d._consent !== "granted") return; // analytics gate — measurement
@@ -818,7 +996,7 @@ export async function sendLeadEvent(event: string, d: Dict, page: string): Promi
     funnel: page,
     product: PRODUCT_BY_PAGE[page] || page,
     page_path: d.path, // same property the browser events carry
-    step: event === "lead start" ? 1 : 2,
+    step: event === "lead start" || (event === "lead complete" && d._capture === "contact") ? 1 : 2,
     value: event === "lead start" ? leadStartValue(page, d.city) : leadValue(page, d.city),
     currency: "EUR",
     city: normalizeCity(d.city),
@@ -826,6 +1004,8 @@ export async function sendLeadEvent(event: string, d: Dict, page: string): Promi
     format: d.format,
     group_size: d.groupSize,
     date: d.date,
+    restaurant: d.restaurant,
+    variant: d._variant,
     guest_of_honour: d.guestOfHonour,
     venue_name: d.venueName,
     nights: d.nights,
@@ -886,8 +1066,11 @@ export function isConsentReplay(d: Dict): boolean {
   return d._replay === "consent";
 }
 
+// Contact-first (d._capture "contact"): step 1 is the `lead complete`, step 2 the `lead details`.
 export async function sendConsentReplay(d: Dict, page: string): Promise<void> {
-  await sendLeadEvent(d._step === "1" ? "lead start" : "lead complete", d, page);
+  const contact = d._capture === "contact";
+  const event = d._step === "1" ? (contact ? "lead complete" : "lead start") : (contact ? "lead details" : "lead complete");
+  await sendLeadEvent(event, d, page);
 }
 
 // ---- QED client portal: the CRM record --------------------------------------
