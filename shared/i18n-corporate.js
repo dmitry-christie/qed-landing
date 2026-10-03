@@ -36,7 +36,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.uc.2t": "Offsites de empresa",
   "c.uc.2d": "El tardeo que salva el offsite de ser todo diapositivas. Entramos después de los talleres y mandamos a todo el mundo a cenar con ganas de revancha.",
   "c.uc.3t": "Eventos con clientes",
-  "c.uc.3d": "Un plan del que tus clientes se acuerdan y que hace que tu marca parezca divertida y espabilada. Cero charla incómoda con el vino templado.",
+  "c.uc.3d": "Un plan del que tus clientes se acordarán y que hace que tu marca parezca divertida y espabilada. Cero charla incómoda con el vino templado.",
 
   "c.fmt.eyebrow": "Dos formas de jugar",
   "c.fmt.h2": "Un plan por sí solo, o parte de la cena de empresa.",
@@ -49,7 +49,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.fmt.fullpitch": "La trivia es el plan entero.",
   "c.fmt.fullwhen": "Una tarde, una noche o justo al acabar un taller",
   "c.fmt.fullwhere": "En tu oficina o en un local que te proponemos y reservamos",
-  "c.fmt.fullcta": "Organizar el plan completo",
+  "c.fmt.fullcta": "Quiero el plan completo",
   "c.fmt.dinner": "Trivia + cena de empresa",
   "c.fmt.season": "Navidad 2026",
   "c.fmt.dinnerpitch": "La trivia es lo mejor de la cena.",
