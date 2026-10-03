@@ -66,7 +66,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.fmt.d2": "Rondas a medida sobre tu empresa",
   "c.fmt.d3": "Marcador en directo y un equipo ganador",
   "c.fmt.d4": "Extras opcionales: fotógrafo, trofeos personalizados",
-  "c.fmt.dinnerprice": "El precio final depende de cuántos sois, la ciudad y si ponemos el local. Te lo pasamos cerrado y sin sorpresas.",
+  "c.fmt.dinnerprice": "El precio final depende de cuántos sois, la ciudad y si ponemos el local. Te lo pasamos cerrado y sin sorpresas. El viernes 11 y el sábado 12 de diciembre se confirman con una señal del 30%.",
   "c.fmt.groupnote": "¿Venís en cuadrilla grande? Los grupos grandes son justo lo nuestro, desde un equipo de 10 hasta más de 300.",
   "c.fmt.grouplink": "Pide presupuesto",
 
@@ -135,7 +135,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // SEASONAL (Sep-Dec 2026): revert to the year-round answer after mid-December.
   "c.faq.a6": "Para noviembre y diciembre, cuanto antes: los jueves y viernes de diciembre son lo primero que se llena, y los locales para grupos grandes también. Para el resto del año, con dos semanas suele bastar. ¿Lo tienes más justo? Pregunta igualmente.",
   "c.faq.q7": "¿Cuánto cuesta?",
-  "c.faq.a7": "Desde 7 € + IVA por persona, con un mínimo de 250 € + IVA por evento. El precio final depende de cuántos sois, la ciudad y si ponemos el local, y te lo pasamos cerrado y sin sorpresas.",
+  "c.faq.a7": "Desde 7 € + IVA por persona, con un mínimo de 250 € + IVA por evento. El precio final depende de cuántos sois, la ciudad y si ponemos el local, y te lo pasamos cerrado y sin sorpresas. Para el viernes 11 y el sábado 12 de diciembre pedimos una señal del 30% al confirmar.",
   "c.faq.q8": "¿Qué incluye?",
   "c.faq.a8": "Anfitrión en directo, nuestro equipo audiovisual (sonido, pantalla o proyector y puntuación en directo), rondas a medida sobre vuestra empresa y premios para el equipo ganador, más un operador en los grupos grandes. Extras a petición: trofeos personalizados y fotógrafo.",
   "c.faq.q9": "¿Puede ser una comida o por la tarde?",
@@ -143,11 +143,11 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.faq.q10": "Ya tenemos restaurante. ¿Venís allí?",
   "c.faq.a10": "Sí, es lo más habitual. Jugamos antes o después de comer o cenar; coordinamos el espacio con el restaurante y llevamos nuestro equipo si hace falta.",
   "c.faq.q11": "¿Cómo funciona la reserva de fecha?",
-  "c.faq.a11": "Tras la llamada te guardamos la fecha hasta 7 días sin coste (72 h en los viernes de diciembre y el sábado 12, que vuelan). Para confirmarla, solo tenéis que aceptar el presupuesto.",
+  "c.faq.a11": "Tras la llamada te guardamos la fecha hasta 7 días sin coste (72 h en los viernes de diciembre y el sábado 12, que vuelan). Para confirmarla, aceptáis el presupuesto. El viernes 11 y el sábado 12 de diciembre se confirman además con una señal del 30%; las condiciones de cancelación van en el presupuesto.",
 
   "c.form.h2": "Déjanos tu teléfono y te llamamos.",
   // SEASONAL (Sep-Dec 2026): drop the "¿Es para diciembre?" opener after mid-December.
-  "c.form.sub": "¿Es para diciembre? Te guardamos la fecha hasta 7 días sin compromiso mientras lo aprobáis internamente. Te llama una persona de verdad, normalmente el mismo día laborable.",
+  "c.form.sub": "¿Es para diciembre? Te guardamos la fecha hasta 7 días sin compromiso mientras lo aprobáis internamente (el 11 y el 12 de diciembre se confirman con una señal del 30%). Te llama una persona de verdad, normalmente el mismo día laborable.",
   "c.form.company": "Empresa",
   "c.form.workemail": "Email de trabajo",
   "c.form.eventType": "¿Qué tipo de evento?",
@@ -187,7 +187,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.ph.msg": "Ocasión, local, cómo sería para vosotros un gran tardeo…",
   "c.form.sent": "enviado",
   "c.form.successh": "Hecho. Te llamamos.",
-  "c.form.successp": "Te llamamos en horario laboral (L-V, 10-19 h), normalmente el mismo día laborable. En la llamada te guardamos la fecha hasta 7 días sin compromiso.",
+  "c.form.successp": "Te llamamos en horario laboral (L-V, 10-19 h), normalmente el mismo día laborable. En la llamada te guardamos la fecha hasta 7 días sin compromiso; el viernes 11 y el sábado 12 de diciembre se confirman con una señal del 30%.",
 
   "c.foot.tagline": "Team building que de verdad se disfruta. Presencial en Valencia, Madrid, Murcia y Santiago de Compostela."
 });
