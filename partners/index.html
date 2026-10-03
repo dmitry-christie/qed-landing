@@ -99,7 +99,7 @@
 
     <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
       <div class="card card--flat reveal statbar3" style="background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.18);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(3,1fr)">
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-count="7">7</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.locations">locations</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-count="7" data-count-es="6">7</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.locations">locations</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="7510">7,510</span>+</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.players">registered players</div></div>
         <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--orange)"><span data-count="78">78</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.return">of players come back</div></div>
       </div>
@@ -320,7 +320,7 @@
           <g>
             <path class="esmap__arrow" marker-end="url(#esArrow)" d="M376 251 Q215 118 101 104"/>
             <path class="esmap__arrow" marker-end="url(#esArrow)" d="M380 254 Q322 202 277 216"/>
-            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M388 250 Q448 203 461 180"/>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M388 250 Q448 203 461 180" data-lang-hide="es"/><!-- Barcelona: QED only, TDT does not run there -->
             <path class="esmap__arrow" marker-end="url(#esArrow)" d="M381 262 Q380 300 362 320"/>
           </g>
 
@@ -341,9 +341,11 @@
             <circle class="esmap__pinring" cx="262.1" cy="214.1" r="8"/><circle class="esmap__pindot" cx="262.1" cy="214.1" r="3.5"/>
             <text x="262" y="199" text-anchor="middle" class="esmap__label">Madrid</text>
 
-            <circle class="esmap__pulse" cx="471.7" cy="172.9" r="8" style="animation-delay:1s"/>
-            <circle class="esmap__pinring" cx="471.7" cy="172.9" r="8"/><circle class="esmap__pindot" cx="471.7" cy="172.9" r="3.5"/>
-            <text x="459" y="168" text-anchor="end" class="esmap__label">Barcelona</text>
+            <g data-lang-hide="es"><!-- Barcelona: QED only, so hidden on the Spanish (TDT) site -->
+              <circle class="esmap__pulse" cx="471.7" cy="172.9" r="8" style="animation-delay:1s"/>
+              <circle class="esmap__pinring" cx="471.7" cy="172.9" r="8"/><circle class="esmap__pindot" cx="471.7" cy="172.9" r="3.5"/>
+              <text x="459" y="168" text-anchor="end" class="esmap__label">Barcelona</text>
+            </g>
 
             <circle class="esmap__pulse" cx="355.0" cy="328.1" r="8" style="animation-delay:1.5s"/>
             <circle class="esmap__pinring" cx="355.0" cy="328.1" r="8"/><circle class="esmap__pindot" cx="355.0" cy="328.1" r="3.5"/>

@@ -64,17 +64,36 @@
     catch (e) { try { return n.toLocaleString(document.documentElement.lang || "en"); } catch (e2) { return String(n); } }
   }
 
+  /* A counter's value can differ by language: ES is the TDT brand, which runs in fewer places
+     than QED, so e.g. <div data-count="7" data-count-es="6"> reads 7 in English and 6 in
+     Spanish. i18n.js sets <html lang> before this script runs and on every in-page toggle. */
+  function countTarget(el) {
+    var es = /^es/i.test(document.documentElement.lang || "") && el.hasAttribute("data-count-es");
+    return parseInt(el.getAttribute(es ? "data-count-es" : "data-count"), 10);
+  }
+
+  // el.__qedCount: "pending" (blanked, waiting to scroll in), "running", "done". i18n.js leaves
+  // a counter alone once this is set.
   function animateCount(el) {
-    var target = parseInt(el.getAttribute("data-count"), 10);
-    if (!isFinite(target)) return;
+    if (!isFinite(countTarget(el))) { el.__qedCount = "done"; return; }
+    el.__qedCount = "running";
     var duration = 3000, start = null;
     function tick(ts) {
       if (start === null) start = ts;
       var p = Math.min((ts - start) / duration, 1);
-      el.textContent = formatCount(Math.round(easeOutCubic(p) * target));
+      // Target read every frame, so a language toggle mid-count lands on the new value.
+      var target = countTarget(el);
+      if (isFinite(target)) el.textContent = formatCount(Math.round(easeOutCubic(p) * target));
       if (p < 1) requestAnimationFrame(tick);
+      else el.__qedCount = "done";
     }
     requestAnimationFrame(tick);
+  }
+
+  function showFinalCount(el) {
+    var n = countTarget(el);
+    if (isFinite(n)) el.textContent = formatCount(n);
+    el.__qedCount = "done";
   }
 
   // Draws each route arrow from Valencia outward as if being penned in, then crossfades
@@ -84,7 +103,11 @@
   // marker-end arrowhead would otherwise render at full opacity from frame one regardless
   // of dash progress — hiding the original until the overlay finishes sidesteps both.
   function animateMapArrows(arrows) {
-    Array.prototype.forEach.call(arrows, function (path, i) {
+    // Skip an arrow hidden for this language (data-lang-hide, e.g. Barcelona on the TDT site):
+    // it has no rendered length to draw, and its clone would inherit the display:none anyway.
+    // If the language flips back it simply shows in its finished, static state.
+    arrows = Array.prototype.filter.call(arrows, function (path) { return path.style.display !== "none"; });
+    arrows.forEach(function (path, i) {
       var len = path.getTotalLength();
       var overlay = path.cloneNode();
       overlay.removeAttribute("marker-end");
@@ -113,7 +136,7 @@
 
   if (reveals.length || counters.length) {
     if ("IntersectionObserver" in window && !reduce) {
-      counters.forEach(function (el) { el.textContent = "0"; });
+      counters.forEach(function (el) { el.textContent = "0"; el.__qedCount = "pending"; });
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
@@ -133,11 +156,18 @@
       reveals.forEach(function (el) { el.classList.add("in"); });
       // No count-up here, but still format the final value for the page language: the baked
       // English "7,510+" reads as 7.51 in Spanish. i18n.js has already set <html lang> by now.
-      counters.forEach(function (el) {
-        var n = parseInt(el.getAttribute("data-count"), 10);
-        if (isFinite(n)) el.textContent = formatCount(n);
-      });
+      counters.forEach(showFinalCount);
     }
+  }
+
+  // In-page language toggle (unbranded/preview builds; branded ones navigate to the other
+  // domain): a counter that already finished re-renders in the new language, both its value
+  // (data-count-es) and its grouping (7,510 vs 7.510). A pending one still counts up to the
+  // right value when it scrolls in, and a running one picks up the new target on its next frame.
+  if (counters.length && "MutationObserver" in window) {
+    new MutationObserver(function () {
+      counters.forEach(function (el) { if (el.__qedCount === "done") showFinalCount(el); });
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   }
 
   /* FAQ accordions — native <details>, but height-animated (.ans already sets

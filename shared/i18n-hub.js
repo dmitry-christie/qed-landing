@@ -1,7 +1,7 @@
 /* Spanish: Hub / homepage. English is baked into /index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.title": "Tardeo de Trivia · Tardeos de trivia por toda España",
-  "h.metadesc": "Montamos y presentamos tardeos de trivia que la gente recuerda de verdad: para empresas, celebraciones, locales y franquicias. Eventos en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela, y tardeos también en A Coruña.",
+  "h.metadesc": "Montamos y presentamos tardeos de trivia que la gente recuerda de verdad: para empresas, celebraciones, locales y franquicias. Eventos en Valencia, Madrid, Murcia y Santiago de Compostela, y tardeos también en A Coruña.",
   "h.ogtitle": "Tardeo de Trivia",
   "h.ogdesc": "La empresa de tardeos de trivia para noches que no aburren. Elige tu sala.",
 
@@ -9,6 +9,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.nav.partners": "Franquicias",
   "h.nav.venues": "Marca blanca",
 
+  // TDT cities only (ES = the TDT brand; Barcelona is QED only). \u00a0 keeps each name whole and
+  // stops a wrapped line from starting with "·".
+  "h.hero.cities": "Valencia\u00a0· Madrid\u00a0· Murcia\u00a0· Santiago\u00a0· A\u00a0Coruña",
   "h.hero.h1a": "Tardeos de trivia que ",
   "h.hero.h1b": "se recuerdan de verdad.",
   "h.hero.sub": "Nosotros lo escribimos, lo presentamos y llevamos la puntuación; tú solo traes a tu gente. Reservamos tardeos de trivia privados para tu empresa, tu cumpleaños o tu celebración, donde tú quieras.",
@@ -16,7 +19,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "h.plan.eyebrow": "Reserva un tardeo",
   "h.plan.h2": "¿Montas algo? Nosotros ponemos la trivia.",
-  "h.plan.lead": "Presencial en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela, o por tu cuenta en cualquier parte del mundo con nuestro kit Express.",
+  "h.plan.lead": "Presencial en Valencia, Madrid, Murcia y Santiago de Compostela, o por tu cuenta en cualquier parte del mundo con nuestro kit Express.",
   "h.plan.corp.kicker": "Para empresas",
   "h.plan.corp.ta": "Team building que de verdad ",
   "h.plan.corp.tb": "se disfruta.",
@@ -43,5 +46,5 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.work.flat.stampb": "Tarifa",
   "h.work.flat.stamp": "plana",
 
-  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Barcelona, Murcia, Santiago de Compostela y A Coruña."
+  "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Murcia, Santiago de Compostela y A Coruña."
 });

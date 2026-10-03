@@ -1,7 +1,8 @@
-/* Spanish: Celebrations page. English is baked into celebrations/index.html. */
+/* Spanish: Celebrations page. English is baked into celebrations/index.html.
+   ES city lists name only TDT's 4 host cities (Valencia, Madrid, Murcia, Santiago); the baked EN is QED's longer list. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.title": "Tardeo de Trivia para Celebraciones · El juego de fiesta que se lleva el show",
-  "cel.metadesc": "Un tardeo de trivia escrito sobre el homenajeado. Cumpleaños, despedidas, bodas y aniversarios presenciales en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela.",
+  "cel.metadesc": "Un tardeo de trivia escrito sobre el homenajeado. Cumpleaños, despedidas, bodas y aniversarios presenciales en Valencia, Madrid, Murcia y Santiago de Compostela.",
   "cel.ogtitle": "Tardeo de Trivia para Celebraciones · El juego de fiesta que se lleva el show",
   "cel.ogdesc": "Trivia personalizada sobre la cumpleañera, la feliz pareja o la efeméride. No una trivia genérica.",
 
@@ -51,7 +52,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.fmt.byquote": "A presupuesto",
   "cel.fmt.fulltag": "· con anfitrión, todo incluido",
   "cel.fmt.fulldesc": "Un anfitrión profesional dirige toda la fiesta. Nos ocupamos de la sala, la técnica y el contenido. ",
-  "cel.fmt.cities": "Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela.",
+  "cel.fmt.cities": "Valencia, Madrid, Murcia y Santiago de Compostela.",
   "cel.fmt.f1": "Anfitrión profesional que anima la sala",
   "cel.fmt.f2": "Recomendación y coordinación del local",
   "cel.fmt.f3": "Contenido a medida y montaje audiovisual completo",
@@ -124,7 +125,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.faq.q2": "¿Cuántos invitados pueden jugar?",
   "cel.faq.a2": "Desde una cena íntima de 2 mesas hasta una fiesta de 200 invitados. Los grupos pequeños juegan por parejas; los grandes se reparten en equipos con clasificación en directo.",
   "cel.faq.q3": "¿Vais hasta donde estemos?",
-  "cel.faq.a3": "El Full Experience con anfitrión es presencial en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela. Una versión Express autogestionada, para cualquier otro sitio, llegará pronto.",
+  "cel.faq.a3": "El Full Experience con anfitrión es presencial en Valencia, Madrid, Murcia y Santiago de Compostela. Una versión Express autogestionada, para cualquier otro sitio, llegará pronto.",
   "cel.faq.q4": "¿Es apto para toda la familia?",
   "cel.faq.a4": "Puede serlo. Dinos cómo es el público y lo enfocamos en consecuencia: para todas las edades en un cumpleaños familiar, o un poco más picante para un tardeo estilo despedida.",
   "cel.faq.q5": "¿Inglés o español?",
@@ -157,5 +158,5 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.form.successh": "Vamos a montar una buena.",
   "cel.form.successp": "Gracias. Tenemos los detalles y te escribirá una persona de verdad de nuestro equipo, normalmente el mismo día.",
 
-  "cel.foot.tagline": "El juego de fiesta que se lleva el show. Presencial en Valencia, Madrid, Barcelona, Murcia y Santiago de Compostela."
+  "cel.foot.tagline": "El juego de fiesta que se lleva el show. Presencial en Valencia, Madrid, Murcia y Santiago de Compostela."
 });
