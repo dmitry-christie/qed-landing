@@ -15,7 +15,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.hero.tag": "Cumpleaños · Despedidas · Aniversarios",
   "cel.hero.h1a": "El juego de fiesta que ",
   "cel.hero.h1b": "se lleva el show.",
-  "cel.hero.sub": "Un tardeo de trivia escrito sobre el homenajeado. Tu gente, vuestras bromas internas, vuestras fotos más comprometedoras, convertidas en la ronda que todo el mundo recuerda.",
+  // The round about the guest of honour is an extra (priced on the call), so the hero offers it
+  // as an add-on: the 150 € in the stat strip below is the hosted quiz without it.
+  "cel.hero.sub": "Un tardeo de trivia con anfitrión en directo que dirige toda la fiesta. Añade una ronda sobre el homenajeado, y vuestras bromas internas y fotos más comprometedoras serán la ronda que todo el mundo recuerda.",
 
   // Price hook (150 € = up to 25 guests at a partner venue), as on the hub's Empresas door.
   "cel.stat.from": "150\u00a0€",
@@ -80,7 +82,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.how.1t": "Cuéntanos a quién celebramos",
   "cel.how.1d": "Cuatro detalles, un par de anécdotas y las fotos vergonzosas. Cuanto más compartes, más nos reímos.",
   "cel.how.2t": "Escribimos las preguntas",
-  "cel.how.2d": "Rondas a medida sobre el homenajeado o la pareja, mezcladas con preguntas para todos los públicos para que nadie se quede fuera.",
+  "cel.how.2d": "Preguntas para todos los públicos, para que nadie se quede fuera, y, si la añadís, una ronda a medida sobre el homenajeado o la pareja.",
   "cel.how.3t": "¡A jugar!",
   "cel.how.3d": "Lo dirigimos nosotros, de principio a fin. Tú te llevas el caos, las fotos y un ganador de lo más chulito.",
 
@@ -109,7 +111,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.cust.prizes.tag1": "Trofeos personalizados",
   "cel.cust.prizes.tag2": "Premios de experiencias",
 
-  "cel.feat.eyebrow": "Qué incluye",
+  "cel.feat.eyebrow": "Así es la trivia",
   "cel.feat.h2": "Una fiesta entera montada sobre ellos.",
   "cel.feat.f0tag": "El extra estrella",
   "cel.feat.f0t": "Rondas escritas sobre ellos",
