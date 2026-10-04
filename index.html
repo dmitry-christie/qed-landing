@@ -21,20 +21,20 @@
 <style>
   /* Hub-only components (hb-). The hub routes: two equal doors for the two focus funnels
      (corporate, franchise), a smaller row for celebrations, white-label in the footer only.
-     Loaded after qed.css, so an hb- rule wins a same-specificity tie. The doors, celebrations row
-     and scorecard carry no .reveal: qed.css pins `.hero .reveal` to transform:none, which would
-     cancel their hover lift and the scorecard tilt (and the hero paints instantly anyway). */
+     Loaded after qed.css, so an hb- rule wins a same-specificity tie. The doors and celebrations
+     row carry no .reveal: qed.css pins `.hero .reveal` to transform:none, which would cancel their
+     hover lift (and the hero paints instantly anyway). */
   /* the venue photo washes out to plain cream by the doors, so they sit on a calm ground */
   .hb-hero{ padding:clamp(28px,4vw,48px) 0 clamp(36px,4.5vw,56px);
     background:linear-gradient(180deg, rgba(251,246,234,.86) 0%, rgba(251,246,234,.9) 38%, var(--cream) 72%), url('/shared/header-bg.jpg') center 30%/cover; }
-  .hb-grid{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-areas:"intro" "doors" "cele" "score"; gap:18px; }
+  .hb-grid{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-areas:"intro" "doors" "cele" "stats"; gap:18px; }
   .hb-intro{ grid-area:intro; }
   .hb-doors{ grid-area:doors; display:grid; grid-template-columns:minmax(0,1fr); gap:18px; margin-top:clamp(10px,2vw,22px); }
   .hb-cele{ grid-area:cele; }
-  .hb-score{ grid-area:score; }
-  @media (min-width:760px){ .hb-doors{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:22px; } }
-  @media (min-width:960px){
-    .hb-grid{ grid-template-columns:minmax(0,1fr) 300px; grid-template-areas:"intro score" "doors doors" "cele cele"; column-gap:56px; row-gap:22px; align-items:end; }
+  .hb-stats{ grid-area:stats; }
+  @media (min-width:760px){
+    .hb-grid{ row-gap:22px; }
+    .hb-doors{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:22px; }
   }
 
   .hb-h1{ margin-top:0; max-width:15ch; font-size:clamp(40px,6vw,68px); text-wrap:balance; }
@@ -111,23 +111,22 @@
     .hb-cele__link{ grid-column:2; justify-self:start; }
   }
 
-  /* --- proof: the scorecard motif --- */
-  .hb-score{ align-self:end; }
-  .hb-score .scorecard__hd svg{ width:16px; height:16px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .hb-score__list{ margin:0; }
-  .hb-score__row{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:11px 15px; border-bottom:1px dashed var(--hairline-strong); }
-  .hb-score__row:last-child{ border-bottom:0; }
-  .hb-score__row dt{ font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
-  .hb-score__row dd{ margin:0; font-weight:900; font-size:26px; letter-spacing:-0.03em; line-height:1; white-space:nowrap; }
-  .hb-score__row:first-child dd{ color:var(--accent); }
-  @media (min-width:960px){ .hb-score{ transform:rotate(2deg); margin-bottom:6px; } }
-  /* tablets: full width under the doors, so the three stats sit side by side (number over label)
-     instead of three long rows with the label ~550px from its number */
-  @media (min-width:600px) and (max-width:959px){
-    .hb-score__list{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
-    .hb-score__row{ flex-direction:column-reverse; align-items:flex-start; justify-content:flex-end; gap:7px; padding:15px 18px 16px; border-bottom:0; }
-    .hb-score__row + .hb-score__row{ border-left:1px dashed var(--hairline-strong); }
-    .hb-score__row dd{ font-size:30px; }
+  /* --- proof: the same dark stat strip the /corporate/ and /celebrations/ heroes end on. Flat (no
+     sticker shadow), so it never reads as one more clickable card next to the doors. Each stat is
+     dt (label) then dd (number) for screen readers, drawn number-over-label. --- */
+  .hb-stats{ margin:clamp(6px,1.4vw,16px) 0 0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+    background:var(--ink); color:#fff; border:2px solid var(--ink); border-radius:var(--r-lg); overflow:hidden; }
+  .hb-stat{ display:flex; flex-direction:column-reverse; align-items:center; justify-content:flex-end; gap:6px; padding:20px 12px; text-align:center; }
+  .hb-stat + .hb-stat{ border-left:1px solid rgba(255,255,255,.16); }
+  .hb-stat dd{ margin:0; color:#fff; white-space:nowrap; }
+  .hb-stat dt{ margin:0; color:rgba(255,255,255,.62); }
+  .hb-stat:first-child dd{ color:var(--yellow); }
+  .hb-stat:last-child dd{ color:var(--accent); }
+  /* phones: two up, the third full width under them (the shared .statbar3 pattern) */
+  @media (max-width:599px){
+    .hb-stats{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .hb-stat{ padding:16px 8px; }
+    .hb-stat:last-child{ grid-column:1 / -1; border-left:0; border-top:1px solid rgba(255,255,255,.16); }
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -168,15 +167,6 @@
         <p class="lead hb-sub" data-i18n="h.hero.sub">We bring the quiz to company dinners, team days and celebrations: the questions, the hosting and the scoreboard. And with our franchise, you run your own.</p>
       </div>
 
-      <div class="hb-score scorecard">
-        <p class="scorecard__hd" style="margin:0"><b data-i18n="h.stat.hd">By the numbers</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg></p>
-        <dl class="hb-score__list">
-          <div class="hb-score__row"><dt data-i18n="h.stat.locations">Locations</dt><dd data-count="7" data-count-es="6">7</dd></div>
-          <div class="hb-score__row"><dt data-i18n="h.stat.players">Registered players</dt><dd><span data-count="7510">7,510</span>+</dd></div>
-          <div class="hb-score__row"><dt data-i18n="h.stat.return">Players who come back</dt><dd><span data-count="78">78</span>%</dd></div>
-        </dl>
-      </div>
-
       <div class="hb-doors">
 
         <div class="hb-door hb-door--corp">
@@ -185,9 +175,9 @@
             <h2 class="hb-door__t" data-i18n="h.door.corp.t">Corporate</h2>
             <span class="hb-door__stamp" aria-hidden="true"><svg class="hb-i" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M3 13h18"/><path d="M11 13v2h2v-2"/></svg></span>
           </div>
-          <p class="hb-door__d" data-i18n="h.door.corp.d">You plan the dinner or the offsite; we bring the quiz, with a live host and rounds about your company.</p>
+          <p class="hb-door__d" data-i18n="h.door.corp.d">You plan the dinner or the offsite; we bring the quiz, with a live host and, if you like, rounds about your company.</p>
           <div class="hb-door__foot">
-            <p class="hb-door__fact" data-i18n="h.door.corp.fact">From&nbsp;€7&nbsp;+&nbsp;VAT&nbsp;per&nbsp;person&nbsp;· 10&nbsp;to&nbsp;300&nbsp;people</p>
+            <p class="hb-door__fact" data-i18n="h.door.corp.fact">From&nbsp;€150&nbsp;+&nbsp;VAT&nbsp;per&nbsp;event&nbsp;· Priced&nbsp;by&nbsp;group&nbsp;size</p>
             <a class="hb-door__cta" href="/corporate/"><span data-i18n="h.door.corp.cta">See company events</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
           </div>
         </div>
@@ -211,10 +201,17 @@
         <span class="hb-cele__ico" aria-hidden="true"><svg class="hb-i" viewBox="0 0 24 24"><path d="M4 21h16"/><path d="M5 21v-6.5A1.5 1.5 0 0 1 6.5 13h11a1.5 1.5 0 0 1 1.5 1.5V21"/><path d="M5 17c1.2.9 2.4.9 3.5 0s2.3-.9 3.5 0 2.3.9 3.5 0 2.3-.9 3.5 0"/><path d="M12 13V9.5"/><path d="M12 7c.9 0 1.4-.7 1.4-1.4C13.4 4.7 12 3 12 3s-1.4 1.7-1.4 2.6c0 .7.5 1.4 1.4 1.4z"/></svg></span>
         <div>
           <h2 class="hb-cele__t" data-i18n="h.cele.t">Celebrations</h2>
-          <p class="hb-cele__d" data-i18n="h.cele.d">Birthdays, hen and stag dos and anniversaries, with rounds written about the guest of honour.</p>
+          <p class="hb-cele__d" data-i18n="h.cele.d">Birthdays, hen and stag dos and anniversaries, with a live host and, if you like, a round about the guest of honour.</p>
         </div>
         <a class="hb-cele__link" href="/celebrations/"><span data-i18n="h.cele.cta">See celebrations</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
       </div>
+
+      <!-- Locations differ per brand: data-count-es="6" (TDT has no Barcelona). -->
+      <dl class="hb-stats">
+        <div class="hb-stat"><dt class="kpi-lab" data-i18n="h.stat.locations">Locations</dt><dd class="kpi" data-count="7" data-count-es="6">7</dd></div>
+        <div class="hb-stat"><dt class="kpi-lab" data-i18n="h.stat.players">Registered players</dt><dd class="kpi"><span data-count="7510">7,510</span>+</dd></div>
+        <div class="hb-stat"><dt class="kpi-lab" data-i18n="h.stat.return">Players who come back</dt><dd class="kpi"><span data-count="78">78</span>%</dd></div>
+      </dl>
 
     </div>
   </section>
@@ -269,7 +266,7 @@
 </footer>
 
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-hub.js?v=20261010"></script>
+<script src="/shared/i18n-hub.js?v=20261011"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
