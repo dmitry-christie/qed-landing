@@ -65,7 +65,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.fmt.dinnercta": "Añadirlo a nuestra cena",
   // scope line under the two formats: we run the trivia, not the offsite or the dinner
   "c.fmt.scopeh": "Lo nuestro es la trivia.",
-  "c.fmt.scoped": "Anfitrión, rondas a medida, puntuación, sonido y pantalla. La cena, el catering, el transporte y el resto del offsite corren de vuestra cuenta; si necesitáis un sitio para jugar, os recomendamos uno.",
+  "c.fmt.scoped": "Anfitrión, rondas a medida, puntuación, sonido y pantalla. La cena, el catering, el transporte y el resto del offsite los organizáis vosotros; si necesitáis un sitio para jugar, os recomendamos uno y lo cuadramos con ellos.",
   // price + booking panel, said once for both formats
   "c.fmt.both": "Para los dos formatos",
   "c.fmt.from": "Desde 7 €",
@@ -154,7 +154,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.faq.q8": "¿Qué incluye?",
   "c.faq.a8": "Anfitrión en directo, nuestro equipo audiovisual (sonido, pantalla o proyector y puntuación en directo), rondas a medida sobre vuestra empresa y premios para el equipo ganador, más un operador en los grupos grandes. Extras a petición: trofeos personalizados y fotógrafo.",
   "c.faq.q12": "¿Organizáis también el offsite o la cena?",
-  "c.faq.a12": "No, lo nuestro es la trivia: anfitrión, rondas a medida, puntuación, sonido y pantalla, de principio a fin. La cena, el catering, el transporte, el alojamiento y los talleres corren de vuestra cuenta (o de quien os organice el evento). Si necesitáis un sitio para jugar, os recomendamos uno que encaje y coordinamos la trivia con ellos.",
+  "c.faq.a12": "No, lo nuestro es la trivia: anfitrión, rondas a medida, puntuación, sonido y pantalla, de principio a fin. La cena, el catering, el transporte, el alojamiento y los talleres los organizáis vosotros (o quien os organice el evento). Si necesitáis un sitio para jugar, os recomendamos uno que encaje y coordinamos la trivia con ellos.",
   "c.faq.q9": "¿Puede ser una comida o por la tarde?",
   "c.faq.a9": "Sí. Muchos equipos prefieren una comida de empresa o un plan de tarde. La misma trivia, el mismo anfitrión, solo que antes.",
   "c.faq.q10": "Ya tenemos restaurante. ¿Venís allí?",
