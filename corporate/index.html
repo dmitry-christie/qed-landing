@@ -122,7 +122,7 @@
   .cx-price__eyebrow, .cx-band__h{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); }
   .cx-price__big{ margin:12px 0 0; font-weight:900; font-size:clamp(46px,4.8vw,64px); letter-spacing:-0.045em; line-height:.95; }
   .cx-price__vat{ margin:7px 0 0; font-family:var(--mono); font-size:13px; font-weight:700; }
-  .cx-price__cond{ margin:16px 0 0; padding:7px 13px; border-radius:999px; background:var(--ink); color:#fff; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.02em; line-height:1.35; }
+  .cx-price__cond{ margin:16px 0 0; padding:7px 13px; border-radius:999px; background:var(--ink); color:#fff; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.02em; line-height:1.35; text-wrap:balance; }
   .cx-price__note{ margin:auto 0 0; padding-top:18px; align-self:stretch; }
   .cx-price__note span{ display:block; padding-top:14px; border-top:2px dashed rgba(31,26,20,.35); font-size:15px; line-height:1.5; font-weight:600; }
   /* the tiers: a real table (screen readers get rows and headers); the partner-venue column is
@@ -153,8 +153,17 @@
   .cx-band__list--book .cx-i{ width:20px; height:20px; color:var(--accent-deep); }
   .cx-band__list--book strong{ font-weight:800; }
   @media (min-width:961px){
-    /* a ticket notch where the perforation meets the top edge: a cream disc on the card's edge */
-    .cx-price__stub::before{ content:""; position:absolute; top:-15px; right:-14px; width:26px; height:26px; border-radius:50%; background:var(--cream); border:2px solid var(--ink); clip-path:inset(50% -3px -3px -3px); }
+    /* ticket notches wherever a perforation meets the card's edge: the stub's dashed line at the
+       top edge, and both ends of the tear line above the band. Cream discs on the edge, half
+       clipped; the right one is bigger and centred on the shadow's outer edge, so it bites
+       through the shadow too (as the bottom notch on /celebrations/ does). It stays within the
+       .wrap's 22px gutter: a bigger disc would add a horizontal scroll at 961-1180px. */
+    .cx-price__stub::before, .cx-price__band::before, .cx-price__band::after{ content:""; position:absolute; border-radius:50%; background:var(--cream); border:2px solid var(--ink); }
+    .cx-price__stub::before{ top:-15px; right:-14px; width:26px; height:26px; clip-path:inset(50% -3px -3px -3px); }
+    .cx-price__band{ position:relative; }
+    /* (top is measured from below the band's 2px dashed border, so these centre the discs on it) */
+    .cx-price__band::before{ top:-14px; left:-15px; width:26px; height:26px; clip-path:inset(-3px -3px -3px 50%); }
+    .cx-price__band::after{ top:-17px; right:-23px; width:32px; height:32px; clip-path:inset(-3px 50% -3px -3px); }
   }
   /* tablets and phones: the stub sits on top of the table (the big price needs the full width) */
   @media (max-width:960px){
@@ -193,9 +202,11 @@
   .cx-vchip{ display:inline-flex; align-items:center; min-height:36px; padding:5px 13px; background:var(--paper); border:2px solid var(--ink); border-radius:999px; box-shadow:2px 2px 0 0 var(--ink); font-weight:700; font-size:14.5px; line-height:1.2; }
   @media (max-width:900px){ .cx-venues{ grid-template-columns:1fr; } }
   @media (max-width:520px){
-    .cx-venues__t{ padding-right:80px; }
-    .cx-venues__stamp{ width:72px; height:72px; top:-8px; right:-4px; }
+    .cx-venues__t{ padding-right:86px; }
+    /* 78px leaves "POR EVENTO" room inside the circle (72px crowded its edge) */
+    .cx-venues__stamp{ width:78px; height:78px; top:-8px; right:-4px; }
     .cx-venues__stamp b{ font-size:18px; }
+    .cx-venues__stamp span{ font-size:9px; letter-spacing:.04em; }
     .cx-vlist > li{ grid-template-columns:1fr; }
     .cx-vchip{ font-size:14px; min-height:34px; }
   }
@@ -646,7 +657,7 @@
         <div class="cx-venues__intro">
           <span class="eyebrow" data-i18n="c.ven.eyebrow">Our venues</span>
           <h3 class="cx-venues__t" data-i18n="c.ven.t">Play at one of our venues and pay €50 less.</h3>
-          <p class="cx-venues__p" data-i18n="c.ven.p">They're the bars where we run a quiz night every week. They're already set up for it, so there's no kit to move and we take €50 off at any group size. We'll tell you which one fits your group and date; food and drink you sort directly with the bar.</p>
+          <p class="cx-venues__p" data-i18n="c.ven.p">They're the bars where we run weekly quiz nights (in Spanish or English), plus OlHops in Valencia. They're already set up for the quiz, so there's no kit to move and we take €50 off any group of up to 75. We'll tell you which one fits your group and date; food and drink you sort directly with the bar.</p>
           <span class="stamp cx-venues__stamp" aria-hidden="true"><b data-i18n="c.ven.save">−€50</b><span data-i18n="c.ven.savesub">per event</span></span>
         </div>
         <ul class="cx-vlist">
@@ -1033,7 +1044,7 @@
               <div style="text-align:center;padding:24px 8px">
                 <span class="stamp" style="background:var(--accent-deep);color:#fff"><b style="color:#fff">✓</b><span style="color:#fff" data-i18n="c.form.sent">sent</span></span>
                 <h3 class="h2" style="margin-top:18px" data-i18n="c.form.successh">Done. We'll call you.</h3>
-                <p class="lead" style="margin-top:10px" data-i18n="c.form.successp">We'll call you during working hours (Mon to Fri, 10:00 to 19:00 Spanish time), usually the same working day. On the call we'll hold your date for up to 7 days, no commitment; Friday 11 and Saturday 12 December are confirmed with a 30% deposit.</p>
+                <p class="lead" style="margin-top:10px" data-i18n="c.form.successp">We'll call you during working hours (Mon to Fri, 10:00 to 19:00 Spanish time), usually the same working day. On the call we'll hold your date for up to 7 days, no commitment.</p>
               </div>
             </div>
           </form>

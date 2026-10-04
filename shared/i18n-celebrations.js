@@ -2,9 +2,9 @@
    ES city lists name only TDT's 4 host cities (Valencia, Madrid, Murcia, Santiago); the baked EN is QED's longer list. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.title": "Tardeo de Trivia para Celebraciones · El juego de fiesta que se lleva el show",
-  "cel.metadesc": "Un tardeo de trivia escrito sobre el homenajeado. Cumpleaños, despedidas, bodas y aniversarios presenciales en Valencia, Madrid, Murcia y Santiago de Compostela.",
+  "cel.metadesc": "Tardeo de trivia con anfitrión en directo para cumpleaños, despedidas, bodas y aniversarios, con una ronda sobre el homenajeado si la queréis. Valencia, Madrid, Murcia y Santiago de Compostela.",
   "cel.ogtitle": "Tardeo de Trivia para Celebraciones · El juego de fiesta que se lleva el show",
-  "cel.ogdesc": "Trivia personalizada sobre la cumpleañera, la feliz pareja o la efeméride. No una trivia genérica.",
+  "cel.ogdesc": "Un tardeo de trivia con anfitrión en directo para tu celebración y, si queréis, una ronda sobre la cumpleañera, la feliz pareja o la efeméride.",
 
   "cel.nav.formats": "Precio",
   "cel.nav.how": "Cómo funciona",
@@ -27,32 +27,33 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.stat.guests": "invitados",
 
   "cel.ev.eyebrow": "Qué celebramos",
-  "cel.ev.h2": "Tres ocasiones, una ronda inolvidable.",
+  "cel.ev.h2": "Tres ocasiones, una fiesta para recordar.",
   "cel.ev.1t": "Cumpleaños",
-  "cel.ev.1d": "Preguntas personalizadas sobre el homenajeado. Su primer coche, aquel corte de pelo, el viaje que nadie puede mencionar. Los amigos descubren quién le conoce de verdad.",
+  "cel.ev.1d": "Una trivia en la que juega todo el mundo. Añade una ronda sobre el homenajeado (su primer coche, aquel corte de pelo, el viaje que nadie puede mencionar) y descubrid quién le conoce de verdad.",
   "cel.ev.1b": "Su vida",
   "cel.ev.1s": "en trivia",
   "cel.ev.2t": "Bodas",
-  "cel.ev.2d": "«¿Cuánto conocéis a la pareja?» Equipo Novia contra Equipo Novio, la historia de cómo se conocieron y las pruebas fotográficas. El rompehielos que de verdad mezcla a los dos bandos.",
+  "cel.ev.2d": "El rompehielos que de verdad mezcla a los dos bandos. Añade la ronda de la pareja: Equipo Novia contra Equipo Novio, cómo se conocieron y las pruebas fotográficas.",
   "cel.ev.2b": "Novia",
   "cel.ev.2s": "vs novio",
   "cel.ev.3t": "Aniversarios",
-  "cel.ev.3d": "Rondas nostálgicas y temáticas ambientadas en el año en que todo empezó. La canción número uno, el precio de una caña, los titulares. Un brindis disfrazado de tardeo de trivia.",
+  "cel.ev.3d": "Un brindis disfrazado de tardeo de trivia. Añade una ronda ambientada en el año en que todo empezó: la canción número uno, el precio de una caña, los titulares.",
   "cel.ev.3b": "Ese",
   "cel.ev.3s": "año",
   "cel.ev.moretag": "+ más",
-  "cel.ev.more": "Fallas, graduaciones, jubilaciones o porque sí. Si hay un motivo para celebrar, te escribimos la ronda, donde quieras celebrarlo.",
+  "cel.ev.more": "Fallas, graduaciones, jubilaciones o porque sí. Si hay un motivo para celebrar, montamos el tardeo donde quieras celebrarlo.",
 
   "cel.fmt.eyebrow": "Cuánto cuesta",
   "cel.fmt.h2": "Un precio cerrado, según cuántos seáis.",
   "cel.fmt.lead": "Nosotros dirigimos toda la fiesta. Tú añades los extras que la hacen suya.",
   "cel.fmt.cities": "Valencia, Madrid, Murcia y Santiago de Compostela.",
 
-  // Price panel (#formats). Private-event tiers, + IVA; 50 € less at a partner venue. Extras
-  // carry no price: they are quoted on the call.
+  // Price panel (#price). Private-event tiers, + IVA; 50 € less at one of our venues (same wording
+  // and reason as c.ven.p on /corporate/). Extras carry no price: they are quoted on the call.
   "cel.price.eyebrow": "Con anfitrión, en persona",
   "cel.price.from": "Desde 150\u00a0€",
-  "cel.price.vat": "+ IVA por evento",
+  "cel.price.vat": "+\u00a0IVA por evento",
+  "cel.price.cond": "Hasta 25 invitados, en uno de nuestros locales",
   "cel.price.t1": "Hasta 25 invitados",
   "cel.price.p1": "200\u00a0€",
   "cel.price.t2": "De 26 a 50 invitados",
@@ -61,8 +62,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.price.p3": "300\u00a0€",
   "cel.price.t4": "Más de 75",
   "cel.price.p4": "Te lo presupuestamos",
-  "cel.price.partnera": "50\u00a0€ menos en uno de nuestros locales asociados,",
-  "cel.price.partnerb": "porque nuestro equipo ya está allí.",
+  "cel.price.partnera": "50\u00a0€ menos en uno de nuestros locales,",
+  "cel.price.partnerb": "porque allí ya está todo montado para la trivia.",
   "cel.price.inh": "Siempre incluido",
   "cel.price.in1": "Un anfitrión en directo que dirige toda la fiesta",
   "cel.price.in2": "Unos 90 minutos de trivia: rondas de imágenes, música, mapas, emojis y banderas",
@@ -80,7 +81,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.how.eyebrow": "Cómo funciona",
   "cel.how.h2": "Del grupo de WhatsApp al tardeo de trivia en tres pasos.",
   "cel.how.1t": "Cuéntanos a quién celebramos",
-  "cel.how.1d": "Cuatro detalles, un par de anécdotas y las fotos vergonzosas. Cuanto más compartes, más nos reímos.",
+  "cel.how.1d": "Cuántos sois, la fecha y el sitio. ¿Añadís la ronda sobre el homenajeado? Mándanos las anécdotas y las fotos vergonzosas.",
   "cel.how.2t": "Escribimos las preguntas",
   "cel.how.2d": "Preguntas para todos los públicos, para que nadie se quede fuera, y, si la añadís, una ronda a medida sobre el homenajeado o la pareja.",
   "cel.how.3t": "¡A jugar!",
@@ -88,8 +89,11 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "cel.cust.eyebrow": "Hazlo tuyo",
   "cel.cust.h2": "Cada parte del tardeo se adapta.",
+  "cel.cust.lead": "Los temas y los tipos de ronda van incluidos. Lo que lleva «Extra» te lo presupuestamos en la llamada.",
+  "cel.cust.inc": "Incluido",
+  "cel.cust.extra": "Extra",
   "cel.cust.themes.t": "Elige un tema",
-  "cel.cust.themes.d": "Marca el tono antes de escribir la primera pregunta.",
+  "cel.cust.themes.d": "Elige el tono del tardeo entre nuestros temas.",
   "cel.cust.themes.tag1": "Educativo",
   "cel.cust.themes.tag2": "Fiesta",
   "cel.cust.themes.tag3": "Cachondeo",
@@ -112,7 +116,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.cust.prizes.tag2": "Premios de experiencias",
 
   "cel.feat.eyebrow": "Así es la trivia",
-  "cel.feat.h2": "Una fiesta entera montada sobre ellos.",
+  "cel.feat.h2": "Más que una lista de preguntas.",
   "cel.feat.f0tag": "El extra estrella",
   "cel.feat.f0t": "Rondas escritas sobre ellos",
   "cel.feat.f0d": "El homenajeado, la pareja, la efeméride. Preguntas personales que solo vuestra gente sabría responder, nunca un pack de trivia reciclado.",
@@ -123,7 +127,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.feat.f3t": "Diapositivas personalizadas",
   "cel.feat.f3d": "Su nombre, sus fotos y sus colores en la pantalla grande. Parece que el tardeo se hizo para ellos. Van con la ronda sobre el homenajeado.",
   "cel.feat.f4t": "Te recomendamos el local",
-  "cel.feat.f4d": "Conocemos los sitios. Te proponemos uno, a ser posible uno de nuestros locales asociados, donde nuestro equipo ya está montado y el precio es más bajo. O lo llevamos todo a vuestra casa.",
+  "cel.feat.f4d": "Conocemos los sitios. Te proponemos uno, a ser posible uno de nuestros locales, donde ya está todo montado para la trivia y cuesta 50\u00a0€ menos. O lo llevamos todo a vuestra casa.",
 
   "cel.faq.eyebrow": "Preguntas",
   "cel.faq.h2": "Lo que todo el mundo quiere saber.",
@@ -138,7 +142,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.faq.q5": "¿Inglés o español?",
   "cel.faq.a5": "Los dos, y los mezclamos para listas de invitados internacionales. Perfecto para una boda con dos bandos que no comparten el mismo idioma.",
   "cel.faq.q6": "¿Con cuánta antelación reservamos?",
-  "cel.faq.a6": "Dos semanas nos dan tiempo para escribir una trivia de verdad personal. ¿Lo tienes más justo? Pregunta igualmente, siempre intentamos encajarlo.",
+  "cel.faq.a6": "Con dos semanas suele bastar (y nos da tiempo a escribir la ronda personal, si la añadís). ¿Lo tienes más justo? Pregunta igualmente, siempre intentamos encajarlo.",
 
   "cel.form.h2": "Cuéntanos a quién celebramos.",
   "cel.form.sub": "Formulario rápido, respuesta de una persona de verdad, normalmente el mismo día. A partir de ahí nos encargamos nosotros.",

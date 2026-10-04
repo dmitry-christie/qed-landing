@@ -117,7 +117,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // partner venues (the bars with a weekly tardeo, plus OlHops); the venue names are not translated
   "c.ven.eyebrow": "Nuestros locales",
   "c.ven.t": "Jugad en uno de nuestros locales y pagad 50\u00a0€ menos.",
-  "c.ven.p": "Son los bares donde hacemos tardeo cada semana. Allí ya está todo montado para la trivia, así que no hay equipo que mover y te descontamos 50\u00a0€ en cualquier tramo. Te decimos cuál encaja con vuestro grupo y vuestra fecha; la comida y la bebida, directamente con el bar.",
+  "c.ven.p": "Son los bares donde hacemos tardeo cada semana, más OlHops en Valencia. Allí ya está todo montado para la trivia, así que no hay equipo que mover y te descontamos 50\u00a0€ en cualquier tramo hasta 75 personas. Te decimos cuál encaja con vuestro grupo y vuestra fecha; la comida y la bebida, directamente con el bar.",
   "c.ven.save": "−50\u00a0€",
   "c.ven.savesub": "por evento",
 
@@ -250,7 +250,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.ph.msg": "Ocasión, local, cómo sería para vosotros un gran tardeo…",
   "c.form.sent": "enviado",
   "c.form.successh": "Hecho. Te llamamos.",
-  "c.form.successp": "Te llamamos en horario laboral (L-V, 10-19 h), normalmente el mismo día laborable. En la llamada te guardamos la fecha hasta 7 días sin compromiso; el viernes 11 y el sábado 12 de diciembre se confirman con una señal del 30%.",
+  "c.form.successp": "Te llamamos en horario laboral (L-V, 10-19 h), normalmente el mismo día laborable. En la llamada te guardamos la fecha hasta 7 días sin compromiso.",
 
   "c.foot.tagline": "Team building que de verdad se disfruta. Presencial en Valencia, Madrid, Murcia y Santiago de Compostela."
 });
