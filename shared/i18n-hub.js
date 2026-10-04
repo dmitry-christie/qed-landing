@@ -9,7 +9,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "h.hero.h1a": "Tardeos de trivia ",
   "h.hero.h1b": "con anfitrión en directo.",
-  "h.hero.sub": "Ponemos la trivia en cenas de empresa y celebraciones: las preguntas, el anfitrión y el marcador. Y con nuestra franquicia, montas los tuyos.",
+  "h.hero.sub": "Ponemos la trivia en cenas de empresa, team building y celebraciones: las preguntas, el anfitrión y el marcador. Y con nuestra franquicia, montas los tuyos.",
 
   // Scorecard. Locations differ per brand (data-count-es="6": TDT has no Barcelona).
   "h.stat.hd": "En cifras",

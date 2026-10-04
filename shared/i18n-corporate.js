@@ -1,6 +1,6 @@
 /* Spanish: Corporate page. English is baked into corporate/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
-  "c.title": "Cena de empresa con trivia y team building · Tardeo de Trivia",
+  "c.title": "Trivia para tu cena de empresa y team building · Tardeo de Trivia",
   "c.metadesc": "Trivia para tu cena de empresa o team building, con anfitrión en directo, desde 7 € + IVA por persona en Valencia, Madrid, Murcia y Santiago de Compostela.",
 
   "c.nav.formats": "Formatos",
@@ -19,7 +19,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // ?v=cena variant (Christmas ad group), swapped in by the inline script in corporate/index.html
   "c.hero.h1cenaa": "Tu cena de empresa, ",
   "c.hero.h1cenab": "con una trivia que se recuerda.",
-  "c.hero.subcena": "Antes o después de la cena o la comida de empresa: 90 minutos de trivia por equipos, con anfitrión en directo y rondas sobre tu empresa. Vamos a vuestro restaurante, a vuestra oficina o a un local que os recomendamos. De 10 a 300 personas.",
+  "c.hero.subcena": "Antes o después de la cena o la comida de empresa: 90 minutos de trivia por equipos, con anfitrión en directo y rondas sobre vuestra empresa. Vamos a vuestro restaurante, a vuestra oficina o a un local que os recomendamos. De 10 a 300 personas.",
   "c.hero.price": "Desde 7 € + IVA por persona · mínimo 250 € + IVA",
   // SEASONAL (Sep-Dec 2026): drop c.hero.hold after mid-December.
   "c.hero.hold": "Te guardamos la fecha hasta 7 días sin compromiso",
@@ -57,7 +57,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.fmt.fullwhen": "Una tarde, una noche o justo al acabar un taller",
   "c.fmt.fullwhere": "En vuestra oficina o en un local que os recomendamos",
   "c.fmt.fullcta": "Organizar nuestra trivia",
-  "c.fmt.dinner": "Trivia + cena de empresa",
+  "c.fmt.dinner": "Trivia en vuestra cena de empresa",
   "c.fmt.season": "Navidad 2026",
   "c.fmt.dinnerpitch": "La trivia es lo mejor de la cena.",
   "c.fmt.dinnerwhen": "Justo antes o después de comer o cenar",
@@ -143,7 +143,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.faq.q3": "¿Vais hasta donde estemos?",
   "c.faq.a3": "Los dos formatos son presenciales en Valencia, Madrid, Murcia y Santiago de Compostela. ¿Es en otro sitio? Elige «Otro sitio» en el formulario y cuéntanos dónde.",
   "c.faq.q4": "¿En nuestra oficina o en un local?",
-  "c.faq.a4": "Donde quieras. Lo montamos en tu espacio con nuestra técnica, o te recomendamos y coordinamos un local que encaje con tu grupo y tu presupuesto.",
+  "c.faq.a4": "Donde quieras. Lo montamos en tu espacio con nuestra técnica, o te recomendamos un local que encaje con tu grupo y coordinamos la trivia con ellos.",
   "c.faq.q5": "¿Inglés o español?",
   "c.faq.a5": "Los dos, y los mezclamos para equipos internacionales. Dinos cómo es la sala y lo enfocamos bien.",
   "c.faq.q6": "¿Con cuánta antelación reservamos?",
@@ -189,7 +189,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.form.rest": "¿Ya tenéis restaurante?",
   "c.form.rest1": "Sí",
   "c.form.rest2": "Aún no",
-  "c.form.rest3": "No, necesitamos local",
+  "c.form.rest3": "No, recomendadnos uno",
   "c.form.senddetails": "Enviar detalles",
   "c.form.skip": "Saltar, prefiero que me llaméis",
   "c.form.note": "Sin compromiso. Sin spam, jamás.",

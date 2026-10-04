@@ -55,7 +55,8 @@ export const handler: Handler = async (event) => {
     "🍻 New Venue Sign-up",
     `🏠 Venue: ${d.venueName}`,
     `📍 City: ${d.city || "—"}`,
-    `🎟 Format: ${d.format || "—"}`,
+    // The step-2 format select was removed from /venues/; print it only if an old cached page sends one.
+    ...(d.format ? [`🎟 Format: ${d.format}`] : []),
     `📆 Nights/week: ${d.nights || "—"}`,
     `👤 Name: ${d.firstName} ${d.lastName}`,
     `📧 Email: ${d.email}`,
