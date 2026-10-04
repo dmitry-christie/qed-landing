@@ -88,7 +88,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.steps.5d": "Firmamos el contrato y montas tu primer tardeo oficial, con soporte online.",
 
   "p.case.eyebrow": "Caso real · El Hachazo",
-  "p.case.h3": "Un franquiciado. Dos ciudades. Las dos creciendo.",
+  "p.case.h3": "Una marca. Dos ciudades. Las dos creciendo.",
   "p.case.p": "El Hachazo abrió en Murcia y Madrid en marzo. En junio, 125 asistentes en el circuito de Murcia y 134 en Madrid.",
   "p.case.note": "Primeros cuatro meses en cada ciudad. Los resultados varían según la ciudad y el operador.",
   "p.case.cta": "Haz esto en tu ciudad",
@@ -135,7 +135,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.map.alt": "Mapa de España con las 6 localidades donde montamos tardeos de trivia: Valencia (nuestra casa), La Cañada, Madrid, Murcia, Santiago de Compostela y A Coruña.",
 
   "p.faq.eyebrow": "Preguntas",
-  "p.faq.h2": "Lo que preguntan los franquiciados.",
+  "p.faq.h2": "Lo que nos preguntan antes de empezar.",
   "p.faq.q1": "¿Tengo derechos exclusivos en mi zona?",
   "p.faq.a1": "Sí. Cada franquiciado tiene un radio protegido de 2,5 km alrededor de cada local donde monta, para el mismo día de la semana: mientras ese local esté activo, no firmamos con otro franquiciado que organice un Tardeo de Trivia ese día dentro de ese radio. Si llevas varias salas, cada una tiene su propio radio.",
   "p.faq.a1b": "Quiz Eat Drink, nuestra marca de quiz en inglés, es un producto distinto con otro público y se gestiona por separado.",
