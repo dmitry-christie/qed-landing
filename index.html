@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.classList.add('js')</script>
 <title data-i18n="h.title">QED · Quiz. Eat. Drink. Pub quiz nights across Spain</title>
-<meta name="description" data-i18n-content="h.metadesc" content="QED builds and runs trivia nights people actually remember: for companies, celebrations, venues and franchise partners. Events in Valencia, Madrid, Barcelona, Murcia &amp; Santiago de Compostela, and trivia nights in A Coruña too.">
+<meta name="description" data-i18n-content="h.metadesc" content="QED runs trivia nights with a live host for company dinners, team days and celebrations, and a franchise to run your own. Events in Valencia, Madrid, Barcelona, Murcia &amp; Santiago de Compostela, and trivia nights in A Coruña too.">
 <meta name="theme-color" content="#FBF6EA">
 <meta property="og:title" data-i18n-content="h.ogtitle" content="QED · Quiz. Eat. Drink.">
-<meta property="og:description" data-i18n-content="h.ogdesc" content="The pub quiz company for nights that aren't boring. Pick your room.">
+<meta property="og:description" data-i18n-content="h.ogdesc" content="Trivia nights with a live host for companies, and a franchise to run your own.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <!-- build:seo -->
@@ -18,6 +18,111 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css">
+<style>
+  /* Hub-only components (hb-). The hub routes: two equal doors for the two focus funnels
+     (corporate, franchise), a smaller row for celebrations, white-label in the footer only.
+     Loaded after qed.css, so an hb- rule wins a same-specificity tie. The doors, celebrations row
+     and scorecard carry no .reveal: qed.css pins `.hero .reveal` to transform:none, which would
+     cancel their hover lift and the scorecard tilt (and the hero paints instantly anyway). */
+  /* the venue photo washes out to plain cream by the doors, so they sit on a calm ground */
+  .hb-hero{ padding:clamp(28px,4vw,48px) 0 clamp(36px,4.5vw,56px);
+    background:linear-gradient(180deg, rgba(251,246,234,.86) 0%, rgba(251,246,234,.9) 38%, var(--cream) 72%), url('/shared/header-bg.jpg') center 30%/cover; }
+  .hb-grid{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-areas:"intro" "doors" "cele" "score"; gap:18px; }
+  .hb-intro{ grid-area:intro; }
+  .hb-doors{ grid-area:doors; display:grid; grid-template-columns:minmax(0,1fr); gap:18px; margin-top:clamp(10px,2vw,22px); }
+  .hb-cele{ grid-area:cele; }
+  .hb-score{ grid-area:score; }
+  @media (min-width:760px){ .hb-doors{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:22px; } }
+  @media (min-width:960px){
+    .hb-grid{ grid-template-columns:minmax(0,1fr) 300px; grid-template-areas:"intro score" "doors doors" "cele cele"; column-gap:56px; row-gap:22px; align-items:end; }
+  }
+
+  .hb-h1{ margin-top:18px; max-width:15ch; font-size:clamp(40px,6vw,68px); text-wrap:balance; }
+  .hb-sub{ margin:16px 0 0; max-width:56ch; text-wrap:pretty; }
+
+  /* --- the two doors: equal size, different character (deep red / ink + franchise green) --- */
+  .hb-door{
+    position:relative; isolation:isolate; overflow:hidden; display:flex; flex-direction:column;
+    padding:clamp(22px,3vw,34px); border:2px solid var(--ink); border-radius:var(--r-xl);
+    box-shadow:6px 6px 0 0 var(--ink); color:#fff;
+    transition:transform .15s cubic-bezier(.2,.7,.2,1), box-shadow .15s cubic-bezier(.2,.7,.2,1);
+  }
+  .hb-door:hover{ transform:translate(-3px,-3px); box-shadow:9px 9px 0 0 var(--ink); }
+  /* halftone corner, behind the text */
+  .hb-door::before{
+    content:""; position:absolute; z-index:-1; right:-46px; bottom:-46px; width:240px; height:240px; border-radius:50%;
+    background-image:radial-gradient(var(--dot) 1.7px, transparent 1.8px); background-size:10px 10px; pointer-events:none;
+  }
+  /* --pop: stamp + CTA fill; --pop-ink: the same hue light enough for small text (AA on the door) */
+  .hb-door--corp{ background:var(--accent-deep); --dot:rgba(255,255,255,.16); --pop:var(--yellow); --pop-ink:var(--yellow-soft); }
+  .hb-door--fran{ background:var(--ink); --dot:rgba(137,175,150,.22); --pop:#89AF96; --pop-ink:#89AF96; }
+  .hb-door__kicker{ margin:0; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; line-height:1.5; color:var(--pop-ink); }
+  .hb-door__head{ display:flex; justify-content:space-between; align-items:center; gap:14px; margin-top:10px; }
+  .hb-door__stamp{
+    flex:0 0 auto; width:62px; height:62px; border-radius:50%; border:2px solid var(--ink); background:var(--pop); color:var(--ink);
+    box-shadow:3px 3px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; transform:rotate(-7deg);
+  }
+  .hb-door--fran .hb-door__stamp{ transform:rotate(6deg); border-color:#fff; box-shadow:3px 3px 0 0 rgba(255,255,255,.9); }
+  .hb-i{ width:28px; height:28px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .hb-door__t{ margin:0; min-width:0; font-weight:900; letter-spacing:-0.035em; line-height:.98; font-size:clamp(40px,5.4vw,62px); color:#fff; }
+  .hb-door__d{ margin:14px 0 0; max-width:40ch; font-size:clamp(16px,1.5vw,18px); font-weight:600; line-height:1.5; color:rgba(255,255,255,.92); text-wrap:pretty; }
+  .hb-door__foot{ margin-top:auto; padding-top:22px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 18px; }
+  .hb-door__fact{ margin:0; font-family:var(--mono); font-size:12.5px; font-weight:700; letter-spacing:.02em; line-height:1.5; color:rgba(255,255,255,.88); }
+  .hb-door__cta{
+    display:inline-flex; align-items:center; gap:9px; min-height:50px; padding:8px 22px; border:2px solid var(--ink); border-radius:999px;
+    background:var(--pop); color:var(--ink); box-shadow:4px 4px 0 0 var(--ink); text-decoration:none;
+    font-size:16px; font-weight:800; letter-spacing:-0.01em; white-space:nowrap;
+  }
+  .hb-door--fran .hb-door__cta{ border-color:#fff; box-shadow:4px 4px 0 0 rgba(255,255,255,.9); }
+  /* stretched link: the CTA is the one real link, its ::after makes the whole door clickable */
+  .hb-door__cta::after, .hb-cele__link::after{ content:""; position:absolute; inset:0; border-radius:inherit; }
+  .hb-door__cta::after{ border-radius:var(--r-xl); }
+  .hb-door__cta:focus-visible, .hb-cele__link:focus-visible{ outline:3px solid var(--ink); outline-offset:3px; }
+  .hb-door--corp .hb-door__cta:focus-visible, .hb-door--fran .hb-door__cta:focus-visible{ outline-color:#fff; }
+  .hb-door .arr, .hb-cele .arr{ display:inline-block; transition:transform .15s; }
+  .hb-door:hover .arr, .hb-cele:hover .arr{ transform:translateX(3px); }
+  @media (max-width:400px){ .hb-door__t{ font-size:clamp(32px,10.5vw,40px); } }
+  @media (max-width:340px){ .hb-door__stamp{ display:none; } }
+  @media (max-width:420px){
+    .hb-door__foot{ flex-direction:column; align-items:stretch; }
+    .hb-door__cta{ justify-content:center; white-space:normal; text-align:center; }
+    .hb-door__stamp{ width:52px; height:52px; }
+    .hb-i{ width:24px; height:24px; }
+  }
+
+  /* --- celebrations: the secondary path, one quiet row --- */
+  .hb-cele{
+    position:relative; display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:6px 18px;
+    padding:16px 22px; background:var(--paper); border:2px solid var(--ink); border-radius:var(--r-lg); box-shadow:3px 3px 0 0 var(--ink);
+    transition:transform .15s cubic-bezier(.2,.7,.2,1), box-shadow .15s cubic-bezier(.2,.7,.2,1);
+  }
+  .hb-cele:hover{ transform:translate(-2px,-2px); box-shadow:5px 5px 0 0 var(--ink); }
+  .hb-cele__ico{ width:48px; height:48px; border-radius:50%; border:2px solid var(--ink); background:var(--yellow-soft); display:flex; align-items:center; justify-content:center; color:var(--ink); }
+  .hb-cele__ico .hb-i{ width:24px; height:24px; }
+  .hb-cele__t{ margin:0; font-size:19px; font-weight:900; letter-spacing:-0.02em; line-height:1.2; }
+  .hb-cele__d{ margin:2px 0 0; font-size:15px; line-height:1.45; color:var(--ink-soft); }
+  .hb-cele__link{ font-weight:800; font-size:15px; color:var(--accent-deep); text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:2px; white-space:nowrap; }
+  @media (max-width:640px){
+    .hb-cele{ grid-template-columns:auto minmax(0,1fr); padding:16px 18px; }
+    .hb-cele__link{ grid-column:2; justify-self:start; }
+  }
+
+  /* --- proof: the scorecard motif --- */
+  .hb-score{ align-self:end; }
+  .hb-score .scorecard__hd svg{ width:16px; height:16px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .hb-score__list{ margin:0; }
+  .hb-score__row{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:11px 15px; border-bottom:1px dashed var(--hairline-strong); }
+  .hb-score__row:last-child{ border-bottom:0; }
+  .hb-score__row dt{ font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
+  .hb-score__row dd{ margin:0; font-weight:900; font-size:26px; letter-spacing:-0.03em; line-height:1; white-space:nowrap; }
+  .hb-score__row:first-child dd{ color:var(--accent); }
+  @media (min-width:960px){ .hb-score{ transform:rotate(2deg); margin-bottom:6px; } }
+
+  @media (prefers-reduced-motion:reduce){
+    .hb-door, .hb-cele, .hb-door .arr, .hb-cele .arr{ transition:none; }
+    .hb-door:hover, .hb-cele:hover{ transform:none; }
+  }
+</style>
 <script src="/config.js"></script>
 <script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
 </head>
@@ -33,109 +138,75 @@
       <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg>
     </button>
     <nav class="nav__links">
-      <a href="#work" data-i18n="h.nav.work">Run a quiz</a>
       <a href="/corporate/" data-i18n="foot.corporate">Corporate</a>
-      <a href="/celebrations/" data-i18n="foot.celebrations">Celebrations</a>
       <a href="/franchise/" data-i18n-href="foot.partnerhref" data-i18n="h.nav.partners">Franchising</a>
-      <a href="/venues/" data-i18n="h.nav.venues">White-label</a>
+      <a href="/celebrations/" data-i18n="foot.celebrations">Celebrations</a>
     </nav>
   </div>
 </header>
 
 <main>
 
-  <!-- ============ HERO ============ -->
-  <section class="hero">
-    <div class="wrap">
-      <div class="reveal">
+  <!-- ============ HERO: who we are + the routes ============ -->
+  <section class="hero hb-hero">
+    <div class="wrap hb-grid">
+
+      <div class="hb-intro reveal">
         <span class="tag tag--shadow" style="background:var(--yellow)" data-i18n="h.hero.cities">Valencia&nbsp;· Madrid&nbsp;· Barcelona&nbsp;· Murcia&nbsp;· Santiago&nbsp;· A&nbsp;Coruña</span>
-        <h1 class="h-display" style="margin-top:20px;max-width:14ch"><span data-i18n="h.hero.h1a">Pub quiz nights </span><span style="color:var(--accent)" data-i18n="h.hero.h1b">people actually remember.</span></h1>
-        <p class="lead" style="margin:20px 0 0;max-width:50ch" data-i18n="h.hero.sub">We write it, host it and keep score: you just bring your people. Book a private quiz night for your company, your birthday or your celebration, wherever you like.</p>
-        <div class="row" style="gap:12px;margin-top:28px">
-          <a class="btn btn--cta btn--lg" href="#plan" data-i18n="h.hero.cta2">Book your private event</a>
+        <h1 class="h-display hb-h1"><span data-i18n="h.hero.h1a">Trivia nights </span><span class="accent" data-i18n="h.hero.h1b">with a live host.</span></h1>
+        <p class="lead hb-sub" data-i18n="h.hero.sub">We bring the trivia to company dinners and celebrations: the questions, the hosting and the scoreboard. And with our franchise, you run your own.</p>
+      </div>
+
+      <div class="hb-score scorecard">
+        <p class="scorecard__hd" style="margin:0"><b data-i18n="h.stat.hd">By the numbers</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></svg></p>
+        <dl class="hb-score__list">
+          <div class="hb-score__row"><dt data-i18n="h.stat.locations">Locations</dt><dd data-count="7" data-count-es="6">7</dd></div>
+          <div class="hb-score__row"><dt data-i18n="h.stat.players">Registered players</dt><dd><span data-count="7510">7,510</span>+</dd></div>
+          <div class="hb-score__row"><dt data-i18n="h.stat.return">Players who come back</dt><dd><span data-count="78">78</span>%</dd></div>
+        </dl>
+      </div>
+
+      <div class="hb-doors">
+
+        <div class="hb-door hb-door--corp">
+          <p class="hb-door__kicker" data-i18n="h.door.corp.kicker">For your team</p>
+          <div class="hb-door__head">
+            <h2 class="hb-door__t" data-i18n="h.door.corp.t">Corporate</h2>
+            <span class="hb-door__stamp" aria-hidden="true"><svg class="hb-i" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M3 13h18"/><path d="M11 13v2h2v-2"/></svg></span>
+          </div>
+          <p class="hb-door__d" data-i18n="h.door.corp.d">You plan the dinner or the offsite; we bring the trivia, with a live host and rounds about your company.</p>
+          <div class="hb-door__foot">
+            <p class="hb-door__fact" data-i18n="h.door.corp.fact">From&nbsp;€7&nbsp;+&nbsp;VAT&nbsp;per&nbsp;person&nbsp;· 10&nbsp;to&nbsp;300&nbsp;people</p>
+            <a class="hb-door__cta" href="/corporate/"><span data-i18n="h.door.corp.cta">See company events</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+          </div>
         </div>
+
+        <div class="hb-door hb-door--fran">
+          <p class="hb-door__kicker" data-i18n="h.door.fran.kicker">For your own business</p>
+          <div class="hb-door__head">
+            <h2 class="hb-door__t" data-i18n="h.door.fran.t">Franchising</h2>
+            <span class="hb-door__stamp" aria-hidden="true"><svg class="hb-i" viewBox="0 0 24 24"><path d="M3.5 9 5 4h14l1.5 5"/><path d="M3.5 9a2.75 2.75 0 0 0 5.5 0 3 3 0 0 0 6 0 2.75 2.75 0 0 0 5.5 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/></svg></span>
+          </div>
+          <p class="hb-door__d" data-i18n="h.door.fran.d">Run weekly trivia nights in your city with our platform, our questions and our brand. No experience needed.</p>
+          <div class="hb-door__foot">
+            <p class="hb-door__fact" data-i18n="h.door.fran.fact">€99&nbsp;+&nbsp;VAT&nbsp;setup&nbsp;· No&nbsp;monthly&nbsp;fee</p>
+            <a class="hb-door__cta" href="/franchise/" data-i18n-href="foot.partnerhref"><span data-i18n="h.door.fran.cta">See the franchise</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+
       </div>
+
+      <div class="hb-cele">
+        <span class="hb-cele__ico" aria-hidden="true"><svg class="hb-i" viewBox="0 0 24 24"><path d="M4 21h16"/><path d="M5 21v-6.5A1.5 1.5 0 0 1 6.5 13h11a1.5 1.5 0 0 1 1.5 1.5V21"/><path d="M5 17c1.2.9 2.4.9 3.5 0s2.3-.9 3.5 0 2.3.9 3.5 0 2.3-.9 3.5 0"/><path d="M12 13V9.5"/><path d="M12 7c.9 0 1.4-.7 1.4-1.4C13.4 4.7 12 3 12 3s-1.4 1.7-1.4 2.6c0 .7.5 1.4 1.4 1.4z"/></svg></span>
+        <div>
+          <h2 class="hb-cele__t" data-i18n="h.cele.t">Celebrations</h2>
+          <p class="hb-cele__d" data-i18n="h.cele.d">Birthdays, hen and stag dos and anniversaries, with rounds written about the guest of honour.</p>
+        </div>
+        <a class="hb-cele__link" href="/celebrations/"><span data-i18n="h.cele.cta">See celebrations</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+      </div>
+
     </div>
   </section>
-
-  <!-- ============ PLAN AN EVENT ============ -->
-  <section id="plan" class="section">
-    <div class="wrap">
-      <div class="reveal" style="max-width:62ch">
-        <span class="eyebrow" data-i18n="h.plan.eyebrow">Book a night</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="h.plan.h2">Throwing something? We'll run the quiz.</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="h.plan.lead">Hosted in person across Valencia, Madrid, Barcelona, Murcia & Santiago de Compostela. A self-run Express version for everywhere else is coming soon.</p>
-      </div>
-
-      <div class="split" style="--split-align:stretch;margin-top:34px">
-
-        <a href="/corporate/" class="lift card reveal" data-d="1" style="overflow:hidden;text-decoration:none;color:inherit">
-          <div style="background:var(--accent);color:#fff;padding:16px 22px;display:flex;align-items:center;justify-content:space-between">
-            <span style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase" data-i18n="h.plan.corp.kicker">For companies</span>
-            <span style="font-size:22px;font-weight:900" class="arr">&rarr;</span>
-          </div>
-          <div class="pad">
-            <h3 class="h2"><span data-i18n="h.plan.corp.ta">Team building people </span><span style="color:var(--accent)" data-i18n="h.plan.corp.tb">actually enjoy.</span></h3>
-            <p class="lead" style="margin-top:12px" data-i18n="h.plan.corp.d">Offsites, client nights, and team days that beat another awkward icebreaker.</p>
-            <span class="tag tag--accent tag--shadow" style="margin-top:18px" data-i18n="h.plan.corp.link">Explore corporate</span>
-          </div>
-        </a>
-
-        <a href="/celebrations/" class="lift card reveal" data-d="2" style="overflow:hidden;text-decoration:none;color:inherit">
-          <div style="background:var(--accent);color:#fff;padding:16px 22px;display:flex;align-items:center;justify-content:space-between">
-            <span style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase" data-i18n="h.plan.cele.kicker">For celebrations</span>
-            <span style="font-size:22px;font-weight:900" class="arr">&rarr;</span>
-          </div>
-          <div class="pad">
-            <h3 class="h2"><span data-i18n="h.plan.cele.ta">The party game that </span><span style="color:var(--accent)" data-i18n="h.plan.cele.tb">steals the show.</span></h3>
-            <p class="lead" style="margin-top:12px" data-i18n="h.plan.cele.d">Birthdays, weddings & anniversaries with questions written about the guests of honour.</p>
-            <span class="tag tag--accent tag--shadow" style="margin-top:18px" data-i18n="h.plan.cele.link">Explore celebrations</span>
-          </div>
-        </a>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ WORK WITH US ============ -->
-  <section id="work" class="section section--tight">
-    <div class="wrap">
-      <div class="reveal" style="max-width:62ch">
-        <span class="eyebrow" data-i18n="h.work.eyebrow">Organise a quiz</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="h.work.h2">Franchising or Flat Fee.</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="h.work.lead">Choose franchising for regular events with expansion potential, or a flat fee for on-demand irregular events.</p>
-      </div>
-
-      <div class="split" style="--split-align:stretch;margin-top:34px">
-
-        <a href="/franchise/" data-i18n-href="foot.partnerhref" class="lift card reveal" data-d="1" style="overflow:hidden;text-decoration:none;color:inherit;background:var(--ink);color:#fff">
-          <div class="pad" style="display:flex;gap:18px;align-items:flex-start;justify-content:space-between">
-            <div>
-              <span style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--yellow)" data-i18n="h.work.fran.kicker">Franchising</span>
-              <h3 class="h2" style="margin-top:10px;color:#fff" data-i18n="h.work.fran.t">Run regular events. Build a business.</h3>
-              <p class="lead" style="margin-top:12px;color:rgba(255,255,255,.78)" data-i18n="h.work.fran.d">Our platform, content and brand. Best for recurring weekly nights with expansion potential.</p>
-              <span class="tag tag--shadow" style="margin-top:18px;background:var(--yellow);border-color:var(--ink)"><span data-i18n="foot.partner">Franchising</span> &rarr;</span>
-            </div>
-            <span class="stamp rot-1" style="flex:0 0 auto;background:var(--yellow)"><b style="font-size:15px" data-i18n="h.work.fran.stampb">Franchise</b><span data-i18n="h.work.fran.stamp">model</span></span>
-          </div>
-        </a>
-
-        <a href="#plan" class="lift card reveal" data-d="2" style="overflow:hidden;text-decoration:none;color:inherit">
-          <div class="pad" style="display:flex;gap:18px;align-items:flex-start;justify-content:space-between">
-            <div>
-              <span style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)" data-i18n="h.work.flat.kicker">Flat Fee</span>
-              <h3 class="h2" style="margin-top:10px" data-i18n="h.work.flat.t">On-demand irregular events.</h3>
-              <p class="lead" style="margin-top:12px" data-i18n="h.work.flat.d">Pay per event with no long-term commitment. Perfect for one-off celebrations or corporate team building.</p>
-              <span class="tag tag--accent tag--shadow" style="margin-top:18px"><span data-i18n="h.work.flat.link">Book an event</span> &rarr;</span>
-            </div>
-            <span class="stamp rot-4" style="flex:0 0 auto;background:var(--green-soft)"><b style="font-size:13px" data-i18n="h.work.flat.stampb">Flat</b><span data-i18n="h.work.flat.stamp">fee</span></span>
-          </div>
-        </a>
-
-      </div>
-    </div>
-  </section>
-
 
   <!-- build:about -->
 
@@ -187,7 +258,7 @@
 </footer>
 
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-hub.js?v=20261008"></script>
+<script src="/shared/i18n-hub.js?v=20261010"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
