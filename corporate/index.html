@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.classList.add('js')</script>
 <title data-i18n="c.title">QED for Corporate · A quiz for your Christmas party or team building</title>
-<meta name="description" data-i18n-content="c.metadesc" content="A genuinely funny quiz night for your team, from €7 + VAT per person. Offsites, client events and team days in Valencia, Madrid, Barcelona, Murcia & Santiago.">
+<meta name="description" data-i18n-content="c.metadesc" content="A genuinely funny quiz night for your team, from €150 + VAT per event with a live host. Offsites, client events and team days in Valencia, Madrid, Barcelona, Murcia & Santiago.">
 <meta name="theme-color" content="#FBF6EA">
 <meta property="og:title" data-i18n-content="c.title" content="QED for Corporate · A quiz for your Christmas party or team building">
-<meta property="og:description" data-i18n-content="c.metadesc" content="A genuinely funny quiz night for your team, from €7 + VAT per person. Offsites, client events and team days in Valencia, Madrid, Barcelona, Murcia & Santiago.">
+<meta property="og:description" data-i18n-content="c.metadesc" content="A genuinely funny quiz night for your team, from €150 + VAT per event with a live host. Offsites, client events and team days in Valencia, Madrid, Barcelona, Murcia & Santiago.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <!-- build:seo -->
@@ -112,35 +112,105 @@
     }
   }
 
-  /* --- price + booking, once for both formats (a ticket: price stub | how to book) --- */
-  .cx-deal{ position:relative; margin-top:22px; display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); background:var(--paper); border:2px solid var(--ink); border-radius:var(--r-lg); box-shadow:5px 5px 0 0 var(--ink); }
-  .cx-deal__price{ position:relative; display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; background:var(--yellow); padding:clamp(22px,3vw,32px); border-right:2px dashed var(--ink); border-radius:18px 0 0 18px; }
-  .cx-deal__book{ padding:clamp(22px,3vw,32px); }
-  .cx-deal__eyebrow{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ink); }
-  .cx-deal__big{ margin:12px 0 0; font-weight:900; font-size:clamp(44px,5.4vw,60px); letter-spacing:-0.04em; line-height:.95; }
-  .cx-deal__vat{ margin:6px 0 0; font-family:var(--mono); font-size:13px; font-weight:700; }
-  .cx-deal__min{ display:inline-block; margin:16px 0 0; padding:7px 13px; border-radius:999px; background:var(--ink); color:#fff; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.03em; }
-  .cx-deal__note{ margin:20px 0 0; padding-top:16px; border-top:2px dashed rgba(31,26,20,.35); font-size:15px; line-height:1.5; font-weight:600; align-self:stretch; }
-  .cx-book{ list-style:none; margin:16px 0 0; padding:0; display:grid; gap:10px; }
-  .cx-book li{ display:flex; gap:13px; align-items:center; line-height:1.4; font-weight:600; padding:6px 0; }
-  .cx-book__ico{ width:40px; height:40px; border-radius:50%; border:2px solid var(--ink); background:var(--cream-soft); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
-  .cx-book__ico .cx-i{ width:20px; height:20px; }
-  /* the deposit, as a sticker: the one number on the panel besides the price */
-  .cx-facts{ list-style:none; margin:20px 0 0; padding:16px 0 0; border-top:1px dashed var(--hairline-strong); display:grid; gap:9px; color:var(--ink-soft); font-size:15px; }
-  .cx-facts li{ display:flex; gap:10px; align-items:flex-start; line-height:1.45; }
-  .cx-facts .cx-i{ width:20px; height:20px; margin-top:1px; color:var(--accent-deep); }
-  .cx-facts strong{ color:var(--ink); font-weight:700; }
-  @media (min-width:781px){
-    /* ticket notches where the perforation meets the edges. Each is a cream disc centred on the
-       card's outer edge; the bottom one is larger and lower so it also cuts the 5px hard shadow. */
-    .cx-deal__price::before, .cx-deal__price::after{ content:""; position:absolute; border-radius:50%; background:var(--cream); border:2px solid var(--ink); }
-    .cx-deal__price::before{ top:-15px; right:-12px; width:26px; height:26px; clip-path:inset(50% -3px -3px -3px); }
-    .cx-deal__price::after{ bottom:-25px; right:-17px; width:36px; height:36px; clip-path:inset(-3px -3px 50% -3px); }
+  /* --- price: one ticket, said once for both formats (founder pricing, 4 Oct 2026: the "Classic"
+     column of the private-events sheet). Stub = the hook | the tiers by group size, with the
+     partner-venue column (-50 €) highlighted; under the tear line, what's included, the extras
+     (no prices: quoted on the call) and how booking works. --- */
+  .cx-price{ margin-top:30px; }
+  .cx-price__top{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); }
+  .cx-price__stub{ position:relative; display:flex; flex-direction:column; align-items:flex-start; background:var(--yellow); padding:clamp(22px,3vw,32px); border-right:2px dashed var(--ink); border-radius:18px 0 0 0; }
+  .cx-price__eyebrow, .cx-band__h{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); }
+  .cx-price__big{ margin:12px 0 0; font-weight:900; font-size:clamp(46px,4.8vw,64px); letter-spacing:-0.045em; line-height:.95; }
+  .cx-price__vat{ margin:7px 0 0; font-family:var(--mono); font-size:13px; font-weight:700; }
+  .cx-price__cond{ margin:16px 0 0; padding:7px 13px; border-radius:999px; background:var(--ink); color:#fff; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.02em; line-height:1.35; }
+  .cx-price__note{ margin:auto 0 0; padding-top:18px; align-self:stretch; }
+  .cx-price__note span{ display:block; padding-top:14px; border-top:2px dashed rgba(31,26,20,.35); font-size:15px; line-height:1.5; font-weight:600; }
+  /* the tiers: a real table (screen readers get rows and headers); the partner-venue column is
+     tinted so the -50 € reads at a glance */
+  .cx-tiers{ padding:clamp(18px,2.6vw,28px) clamp(18px,3vw,32px) clamp(18px,2.6vw,26px); }
+  .cx-tiers table{ width:100%; border-collapse:separate; border-spacing:0; }
+  .cx-tiers th, .cx-tiers td{ padding:13px 14px; text-align:left; vertical-align:middle; border-bottom:1px dashed var(--hairline-strong); }
+  .cx-tiers thead th{ padding-top:12px; padding-bottom:11px; border-bottom:2px solid var(--ink); font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; line-height:1.3; color:var(--ink-soft); }
+  .cx-tiers tbody th{ font-weight:700; font-size:16px; line-height:1.3; white-space:nowrap; }
+  .cx-tiers td{ font-weight:900; font-size:clamp(20px,1.9vw,23px); letter-spacing:-0.025em; white-space:nowrap; }
+  .cx-tiers th:first-child{ padding-left:0; }
+  .cx-tiers .is-ours{ background:var(--yellow-soft); }
+  .cx-tiers thead .is-ours{ color:var(--ink); border-radius:12px 12px 0 0; }
+  .cx-tiers .is-end{ border-radius:0 0 12px 12px; }
+  .cx-tiers__save{ display:inline-block; margin-left:6px; padding:2px 7px; border-radius:999px; background:var(--accent); color:#fff; letter-spacing:.02em; white-space:nowrap; }
+  .cx-tiers tbody tr:last-child > *{ border-bottom:0; }
+  .cx-tiers__quote td{ font-size:16px; font-weight:800; letter-spacing:-0.01em; white-space:normal; color:var(--ink); }
+  .cx-tiers__foot{ margin:12px 0 0; font-size:13.5px; line-height:1.5; color:var(--ink-soft); }
+  /* under the tear line: three short lists */
+  .cx-price__band{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px clamp(22px,3vw,40px); padding:clamp(22px,3vw,30px) clamp(20px,3vw,32px); background:var(--cream-soft); border-top:2px dashed var(--ink); border-radius:0 0 18px 18px; }
+  .cx-band__h{ margin-bottom:12px; }
+  .cx-band__sub{ display:block; margin-top:4px; font-family:var(--sans); font-size:13.5px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--ink-soft); }
+  .cx-band__list{ list-style:none; margin:0; padding:0; display:grid; gap:9px; }
+  .cx-band__list li{ display:flex; gap:10px; align-items:flex-start; font-weight:600; font-size:15px; line-height:1.4; }
+  .cx-band__list--inc li::before, .cx-band__list--ex li::before{ content:""; flex:0 0 auto; width:20px; height:20px; border-radius:50%; border:2px solid var(--ink); background-size:13px; background-position:center; background-repeat:no-repeat; }
+  .cx-band__list--inc li::before{ background-color:var(--accent); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12l5 5 9-11' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+  .cx-band__list--ex li::before{ background-color:var(--yellow); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 5v14M5 12h14' fill='none' stroke='%231F1A14' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  .cx-band__list--book .cx-i{ width:20px; height:20px; color:var(--accent-deep); }
+  .cx-band__list--book strong{ font-weight:800; }
+  @media (min-width:961px){
+    /* a ticket notch where the perforation meets the top edge: a cream disc on the card's edge */
+    .cx-price__stub::before{ content:""; position:absolute; top:-15px; right:-14px; width:26px; height:26px; border-radius:50%; background:var(--cream); border:2px solid var(--ink); clip-path:inset(50% -3px -3px -3px); }
   }
-  @media (max-width:780px){
-    .cx-deal{ grid-template-columns:1fr; }
-    .cx-deal__price{ border-right:0; border-bottom:2px dashed var(--ink); border-radius:18px 18px 0 0; }
+  /* tablets and phones: the stub sits on top of the table (the big price needs the full width) */
+  @media (max-width:960px){
+    .cx-price__top{ grid-template-columns:1fr; }
+    .cx-price__stub{ border-right:0; border-bottom:2px dashed var(--ink); border-radius:18px 18px 0 0; }
+    .cx-price__note{ margin-top:0; }
+    .cx-price__band{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .cx-price__band > :last-child{ grid-column:1 / -1; }
   }
+  @media (max-width:600px){
+    .cx-price__band{ grid-template-columns:1fr; gap:22px; }
+  }
+  @media (max-width:420px){
+    .cx-tiers{ padding-left:16px; padding-right:12px; }
+    .cx-tiers th, .cx-tiers td{ padding:12px 9px; }
+    .cx-tiers thead th{ font-size:10.5px; letter-spacing:.06em; }
+    .cx-tiers tbody th{ font-size:15px; }
+    .cx-tiers td{ font-size:19px; }
+    .cx-tiers__save{ display:table; margin:5px 0 0; }
+  }
+
+  /* --- partner venues: the bars where we run a public quiz every week (plus OlHops). Our names
+     for them, grouped by city; the -50 € said once, as a stamp. --- */
+  .cx-venues{ position:relative; margin-top:22px; display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.2fr); gap:22px clamp(26px,4vw,52px); padding:clamp(22px,3vw,34px); background:var(--green-soft); }
+  .cx-venues__intro{ position:relative; }
+  .cx-venues__t{ margin:14px 0 0; padding-right:100px; font-weight:900; font-size:clamp(23px,2.5vw,30px); letter-spacing:-0.027em; line-height:1.1; text-wrap:balance; }
+  .cx-venues__p{ margin:12px 0 0; line-height:1.55; color:var(--ink-soft); max-width:48ch; }
+  .cx-venues__stamp{ position:absolute; top:-4px; right:0; transform:rotate(8deg); background:var(--yellow); }
+  .cx-venues__stamp b{ font-size:21px; }
+  .cx-vlist{ list-style:none; margin:0; padding:0; border-top:2px solid var(--ink); align-self:start; }
+  .cx-vlist > li{ display:grid; grid-template-columns:8.6rem minmax(0,1fr); gap:8px 16px; align-items:center; padding:13px 0; border-bottom:1px dashed rgba(31,26,20,.24); }
+  .cx-vlist > li:last-child{ border-bottom:0; padding-bottom:0; }
+  .cx-vlist__city{ display:flex; gap:7px; align-items:center; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; line-height:1.3; }
+  .cx-vlist__city .cx-i{ width:17px; height:17px; color:var(--accent-deep); }
+  .cx-vchips{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
+  .cx-vchip{ display:inline-flex; align-items:center; min-height:36px; padding:5px 13px; background:var(--paper); border:2px solid var(--ink); border-radius:999px; box-shadow:2px 2px 0 0 var(--ink); font-weight:700; font-size:14.5px; line-height:1.2; }
+  @media (max-width:900px){ .cx-venues{ grid-template-columns:1fr; } }
+  @media (max-width:520px){
+    .cx-venues__t{ padding-right:80px; }
+    .cx-venues__stamp{ width:72px; height:72px; top:-8px; right:-4px; }
+    .cx-venues__stamp b{ font-size:18px; }
+    .cx-vlist > li{ grid-template-columns:1fr; }
+    .cx-vchip{ font-size:14px; min-height:34px; }
+  }
+
+  /* hero price line: the hook, then what it's for and a jump to the table */
+  .cx-hero__facts .cx-hero__pricefact{ align-items:flex-start; }
+  .cx-hero__pricefact .cx-i{ margin-top:1px; }
+  .cx-hero__cond{ display:block; margin-top:3px; font-size:14.5px; font-weight:600; color:var(--ink-soft); }
+  .cx-hero__cond a{ color:var(--accent-deep); font-weight:700; white-space:nowrap; }
+
+  /* "Included" / "Extra" flags on the customize rows and the custom-rounds card */
+  .cx-opt__t .cx-flag{ display:table; margin:0 0 7px; }
+  .cx-flag{ display:inline-block; padding:3px 8px 2px; border:1.5px solid var(--ink); border-radius:999px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; line-height:1.3; white-space:nowrap; }
+  .cx-flag--inc{ background:var(--green-soft); }
+  .cx-flag--ex{ background:var(--yellow); }
 
   /* --- customize: one card, four aligned rows (what it is | the options, as chips) ---
      Each row has one tint (--tint), shared by its icon tile and its chips, so a row reads as one
@@ -342,6 +412,7 @@
     </button>
     <nav class="nav__links">
       <a href="#formats" data-i18n="c.nav.formats">Formats</a>
+      <a href="#price" data-i18n="c.nav.price">Prices</a>
       <a href="#how" data-i18n="c.nav.how">How it works</a>
       <a href="#faq" data-i18n="c.nav.faq">FAQ</a>
       <a class="btn btn--sm btn--cta" href="#quote" data-i18n="c.cta.quote">Get a quote</a>
@@ -359,9 +430,10 @@
              Revert it (EN here + ES in i18n-corporate.js) to the plain "Hosted in <cities>" tag after mid-December. -->
         <span class="tag tag--accent tag--shadow" data-i18n="c.hero.tag">Christmas &amp; end-of-year parties 2026 · Valencia, Madrid, Barcelona, Murcia &amp; Santiago</span>
         <h1 class="h-display cx-hero__h1" id="c-hero-h1"><span data-i18n="c.hero.h1a">Team building people </span><span class="accent" data-i18n="c.hero.h1b">actually enjoy.</span></h1>
-        <p class="lead cx-hero__sub" id="c-hero-sub" data-i18n="c.hero.sub">Forget trust falls and forced fun. 90 minutes of trivia with a live host and rounds about your company, before or after the company dinner: at your office, at the dinner's restaurant or at a venue we recommend. From 10 to 300 people.</p>
+        <p class="lead cx-hero__sub" id="c-hero-sub" data-i18n="c.hero.sub">Forget trust falls and forced fun. 90 minutes of team trivia with a live host, before or after the company dinner: at your office, at the dinner's restaurant or at one of our venues. From 10 to 300+ people.</p>
         <ul class="cx-hero__facts">
-          <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-coin"/></svg><strong class="cx-hero__price" data-i18n="c.hero.price">From €7 + VAT per person · minimum €250 + VAT</strong></li>
+          <!-- The hook is the lowest tier (up to 25 people at a partner venue), so its condition sits right under it. -->
+          <li class="cx-hero__pricefact"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-coin"/></svg><span><strong class="cx-hero__price" data-i18n="c.hero.price">From €150 +&nbsp;VAT per event</strong><span class="cx-hero__cond"><span data-i18n="c.hero.pricecond">Up to 25 people, at one of our venues.</span> <a href="#price" data-i18n="c.hero.pricelink">See all prices</a></span></span></li>
           <!-- SEASONAL (Sep-Dec 2026): drop c.hero.hold (EN here + ES) after mid-December. -->
           <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span class="cx-hero__hold" data-i18n="c.hero.hold">We hold your date for up to 7 days, no commitment</span></li>
         </ul>
@@ -381,7 +453,7 @@
           <p class="cx-bring__h" data-i18n="c.hero.bringh">We bring</p>
           <ul>
             <li><span class="cx-bring__i" style="background:var(--yellow)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-mic"/></svg></span><span data-i18n="c.hero.bring1">A live host</span></li>
-            <li><span class="cx-bring__i" style="background:var(--orange-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-doc"/></svg></span><span data-i18n="c.hero.bring2">Rounds about your company</span></li>
+            <li><span class="cx-bring__i" style="background:var(--orange-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-image"/></svg></span><span data-i18n="c.hero.bring2">Picture and music rounds</span></li>
             <li><span class="cx-bring__i" style="background:var(--green-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-speaker"/></svg></span><span data-i18n="c.hero.bring3">Sound, screen and scoring</span></li>
           </ul>
         </div>
@@ -392,7 +464,7 @@
     <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
       <div class="card card--flat reveal statbar4" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff" data-count="5" data-count-es="4">5</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.cities">host cities</div></div>
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--accent)">10–300</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.players">people</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--accent)">10–300+</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.players">people</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="7510">7,510</span>+</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.players2">registered players</div></div>
         <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--yellow)"><span data-count="78">78</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.repeat">of players come back</div></div>
       </div>
@@ -453,7 +525,7 @@
             <p class="cx-fmt__pitch" data-i18n="c.fmt.fullpitch">The quiz is the plan.</p>
             <dl class="cx-spec">
               <div><dt data-i18n="c.fmt.when">When</dt><dd data-i18n="c.fmt.fullwhen">An afternoon, an evening or straight after a workshop</dd></div>
-              <div><dt data-i18n="c.fmt.where">Where</dt><dd data-i18n="c.fmt.fullwhere">Your office, or a venue we recommend</dd></div>
+              <div><dt data-i18n="c.fmt.where">Where</dt><dd data-i18n="c.fmt.fullwhere">Your office, or one of our venues</dd></div>
             </dl>
             <a class="btn btn--cta btn--block" href="#quote"><span data-i18n="c.fmt.fullcta">Plan our quiz</span> <span class="arr">&rarr;</span></a>
           </div>
@@ -472,43 +544,133 @@
             <p class="cx-fmt__pitch" data-i18n="c.fmt.dinnerpitch">The quiz is the best part of the dinner.</p>
             <dl class="cx-spec">
               <div><dt data-i18n="c.fmt.when">When</dt><dd data-i18n="c.fmt.dinnerwhen">Right before or after the meal</dd></div>
-              <div><dt data-i18n="c.fmt.where">Where</dt><dd data-i18n="c.fmt.dinnerwhere">At the restaurant you've booked (we sort it out with them), or a venue we recommend</dd></div>
+              <div><dt data-i18n="c.fmt.where">Where</dt><dd data-i18n="c.fmt.dinnerwhere">At the restaurant you've booked (we sort it out with them), or one of our venues</dd></div>
             </dl>
             <a class="btn btn--cta btn--block" href="#quote" data-preselect-event="christmas-dinner"><span data-i18n="c.fmt.dinnercta">Add it to our dinner</span> <span class="arr">&rarr;</span></a>
           </div>
         </article>
       </div>
 
-      <!-- Scope, said once: we run the quiz, not the offsite or the dinner around it. -->
+      <!-- Scope, said once: we run the quiz, not the offsite or the dinner around it. Custom rounds
+           are an extra now, so they are not in this list. -->
       <div class="cx-scope reveal">
         <span class="cx-scope__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-mic"/></svg></span>
-        <p><strong data-i18n="c.fmt.scopeh">Our part is the quiz.</strong> <span data-i18n="c.fmt.scoped">Host, custom rounds, scoring, sound and screen. The dinner, catering, travel and the rest of the offsite are yours to organise; if you need somewhere to play, we'll recommend a venue and sort it out with them.</span></p>
+        <p><strong data-i18n="c.fmt.scopeh">Our part is the quiz.</strong> <span data-i18n="c.fmt.scoped">Host, questions, scoring, sound and screen. The dinner, catering, travel and the rest of the offsite are yours to organise. Need somewhere to play? We'll recommend one, ideally one of our venues: it's cheaper and they're already set up for the quiz.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRICE ============ -->
+  <!-- Founder pricing (4 Oct 2026; source: the "Classic" column of the TdT private-events sheet).
+       One price per event by group size (never per person), €50 less at a partner venue because
+       nothing has to be moved, more than 75 people quoted. Only the full hosted format is offered.
+       Extras carry no prices on the page: they are quoted on the call.
+       The 11-12 Dec deposit is said here once, and in the FAQ (payment, changes). -->
+  <section id="price" class="section section--tight">
+    <div class="wrap">
+      <div class="reveal" style="max-width:62ch">
+        <span class="eyebrow" data-i18n="c.price.eyebrow">Price</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="c.price.h2">One fixed price for the whole group.</h2>
+        <p class="lead" style="margin-top:12px;text-wrap:pretty" data-i18n="c.price.lead">Not per head: it goes by group size, and it's €50 less at one of our venues. The extras are up to you.</p>
       </div>
 
-      <!-- Price and booking terms, said once for both formats. The 30% deposit is a date rule
-           (Fri 11 + Sat 12 Dec), not a format rule, so it sits here and not in a card. -->
-      <div class="cx-deal reveal">
-        <div class="cx-deal__price">
-          <p class="cx-deal__eyebrow" data-i18n="c.fmt.both">Both formats</p>
-          <p class="cx-deal__big" data-i18n="c.fmt.from">From €7</p>
-          <p class="cx-deal__vat" data-i18n="c.fmt.fromvat">+ VAT per person</p>
-          <p class="cx-deal__min" data-i18n="c.fmt.min">Minimum €250 + VAT per event</p>
-          <p class="cx-deal__note" data-i18n="c.fmt.pricenote">The final price depends on headcount, city and where you play. You get one fixed quote, no surprises.</p>
+      <div class="card cx-price reveal">
+        <div class="cx-price__top">
+          <div class="cx-price__stub">
+            <p class="cx-price__eyebrow" data-i18n="c.fmt.both">Both formats</p>
+            <p class="cx-price__big" data-i18n="c.price.from">From €150</p>
+            <p class="cx-price__vat" data-i18n="c.price.vat">+ VAT per event</p>
+            <p class="cx-price__cond" data-i18n="c.price.cond">Up to 25 people, at one of our venues</p>
+            <p class="cx-price__note"><span data-i18n="c.price.note">You get the fixed price on the call. No per-head maths, no surprises.</span></p>
+          </div>
+          <div class="cx-tiers">
+            <table>
+              <caption class="sr-only" data-i18n="c.price.caption">Price per event by group size, + VAT</caption>
+              <thead>
+                <tr>
+                  <th scope="col" data-i18n="c.price.th.size">People</th>
+                  <th scope="col" data-i18n="c.price.th.yours">At your place</th>
+                  <th scope="col" class="is-ours"><span data-i18n="c.price.th.ours">At our venues</span> <span class="cx-tiers__save" data-i18n="c.ven.save">−€50</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row" data-i18n="c.price.r1">Up to 25</th><td data-i18n="c.price.e200">€200</td><td class="is-ours" data-i18n="c.price.e150">€150</td></tr>
+                <tr><th scope="row" data-i18n="c.price.r2">26 to 50</th><td data-i18n="c.price.e250">€250</td><td class="is-ours" data-i18n="c.price.e200">€200</td></tr>
+                <tr><th scope="row" data-i18n="c.price.r3">51 to 75</th><td data-i18n="c.price.e300">€300</td><td class="is-ours is-end" data-i18n="c.price.e250">€250</td></tr>
+                <tr class="cx-tiers__quote"><th scope="row" data-i18n="c.price.r4">More than 75</th><td colspan="2" data-i18n="c.price.quote">We'll quote it</td></tr>
+              </tbody>
+            </table>
+            <p class="cx-tiers__foot" data-i18n="c.price.foot">Per event, + VAT. Your place: your office, your restaurant or any other venue.</p>
+          </div>
         </div>
-        <div class="cx-deal__book">
-          <p class="cx-deal__eyebrow" data-i18n="c.fmt.bookh">How booking works</p>
-          <ul class="cx-book">
-            <li><span class="cx-book__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cal"/></svg></span><span data-i18n="c.fmt.book1">We hold your date for up to 7 days, no commitment.</span></li>
-            <li><span class="cx-book__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-doc"/></svg></span><span data-i18n="c.fmt.book2">You confirm it by accepting the quote.</span></li>
-            <!-- SEASONAL (Sep-Dec 2026): the 11-12 Dec deposit line (c.fmt.book3a/b, EN here + ES). Drop it after 12 Dec. -->
-            <li><span class="cx-book__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-coin"/></svg></span><span><strong data-i18n="c.fmt.book3a">Friday 11 and Saturday 12 December:</strong> <span data-i18n="c.fmt.book3b">plus a 30% deposit to confirm.</span></span></li>
-          </ul>
-          <ul class="cx-facts">
-            <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg><span><span data-i18n="c.fmt.inperson">In person in</span> <strong data-i18n="c.fmt.cities">Valencia, Madrid, Barcelona, Murcia &amp; Santiago de Compostela.</strong></span></li>
-            <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-clock"/></svg><span data-i18n="c.fmt.dur">About 90 minutes of play</span></li>
-            <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-team"/></svg><span data-i18n="c.fmt.size">From 10 to 300+ people</span></li>
-          </ul>
+        <div class="cx-price__band">
+          <div>
+            <p class="cx-band__h" data-i18n="c.price.inch">Always included</p>
+            <ul class="cx-band__list cx-band__list--inc">
+              <li data-i18n="c.price.inc1">A live host</li>
+              <li data-i18n="c.price.inc2">The quiz, with picture, music and map rounds</li>
+              <li data-i18n="c.price.inc3">Live scoring on screen</li>
+              <li data-i18n="c.price.inc4">Our sound and screen, set up for you</li>
+              <li data-i18n="c.price.inc5">An operator for big groups</li>
+            </ul>
+          </div>
+          <div>
+            <p class="cx-band__h"><span data-i18n="c.price.exh">Extras</span> <span class="cx-band__sub" data-i18n="c.price.exsub">Quoted on the call, only if you want them.</span></p>
+            <ul class="cx-band__list cx-band__list--ex">
+              <li data-i18n="c.price.ex1">A theme and rounds about your company</li>
+              <li data-i18n="c.price.ex2">Prizes for the winning team</li>
+              <li data-i18n="c.price.ex3">Custom trophies</li>
+              <li data-i18n="c.price.ex4">Live rounds: card towers, modelling, karaoke</li>
+              <li data-i18n="c.price.ex5">A photographer</li>
+            </ul>
+          </div>
+          <div>
+            <p class="cx-band__h" data-i18n="c.fmt.bookh">How booking works</p>
+            <ul class="cx-band__list cx-band__list--book">
+              <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="c.fmt.book1">We hold your date for up to 7 days, no commitment.</span></li>
+              <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-doc"/></svg><span data-i18n="c.fmt.book2">You confirm it by accepting the quote.</span></li>
+              <!-- SEASONAL (Sep-Dec 2026): the 11-12 Dec deposit line (c.fmt.book3a/b, EN here + ES). Drop it after 12 Dec. -->
+              <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-coin"/></svg><span><strong data-i18n="c.fmt.book3a">Friday 11 and Saturday 12 December:</strong> <span data-i18n="c.fmt.book3b">plus a 30% deposit to confirm.</span></span></li>
+            </ul>
+          </div>
         </div>
+      </div>
+
+      <!-- Partner venues: the bars where we run a public quiz every week, plus OlHops (Valencia),
+           checked against tardeodetrivia.com / quizeatdrink.com event listings on 4 Oct 2026.
+           A Coruña is not offered for companies yet, so Magpie's Coven is left out; La Canyada
+           (one-off nights), Padrón and Sagunto (no events) are not partner venues. Barcelona is
+           QED only (data-lang-hide="es"). Venue names are proper nouns: no i18n keys.
+           When a weekly venue opens or closes, update this list. -->
+      <div class="card cx-venues reveal" id="our-venues">
+        <div class="cx-venues__intro">
+          <span class="eyebrow" data-i18n="c.ven.eyebrow">Our venues</span>
+          <h3 class="cx-venues__t" data-i18n="c.ven.t">Play at one of our venues and pay €50 less.</h3>
+          <p class="cx-venues__p" data-i18n="c.ven.p">They're the bars where we run a quiz night every week. They're already set up for it, so there's no kit to move and we take €50 off at any group size. We'll tell you which one fits your group and date; food and drink you sort directly with the bar.</p>
+          <span class="stamp cx-venues__stamp" aria-hidden="true"><b data-i18n="c.ven.save">−€50</b><span data-i18n="c.ven.savesub">per event</span></span>
+        </div>
+        <ul class="cx-vlist">
+          <li>
+            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Valencia</span>
+            <ul class="cx-vchips"><li class="cx-vchip">Casapueblo Brewhouse</li><li class="cx-vchip">Chester &amp; Co.</li><li class="cx-vchip">Cheeck's n' Beer</li><li class="cx-vchip">OlHops</li></ul>
+          </li>
+          <li>
+            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Madrid</span>
+            <ul class="cx-vchips"><li class="cx-vchip">El Hachazo (Atocha)</li></ul>
+          </li>
+          <li data-lang-hide="es">
+            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Barcelona</span>
+            <ul class="cx-vchips"><li class="cx-vchip">Pasa Tapas</li></ul>
+          </li>
+          <li>
+            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Murcia</span>
+            <ul class="cx-vchips"><li class="cx-vchip">El Hachazo</li></ul>
+          </li>
+          <li>
+            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Santiago de Compostela</span>
+            <ul class="cx-vchips"><li class="cx-vchip">La Cervecería Internacional</li></ul>
+          </li>
+        </ul>
       </div>
     </div>
   </section>
@@ -529,13 +691,12 @@
         <div>
           <div class="step__n">02</div><div class="step__bar"></div>
           <h3 class="h3" data-i18n="c.how.2t">We build your quiz</h3>
-          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.2d">From what you tell us on the call, we write your rounds and build the slides.</p>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.2d">On the call we choose the theme and the rounds with you, plus any extras you want. Then we build the slides.</p>
         </div>
         <div>
           <div class="step__n">03</div><div class="step__bar"></div>
           <h3 class="h3" data-i18n="c.how.3t">Game on</h3>
-          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.3d">We run it from start to finish. You get the photos, the banter and a winning team.</p>
-          <p class="muted" style="margin-top:8px;font-size:13px;opacity:.8" data-i18n="c.how.3note">Photographer available as an optional add-on.</p>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.3d">We run it from start to finish. You get the laughs, the banter and a winning team.</p>
         </div>
       </div>
     </div>
@@ -543,20 +704,23 @@
 
   <!-- ============ CUSTOMIZE (make it yours) ============ -->
   <!-- One card, four rows: what can change on the left, the options as chips on the right. The
-       options are a pick-list, not a sequence, so no numbers or courses. -->
+       options are a pick-list, not a sequence, so no numbers or courses. Each row is flagged
+       Included (standard themes, standard round types) or Extra (live rounds, prizes): founder
+       pricing, 4 Oct 2026. -->
   <section id="customize" class="section section--tight">
     <div class="wrap">
       <div class="reveal" style="max-width:60ch">
         <span class="eyebrow" data-i18n="c.cust.eyebrow">Make it yours</span>
         <h2 class="h2" style="margin-top:14px" data-i18n="c.cust.h2">Every part of the night can flex.</h2>
+        <p class="lead" style="margin-top:12px;text-wrap:pretty" data-i18n="c.cust.lead">Themes and round types are included. Anything marked Extra, we quote on the call.</p>
       </div>
       <div class="card cx-opts reveal">
         <div class="cx-opt cx-opt--y">
           <div class="cx-opt__hd">
             <span class="cx-tile" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-palette"/></svg></span>
             <div>
-              <h3 class="cx-opt__t" data-i18n="c.cust.themes.t">Pick a theme</h3>
-              <p class="cx-opt__d" data-i18n="c.cust.themes.d">Set the tone before we write a single question.</p>
+              <h3 class="cx-opt__t"><span class="cx-flag cx-flag--inc" data-i18n="c.cust.inc">Included</span> <span data-i18n="c.cust.themes.t">Pick a theme</span></h3>
+              <p class="cx-opt__d" data-i18n="c.cust.themes.d">Choose the tone of the night from our themes.</p>
             </div>
           </div>
           <ul class="cx-chips">
@@ -570,7 +734,7 @@
           <div class="cx-opt__hd">
             <span class="cx-tile" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-modes"/></svg></span>
             <div>
-              <h3 class="cx-opt__t" data-i18n="c.cust.rounds.t">More than multiple choice</h3>
+              <h3 class="cx-opt__t"><span class="cx-flag cx-flag--inc" data-i18n="c.cust.inc">Included</span> <span data-i18n="c.cust.rounds.t">More than multiple choice</span></h3>
               <p class="cx-opt__d" data-i18n="c.cust.rounds.d">Mix in whichever round formats suit the room.</p>
             </div>
           </div>
@@ -586,7 +750,7 @@
           <div class="cx-opt__hd">
             <span class="cx-tile" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-bolt"/></svg></span>
             <div>
-              <h3 class="cx-opt__t" data-i18n="c.cust.active.t">Get the room on its feet</h3>
+              <h3 class="cx-opt__t"><span class="cx-flag cx-flag--ex" data-i18n="c.cust.extra">Extra</span> <span data-i18n="c.cust.active.t">Get the room on its feet</span></h3>
               <p class="cx-opt__d" data-i18n="c.cust.active.d">Add a live round alongside the quiz.</p>
             </div>
           </div>
@@ -600,7 +764,7 @@
           <div class="cx-opt__hd">
             <span class="cx-tile" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-ribbon"/></svg></span>
             <div>
-              <h3 class="cx-opt__t" data-i18n="c.cust.prizes.t">Prizes worth winning</h3>
+              <h3 class="cx-opt__t"><span class="cx-flag cx-flag--ex" data-i18n="c.cust.extra">Extra</span> <span data-i18n="c.cust.prizes.t">Prizes worth winning</span></h3>
               <p class="cx-opt__d" data-i18n="c.cust.prizes.d">Give the winning team something to actually keep.</p>
             </div>
           </div>
@@ -613,19 +777,21 @@
     </div>
   </section>
 
-  <!-- ============ FEATURES (what's included, said once for both formats) ============ -->
+  <!-- ============ FEATURES (inside the quiz) ============
+       The big card is the custom-rounds extra (personalización), flagged as such; the three small
+       cards (host, scoring, sound and screen) are in every event. -->
   <section id="features" class="section section--tight">
     <div class="wrap">
       <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="c.feat.eyebrow">What's in the box</span>
+        <span class="eyebrow" data-i18n="c.feat.eyebrow">Inside the quiz</span>
         <h2 class="h2" style="margin-top:14px" data-i18n="c.feat.h2">More than a list of questions.</h2>
       </div>
       <div class="cx-feat reveal">
         <div class="card pad cx-feat__big">
           <div>
-            <span class="tag" style="background:transparent;border-color:rgba(255,255,255,.75);color:#fff" data-i18n="c.feat.f0tag">Custom packs</span>
+            <span class="tag" style="background:var(--yellow);border-color:var(--ink);color:var(--ink)" data-i18n="c.feat.f0tag">Extra · Custom packs</span>
             <h3 class="h3 cx-feat__bigt" data-i18n="c.feat.f0t">Rounds written about you</h3>
-            <p class="cx-feat__bigd" data-i18n="c.feat.f0d">Your team, your industry, your in-jokes, with your logo and colours on every screen. Not a generic pub-quiz pack with the serial numbers filed off.</p>
+            <p class="cx-feat__bigd" data-i18n="c.feat.f0d">Your team, your industry, your in-jokes, with your logo and colours on every screen. Add it as an extra and we write the rounds for you.</p>
           </div>
           <!-- One of our real question slides (the projector's house look), with a question about
                "your" office and the logo slot filled. Decorative (aria-hidden): the card's text says it. -->
@@ -679,58 +845,62 @@
         <span class="eyebrow" data-i18n="c.faq.eyebrow">Questions</span>
         <h2 class="h2" style="margin-top:14px" data-i18n="c.faq.h2">The stuff people ask.</h2>
       </div>
+      <!-- Corporate FAQ audit (Oct 2026) + founder answers (4 Oct 2026). Eleven items, in this order:
+           booking (merges the old date-hold item), price + inclusions, restaurant/office + set-up,
+           scope, length + time of day, group size, language, cities, invoice + payment, changes,
+           see it first. Only the first is open. Price and the deposit live once in #price; the FAQ
+           answers in short and doesn't repeat the table. -->
       <div class="faq reveal" style="margin-top:26px">
         <!-- SEASONAL (Sep-Dec 2026): the booking-lead-time item sits first and open for Christmas season.
              After mid-December, move it back to the end, drop its "open", put "open" on whichever
-             item is then first (the "How much does it cost?" item stays near the top), and revert
-             c.faq.a6 to the year-round answer. -->
+             item is then first (the price item stays near the top), and revert c.faq.a6 to the
+             year-round answer: "Two weeks is usually enough. After the call we hold your date for up
+             to 7 days, no commitment." -->
         <details open>
           <summary><span data-i18n="c.faq.q6">How far ahead should we book?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a6">For November and December, as early as you can: December Thursdays and Fridays go first, and so do rooms for big groups. The rest of the year, two weeks is usually enough. Tighter than that? Ask anyway.</div>
+          <div class="ans" data-i18n="c.faq.a6">For December, as early as you can: Fridays and Saturday 12th fill first. After the call we hold your date for up to 7 days, no commitment (72 hours on those dates). The rest of the year, two weeks is usually enough.</div>
         </details>
         <details>
-          <summary><span data-i18n="c.faq.q7">How much does it cost?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a7">From €7 + VAT per person, with a minimum of €250 + VAT per event. The final price depends on headcount, city and where you play, and you get it as one fixed quote with no surprises. For Friday 11 and Saturday 12 December we ask for a 30% deposit on confirmation.</div>
+          <summary><span data-i18n="c.faq.q7">How much is it, and what's included?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a7">From €150 +&nbsp;VAT per event, never per person. It goes by group size (€200, €250 or €300 +&nbsp;VAT up to 75 people; more than 75, we quote it) and it's €50 less at one of our venues. The host, the quiz, live scoring, sound and screen are included. Rounds about your company, prizes, trophies, live rounds and a photographer are extras we quote on the call.</div>
         </details>
         <details>
-          <summary><span data-i18n="c.faq.q8">What's included?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a8">A live host, our AV kit (sound, a screen or projector and live scoring), custom rounds about your company and prizes for the winning team, plus an operator for larger groups. Extras on request: custom trophies and a photographer.</div>
+          <summary><span data-i18n="c.faq.q10">We've booked a restaurant (or it's at the office). Do you come there?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a10">Yes, that's the usual setup. We play before or after the meal and sort it out with the place. We bring our own sound and screen; if there's already a screen or projector and sound, we use theirs, which keeps it simple. All we need is a power socket and a little time to set up.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q12">Do you organise the offsite or the dinner too?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a12">No, our part is the quiz: host, custom rounds, scoring, sound and screen, from start to finish. The dinner, catering, travel, accommodation and workshops are yours to organise (or whoever is organising your event). If you need somewhere to play, we'll recommend a venue that fits and coordinate the quiz with them.</div>
+          <div class="ans" data-i18n="c.faq.a12">No, our part is the quiz. The dinner, catering, travel and the rest of the offsite are yours to organise (or your event organiser's). No venue yet? We'll recommend one, ideally one of our venues: it's €50 cheaper because they're already set up for the quiz.</div>
         </details>
         <details>
-          <summary><span data-i18n="c.faq.q9">Can it be a lunch or an afternoon?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a9">Yes. Plenty of teams prefer a company lunch or an afternoon plan. Same quiz, same host, just earlier.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="c.faq.q10">We've booked the restaurant. Do you come there?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a10">Yes, that's the usual setup. We play before or after the meal, sort the space out with the restaurant and bring our own kit if needed.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="c.faq.q11">How does the date hold work?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a11">After the call we hold the date for up to 7 days at no cost (72 h on December Fridays and Saturday 12th, which go fast). To confirm, you accept the quote. Friday 11 and Saturday 12 December also need a 30% deposit to confirm; cancellation terms are in the quote.</div>
+          <summary><span data-i18n="c.faq.q2">How long is it, and when?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a2">About 90 minutes. At lunchtime, in the afternoon or in the evening, right before or after the meal: we fit it to your schedule.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q1">How many people can play?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a1">Anywhere from 10 to 300+. Smaller teams play as individuals or pairs; bigger groups split into tables. Big groups are no trouble at all.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="c.faq.q2">How long does it run?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a2">About 90 minutes for the full night, though we flex it around your schedule. A tight after-workshop slot or a long evening both work.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="c.faq.q3">Do you travel to us?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a3">Both formats are hosted in person across Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela. Somewhere else? Pick "Elsewhere" in the form and tell us where.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="c.faq.q4">Our office, or a venue?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a4">Either. We'll run it in your space with our AV, or recommend a venue that fits your group and coordinate the quiz with them.</div>
+          <div class="ans" data-i18n="c.faq.a1">From 10 to 300+, in teams at each table. Nobody needs to know everything: there are picture, music and map rounds, and the host keeps it moving so nobody's left out.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q5">English or Spanish?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a5">Both, and we mix them for international teams. Tell us your room and we'll pitch it right.</div>
+          <div class="ans" data-i18n="c.faq.a5">Either, or bilingual for international teams. We have hosts in both languages.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="c.faq.q3">Which cities do you cover?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a3">Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela. Somewhere else? Pick "Elsewhere" in the form and we'll look into it.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="c.faq.q13">Do you invoice? How do we pay?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <!-- SEASONAL (Sep-Dec 2026): drop the last sentence (the 11-12 Dec deposit) after 12 Dec. -->
+          <div class="ans" data-i18n="c.faq.a13">Yes, a VAT invoice made out to your company. You pay by bank transfer or by card (we send you a payment link), before the event and at the latest the day before. For Friday 11 and Saturday 12 December, 30% is paid when you confirm.</div>
+        </details>
+        <details>
+          <!-- SEASONAL (Sep-Dec 2026): after 12 Dec, drop the clause after the semicolon (the deposit). -->
+          <summary><span data-i18n="c.faq.q14">What if the date or the headcount changes?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a14">You can change the headcount until 3 working days before, and the price follows the tier. One date change is free if you tell us at least 7 days ahead, subject to availability. Cancelling is free up to 7 days before; after that, the 11-12 December deposit isn't refunded, but you can use it for another date within 3 months.</div>
+        </details>
+        <details>
+          <summary><span data-i18n="c.faq.q15">Can we see it before we book?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans"><span data-i18n="c.faq.a15">Yes. Come to one of our public quiz nights with a couple of colleagues and see it live. The dates are on</span> <a href="https://quizeatdrink.com" target="_blank" rel="noopener" data-i18n-href="c.faq.a15href" data-i18n="c.faq.a15link">quizeatdrink.com</a>.</div>
         </details>
       </div>
     </div>
@@ -746,7 +916,7 @@
           <span class="eyebrow quote-intro__more" style="color:rgba(255,255,255,.6)" data-i18n="c.cta.quote">Get a quote</span>
           <h2 class="h2" style="color:#fff" data-i18n="c.form.h2">Leave your number. We'll call you.</h2>
           <!-- SEASONAL: drop the "Booking for December?" opener from c.form.sub (EN + ES) after mid-December. -->
-          <p class="quote-intro__more" style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="c.form.sub">Booking for December? We'll hold your date for up to 7 days, no commitment, while you get sign-off (11 and 12 December are confirmed with a 30% deposit). A real person calls you, usually the same working day.</p>
+          <p class="quote-intro__more" style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="c.form.sub">Booking for December? We'll hold your date for up to 7 days, no commitment, while you get sign-off. A real person calls you, usually the same working day.</p>
         </div>
         <div class="pad">
           <form id="event-form" name="corporate-event" novalidate data-action="/.netlify/functions/book-event" data-contact-first>
@@ -995,14 +1165,14 @@
     swap(parts[1], "c.hero.h1cenab", "with a quiz people remember.");
     h1.style.maxWidth = "17ch"; // longer line than the default H1; keeps it to ~4 lines
   }
-  swap(document.getElementById("c-hero-sub"), "c.hero.subcena", "Before or after the company dinner or lunch: 90 minutes of team trivia with a live host and rounds about your company. We come to your restaurant, your office or a venue we recommend. For 10 to 300 people.");
+  swap(document.getElementById("c-hero-sub"), "c.hero.subcena", "Before or after the company dinner or lunch: 90 minutes of team trivia with a live host. We come to your restaurant or your office, or you play at one of our venues. For 10 to 300+ people.");
   swap(document.getElementById("c-hero-cta"), "c.cta.holdcena", "Hold your date");
   preselect("christmas-dinner");
   document.documentElement.setAttribute("data-variant", "cena");
 })();
 </script>
 <script src="/shared/i18n-common.js?v=20261010"></script>
-<script src="/shared/i18n-corporate.js?v=20261010"></script>
+<script src="/shared/i18n-corporate.js?v=20261011"></script>
 <script src="/shared/i18n.js?v=20261010"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js?v=20261010"></script>
