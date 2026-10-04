@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.classList.add('js')</script>
 <title data-i18n="h.title">QED · Quiz. Eat. Drink. Pub quiz nights across Spain</title>
-<meta name="description" data-i18n-content="h.metadesc" content="QED runs trivia nights with a live host for company dinners, team days and celebrations, and a franchise to run your own. Events in Valencia, Madrid, Barcelona, Murcia &amp; Santiago de Compostela, and trivia nights in A Coruña too.">
+<meta name="description" data-i18n-content="h.metadesc" content="QED runs trivia nights with a live host for company dinners, team days and celebrations, and offers a franchise so you can run your own. Events in Valencia, Madrid, Barcelona, Murcia &amp; Santiago de Compostela, and trivia nights in A Coruña too.">
 <meta name="theme-color" content="#FBF6EA">
 <meta property="og:title" data-i18n-content="h.ogtitle" content="QED · Quiz. Eat. Drink.">
 <meta property="og:description" data-i18n-content="h.ogdesc" content="Trivia nights with a live host for companies, and a franchise to run your own.">
@@ -37,7 +37,7 @@
     .hb-grid{ grid-template-columns:minmax(0,1fr) 300px; grid-template-areas:"intro score" "doors doors" "cele cele"; column-gap:56px; row-gap:22px; align-items:end; }
   }
 
-  .hb-h1{ margin-top:18px; max-width:15ch; font-size:clamp(40px,6vw,68px); text-wrap:balance; }
+  .hb-h1{ margin-top:0; max-width:15ch; font-size:clamp(40px,6vw,68px); text-wrap:balance; }
   .hb-sub{ margin:16px 0 0; max-width:56ch; text-wrap:pretty; }
 
   /* --- the two doors: equal size, different character (deep red / ink + franchise green) --- */
@@ -56,6 +56,10 @@
   /* --pop: stamp + CTA fill; --pop-ink: the same hue light enough for small text (AA on the door) */
   .hb-door--corp{ background:var(--accent-deep); --dot:rgba(255,255,255,.16); --pop:var(--yellow); --pop-ink:var(--yellow-soft); }
   .hb-door--fran{ background:var(--ink); --dot:rgba(137,175,150,.22); --pop:#89AF96; --pop-ink:#89AF96; }
+  /* an ink shadow melts into the ink door (it read ~7px wider than the red one), so its offset
+     is sage, edged in ink like every other sticker */
+  .hb-door--fran{ box-shadow:6px 6px 0 0 #89AF96, 6px 6px 0 2px var(--ink); }
+  .hb-door--fran:hover{ box-shadow:9px 9px 0 0 #89AF96, 9px 9px 0 2px var(--ink); }
   .hb-door__kicker{ margin:0; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; line-height:1.5; color:var(--pop-ink); }
   .hb-door__head{ display:flex; justify-content:space-between; align-items:center; gap:14px; margin-top:10px; }
   .hb-door__stamp{
@@ -117,6 +121,14 @@
   .hb-score__row dd{ margin:0; font-weight:900; font-size:26px; letter-spacing:-0.03em; line-height:1; white-space:nowrap; }
   .hb-score__row:first-child dd{ color:var(--accent); }
   @media (min-width:960px){ .hb-score{ transform:rotate(2deg); margin-bottom:6px; } }
+  /* tablets: full width under the doors, so the three stats sit side by side (number over label)
+     instead of three long rows with the label ~550px from its number */
+  @media (min-width:600px) and (max-width:959px){
+    .hb-score__list{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .hb-score__row{ flex-direction:column-reverse; align-items:flex-start; justify-content:flex-end; gap:7px; padding:15px 18px 16px; border-bottom:0; }
+    .hb-score__row + .hb-score__row{ border-left:1px dashed var(--hairline-strong); }
+    .hb-score__row dd{ font-size:30px; }
+  }
 
   @media (prefers-reduced-motion:reduce){
     .hb-door, .hb-cele, .hb-door .arr, .hb-cele .arr{ transition:none; }
@@ -152,7 +164,6 @@
     <div class="wrap hb-grid">
 
       <div class="hb-intro reveal">
-        <span class="tag tag--shadow" style="background:var(--yellow)" data-i18n="h.hero.cities">Valencia&nbsp;· Madrid&nbsp;· Barcelona&nbsp;· Murcia&nbsp;· Santiago&nbsp;· A&nbsp;Coruña</span>
         <h1 class="h-display hb-h1"><span data-i18n="h.hero.h1a">Trivia nights </span><span class="accent" data-i18n="h.hero.h1b">with a live host.</span></h1>
         <p class="lead hb-sub" data-i18n="h.hero.sub">We bring the trivia to company dinners and celebrations: the questions, the hosting and the scoreboard. And with our franchise, you run your own.</p>
       </div>

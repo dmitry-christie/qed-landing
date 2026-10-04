@@ -26,12 +26,14 @@ Shared CSS/JS/images live in `/shared/`.
 
 **English is baked into the HTML. Spanish is swapped in at runtime.**
 
-- Each translatable element has `data-i18n="key"` (or `data-i18n-content|ph|aria|href` for
-  attributes). The baked text is the English.
+- Each translatable element has `data-i18n="key"` (or `data-i18n-content|ph|aria|href|alt|value`
+  for attributes). The baked text is the English. `data-i18n-value` swaps a radio's submitted
+  `value`: the corporate event-type cards post their localized label, which Telegram and the
+  Brevo deal read, so a missing ES key there would post English from the TDT site.
 - Spanish strings live in `shared/i18n-*.js` as `window.QED_ES[key]`. `shared/i18n.js`
   replaces the text when the language is ES.
 - Each page loads `i18n-common.js` (shared keys: footer, forms, consent, cross-sell,
-  comparison table, About) plus its own `i18n-<page>.js` (page-specific keys, prefixed
+  About) plus its own `i18n-<page>.js` (page-specific keys, prefixed
   `h.` hub, `c.` corporate, `cel.` celebrations, `v.` venues, `p.` partners, `pr.` privacy,
   `tm.` terms).
 
@@ -44,7 +46,7 @@ dictionaries into a `window` shim, then diff against every key in the page **plu
 `shared/about.partial.html`** (the partial's keys only appear post-build):
 
 ```bash
-node -e 'global.window={};const f=require("fs"),L=p=>new Function("window","Object",f.readFileSync(p,"utf8"))(window,Object);["shared/i18n-common.js","shared/i18n-partners.js"].forEach(L);const h=f.readFileSync("partners/index.html","utf8")+f.readFileSync("shared/about.partial.html","utf8");console.log([...new Set([...h.matchAll(/data-i18n(?:-(?:content|ph|aria|href))?="([^"]+)"/g)].map(m=>m[1]))].filter(k=>!(k in window.QED_ES)))'
+node -e 'global.window={};const f=require("fs"),L=p=>new Function("window","Object",f.readFileSync(p,"utf8"))(window,Object);["shared/i18n-common.js","shared/i18n-partners.js"].forEach(L);const h=f.readFileSync("partners/index.html","utf8")+f.readFileSync("shared/about.partial.html","utf8");console.log([...new Set([...h.matchAll(/data-i18n(?:-(?:content|ph|aria|href|alt|value))?="([^"]+)"/g)].map(m=>m[1]))].filter(k=>!(k in window.QED_ES)))'
 ```
 
 It also catches the reverse: keys left orphaned in the dictionary after a section is rewritten.
@@ -76,7 +78,8 @@ If they ever go up, the transparency line under the block needs its effective da
 
 ## Shared About section (single source)
 
-The "About us" section is identical on 5 pages, so it is **not** duplicated. It lives once in
+The "About us" section is identical on 4 pages (hub, corporate, celebrations, partners; the
+minimal /venues/ page has none), so it is **not** duplicated. It lives once in
 `shared/about.partial.html` and is stamped into each page's `<!-- build:about -->` marker by
 `build.mjs` on every build. Edit the partial once; every page updates. Its copy is still
 translated at runtime via the `about.*` keys in `i18n-common.js`.
@@ -197,7 +200,9 @@ Corporate gets its value from the step-1 response instead (see Contact-first bel
 
 **Contact-first corporate form (Oct 2026).** `<form data-contact-first>` (corporate only;
 celebrations keeps the classic flow) makes step 1 (event type, first name, phone, email; phone
-required and checked by `isPhone()`, Spain = 9 digits starting 6-9) the whole lead. `qed.js`
+required and checked by `isPhone()`, Spain = 9 digits starting 6-9) the whole lead. The event
+type is four one-tap radio cards in `fieldset#c-event`, not a dropdown: a tap moves focus to the
+first empty contact field, Enter or Space picks a card, and the error hint sits on the fieldset. `qed.js`
 posts it with `_capture:"contact"`, `_variant` and event id E1, waits up to 2.5 s, then shows
 the optional step 2; `book-event` answers `{ok, value, tgRef}` after a "📞 LLAMAR" Telegram
 alert (call-by time in Europe/Madrid, to `TELEGRAM_CALL_CHAT_ID` if set, mentioning
@@ -228,7 +233,9 @@ category they need: **analytics** → Amplitude; **marketing** → Meta Pixel/CA
 back while a lead form is in view or focused (it used to cover step 1's Continue on phones) and
 opens once the form is scrolled away, focus leaves it, or a lead is sent (`qed:leadsent`); while
 open it reserves its height as body padding. Only sections that contain a `form[data-action]`
-count (the hub's `#plan` is link cards). Lead POSTs sent before a choice carry `_consent:
+count (the hub's `#plan` is link cards). A form already on the first screen at load (the
+/venues/ hero form, which a short page can never scroll away) holds the banner only while focus
+is inside it, so the 4 s timer still opens it there. Lead POSTs sent before a choice carry `_consent:
 "denied"` and the server drops their event, so `qed.js` keeps them in memory and re-POSTs them
 with `_replay:"consent"` when analytics is granted; the functions answer a replay with
 `sendLeadEvent` alone (same `_event_id`, so Meta and Amplitude dedup it).

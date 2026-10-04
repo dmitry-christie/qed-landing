@@ -1,7 +1,7 @@
 /* Spanish: Corporate page. English is baked into corporate/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.title": "Cena de empresa con trivia y team building · Tardeo de Trivia",
-  "c.metadesc": "La cena de empresa que tu equipo pedirá repetir: tardeos de trivia desde 7 € + IVA por persona en Valencia, Madrid, Murcia y Santiago de Compostela.",
+  "c.metadesc": "Trivia para tu cena de empresa o team building, con anfitrión en directo, desde 7 € + IVA por persona en Valencia, Madrid, Murcia y Santiago de Compostela.",
 
   "c.nav.formats": "Formatos",
   "c.nav.how": "Cómo funciona",
@@ -15,11 +15,11 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.hero.tag": "Cenas de empresa y Navidad 2026 · Valencia, Madrid, Murcia y Santiago",
   "c.hero.h1a": "Team building que de verdad ",
   "c.hero.h1b": "se disfruta.",
-  "c.hero.sub": "Olvídate de las dinámicas de confianza y la diversión forzada. 90 minutos de trivia con anfitrión en directo y rondas sobre tu empresa, antes o después de la cena de empresa: en tu oficina, en el restaurante de la cena o en un local que buscamos nosotros. De 10 a 300 personas.",
+  "c.hero.sub": "Olvídate de las dinámicas de confianza y la diversión forzada. 90 minutos de trivia con anfitrión en directo y rondas sobre tu empresa, antes o después de la cena de empresa: en tu oficina, en el restaurante de la cena o en un local que te recomendamos. De 10 a 300 personas.",
   // ?v=cena variant (Christmas ad group), swapped in by the inline script in corporate/index.html
-  "c.hero.h1cenaa": "La cena de empresa, ",
-  "c.hero.h1cenab": "con un plan que la gente recuerda.",
-  "c.hero.subcena": "Antes o después de la cena o la comida de empresa: 90 minutos de trivia por equipos, con anfitrión en directo y rondas sobre tu empresa. Vamos a vuestro restaurante, a tu oficina o a un local que buscamos nosotros. De 10 a 300 personas.",
+  "c.hero.h1cenaa": "Tu cena de empresa, ",
+  "c.hero.h1cenab": "con una trivia que se recuerda.",
+  "c.hero.subcena": "Antes o después de la cena o la comida de empresa: 90 minutos de trivia por equipos, con anfitrión en directo y rondas sobre tu empresa. Vamos a vuestro restaurante, a vuestra oficina o a un local que os recomendamos. De 10 a 300 personas.",
   "c.hero.price": "Desde 7 € + IVA por persona · mínimo 250 € + IVA",
   // SEASONAL (Sep-Dec 2026): drop c.hero.hold after mid-December.
   "c.hero.hold": "Te guardamos la fecha hasta 7 días sin compromiso",
@@ -55,13 +55,13 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.fmt.yearround": "Todo el año",
   "c.fmt.fullpitch": "La trivia es el plan.",
   "c.fmt.fullwhen": "Una tarde, una noche o justo al acabar un taller",
-  "c.fmt.fullwhere": "En tu oficina o en un local que te recomendamos",
+  "c.fmt.fullwhere": "En vuestra oficina o en un local que os recomendamos",
   "c.fmt.fullcta": "Organizar nuestra trivia",
   "c.fmt.dinner": "Trivia + cena de empresa",
   "c.fmt.season": "Navidad 2026",
   "c.fmt.dinnerpitch": "La trivia es lo mejor de la cena.",
   "c.fmt.dinnerwhen": "Justo antes o después de comer o cenar",
-  "c.fmt.dinnerwhere": "En el restaurante que ya tenéis (lo cuadramos con ellos) o en un local que te recomendamos",
+  "c.fmt.dinnerwhere": "En el restaurante que ya tenéis (lo cuadramos con ellos) o en un local que os recomendamos",
   "c.fmt.dinnercta": "Añadirlo a nuestra cena",
   // scope line under the two formats: we run the trivia, not the offsite or the dinner
   "c.fmt.scopeh": "Lo nuestro es la trivia.",
@@ -71,7 +71,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.fmt.from": "Desde 7 €",
   "c.fmt.fromvat": "+ IVA por persona",
   "c.fmt.min": "Mínimo 250 € + IVA por evento",
-  "c.fmt.pricenote": "El precio final depende de cuántos sois, la ciudad y si ponemos el local. Te lo pasamos cerrado y sin sorpresas.",
+  "c.fmt.pricenote": "El precio final depende de cuántos sois, la ciudad y dónde jugáis. Te lo pasamos cerrado y sin sorpresas.",
   "c.fmt.bookh": "Cómo se reserva",
   "c.fmt.book1": "Te guardamos la fecha hasta 7 días, sin compromiso.",
   "c.fmt.book2": "La confirmas aceptando el presupuesto.",
@@ -150,7 +150,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // SEASONAL (Sep-Dec 2026): revert to the year-round answer after mid-December.
   "c.faq.a6": "Para noviembre y diciembre, cuanto antes: los jueves y viernes de diciembre son lo primero que se llena, y los locales para grupos grandes también. Para el resto del año, con dos semanas suele bastar. ¿Lo tienes más justo? Pregunta igualmente.",
   "c.faq.q7": "¿Cuánto cuesta?",
-  "c.faq.a7": "Desde 7 € + IVA por persona, con un mínimo de 250 € + IVA por evento. El precio final depende de cuántos sois, la ciudad y si ponemos el local, y te lo pasamos cerrado y sin sorpresas. Para el viernes 11 y el sábado 12 de diciembre pedimos una señal del 30% al confirmar.",
+  "c.faq.a7": "Desde 7 € + IVA por persona, con un mínimo de 250 € + IVA por evento. El precio final depende de cuántos sois, la ciudad y dónde jugáis, y te lo pasamos cerrado y sin sorpresas. Para el viernes 11 y el sábado 12 de diciembre pedimos una señal del 30% al confirmar.",
   "c.faq.q8": "¿Qué incluye?",
   "c.faq.a8": "Anfitrión en directo, nuestro equipo audiovisual (sonido, pantalla o proyector y puntuación en directo), rondas a medida sobre vuestra empresa y premios para el equipo ganador, más un operador en los grupos grandes. Extras a petición: trofeos personalizados y fotógrafo.",
   "c.faq.q12": "¿Organizáis también el offsite o la cena?",

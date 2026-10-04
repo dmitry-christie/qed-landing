@@ -646,7 +646,20 @@
       if (etRadios && etField) {
         var etTap = false;
         etField.addEventListener("pointerdown", function () { etTap = true; });
-        etField.addEventListener("keydown", function () { etTap = false; });
+        // a touch that turns into a scroll fires pointercancel and no click: don't leave etTap set
+        etField.addEventListener("pointercancel", function () { etTap = false; });
+        etField.addEventListener("keydown", function (e) {
+          etTap = false;
+          // Enter on a card picks it, like Space. Left alone, the browser treats it as an implicit
+          // submit: Continue runs and flags all four fields before anything is chosen.
+          if (e.key === "Enter" && e.target && e.target.type === "radio") {
+            e.preventDefault();
+            if (!e.target.checked) {
+              e.target.checked = true;
+              try { e.target.dispatchEvent(new Event("change", { bubbles: true })); } catch (err) {}
+            }
+          }
+        });
         etField.addEventListener("click", function () { setTimeout(function () { etTap = false; }, 0); });
         etField.addEventListener("change", function () {
           if (!etTap) return;
@@ -658,9 +671,12 @@
         });
       }
       if (fn) {
-        fn.addEventListener("input", function () { if (fnValid()) fieldError(fn, false); });
-        // Blur flags an empty name, except mid-tap on an event-type card (focus comes straight back).
-        fn.addEventListener("blur", function () { if (!etTap) fieldError(fn, !fnValid()); });
+        fn.addEventListener("input", function () { fn.__dirty = true; if (fnValid()) fieldError(fn, false); });
+        // Blur flags an empty name only once it has been typed in: a card tap now focuses the
+        // name for the visitor, and tapping away from it untouched (say, to close the keyboard)
+        // must not scold them. Never mid-tap on a card either (focus comes straight back).
+        // Continue still checks it either way.
+        fn.addEventListener("blur", function () { if (!etTap && fn.__dirty) fieldError(fn, !fnValid()); });
       }
 
       // Every field is checked so all errors show at once; returns the first invalid one.

@@ -7,12 +7,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "h.nav.partners": "Franquicias",
 
-  // TDT cities only (ES = the TDT brand; Barcelona is QED only). \u00a0 keeps each name whole and
-  // stops a wrapped line from starting with "·".
-  "h.hero.cities": "Valencia\u00a0· Madrid\u00a0· Murcia\u00a0· Santiago\u00a0· A\u00a0Coruña",
   "h.hero.h1a": "Tardeos de trivia ",
   "h.hero.h1b": "con anfitrión en directo.",
-  "h.hero.sub": "Ponemos la trivia en cenas de empresa y celebraciones: las preguntas, la presentación y el marcador. Y con nuestra franquicia, montas los tuyos.",
+  "h.hero.sub": "Ponemos la trivia en cenas de empresa y celebraciones: las preguntas, el anfitrión y el marcador. Y con nuestra franquicia, montas los tuyos.",
 
   // Scorecard. Locations differ per brand (data-count-es="6": TDT has no Barcelona).
   "h.stat.hd": "En cifras",
@@ -25,7 +22,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // only at " · ".
   "h.door.corp.kicker": "Para tu equipo",
   "h.door.corp.t": "Empresas",
-  "h.door.corp.d": "Vosotros organizáis la cena o el offsite; nosotros ponemos la trivia, con anfitrión en directo y rondas sobre tu empresa.",
+  "h.door.corp.d": "Tú organizas la cena o el offsite; nosotros ponemos la trivia, con anfitrión en directo y rondas sobre tu empresa.",
   "h.door.corp.fact": "Desde\u00a07\u00a0€\u00a0+\u00a0IVA\u00a0por\u00a0persona\u00a0· De\u00a010\u00a0a\u00a0300\u00a0personas",
   "h.door.corp.cta": "Ver eventos de empresa",
   "h.door.fran.kicker": "Para tu propio negocio",
@@ -37,7 +34,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // Celebrations: the smaller, secondary path.
   "h.cele.t": "Celebraciones",
   "h.cele.d": "Cumpleaños, despedidas y aniversarios, con rondas escritas sobre el homenajeado.",
-  "h.cele.cta": "Ver Celebraciones",
+  "h.cele.cta": "Ver celebraciones",
 
   "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Murcia, Santiago de Compostela y A Coruña."
 });

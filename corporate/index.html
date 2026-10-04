@@ -154,19 +154,21 @@
   .cx-chip{ display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:4px 14px 4px 5px; background:var(--tint); border:2px solid var(--ink); border-radius:999px; box-shadow:2px 2px 0 0 var(--ink); font-weight:700; font-size:14.5px; line-height:1.2; letter-spacing:-0.005em; color:var(--ink); }
   .cx-chip__i{ width:28px; height:28px; flex:0 0 auto; border-radius:50%; background:var(--paper); border:1.5px solid var(--ink); display:inline-flex; align-items:center; justify-content:center; }
   .cx-chip__i .cx-i{ width:16px; height:16px; stroke-width:2.1; }
-  /* phones: chips drop under the text, indented to the text column (tile + gap) */
+  /* tablets: chips drop under the text, indented to the text column (tile + gap) */
   @media (max-width:780px){
-    .cx-opt{ grid-template-columns:minmax(0,1fr); }
+    .cx-opt{ grid-template-columns:minmax(0,1fr); gap:14px; }
     .cx-chips{ padding-left:66px; gap:8px; }
   }
-  @media (max-width:420px){
+  /* phones: the indent left room for one chip per line, so the chips take the card's full width
+     (two or three to a row) */
+  @media (max-width:480px){
+    .cx-opt{ padding:20px 18px; }
     .cx-opt__hd{ gap:14px; }
-    .cx-chips{ padding-left:58px; }
+    .cx-chips{ padding-left:0; gap:8px 7px; }
     .cx-chip{ min-height:38px; font-size:14px; gap:7px; padding:3px 13px 3px 4px; }
     .cx-chip__i{ width:27px; height:27px; }
     .cx-chip__i .cx-i{ width:15px; height:15px; }
   }
-  @media (max-width:340px){ .cx-chips{ padding-left:0; } }
 
   /* --- features: a real slide in the big card, icon tiles on the rest --- */
   .cx-feat{ margin-top:30px; display:grid; grid-template-columns:minmax(0,1.12fr) minmax(0,1fr); grid-template-rows:repeat(3,auto); gap:16px; }
@@ -208,8 +210,13 @@
     .cx-feat__big{ grid-row:auto; }
   }
   @media (max-width:420px){
-    /* the slide takes the card's full width (out to its border) so its type stays readable */
-    .cx-slide{ margin-left:-8px; margin-right:-8px; }
+    /* the slide runs almost out to the card's border (slimmer padding, wider bleed) and its
+       smallest type gets a higher floor, so the A-D answers stay readable on a phone */
+    .cx-feat__big{ padding-left:16px; padding-right:16px; }
+    .cx-slide{ margin-left:-10px; margin-right:-10px; }
+    .cx-stage{ box-shadow:4px 4px 0 0 rgba(31,26,20,.55); }
+    .cx-stage__opts li{ font-size:max(2.3cqw,10.5px); }
+    .cx-stage__kicker{ font-size:max(1.72cqw,8.5px); }
     .cx-mini{ gap:14px; }
     .cx-tile{ width:44px; height:44px; border-radius:12px; }
   }
@@ -220,6 +227,25 @@
   .cx-scope strong{ color:var(--ink); font-weight:800; }
   .cx-scope__ico{ width:46px; height:46px; flex:0 0 auto; border-radius:50%; background:var(--yellow); border:2px solid var(--ink); box-shadow:2px 2px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; }
   @media (max-width:420px){ .cx-scope{ align-items:flex-start; gap:13px; } .cx-scope__ico{ width:40px; height:40px; } .cx-scope__ico .cx-i{ width:20px; height:20px; } }
+
+  /* --- other services: the franchise only, one calm wide card (white-label stays in the footer).
+     A light sage card, not ink: it is a side door, and an ink card's ink shadow would melt into it. --- */
+  a.cx-xsell{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:14px 22px; padding:clamp(18px,2.6vw,26px) clamp(18px,3vw,30px); background:var(--green-soft); color:var(--ink); text-decoration:none; }
+  .cx-xsell__ico{ width:58px; height:58px; border-radius:50%; background:#89AF96; color:var(--ink); border:2px solid var(--ink); box-shadow:3px 3px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; transform:rotate(6deg); }
+  .cx-xsell__ico .cx-i{ width:28px; height:28px; }
+  .cx-xsell__eyebrow{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+  .cx-xsell__t{ margin:6px 0 0; font-weight:800; font-size:clamp(20px,2.2vw,26px); letter-spacing:-0.02em; line-height:1.2; text-wrap:balance; }
+  .cx-xsell__go{ background:var(--yellow); color:var(--ink); white-space:nowrap; }
+  .cx-xsell .arr{ display:inline-block; transition:transform .15s; }
+  .cx-xsell:hover .arr{ transform:translateX(3px); }
+  .cx-xsell:focus-visible{ outline:3px solid var(--accent-deep); outline-offset:4px; }
+  @media (max-width:640px){
+    a.cx-xsell{ grid-template-columns:auto minmax(0,1fr); }
+    .cx-xsell__go{ grid-column:1 / -1; justify-self:start; }
+    .cx-xsell__ico{ width:48px; height:48px; }
+    .cx-xsell__ico .cx-i{ width:24px; height:24px; }
+  }
+  @media (prefers-reduced-motion:reduce){ .cx-xsell .arr{ transition:none; } }
 
   /* --- event type: four one-tap cards instead of a dropdown ---
      Real radios in a fieldset + legend (keyboard: Tab in, arrows to choose). The input is
@@ -281,6 +307,7 @@
   <symbol id="cx-i-speaker" viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><circle cx="12" cy="14.5" r="3.5"/><path d="M12 7h.01"/></symbol>
   <symbol id="cx-i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.6a4.3 4.3 0 1 0 0 6.8"/><path d="M7.5 10.6h6M7.5 13.4h6"/></symbol>
   <symbol id="cx-i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="cx-i-store" viewBox="0 0 24 24"><path d="M3.5 9 5 4h14l1.5 5"/><path d="M3.5 9a2.75 2.75 0 0 0 5.5 0 3 3 0 0 0 6 0 2.75 2.75 0 0 0 5.5 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/></symbol>
   <!-- customize chips -->
   <symbol id="cx-i-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7.5 4.5 3.5 4.5v13c4 0 6.5.5 8.5 2 2-1.5 4.5-2 8.5-2v-13c-4 0-6.5.5-8.5 2z"/><path d="M12 6.5v13"/></symbol>
   <symbol id="cx-i-party" viewBox="0 0 24 24"><path d="M3.5 20.5l4.8-12.3 7.5 7.5z"/><path d="M6.3 13.4l4.3 4.3"/><path d="M13.5 9.5c1.6-1.6 1.6-3.4.6-4.9M14.5 10.5c1.6-1.6 3.4-1.6 4.9-.6"/><path d="M12 3v.01M20.5 4.5v.01M21 12v.01M17.5 3.5l-.6 1.6"/></symbol>
@@ -326,7 +353,7 @@
              Revert it (EN here + ES in i18n-corporate.js) to the plain "Hosted in <cities>" tag after mid-December. -->
         <span class="tag tag--accent tag--shadow" data-i18n="c.hero.tag">Christmas &amp; end-of-year parties 2026 · Valencia, Madrid, Barcelona, Murcia &amp; Santiago</span>
         <h1 class="h-display cx-hero__h1" id="c-hero-h1"><span data-i18n="c.hero.h1a">Team building people </span><span class="accent" data-i18n="c.hero.h1b">actually enjoy.</span></h1>
-        <p class="lead cx-hero__sub" id="c-hero-sub" data-i18n="c.hero.sub">Forget trust falls and forced fun. 90 minutes of trivia with a live host and rounds about your company, before or after the company dinner: at your office, at the dinner's restaurant or at a venue we find. From 10 to 300 people.</p>
+        <p class="lead cx-hero__sub" id="c-hero-sub" data-i18n="c.hero.sub">Forget trust falls and forced fun. 90 minutes of trivia with a live host and rounds about your company, before or after the company dinner: at your office, at the dinner's restaurant or at a venue we recommend. From 10 to 300 people.</p>
         <ul class="cx-hero__facts">
           <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-coin"/></svg><strong class="cx-hero__price" data-i18n="c.hero.price">From €7 + VAT per person · minimum €250 + VAT</strong></li>
           <!-- SEASONAL (Sep-Dec 2026): drop c.hero.hold (EN here + ES) after mid-December. -->
@@ -460,7 +487,7 @@
           <p class="cx-deal__big" data-i18n="c.fmt.from">From €7</p>
           <p class="cx-deal__vat" data-i18n="c.fmt.fromvat">+ VAT per person</p>
           <p class="cx-deal__min" data-i18n="c.fmt.min">Minimum €250 + VAT per event</p>
-          <p class="cx-deal__note" data-i18n="c.fmt.pricenote">The final price depends on headcount, city and whether we provide the venue. You get one fixed quote, no surprises.</p>
+          <p class="cx-deal__note" data-i18n="c.fmt.pricenote">The final price depends on headcount, city and where you play. You get one fixed quote, no surprises.</p>
         </div>
         <div class="cx-deal__book">
           <p class="cx-deal__eyebrow" data-i18n="c.fmt.bookh">How booking works</p>
@@ -657,7 +684,7 @@
         </details>
         <details>
           <summary><span data-i18n="c.faq.q7">How much does it cost?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a7">From €7 + VAT per person, with a minimum of €250 + VAT per event. The final price depends on headcount, city and whether we provide the venue, and you get it as one fixed quote with no surprises. For Friday 11 and Saturday 12 December we ask for a 30% deposit on confirmation.</div>
+          <div class="ans" data-i18n="c.faq.a7">From €7 + VAT per person, with a minimum of €250 + VAT per event. The final price depends on headcount, city and where you play, and you get it as one fixed quote with no surprises. For Friday 11 and Saturday 12 December we ask for a 30% deposit on confirmation.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q8">What's included?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -841,30 +868,18 @@
 
   <!-- build:about -->
 
-  <!-- ============ OTHER SERVICES: run trivia yourself (cross-sell) ============ -->
+  <!-- ============ OTHER SERVICES: the franchise (cross-sell) ============ -->
+  <!-- Franchise only: white-label gets no promotion on the focus pages (footer link only). -->
   <section class="section section--tight">
     <div class="wrap">
-      <div class="reveal" style="max-width:62ch">
-        <span class="eyebrow" data-i18n="os.eyebrow">Other services</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="xsell.work.h">Got a venue, or want your own business?</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="xsell.work.d">Fill your venue with trivia, or open your own trivia franchise.</p>
-      </div>
-      <div class="split" style="--split-align:stretch;margin-top:30px">
-        <a href="/franchise/" data-i18n-href="foot.partnerhref" class="lift card reveal" data-d="1" style="overflow:hidden;text-decoration:none;color:inherit;background:var(--ink);color:#fff">
-          <div class="pad" style="display:flex;flex-direction:column;gap:10px">
-            <span class="eyebrow eyebrow--plain" style="color:var(--yellow)" data-i18n="os.fran.t">Franchise</span>
-            <h3 class="h3" style="color:#fff" data-i18n="os.fran.d">Run recurring trivia and build a business that grows.</h3>
-            <span class="tag tag--shadow" style="align-self:flex-start;margin-top:6px;background:var(--yellow);border-color:var(--ink)"><span data-i18n="os.fran.link">See franchising</span> &rarr;</span>
-          </div>
-        </a>
-        <a href="/venues/" class="lift card reveal" data-d="2" style="overflow:hidden;text-decoration:none;color:inherit;background:var(--accent-deep);color:#fff">
-          <div class="pad" style="display:flex;flex-direction:column;gap:10px">
-            <span class="eyebrow eyebrow--plain" style="color:#fff" data-i18n="os.venue.t">White-label</span>
-            <h3 class="h3" style="color:#fff" data-i18n="os.venue.d">Fill your venue with your own trivia night. Zero commission.</h3>
-            <span class="tag tag--shadow" style="align-self:flex-start;margin-top:6px;background:#fff;border-color:#fff;color:var(--accent)"><span data-i18n="os.venue.link">See venues</span> &rarr;</span>
-          </div>
-        </a>
-      </div>
+      <a href="/franchise/" data-i18n-href="foot.partnerhref" class="lift card reveal cx-xsell">
+        <span class="cx-xsell__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-store"/></svg></span>
+        <div class="cx-xsell__txt">
+          <p class="cx-xsell__eyebrow"><span data-i18n="os.eyebrow">Other services</span> · <span data-i18n="os.fran.t">Franchise</span></p>
+          <h2 class="cx-xsell__t" data-i18n="os.fran.d">Run recurring trivia and build a business that grows.</h2>
+        </div>
+        <span class="tag tag--shadow cx-xsell__go"><span data-i18n="os.fran.link">See franchising</span> <span class="arr" aria-hidden="true">&rarr;</span></span>
+      </a>
     </div>
   </section>
 
@@ -970,11 +985,11 @@
   var h1 = document.getElementById("c-hero-h1");
   if (h1) {
     var parts = h1.querySelectorAll("[data-i18n]");
-    swap(parts[0], "c.hero.h1cenaa", "The company dinner, ");
-    swap(parts[1], "c.hero.h1cenab", "with a plan people remember.");
+    swap(parts[0], "c.hero.h1cenaa", "Your company dinner, ");
+    swap(parts[1], "c.hero.h1cenab", "with a quiz people remember.");
     h1.style.maxWidth = "17ch"; // longer line than the default H1; keeps it to ~4 lines
   }
-  swap(document.getElementById("c-hero-sub"), "c.hero.subcena", "Before or after the company dinner or lunch: 90 minutes of team trivia with a live host and rounds about your company. We come to your restaurant, your office or a venue we find. For 10 to 300 people.");
+  swap(document.getElementById("c-hero-sub"), "c.hero.subcena", "Before or after the company dinner or lunch: 90 minutes of team trivia with a live host and rounds about your company. We come to your restaurant, your office or a venue we recommend. For 10 to 300 people.");
   swap(document.getElementById("c-hero-cta"), "c.cta.holdcena", "Hold your date");
   preselect("christmas-dinner");
   document.documentElement.setAttribute("data-variant", "cena");

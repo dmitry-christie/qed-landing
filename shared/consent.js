@@ -312,9 +312,15 @@
     return false;
   }
 
+  // A form already on the first screen at load (the /venues/ hero form) can never be scrolled
+  // away on a short page, so the in-view hold would keep the banner back for good and nothing
+  // on that page would ever be measured. For such a form only focus inside it holds the banner;
+  // the CTA-scroll problem above can't happen there (no scroll brings it into view). Forms
+  // below the fold at load (every other page) keep the full hold.
   function deferredShow() {
     if (categories != null || !analyticsEnabled()) return; // decided already, or nothing to ask
     var armed = false, done = false, settle = null;
+    var formAtLoad = !location.hash && (window.pageYOffset || 0) < 10 && leadFormInView();
     function show() {
       if (done) return;
       done = true;
@@ -327,7 +333,7 @@
     }
     function check() {
       armed = true;
-      if (!leadFormInView() && !focusInLeadForm()) show();
+      if ((formAtLoad || !leadFormInView()) && !focusInLeadForm()) show();
     }
     function onScroll() {
       clearTimeout(settle);
