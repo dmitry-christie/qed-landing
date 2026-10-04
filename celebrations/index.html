@@ -18,6 +18,44 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css">
+<style>
+  /* Celebrations-only components (cl-). The price panel is a ticket, like the /corporate/ one:
+     a yellow stub with the hook price and the group-size tiers | what is always included and the
+     extras, which are quoted on the call (no prices on the page). Prices are + VAT. */
+  .cl-deal{ margin-top:30px; display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); background:var(--paper); border:2px solid var(--ink); border-radius:var(--r-lg); box-shadow:5px 5px 0 0 var(--ink); }
+  .cl-deal__price{ position:relative; display:flex; flex-direction:column; align-items:flex-start; background:var(--yellow); padding:clamp(22px,3vw,32px); border-right:2px dashed var(--ink); border-radius:18px 0 0 18px; }
+  .cl-deal__body{ display:flex; flex-direction:column; padding:clamp(22px,3vw,32px); }
+  .cl-deal__eyebrow{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ink); }
+  .cl-deal__big{ margin:12px 0 0; font-weight:900; font-size:clamp(44px,5.4vw,60px); letter-spacing:-0.04em; line-height:.95; }
+  .cl-deal__vat{ margin:6px 0 0; font-family:var(--mono); font-size:13px; font-weight:700; }
+  .cl-tiers{ margin:22px 0 0; align-self:stretch; border-top:2px solid var(--ink); }
+  .cl-tier{ display:flex; justify-content:space-between; align-items:baseline; gap:14px; padding:10px 0; border-bottom:1px dashed rgba(31,26,20,.4); }
+  .cl-tier dt{ font-weight:700; line-height:1.35; }
+  .cl-tier dd{ margin:0; font-weight:900; font-size:20px; letter-spacing:-0.02em; white-space:nowrap; }
+  .cl-tier--quote dd{ font-size:15px; font-weight:800; letter-spacing:-0.01em; white-space:normal; text-align:right; }
+  .cl-deal__partner{ margin:16px 0 0; font-size:15px; font-weight:600; line-height:1.5; }
+  .cl-deal__partner strong{ font-weight:800; }
+  .cl-deal__body .ticks{ margin-top:16px; }
+  .cl-extras{ margin:24px 0 0; padding-top:20px; border-top:1px dashed var(--hairline-strong); }
+  .cl-extras__list{ list-style:none; margin:14px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
+  .cl-extras__list li{ display:inline-flex; align-items:center; gap:6px; padding:7px 13px; border:2px solid var(--ink); border-radius:999px; background:var(--cream-soft); font-size:14.5px; font-weight:700; line-height:1.25; }
+  .cl-extras__list li::before{ content:"+"; font-weight:900; color:var(--accent-deep); }
+  .cl-deal__foot{ margin-top:auto; padding-top:24px; display:grid; gap:14px; }
+  .cl-deal__where{ margin:0; color:var(--ink-soft); font-size:15px; line-height:1.5; }
+  .cl-deal__where strong{ color:var(--ink); }
+  /* the "+ more" pill in the occasions strip: never split "+ / MORE" over two lines */
+  .cases + .card .tag{ flex:0 0 auto; white-space:nowrap; }
+  @media (min-width:781px){
+    /* ticket notches where the perforation meets the edges (same as /corporate/) */
+    .cl-deal__price::before, .cl-deal__price::after{ content:""; position:absolute; border-radius:50%; background:var(--cream); border:2px solid var(--ink); }
+    .cl-deal__price::before{ top:-15px; right:-12px; width:26px; height:26px; clip-path:inset(50% -3px -3px -3px); }
+    .cl-deal__price::after{ bottom:-25px; right:-17px; width:36px; height:36px; clip-path:inset(-3px -3px 50% -3px); }
+  }
+  @media (max-width:780px){
+    .cl-deal{ grid-template-columns:minmax(0,1fr); }
+    .cl-deal__price{ border-right:0; border-bottom:2px dashed var(--ink); border-radius:18px 18px 0 0; }
+  }
+</style>
 <script>window.QED_SITE = "celebrations";</script>
 <script src="/config.js"></script>
 <script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
@@ -35,7 +73,7 @@
       <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg>
     </button>
     <nav class="nav__links">
-      <a href="#formats" data-i18n="cel.nav.formats">Formats</a>
+      <a href="#formats" data-i18n="cel.nav.formats">Pricing</a>
       <a href="#how" data-i18n="cel.nav.how">How it works</a>
       <a href="#faq" data-i18n="cel.nav.faq">FAQ</a>
       <a class="btn btn--sm btn--cta" href="#plan" data-i18n="cel.cta.plan">Plan my event</a>
@@ -62,7 +100,7 @@
     <!-- stat strip -->
     <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
       <div class="card card--flat reveal statbar4" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)"><span data-count="100">100</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.custom">about them</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-i18n="cel.stat.from">€150</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.fromlab">from · + VAT</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff" data-count="5" data-count-es="4">5</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.cities">host cities</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="90">90</span><span style="font-size:.5em">min</span></div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.run">of carnage</div></div>
         <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--accent)">2–200</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.guests">guests</div></div>
@@ -110,61 +148,55 @@
     </div>
   </section>
 
-  <!-- ============ FORMATS ============ -->
+  <!-- ============ PRICE ============ -->
+  <!-- One format (hosted, in person). Prices are the private-event tiers (+ VAT): 200 / 250 / 300 by
+       group size, more than 75 quoted, 50 less at a partner venue, so the hook is 150. Extras carry
+       no price on the page: they are quoted on the call. Keep cel.stat.from and h.door.corp.fact in
+       step with these. -->
   <section id="formats" class="section section--tight">
     <div class="wrap">
       <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="cel.fmt.eyebrow">Two ways to play</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="cel.fmt.h2">We host it, or you do.</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="cel.fmt.lead">Same personalised quiz. Pick how hands-on you want to be on the day.</p>
+        <span class="eyebrow" data-i18n="cel.fmt.eyebrow">What it costs</span>
+        <h2 class="h2" style="margin-top:14px;text-wrap:balance" data-i18n="cel.fmt.h2">One fixed price, set by group size.</h2>
+        <p class="lead" style="margin-top:12px" data-i18n="cel.fmt.lead">We host the whole party. You add the extras that make it theirs.</p>
       </div>
 
-      <div class="formats reveal" style="margin-top:30px">
-        <div class="card fmt">
-          <div class="fmt__hd" style="background:var(--accent)">
-            <h3 data-i18n="cel.fmt.full">Full Experience</h3>
-            <span class="tag" style="background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);color:#fff" data-i18n="cel.fmt.hosted">Hosted</span>
-          </div>
-          <div class="fmt__price">
-            <span class="price" style="font-size:26px" data-i18n="cel.fmt.byquote">By quote</span>
-            <span class="price-sm" data-i18n="cel.fmt.fulltag">· hosted, all in</span>
-          </div>
-          <div class="fmt__body">
-            <p class="muted" style="margin:0;line-height:1.5"><span data-i18n="cel.fmt.fulldesc">A professional host runs the whole party. We sort the room, the tech and the content. </span><strong style="color:var(--ink)" data-i18n="cel.fmt.cities">Valencia, Madrid, Barcelona, Murcia & Santiago de Compostela.</strong></p>
-            <ul class="ticks">
-              <li data-i18n="cel.fmt.f1">Professional quiz host who works the room</li>
-              <li data-i18n="cel.fmt.f2">Venue recommendations &amp; coordination</li>
-              <li data-i18n="cel.fmt.f3">Custom content &amp; full AV setup</li>
-              <li data-i18n="cel.fmt.f4">On-site support start to finish</li>
+      <div class="cl-deal reveal">
+        <div class="cl-deal__price">
+          <p class="cl-deal__eyebrow" data-i18n="cel.price.eyebrow">Hosted, in person</p>
+          <p class="cl-deal__big" data-i18n="cel.price.from">From €150</p>
+          <p class="cl-deal__vat" data-i18n="cel.price.vat">+ VAT per event</p>
+          <dl class="cl-tiers">
+            <div class="cl-tier"><dt data-i18n="cel.price.t1">Up to 25 guests</dt><dd data-i18n="cel.price.p1">€200</dd></div>
+            <div class="cl-tier"><dt data-i18n="cel.price.t2">26 to 50 guests</dt><dd data-i18n="cel.price.p2">€250</dd></div>
+            <div class="cl-tier"><dt data-i18n="cel.price.t3">51 to 75 guests</dt><dd data-i18n="cel.price.p3">€300</dd></div>
+            <div class="cl-tier cl-tier--quote"><dt data-i18n="cel.price.t4">More than 75</dt><dd data-i18n="cel.price.p4">We quote it</dd></div>
+          </dl>
+          <p class="cl-deal__partner"><strong data-i18n="cel.price.partnera">€50 less at one of our partner venues,</strong> <span data-i18n="cel.price.partnerb">because our kit is already there.</span></p>
+        </div>
+        <div class="cl-deal__body">
+          <p class="cl-deal__eyebrow" data-i18n="cel.price.inh">Always included</p>
+          <ul class="ticks">
+            <li data-i18n="cel.price.in1">A live host who runs the whole party</li>
+            <li data-i18n="cel.price.in2">About 90 minutes of trivia: picture, music, map, emoji and flag rounds</li>
+            <li data-i18n="cel.price.in3">Live scoring, with the leaderboard on screen</li>
+            <li data-i18n="cel.price.in4">Our own sound and screen</li>
+          </ul>
+          <div class="cl-extras">
+            <p class="cl-deal__eyebrow" data-i18n="cel.price.exh">Extras, priced on the call</p>
+            <ul class="cl-extras__list">
+              <li data-i18n="cel.price.ex1">A round about the guest of honour</li>
+              <li data-i18n="cel.price.ex2">Prizes for the winners</li>
+              <li data-i18n="cel.price.ex3">Custom trophies</li>
+              <li data-i18n="cel.price.ex4">Live rounds</li>
+              <li data-i18n="cel.price.ex5">Photographer</li>
             </ul>
-            <a class="btn btn--cta btn--block" href="#plan" style="margin-top:auto" data-i18n="cel.cta.planhosted">Plan a hosted event</a>
+          </div>
+          <div class="cl-deal__foot">
+            <p class="cl-deal__where"><span data-i18n="cel.price.inperson">In person in</span> <strong data-i18n="cel.fmt.cities">Valencia, Madrid, Barcelona, Murcia &amp; Santiago de Compostela.</strong></p>
+            <a class="btn btn--cta btn--block" href="#plan"><span data-i18n="cel.cta.plan">Plan my event</span> <span class="arr">&rarr;</span></a>
           </div>
         </div>
-
-        <div class="card fmt fmt--soon">
-          <div class="fmt__hd" style="background:var(--ink)">
-            <h3 data-i18n="cel.fmt.express">Express</h3>
-            <span class="tag soon-tag" data-i18n="cel.fmt.soon">Coming soon</span>
-          </div>
-          <div class="fmt__price">
-            <span class="price-sm" data-i18n="cel.fmt.expsoon">Run it yourself, anywhere. Launching soon.</span>
-          </div>
-          <div class="fmt__body">
-            <p class="muted" style="margin:0;line-height:1.5" data-i18n="cel.fmt.expdesc">Everything you'll need to run it yourself, wherever the party is. One of your own makes a surprisingly good host.</p>
-            <ul class="ticks ticks--ink">
-              <li data-i18n="cel.fmt.e1">Platform access with live digital scoring</li>
-              <li data-i18n="cel.fmt.e2">Curated, personalised question packs</li>
-              <li data-i18n="cel.fmt.e3">Automated leaderboards &amp; tie-breakers</li>
-              <li data-i18n="cel.fmt.e4">Step-by-step host guide</li>
-            </ul>
-            <span class="btn btn--soon btn--block" data-i18n="cel.fmt.soon">Coming soon</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="card card--flat reveal" style="background:var(--yellow-soft);border-radius:var(--r-md);margin-top:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding:16px 22px">
-        <span style="font-weight:700;display:flex;align-items:center;gap:11px"><span class="tag tag--solid">100%</span> <span data-i18n="cel.fmt.flatnote">Every quiz is written from scratch about the guest of honour.</span></span>
-        <a class="btn btn--sm" href="#plan" data-i18n="cel.fmt.flatlink">Plan my event</a>
       </div>
     </div>
   </section>
@@ -255,7 +287,7 @@
       </div>
       <div class="bento reveal" style="margin-top:30px">
         <div class="card b-feature pad" style="background:var(--accent-deep);color:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:240px">
-          <span class="tag" style="align-self:flex-start;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);color:#fff" data-i18n="cel.feat.f0tag">Custom packs</span>
+          <span class="tag" style="align-self:flex-start;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);color:#fff" data-i18n="cel.feat.f0tag">The star extra</span>
           <div>
             <h3 class="h3" style="color:#fff;font-size:clamp(22px,2.4vw,28px)" data-i18n="cel.feat.f0t">Rounds written about them</h3>
             <p style="margin-top:10px;color:#fff;line-height:1.55" data-i18n="cel.feat.f0d">The guest of honour, the couple, the milestone. Personal questions only your crowd could answer, never a recycled pub pack.</p>
@@ -267,15 +299,15 @@
         </div>
         <div class="card b-half pad lift" style="background:var(--cream-soft)">
           <h3 class="h3" data-i18n="cel.feat.f2t">A real host</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f2d">A pro who reads the room and keeps the energy up. Full Experience only.</p>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f2d">A pro who reads the room and keeps the energy up.</p>
         </div>
         <div class="card b-half pad lift">
           <h3 class="h3" data-i18n="cel.feat.f3t">Branded slides</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f3d">Their name, their photos, their colours on the big screen. Looks like the night was made for them.</p>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f3d">Their name, their photos, their colours on the big screen. Looks like the night was made for them. Comes with the round about them.</p>
         </div>
         <div class="card b-half pad lift" style="background:var(--yellow-soft)">
-          <h3 class="h3" data-i18n="cel.feat.f4t">Venue recs &amp; coordination</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f4d">We know the rooms. We'll suggest and book the right one, or run it at home.</p>
+          <h3 class="h3" data-i18n="cel.feat.f4t">Venue recommendations</h3>
+          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="cel.feat.f4d">We know the rooms. We'll suggest one, ideally one of our partner venues, where our kit is already set up and the price is lower. Or we bring it all to your place.</p>
         </div>
       </div>
     </div>
@@ -291,7 +323,7 @@
       <div class="faq reveal" style="margin-top:26px">
         <details open>
           <summary><span data-i18n="cel.faq.q1">How personalised does it get?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="cel.faq.a1">Very. We build a whole round (or more) from the details and photos you send about the guest of honour or the couple, then balance it with general questions so everyone can join in.</div>
+          <div class="ans" data-i18n="cel.faq.a1">As much as you like. The personalised round is an extra: we build a whole round (or more) from the details and photos you send about the guest of honour or the couple, then balance it with general questions so everyone can join in.</div>
         </details>
         <details>
           <summary><span data-i18n="cel.faq.q2">How many guests can play?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -299,7 +331,7 @@
         </details>
         <details>
           <summary><span data-i18n="cel.faq.q3">Do you travel to us?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="cel.faq.a3">The hosted Full Experience runs in person across Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela. A self-run Express version, for everywhere else, is coming soon.</div>
+          <div class="ans" data-i18n="cel.faq.a3">We run it in person in Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela, at a venue or at your place. We bring the host, the sound and the screen (or use the room's own, if it has them); all we need is a socket and a little time to set up.</div>
         </details>
         <details>
           <summary><span data-i18n="cel.faq.q4">Is it family-friendly?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -498,7 +530,7 @@
 </footer>
 
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-celebrations.js"></script>
+<script src="/shared/i18n-celebrations.js?v=20261011"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>

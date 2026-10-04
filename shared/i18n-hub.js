@@ -11,19 +11,20 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.hero.h1b": "con anfitrión en directo.",
   "h.hero.sub": "Ponemos la trivia en cenas de empresa, team building y celebraciones: las preguntas, el anfitrión y el marcador. Y con nuestra franquicia, montas los tuyos.",
 
-  // Scorecard. Locations differ per brand (data-count-es="6": TDT has no Barcelona).
-  "h.stat.hd": "En cifras",
+  // Stat strip under the doors. Locations differ per brand (data-count-es="6": TDT has no Barcelona).
   "h.stat.locations": "Localidades",
   "h.stat.players": "Jugadores registrados",
   "h.stat.return": "Jugadores que repiten",
 
-  // The two focus doors (corporate, franchise). Facts mirror c.hero.price / c.hero.sub and
-  // p.hero.terms; change them together. \u00a0 keeps each fact clause whole, so a phone wraps
-  // only at " · ".
+  // The two focus doors (corporate, franchise). The corporate fact is the private-event price
+  // hook (150 € = up to 25 players at a partner venue; tiers 200/250/300 € + IVA, more than 75
+  // quoted) and the franchise one mirrors p.hero.terms; change them with those pages. Custom
+  // rounds about the company are a paid extra, hence "si quieres". \u00a0 keeps each fact
+  // clause whole, so a phone wraps only at " · ".
   "h.door.corp.kicker": "Para tu equipo",
   "h.door.corp.t": "Empresas",
-  "h.door.corp.d": "Tú organizas la cena o el offsite; nosotros ponemos la trivia, con anfitrión en directo y rondas sobre tu empresa.",
-  "h.door.corp.fact": "Desde\u00a07\u00a0€\u00a0+\u00a0IVA\u00a0por\u00a0persona\u00a0· De\u00a010\u00a0a\u00a0300\u00a0personas",
+  "h.door.corp.d": "Tú organizas la cena o el offsite; nosotros ponemos la trivia, con anfitrión en directo y, si quieres, rondas sobre tu empresa.",
+  "h.door.corp.fact": "Desde\u00a0150\u00a0€\u00a0+\u00a0IVA\u00a0por\u00a0evento\u00a0· Precio\u00a0según\u00a0el\u00a0grupo",
   "h.door.corp.cta": "Ver eventos de empresa",
   "h.door.fran.kicker": "Para tu propio negocio",
   "h.door.fran.t": "Franquicias",
@@ -33,7 +34,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   // Celebrations: the smaller, secondary path.
   "h.cele.t": "Celebraciones",
-  "h.cele.d": "Cumpleaños, despedidas y aniversarios, con rondas escritas sobre el homenajeado.",
+  "h.cele.d": "Cumpleaños, despedidas y aniversarios, con anfitrión en directo y, si quieres, una ronda sobre el homenajeado.",
   "h.cele.cta": "Ver celebraciones",
 
   "h.foot.tagline": "Tardeos de trivia, hechos como Dios manda. Valencia, Madrid, Murcia, Santiago de Compostela y A Coruña."
