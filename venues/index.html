@@ -18,6 +18,50 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css">
+<style>
+/* White-label (marca blanca) page, kept minimal on purpose: header, a short hero and the
+   interest form. Page-only rules; shared/qed.css stays untouched. */
+
+/* header: no section links any more, so no burger. The EN/ES switch (injected by i18n.js
+   into .nav__links) and, on phones, a jump to the form stay in the bar at every width. */
+@media (max-width:860px){
+  .nav__links.vmin-nav{ position:static; flex-direction:row; align-items:center; gap:10px; max-height:none; opacity:1; overflow:visible; background:none; border:0; transition:none; }
+  .nav__links.vmin-nav .langsw{ margin:0; align-self:center; }
+  .nav__links.vmin-nav a.btn{ margin:0; padding:0 16px; border-top:2px solid var(--ink); }
+}
+@media (max-width:360px){
+  .nav__links.vmin-nav a.btn{ height:40px; padding:0 12px; font-size:13px; }
+  .nav__links.vmin-nav .langsw button{ padding:7px 9px; }
+}
+/* side by side with the form, the header button would point at what is already on screen */
+@media (min-width:900px){ .vmin-nav__cta{ display:none !important; } }
+
+.vmin{ overflow:visible; padding:clamp(28px,6vw,80px) 0 clamp(44px,7vw,96px); }
+.vmin__grid{ display:grid; grid-template-columns:minmax(0,1fr); gap:clamp(26px,4vw,64px); align-items:start; }
+/* top-aligned, so the intro stays put while step 2 grows the card */
+@media (min-width:900px){
+  .vmin__grid{ grid-template-columns:minmax(0,1fr) minmax(0,1.04fr); }
+  .vmin__intro{ padding-top:clamp(20px,3.2vw,48px); }
+}
+.vmin__h1{ margin:18px 0 0; max-width:12ch; font-weight:900; letter-spacing:-0.037em; line-height:0.97; font-size:clamp(38px,5.6vw,70px); }
+.vmin__sub{ margin:18px 0 0; max-width:44ch; text-wrap:pretty; }
+.vmin__alt{ margin:24px 0 0; padding-top:18px; max-width:44ch; border-top:2px dashed var(--hairline-strong); font-size:15px; font-weight:600; line-height:1.5; color:var(--ink-soft); text-wrap:pretty; }
+.vmin__alt a{ font-weight:800; color:var(--ink); text-decoration:underline; text-decoration-color:var(--accent); text-decoration-thickness:2px; text-underline-offset:3px; white-space:nowrap; }
+.vmin__alt a:hover{ color:var(--accent-deep); }
+.vmin__alt .arr{ display:inline-block; transition:transform .15s; }
+.vmin__alt a:hover .arr{ transform:translateX(3px); }
+
+/* the form card: ink heading band over a white body (same pairing as the old dark intro panel).
+   The card itself is ink and the body white, not the other way round: an ink band over a white
+   card leaves a pale hairline at the rounded corners, and overflow:hidden would clip the step-2
+   dropdown. */
+.vmin-card{ background:var(--ink); }
+.vmin-card__hd{ color:#fff; padding:clamp(18px,2.6vw,26px) clamp(20px,3vw,32px); }
+.vmin-card__hd .h2{ color:#fff; font-size:clamp(24px,2.6vw,32px); }
+.vmin-card__hd p{ margin:8px 0 0; color:rgba(255,255,255,.78); font-size:15px; line-height:1.55; max-width:48ch; }
+.vmin-card__bd{ padding:clamp(20px,3vw,32px); background:var(--paper); border-radius:0 0 calc(var(--r-lg) - 2px) calc(var(--r-lg) - 2px); }
+@media (prefers-reduced-motion:reduce){ .vmin__alt .arr{ transition:none; } }
+</style>
 <script>window.QED_SITE = "venues";</script>
 <script src="/config.js"></script>
 <script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
@@ -30,247 +74,30 @@
       <span class="brand__en"><img src="/shared/qed-logo.png" alt="Quiz Eat Drink"></span>
       <img class="brand__es" src="/shared/tardeo-logo.svg" alt="Tardeo de Trivia">
     </a>
-    <a class="btn btn--sm btn--cta nav__cta-m" href="#start" data-i18n="v.cta.start">Get started</a>
-    <button class="nav__toggle" data-i18n-aria="ui.menu" aria-label="Menu" aria-expanded="false">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg>
-    </button>
-    <nav class="nav__links">
-      <a href="#plans" data-i18n="v.nav.plans">Plans</a>
-      <a href="#calc" data-i18n="v.nav.numbers">Why it works</a>
-      <a href="#get" data-i18n="v.nav.get">What you get</a>
-      <a href="#faq" data-i18n="v.nav.faq">FAQ</a>
-      <a class="btn btn--sm btn--cta" href="#start" data-i18n="v.cta.start">Get started</a>
+    <nav class="nav__links vmin-nav">
+      <a class="btn btn--sm btn--cta vmin-nav__cta" href="#start" data-i18n="v.cta.start">Get started</a>
     </nav>
   </div>
 </header>
 
 <main>
 
-  <!-- ============ HERO ============ -->
-  <section class="hero">
-    <div class="wrap">
-      <div class="reveal">
+  <!-- ============ HERO + INTEREST FORM ============ -->
+  <section class="hero vmin">
+    <div class="wrap vmin__grid">
+      <div class="vmin__intro reveal">
         <span class="tag tag--accent tag--shadow" data-i18n="v.hero.tag">Under your name · Not a franchise</span>
-        <h1 class="h-display" style="margin-top:20px;max-width:14ch"><span data-i18n="v.hero.h1a">Your venue, your night of </span><span class="accent" data-i18n="v.hero.h1b">trivia.</span></h1>
-        <p class="lead" style="margin:20px 0 0;max-width:46ch" data-i18n="v.hero.sub">We bring the quiz, you run it under your own name. It turns your quiet table-for-two evenings into a room full of regulars, and every cent of the bar stays yours.</p>
-        <div class="row" style="gap:12px;margin-top:26px">
-          <a class="btn btn--cta btn--lg" href="#start"><span data-i18n="v.cta.start">Get started</span> <span class="arr">&rarr;</span></a>
-          <a class="btn btn--lg" href="#calc" data-i18n="v.cta.numbers">See why it works</a>
+        <h1 class="vmin__h1"><span data-i18n="v.hero.h1a">Your venue, your night of </span><span class="accent" data-i18n="v.hero.h1b">trivia.</span></h1>
+        <p class="lead vmin__sub" data-i18n="v.hero.sub">We bring the quiz, you run it under your own name. It turns your quiet table-for-two evenings into a room full of regulars, and every cent of the bar stays yours.</p>
+        <p class="vmin__alt"><span data-i18n="v.hero.alt">Looking to build a growing business of your own instead?</span> <a href="/franchise/" data-i18n-href="foot.partnerhref"><span data-i18n="v.hero.altlink">See franchising</span> <span class="arr" aria-hidden="true">&rarr;</span></a></p>
+      </div>
+
+      <div class="card vmin-card reveal" id="start">
+        <div class="vmin-card__hd">
+          <h2 class="h2" data-i18n="v.form.h2">Let's fill your room.</h2>
+          <p data-i18n="v.form.sub">Tell us about your venue. We'll line up your first night and talk through terms that work for you.</p>
         </div>
-      </div>
-    </div>
-
-    <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
-      <div class="card card--flat reveal statbar4" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)">0%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="v.stat.commission">commission</div></div>
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="40">40</span>+</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="v.stat.players">players a night</div></div>
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-i18n="v.stat.weeklynum">Yours</span></div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="v.stat.weekly">still your night</div></div>
-        <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--orange)">Flexible</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="v.stat.contracts">contract terms</div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ PLANS ============ -->
-  <section id="plans" class="section">
-    <div class="wrap">
-      <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="v.plans.eyebrow">Two ways to run it</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="v.plans.h2">Pick your format. Keep your bar.</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="v.plans.lead">Both run under your name, both feel like your night, and both take 0% of food and drink. The difference is who holds the mic.</p>
-        <p class="muted" style="margin-top:10px"><span data-i18n="v.plans.note">Built for the venues and events you run when it suits you, not a franchise commitment. Looking to build a full, growing business instead?</span> <a href="/franchise/" data-i18n-href="foot.partnerhref" data-i18n="v.plans.notelink">See franchising</a></p>
-      </div>
-
-      <div class="formats reveal" style="margin-top:30px">
-        <div class="card fmt">
-          <div class="fmt__hd" style="background:var(--accent)">
-            <h3 data-i18n="v.plan.classic">QED Classic</h3>
-          </div>
-          <div class="fmt__price">
-            <span class="price" style="color:var(--orange)" data-i18n="v.plan.clasamt">€150</span>
-            <span class="price-sm" data-i18n="v.plan.clasprice">+ VAT/mo · up to 5 events per month</span>
-            <span class="price-sm" style="flex-basis:100%" data-i18n="v.plan.clasoneoff">or €50 + VAT for a one-off event</span>
-          </div>
-          <div class="fmt__body">
-            <p class="muted" style="margin:0;line-height:1.5" data-i18n="v.plan.clasdesc">The full pub-quiz experience: four rounds of classic trivia, run by your own team.</p>
-            <ul class="ticks">
-              <li data-i18n="v.plan.clasf1">Four rounds, 40 questions each</li>
-              <li data-i18n="v.plan.clasf2">Classic paper answer sheets</li>
-              <li data-i18n="v.plan.clasf3">QED host available as an add-on in select cities</li>
-              <li data-i18n="v.plan.clasf4">Fresh content for every event</li>
-              <li data-i18n="v.plan.clasf5">Monthly plans include a set number of nights</li>
-            </ul>
-            <a class="btn btn--dark btn--block" href="#start" style="margin-top:auto" data-i18n="v.cta.classtart">Start with Classic</a>
-          </div>
-        </div>
-
-        <div class="card fmt fmt--soon">
-          <div class="fmt__hd" style="background:var(--ink)">
-            <h3 data-i18n="v.plan.express">QED Express</h3>
-            <span class="tag soon-tag" data-i18n="v.plan.soon">Coming soon</span>
-          </div>
-          <div class="fmt__price">
-            <span class="price-sm" data-i18n="v.plan.expsoon">App-based, you host. Launching soon.</span>
-          </div>
-          <div class="fmt__body">
-            <p class="muted" style="margin:0;line-height:1.5" data-i18n="v.plan.expdesc">Lean and quick. You'll run it off the app with one of your own staff on the mic.</p>
-            <ul class="ticks ticks--ink">
-              <li data-i18n="v.plan.expf1">Around one hour, start to finish</li>
-              <li data-i18n="v.plan.expf2">App-based, multiple-choice rounds</li>
-              <li data-i18n="v.plan.expf3">Your venue provides the host</li>
-              <li data-i18n="v.plan.expf4">Fresh content for every event</li>
-            </ul>
-            <span class="btn btn--soon btn--block" data-i18n="v.plan.soon">Coming soon</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="card card--flat reveal" style="background:var(--green-soft);border-radius:var(--r-md);margin-top:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding:16px 22px">
-        <span style="font-weight:700;display:flex;align-items:center;gap:11px;line-height:1.4"><span class="tag tag--solid" data-i18n="v.plans.addontag">Add-on</span> <span data-i18n="v.plans.addon">Add Social Media Management: event announcements, leaderboard highlights, reels and story templates.</span></span>
-        <a class="btn btn--sm" href="#start" data-i18n="v.plans.addonlink">Add it on</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ WHY IT WORKS ============ -->
-  <section id="calc" class="section section--tight">
-    <div class="wrap">
-      <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="v.calc.eyebrow">Why it works</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="v.calc.h2">What your own trivia night does for your venue.</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="v.calc.lead">A reason to come in on your quietest night, and a reason to stay for one more round.</p>
-      </div>
-
-      <div class="grid g-3 reveal" style="margin-top:30px">
-        <div class="card pad lift">
-          <h3 class="h3" data-i18n="v.calc.c1t">A fuller room</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.calc.c1d">Teams book ahead and turn up early for a good table. Your quietest weeknight starts to fill.</p>
-        </div>
-        <div class="card pad lift" style="background:var(--cream-soft)">
-          <h3 class="h3" data-i18n="v.calc.c2t">A busier bar</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.calc.c2d">People stay for the whole quiz, eating and drinking as they play. Every cent of the bar stays yours.</p>
-        </div>
-        <div class="card pad lift">
-          <h3 class="h3" data-i18n="v.calc.c3t">Regulars who return</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.calc.c3d">Fresh questions for every event and a live leaderboard turn one-off visitors into a crowd that plans their outings around you.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ WHAT YOU GET (bento) ============ -->
-  <section id="get" class="section section--tight">
-    <div class="wrap">
-      <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="v.get.eyebrow">What you get</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="v.get.h2">A night that runs itself, built together with you.</h2>
-      </div>
-      <div class="bento reveal" style="margin-top:30px">
-        <div class="card b-feature pad" style="background:var(--accent-deep);color:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:240px">
-          <span class="tag" style="align-self:flex-start;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);color:#fff" data-i18n="v.get.f0tag">Collaboration</span>
-          <div>
-            <h3 class="h3" style="color:#fff;font-size:clamp(22px,2.4vw,28px)" data-i18n="v.get.f0t">Your venue, our know-how</h3>
-            <p style="margin-top:10px;color:#fff;line-height:1.55" data-i18n="v.get.f0d">It runs under your name, on your screens. We power the trivia from behind the scenes; the night stays yours.</p>
-          </div>
-        </div>
-        <div class="card b-half pad lift">
-          <h3 class="h3" data-i18n="v.get.f1t">Fresh content, every event</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.get.f1d">A new quiz for every event, so your regulars never get a repeat and always come back.</p>
-        </div>
-        <div class="card b-half pad lift" style="background:var(--cream-soft)">
-          <h3 class="h3" data-i18n="v.get.f2t">Leaderboard on your screens</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.get.f2d">A live digital leaderboard up on the venue TVs, driving that one-more-round energy.</p>
-        </div>
-        <div class="card b-half pad lift">
-          <h3 class="h3" data-i18n="v.get.f3t">Promotion assets</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.get.f3d">Posters, table talkers and Instagram templates, ready to fill the room before doors.</p>
-        </div>
-        <div class="card b-half pad lift" style="background:var(--green-soft)">
-          <h3 class="h3" data-i18n="v.get.f4t">Analytics dashboard</h3>
-          <p class="muted" style="margin-top:6px;line-height:1.5" data-i18n="v.get.f4d">See attendance and trends night to night, so you know exactly what's working.</p>
-        </div>
-      </div>
-
-      <div class="card card--flat reveal" style="background:var(--ink);color:#fff;border-radius:var(--r-md);margin-top:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding:18px 24px">
-        <span style="font-weight:800;font-size:clamp(16px,2vw,20px);display:flex;align-items:center;gap:12px"><span class="tag" style="background:var(--yellow);border-color:var(--yellow)">0%</span> <span data-i18n="v.get.commission">No commission on bar or food. Flexible contract terms.</span></span>
-        <a class="btn btn--soft" href="#start" data-i18n="v.cta.start">Get started</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ COMPARE: franchise vs host venue ============ -->
-  <section class="section section--tight">
-    <div class="wrap">
-      <div class="reveal" style="max-width:62ch">
-        <span class="eyebrow" data-i18n="cmp.eyebrow">Work with us</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="cmp.h2">Franchise, or host at your venue?</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="cmp.lead">Two ways to run trivia with us. Pick the one that fits you.</p>
-      </div>
-      <div class="cmp reveal" style="margin-top:30px">
-        <div class="cmp__corner"></div>
-        <div class="cmp__colh" data-i18n="cmp.col1">Franchise</div>
-        <div class="cmp__colh cmp__colh--alt" data-i18n="cmp.col2">White-label</div>
-
-        <div class="cmp__rowlab" data-i18n="cmp.r1l">Best for</div>
-        <div class="cmp__cell" data-i18n="cmp.r1a">Building a business with room to expand</div>
-        <div class="cmp__cell" data-i18n="cmp.r1b">Filling your venue on your own terms</div>
-
-        <div class="cmp__rowlab" data-i18n="cmp.r2l">Commitment</div>
-        <div class="cmp__cell" data-i18n="cmp.r2a">Recurring · you build your brand with ours</div>
-        <div class="cmp__cell" data-i18n="cmp.r2b">Flexible · run it when you want, no lock-in</div>
-
-        <div class="cmp__rowlab" data-i18n="cmp.r3l">Who runs it</div>
-        <div class="cmp__cell" data-i18n="cmp.r3a">You, as the franchisee</div>
-        <div class="cmp__cell" data-i18n="cmp.r3b">You or your team, white-label if you like</div>
-
-        <div class="cmp__rowlab" data-i18n="cmp.r4l">Economics</div>
-        <div class="cmp__cell" data-i18n="cmp.r4a">Revenue share · you run the night</div>
-        <div class="cmp__cell" data-i18n="cmp.r4b">0% commission on bar and food</div>
-
-        <div class="cmp__rowlab" data-i18n="cmp.r5l">Promotion</div>
-        <div class="cmp__cell" data-i18n="cmp.r5a">Included · we run ads on your behalf with our in-house expertise; basic organic social is ultimately yours to run</div>
-        <div class="cmp__cell" data-i18n="cmp.r5b">Optional social-media add-on</div>
-
-        <div class="cmp__corner cmp__foot"></div>
-        <div class="cmp__foot"><a class="btn btn--sm btn--dark" href="/franchise/" data-i18n="cmp.cta1" data-i18n-href="foot.partnerhref">See franchising</a></div>
-        <div class="cmp__foot"><a class="btn btn--sm" href="#start" style="background:var(--accent);color:#fff;border-color:var(--accent)" data-i18n="v.cmp.cta">Sign up my venue</a></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ FAQ ============ -->
-  <section id="faq" class="section">
-    <div class="wrap wrap--narrow">
-      <div class="reveal">
-        <span class="eyebrow" data-i18n="v.faq.eyebrow">Questions</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="v.faq.h2">The stuff venue owners ask.</h2>
-      </div>
-      <div class="faq reveal" style="margin-top:26px">
-        <details open>
-          <summary><span data-i18n="v.faq.q1">How often do we need to run it?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="v.faq.a1">As often as you like. A regular slot fills a room best, but it's completely flexible, whatever fits your calendar.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="v.faq.q2">Will the questions get repetitive for regulars?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="v.faq.a2">No. We ship a new question pack for every event, so your regulars never get the same trivia twice.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="v.faq.q3">Who handles promoting the night to fill the room?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="v.faq.a3">We can run Instagram ads on your behalf, it's something we're genuinely good at. It's optional though: if you already know how to advertise events or have your own channels, feel free to run promotion yourself.</div>
-        </details>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ START FORM ============ -->
-  <section id="start" class="section section--tight">
-    <div class="wrap">
-      <div class="card reveal split split--flush" style="--split:0.85fr 1.15fr;overflow:hidden">
-        <div class="pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
-          <span class="eyebrow eyebrow--plain" style="color:var(--green)" data-i18n="v.cta.start">Get started</span>
-          <h2 class="h2" style="color:#fff" data-i18n="v.form.h2">Let's fill your room.</h2>
-          <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="v.form.sub">Tell us about your venue. We'll line up your first night and talk through terms that work for you.</p>
-        </div>
-        <div class="pad">
+        <div class="vmin-card__bd">
           <form id="venue-form" name="venue-signup" novalidate data-action="/.netlify/functions/venue-apply">
             <input type="hidden" name="page" value="venues">
             <p class="hp"><label><span data-i18n="form.hp">Leave this empty</span> <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
@@ -356,24 +183,6 @@
     </div>
   </section>
 
-  <!-- build:about -->
-
-  <!-- ============ EVENT CROSS-SELL (corporate + celebrations) ============ -->
-  <section class="section section--tight">
-    <div class="wrap">
-      <div class="card card--flat reveal" style="background:var(--yellow-soft);border-radius:var(--r-md);display:flex;gap:16px 20px;align-items:center;flex-wrap:wrap;justify-content:space-between;padding:18px 24px">
-        <div style="display:flex;flex-direction:column;gap:4px;max-width:52ch">
-          <b style="font-size:clamp(16px,2vw,19px);letter-spacing:-0.01em" data-i18n="xsell.event.h">Just want a one-off event?</b>
-          <span class="muted" style="font-weight:600" data-i18n="xsell.event.d">We also run trivia for companies and celebrations, no strings attached.</span>
-        </div>
-        <div class="row" style="gap:10px">
-          <a class="btn btn--sm" href="/corporate/" data-i18n="os.corp.link">Explore corporate</a>
-          <a class="btn btn--sm" href="/celebrations/" data-i18n="os.cele.link">Explore celebrations</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <footer class="footer">
@@ -422,7 +231,7 @@
 </footer>
 
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-venues.js"></script>
+<script src="/shared/i18n-venues.js?v=20261010"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
