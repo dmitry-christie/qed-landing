@@ -4,7 +4,8 @@
      English on first run and swaps textContent (no innerHTML, no XSS surface).
    - Spanish lives in window.QED_ES, filled by the per-page /shared/i18n-<page>.js files.
    - Attribute translations: data-i18n-ph (placeholder), data-i18n-aria (aria-label),
-     data-i18n-content (meta content).
+     data-i18n-content (meta content), data-i18n-href, data-i18n-alt, data-i18n-value (a
+     radio's submitted value).
    - Per-language content (ES = TDT, EN = QED): data-lang-hide and data-count-es, see
      applyLangHide() / applyCounts().
    - Injects the EN/ES switcher into the nav and the "in development" banner.
@@ -207,6 +208,9 @@ window.QED_ES = window.QED_ES || {};
     // alt text is the image's accessible name and is what image search indexes, so it leaks
     // English on the ES site exactly like visible copy does.
     applyAttr("data-i18n-alt", "alt", lang);
+    // A radio's submitted value, when it is its localized label (the corporate event-type cards
+    // post what the old <option>s did: the label text in the page language).
+    applyAttr("data-i18n-value", "value", lang);
 
     document.querySelectorAll(".langsw button").forEach(function (b) {
       var on = b.getAttribute("data-lang") === lang;

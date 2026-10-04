@@ -622,23 +622,51 @@
         else el.removeAttribute("aria-describedby");
         if (el.__cselectBtn) el.__cselectBtn.setAttribute("aria-invalid", show ? "true" : "false");
       }
+      var et = form.elements.eventType, fn = form.elements.firstName;
+      // The event type is a <select>, or (corporate) a group of radio cards: then form.elements
+      // gives a RadioNodeList, which has .value but is not an element, so the group's fieldset
+      // (id "c-event") carries the error hint and aria-invalid, and focus goes to a radio.
+      var etRadios = et && !et.nodeType ? Array.prototype.slice.call(et) : null;
+      var etField = etRadios ? (etRadios[0] && etRadios[0].closest("fieldset")) : et;
       function focusField(el) {
+        if (etRadios && (el === etField || el === et)) {
+          (etRadios.filter(function (r) { return r.checked; })[0] || etRadios[0]).focus();
+          return;
+        }
         if (el.__cselectBtn) el.__cselectBtn.focus(); else el.focus();
       }
-      var et = form.elements.eventType, fn = form.elements.firstName;
       function etValid() { return !et || !!et.value; }
       function fnValid() { var v = fn ? fn.value.trim() : "x"; return v.length >= 1 && v.length <= 60; }
       function emValid() { var v = emailInput ? emailInput.value.trim() : ""; return !!v && EMAIL_RE.test(v); }
-      if (et) et.addEventListener("change", function () { if (etValid()) fieldError(et, false); });
+      if (etField) etField.addEventListener("change", function () { if (etValid()) fieldError(etField, false); });
+      // One tap on an event-type card moves straight on to the first empty contact field (the
+      // first name), saving the tap into it. Pointer only: the arrow keys move between the radios
+      // and must stay there. Focus is set inside the tap's own change event, so iOS opens the
+      // keyboard, and again just after in case the label's default focus lands on the radio.
+      if (etRadios && etField) {
+        var etTap = false;
+        etField.addEventListener("pointerdown", function () { etTap = true; });
+        etField.addEventListener("keydown", function () { etTap = false; });
+        etField.addEventListener("click", function () { setTimeout(function () { etTap = false; }, 0); });
+        etField.addEventListener("change", function () {
+          if (!etTap) return;
+          etTap = false;
+          var next = [fn, phoneInput, emailInput].filter(function (f) { return f && !f.value.trim(); })[0];
+          if (!next) return;
+          next.focus();
+          setTimeout(function () { if (etRadios.indexOf(document.activeElement) > -1) next.focus(); }, 0);
+        });
+      }
       if (fn) {
         fn.addEventListener("input", function () { if (fnValid()) fieldError(fn, false); });
-        fn.addEventListener("blur", function () { fieldError(fn, !fnValid()); });
+        // Blur flags an empty name, except mid-tap on an event-type card (focus comes straight back).
+        fn.addEventListener("blur", function () { if (!etTap) fieldError(fn, !fnValid()); });
       }
 
       // Every field is checked so all errors show at once; returns the first invalid one.
       function validate() {
         var bad = [];
-        fieldError(et, !etValid()); if (!etValid()) bad.push(et);
+        fieldError(etField, !etValid()); if (!etValid()) bad.push(etField || et);
         fieldError(fn, !fnValid()); if (!fnValid()) bad.push(fn);
         setPhoneError(!phoneValid()); if (phoneInput && !phoneValid()) bad.push(phoneInput);
         setEmailError(!emValid()); if (emailInput && !emValid()) bad.push(emailInput);
