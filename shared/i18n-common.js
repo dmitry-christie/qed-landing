@@ -29,17 +29,12 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   /* common form fields */
   "form.back": "Atrás",
   "form.sending": "Enviando…",
-  "form.name": "Tu nombre",
   "form.email": "Email",
   "form.city": "Ciudad",
   "form.cityph": "Elige una ciudad…",
   "form.else": "¿Algo más?",
   "form.note": "Respondemos por email, normalmente el mismo día. Sin spam, jamás.",
-  "form.err1": "Vaya, no se ha enviado. Escríbenos a ",
-  "form.err2": " y lo solucionamos.",
   "form.generr": "Algo ha fallado. Escríbenos a info@tardeodetrivia.com.",
-  "form.reqName": "Tu nombre",
-  "form.optElse": "¿Algo más?",
   "form.phoneCC": "Prefijo del país",
   "form.phoneErr": "Introduce un número de teléfono válido.",
   /* inline hint created by qed.js when the email fails the server's shape check (e.g. juan@gmail) */
@@ -65,17 +60,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "consent.cat.marketing": "Marketing",
   "consent.cat.marketingd": "Optimización y segmentación de campañas publicitarias (Meta, Google).",
 
-  /* ---- cross-sell: "other services" cards (reused across pages) ---- */
-  "os.eyebrow": "Otros servicios",
-  "os.corp.t": "Para empresas",
-  "os.corp.d": "Team building y eventos con clientes que de verdad se disfrutan.",
+  /* ---- cross-sell: "explore" links on the franchise page ---- */
   "os.corp.link": "Descubre Empresas",
-  "os.cele.t": "Para celebraciones",
-  "os.cele.d": "Cumpleaños, bodas y aniversarios con preguntas sobre los protagonistas.",
   "os.cele.link": "Descubre Celebraciones",
-  "os.fran.t": "Franquicia",
-  "os.fran.d": "Monta tardeos de trivia recurrentes y crea un negocio en expansión.",
-  "os.fran.link": "Descubre la franquicia",
 
   /* ---- cross-sell headings ---- */
   "xsell.event.h": "¿Solo quieres un evento puntual?",
