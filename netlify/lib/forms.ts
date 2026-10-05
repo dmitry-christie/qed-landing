@@ -226,10 +226,10 @@ const CALL_TZ = "Europe/Madrid";
 const CALL_OPEN = 10 * 60, CALL_CLOSE = 19 * 60, CALL_NEXT_DAY = 11 * 60, CALL_SLA = 120;
 
 // Public holidays in Valencia when nobody calls (Madrid dates, YYYY-MM-DD). Extend every year:
-// national + Comunitat Valenciana days that fall Mon-Fri.
+// national, Comunitat Valenciana and Valencia city days that fall Mon-Fri.
 export const NO_CALL_DAYS = new Set([
   "2026-10-09", "2026-10-12", "2026-12-08", "2026-12-25",
-  "2027-01-01", "2027-01-06",
+  "2027-01-01", "2027-01-06", "2027-01-22",
 ]);
 const DOW_ES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
 const DOW_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

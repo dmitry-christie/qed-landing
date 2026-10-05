@@ -213,6 +213,8 @@
   .cx-pp__l{ font-weight:700; color:var(--ink-soft); line-height:1.3; }
   .cx-pp .btn{ margin-top:10px; }
   @media (max-width:860px){ .cx-org{ grid-template-columns:1fr; } }
+  /* narrow phones: keep "Cuéntanos tu cena →" on one line */
+  @media (max-width:380px){ .cx-pp{ padding:18px 16px; } .cx-pp .btn{ padding-left:14px; padding-right:14px; gap:7px; } }
 
   /* ---------- 10. price: one ticket. Stub = the hook | the tiers by group size, with the
      partner-venue column (-50 €) highlighted; under the tear line, the extras and how booking
@@ -644,7 +646,7 @@
         <div>
           <div class="step__n">01</div><div class="step__bar"></div>
           <h3 class="h3" data-i18n="c.how.1t">Tell us about your event</h3>
-          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.1d">Your name, your phone and the kind of event: 30 seconds. We call you, usually the same working day.</p>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.1d">Your name, phone, email and the kind of event: 30 seconds. We call you, usually the same working day.</p>
         </div>
         <div>
           <div class="step__n">02</div><div class="step__bar"></div>
@@ -723,7 +725,7 @@
           <div class="cx-price__stub">
             <p class="cx-price__eyebrow" data-i18n="c.price.stubh">Price per event</p>
             <p class="cx-price__big" data-i18n="c.price.from">From €150</p>
-            <p class="cx-price__vat" data-i18n="c.price.vat">+ VAT per event · €181.50 incl. VAT</p>
+            <p class="cx-price__vat" data-i18n="c.price.vat">+&nbsp;VAT per event · €181.50&nbsp;incl.&nbsp;VAT</p>
             <p class="cx-price__cond" data-i18n="c.price.cond">Up to 25 people, at one of our venues</p>
             <p class="cx-price__note"><span data-i18n="c.price.note">You get the fixed price on the call, no surprises.</span></p>
             <a class="btn btn--cta" href="#quote"><span data-i18n="c.price.cta">Ask for your price</span> <span class="arr">&rarr;</span></a>
@@ -863,7 +865,7 @@
         </details>
         <details>
           <summary><span data-i18n="c.faq.q3">Which cities do you cover?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a3">Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela. Somewhere else? Pick "Elsewhere" in the form and we'll look into it.</div>
+          <div class="ans" data-i18n="c.faq.a3">Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela. Somewhere else? Pick "Elsewhere" in the form and we'll look into it. Outside Valencia we work with local hosts and venues, and some services (such as live rounds, the photographer or our own sound kit) depend on availability. We'll confirm it on the call.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q13">Do you invoice? How do we pay?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -908,7 +910,7 @@
           <p class="cx-quote__sub" data-i18n="c.form.sub">Tell us the date, the city and how many of you there are. We'll take care of the rest.</p>
           <p class="cx-quote__call quote-intro__more"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-phone"/></svg><span data-i18n="c.form.call">We call you, usually the same working day (Mon to Fri, 10:00 to 19:00 Spanish time).</span></p>
           <!-- SEASONAL: drop c.form.hold (EN + ES) after mid-December. -->
-          <p class="cx-quote__call quote-intro__more"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="c.form.hold">Booking for December? We'll hold your date for up to 7 days, no commitment, while you get sign-off.</span></p>
+          <p class="cx-quote__call quote-intro__more"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="c.form.hold">Booking for December? We'll hold your date, no commitment, while you get sign-off: up to 7 days, or 72 hours on Fridays and Saturday 12th.</span></p>
         </div>
         <div class="pad">
           <form id="event-form" name="corporate-event" novalidate data-action="/.netlify/functions/book-event" data-contact-first>
@@ -1146,7 +1148,7 @@
   document.documentElement.setAttribute("data-variant", "cena");
 })();
 </script>
-<script src="/shared/i18n-common.js?v=20261010"></script>
+<script src="/shared/i18n-common.js?v=20261012"></script>
 <script src="/shared/i18n-corporate.js?v=20261012"></script>
 <script src="/shared/i18n.js?v=20261010"></script>
 <script src="/shared/walker.js"></script>

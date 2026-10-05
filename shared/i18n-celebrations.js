@@ -78,7 +78,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.price.ex5": "Fotógrafo",
   "cel.price.inperson": "En persona en",
   "cel.price.citynote": "*Fuera de Valencia trabajamos con anfitriones y locales de la zona; algunos servicios (como las rondas en directo, el fotógrafo o nuestro propio equipo de sonido) dependen de la disponibilidad. Te lo confirmamos en la llamada.",
-  "cel.fmt.flatlink": "Organiza mi evento",
 
   "cel.how.eyebrow": "Cómo funciona",
   "cel.how.h2": "Del grupo de WhatsApp al tardeo de trivia en tres pasos.",
@@ -129,7 +128,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.feat.f3t": "Diapositivas personalizadas",
   "cel.feat.f3d": "Su nombre, sus fotos y sus colores en la pantalla grande. Parece que el tardeo se hizo para ellos. Van con la ronda sobre el homenajeado.",
   "cel.feat.f4t": "Te recomendamos el local",
-  "cel.feat.f4d": "Conocemos los sitios. Te proponemos uno, a ser posible uno de nuestros locales, donde ya está todo montado para la trivia y cuesta 50\u00a0€ menos. O lo llevamos todo a vuestra casa.",
+  "cel.feat.f4d": "Conocemos los sitios. Te proponemos uno, a ser posible uno de nuestros locales, donde ya está todo montado para la trivia y cuesta 60,50\u00a0€ menos. O lo llevamos todo a vuestra casa.",
 
   "cel.faq.eyebrow": "Preguntas",
   "cel.faq.h2": "Lo que todo el mundo quiere saber.",

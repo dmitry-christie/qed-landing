@@ -78,7 +78,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.inc.4": "Nuestro propio equipo de sonido y pantalla, montado",
   "c.inc.5": "Operador técnico en los grupos grandes",
   "c.inc.exh": "Si lo queréis (extra)",
-  "c.inc.exsub": "Te lo presupuestamos en la llamada.",
+  "c.inc.exsub": "Te los presupuestamos en la llamada.",
   // the extras list, shared by #included and the price ticket
   "c.ex.1": "Rondas y tema sobre vuestra empresa",
   "c.ex.2": "Premios para el equipo ganador",
@@ -114,7 +114,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.how.eyebrow": "Cómo funciona",
   "c.how.h2": "Del primer mensaje al tardeo, en tres pasos.",
   "c.how.1t": "Cuéntanos tu evento",
-  "c.how.1d": "Tu nombre, tu teléfono y el tipo de evento: 30 segundos. Te llamamos, normalmente el mismo día laborable.",
+  "c.how.1d": "Tu nombre, tu teléfono, tu email y el tipo de evento: 30 segundos. Te llamamos, normalmente el mismo día laborable.",
   "c.how.2t": "Lo cerramos en una llamada",
   "c.how.2d": "Fecha, ciudad, cuántos sois y si queréis algún extra. Te damos un precio cerrado y te guardamos la fecha hasta 7 días sin compromiso.",
   "c.how.3t": "Llegáis y a jugar",
@@ -152,7 +152,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.price.lead": "Va según cuántos sois: para 25 personas sale a 8 € + IVA por cabeza, o 6 € en uno de nuestros locales.",
   "c.price.stubh": "Precio por evento",
   "c.price.from": "Desde 150 €",
-  "c.price.vat": "+ IVA por evento · 181,50 € con IVA",
+  "c.price.vat": "+ IVA por evento · 181,50 € con IVA",
   "c.price.cond": "Hasta 25 personas, en uno de nuestros locales",
   "c.price.note": "Te damos el precio cerrado en la llamada, sin sorpresas.",
   "c.price.cta": "Pide tu precio",
@@ -209,7 +209,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.faq.a5": "En los dos, o bilingüe para equipos internacionales. Tenemos anfitriones en español y en inglés.",
   // TDT's 4 corporate cities only (no Barcelona; A Coruña is not offered for companies yet)
   "c.faq.q3": "¿En qué ciudades?",
-  "c.faq.a3": "Valencia, Madrid, Murcia y Santiago de Compostela. ¿Es en otra ciudad? Elige «Otro sitio» en el formulario y lo vemos.",
+  "c.faq.a3": "Valencia, Madrid, Murcia y Santiago de Compostela. ¿Es en otra ciudad? Elige «Otro sitio» en el formulario y lo vemos. Fuera de Valencia trabajamos con anfitriones y locales de la zona, y algunos servicios (como las rondas en directo, el fotógrafo o nuestro propio equipo de sonido) dependen de la disponibilidad. Te lo confirmamos en la llamada.",
   // invoicing entity: TDT invoices from Tardeo de Trivia SL (the EN text names no entity)
   "c.faq.q13": "¿Emitís factura? ¿Cómo se paga?",
   "c.faq.a13": "Sí, factura de Tardeo de Trivia SL a nombre de tu empresa, con IVA. Pagas por transferencia o con tarjeta (te mandamos un enlace de pago), antes del evento y como tarde el día anterior. El viernes 11 y el sábado 12 de diciembre, el 30% se paga al confirmar.",
@@ -229,7 +229,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.form.sub": "Cuéntanos fecha, ciudad y cuántos sois. Del resto nos encargamos.",
   "c.form.call": "Te llamamos, normalmente el mismo día laborable (L-V, 10-19 h).",
   // SEASONAL (Sep-Dec 2026): drop c.form.hold after mid-December.
-  "c.form.hold": "¿Es para diciembre? Te guardamos la fecha hasta 7 días sin compromiso mientras lo aprobáis internamente.",
+  "c.form.hold": "¿Es para diciembre? Te guardamos la fecha sin compromiso mientras lo aprobáis internamente: hasta 7 días, o 72 horas los viernes y el sábado 12.",
   "c.form.company": "Empresa",
   "c.form.workemail": "Email de trabajo",
   "c.form.eventType": "¿Qué tipo de evento?",
