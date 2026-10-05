@@ -15,7 +15,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // 1. hero
   // SEASONAL (Sep-Dec 2026): revert c.hero.tag to "Presencial en <ciudades>" after mid-December.
   // ES city lists name only TDT's 4 host cities (Valencia, Madrid, Murcia, Santiago); the baked EN is QED's longer list.
-  "c.hero.tag": "Cenas de empresa y Navidad 2026 · Valencia, Madrid, Murcia y Santiago",
+  "c.hero.tag": "Cenas de empresa y Navidad 2026 · Valencia, Madrid*, Murcia* y Santiago*",
   "c.hero.photoalt": "Un anfitrión con micrófono presenta una trivia a los equipos sentados en sus mesas",
   "c.hero.h1a": "Team building que de verdad ",
   "c.hero.h1b": "se disfruta.",
