@@ -9,7 +9,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.nav.formats": "Precio",
   "cel.nav.how": "Cómo funciona",
   "cel.nav.faq": "Preguntas",
-  "cel.cta.plan": "Organiza mi evento",
+  "cel.cta.plan": "Cuéntanos tu celebración",
+  "cel.cta.navm": "Cuéntanos tu fiesta",
   "cel.cta.how": "Ver cómo funciona",
 
   "cel.hero.tag": "Cumpleaños · Despedidas · Aniversarios",
@@ -46,7 +47,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.fmt.eyebrow": "Cuánto cuesta",
   "cel.fmt.h2": "Un precio cerrado, según cuántos seáis.",
   "cel.fmt.lead": "Nosotros dirigimos toda la fiesta. Tú añades los extras que la hacen suya.",
-  "cel.fmt.cities": "Valencia, Madrid, Murcia y Santiago de Compostela.",
+  "cel.fmt.cities": "Valencia, Madrid*, Murcia* y Santiago de Compostela*.",
 
   // Price panel (#price). Private-event tiers, + IVA; 50 € less at one of our venues (same wording
   // and reason as c.ven.p on /corporate/). Extras carry no price: they are quoted on the call.
@@ -76,6 +77,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.price.ex4": "Rondas en directo",
   "cel.price.ex5": "Fotógrafo",
   "cel.price.inperson": "En persona en",
+  "cel.price.citynote": "*Fuera de Valencia trabajamos con anfitriones y locales de la zona; algunos servicios (como las rondas en directo, el fotógrafo o nuestro propio equipo de sonido) dependen de la disponibilidad. Te lo confirmamos en la llamada.",
   "cel.fmt.flatlink": "Organiza mi evento",
 
   "cel.how.eyebrow": "Cómo funciona",
@@ -136,7 +138,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.faq.q2": "¿Cuántos invitados pueden jugar?",
   "cel.faq.a2": "Desde una cena íntima de 2 mesas hasta una fiesta de 200 invitados. Los grupos pequeños juegan por parejas; los grandes se reparten en equipos con clasificación en directo.",
   "cel.faq.q3": "¿Vais hasta donde estemos?",
-  "cel.faq.a3": "Lo hacemos en persona en Valencia, Madrid, Murcia y Santiago de Compostela, en un local o en vuestra casa. Llevamos el anfitrión, el sonido y la pantalla (o usamos los del sitio, si los tiene); solo necesitamos un enchufe y un rato para montar.",
+  "cel.faq.a3": "Lo hacemos en persona en Valencia, Madrid, Murcia y Santiago de Compostela, en un local o en vuestra casa. Llevamos el anfitrión, el sonido y la pantalla (o usamos los del sitio, si los tiene); solo necesitamos un enchufe y un rato para montar. Fuera de Valencia trabajamos con anfitriones y locales de la zona, y algunos servicios (como las rondas en directo, el fotógrafo o nuestro propio equipo de sonido) dependen de la disponibilidad. Te lo confirmamos en la llamada.",
   "cel.faq.q4": "¿Es apto para toda la familia?",
   "cel.faq.a4": "Puede serlo. Dinos cómo es el público y lo enfocamos en consecuencia: para todas las edades en un cumpleaños familiar, o un poco más picante para un tardeo estilo despedida.",
   "cel.faq.q5": "¿Inglés o español?",
@@ -144,6 +146,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.faq.q6": "¿Con cuánta antelación reservamos?",
   "cel.faq.a6": "Con dos semanas suele bastar (y nos da tiempo a escribir la ronda personal, si la añadís). ¿Lo tienes más justo? Pregunta igualmente, siempre intentamos encajarlo.",
 
+  "cel.form.eyebrow": "Tu celebración",
   "cel.form.h2": "Cuéntanos a quién celebramos.",
   "cel.form.sub": "Formulario rápido, respuesta de una persona de verdad, normalmente el mismo día. A partir de ahí nos encargamos nosotros.",
   "cel.form.eventType": "¿Qué celebramos?",

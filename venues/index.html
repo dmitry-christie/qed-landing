@@ -37,6 +37,30 @@
 @media (min-width:900px){ .vmin-nav__cta{ display:none !important; } }
 
 .vmin{ overflow:visible; padding:clamp(28px,6vw,80px) 0 clamp(44px,7vw,96px); }
+/* Full-bleed photo hero: teams at the tables on a real quiz night, under a dark shade so the white
+   intro clears AA wherever it lands; the form card stays solid on top. Phones get the 4:5 crop
+   over the intro only, faded into the ink ground the form card sits on. */
+.hero.vmin{ background:#17130F; isolation:isolate; }
+.vmin__intro{ color:#fff; }
+.vmin__intro .tag{ color:var(--ink); }
+.ph-media{ position:absolute; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
+.ph-media picture, .ph-media img{ display:block; width:100%; height:100%; }
+.ph-media img{ object-fit:cover; object-position:center 40%; }
+.ph-media::after{ content:""; position:absolute; inset:0;
+  background:linear-gradient(90deg, rgba(23,19,15,.88) 0%, rgba(23,19,15,.72) 50%, rgba(23,19,15,.6) 100%); }
+@media (max-width:899px){
+  .ph-media{ bottom:auto; height:min(100%,150vw); -webkit-mask-image:linear-gradient(#000 60%,transparent); mask-image:linear-gradient(#000 60%,transparent); }
+  .ph-media img{ object-position:center 35%; }
+  .ph-media::after{ background:linear-gradient(180deg, rgba(23,19,15,.7), rgba(23,19,15,.82)); }
+}
+.vmin .vmin__h1{ color:#fff; text-shadow:0 2px 18px rgba(0,0,0,.35); }
+.vmin .vmin__h1 .accent{ color:var(--yellow); }
+.vmin .vmin__sub{ color:rgba(255,255,255,.92); }
+.vmin .vmin__alt{ color:rgba(255,255,255,.84); border-top-color:rgba(255,255,255,.28); }
+.vmin .vmin__alt a{ color:#fff; text-decoration-color:var(--yellow); }
+.vmin .vmin__alt a:hover{ color:var(--yellow-soft); }
+/* the card's ink edge would melt into the shade: a light rim and a yellow sticker offset */
+.vmin .vmin-card{ border-color:rgba(255,255,255,.82); box-shadow:6px 6px 0 0 var(--yellow), 6px 6px 0 2px var(--ink); }
 .vmin__grid{ display:grid; grid-template-columns:minmax(0,1fr); gap:clamp(26px,4vw,64px); align-items:start; }
 /* top-aligned, so the intro stays put while step 2 grows the card */
 @media (min-width:900px){
@@ -84,6 +108,14 @@
 
   <!-- ============ HERO + INTEREST FORM ============ -->
   <section class="hero vmin">
+    <div class="ph-media" aria-hidden="true">
+      <picture>
+        <source media="(max-width:640px)" type="image/webp" srcset="/shared/hero-venues-800.webp">
+        <source media="(max-width:640px)" srcset="/shared/hero-venues-800.jpg">
+        <source type="image/webp" srcset="/shared/hero-venues-1200.webp 1200w, /shared/hero-venues-1920.webp 1920w" sizes="100vw">
+        <img src="/shared/hero-venues-1920.jpg" srcset="/shared/hero-venues-1200.jpg 1200w, /shared/hero-venues-1920.jpg 1920w" sizes="100vw" width="1920" height="1080" alt="" fetchpriority="high" decoding="async">
+      </picture>
+    </div>
     <div class="wrap vmin__grid">
       <div class="vmin__intro reveal">
         <span class="tag tag--accent tag--shadow" data-i18n="v.hero.tag">Under your name · Not a franchise</span>

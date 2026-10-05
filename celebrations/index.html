@@ -19,6 +19,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css">
 <style>
+  /* Full-bleed photo hero: friends in booths at a real quiz night, under a dark shade so the white
+     copy clears AA wherever it lands. Phones get the 4:5 crop over the top of the hero, faded into
+     the ink ground under the stats, so the photo is never blown up behind the strip. */
+  .hero.cl-hero{ padding:clamp(52px,8vw,112px) 0 clamp(36px,5vw,60px); background:#17130F; color:#fff; isolation:isolate; }
+  .ph-media{ position:absolute; inset:0; z-index:-1; pointer-events:none; }
+  .ph-media picture, .ph-media img{ display:block; width:100%; height:100%; }
+  .ph-media img{ object-fit:cover; object-position:center 40%; }
+  .ph-media::after{ content:""; position:absolute; inset:0;
+    background:linear-gradient(90deg, rgba(23,19,15,.86) 0%, rgba(23,19,15,.66) 55%, rgba(23,19,15,.42) 100%),
+      linear-gradient(180deg, rgba(23,19,15,0) 55%, rgba(23,19,15,.85) 100%); }
+  @media (max-width:640px){
+    .ph-media{ bottom:auto; height:min(100%,150vw); -webkit-mask-image:linear-gradient(#000 62%,transparent); mask-image:linear-gradient(#000 62%,transparent); }
+    .ph-media img{ object-position:center 30%; }
+    .ph-media::after{ background:linear-gradient(180deg, rgba(23,19,15,.66), rgba(23,19,15,.8) 60%, rgba(23,19,15,.86)); }
+  }
+  .cl-hero .h-display{ color:#fff; text-shadow:0 2px 18px rgba(0,0,0,.35); }
+  .cl-hero .h-display .accent{ color:var(--yellow); }
+  .cl-hero .lead{ color:rgba(255,255,255,.92); }
+  .cl-hero .tag{ color:var(--ink); }
+  /* on the dark photo an ink offset would vanish: the primary takes a yellow one, edged in ink */
+  .cl-hero .btn--cta{ box-shadow:4px 4px 0 0 var(--yellow), 4px 4px 0 2px var(--ink); }
+  .cl-hero .btn--cta:hover{ box-shadow:6px 6px 0 0 var(--yellow), 6px 6px 0 2px var(--ink); }
+  .btn--onDark{ background:transparent; color:#fff; border-color:#fff; box-shadow:4px 4px 0 0 rgba(255,255,255,.35); }
+  .btn--onDark:hover{ background:rgba(255,255,255,.08); box-shadow:6px 6px 0 0 rgba(255,255,255,.35); }
+  .cl-stats{ background:rgba(23,19,15,.72) !important; border:2px solid rgba(255,255,255,.18) !important; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+  .cl-stats .kpi-lab{ color:rgba(255,255,255,.76) !important; }
+  /* the city footnote under the price block: one asterisk per city outside Valencia */
+  .cl-note{ margin:0; font-size:13px; line-height:1.5; color:var(--ink-soft); text-wrap:pretty; }
   /* Celebrations-only components (cl-). The price panel is a ticket, like the /corporate/ one:
      a yellow stub with the hook price and the group-size tiers | what is always included and the
      extras, which are quoted on the call (no prices on the page). Prices are + VAT. */
@@ -79,7 +107,7 @@
       <span class="brand__en"><img src="/shared/qed-logo.png" alt="Quiz Eat Drink"></span>
       <img class="brand__es" src="/shared/tardeo-logo.svg" alt="Tardeo de Trivia">
     </a>
-    <a class="btn btn--sm btn--cta nav__cta-m" href="#plan" data-i18n="cel.cta.plan">Plan my event</a>
+    <a class="btn btn--sm btn--cta nav__cta-m" href="#plan" data-i18n="cel.cta.navm">Tell us about it</a>
     <button class="nav__toggle" data-i18n-aria="ui.menu" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg>
     </button>
@@ -87,7 +115,7 @@
       <a href="#price" data-i18n="cel.nav.formats">Pricing</a>
       <a href="#how" data-i18n="cel.nav.how">How it works</a>
       <a href="#faq" data-i18n="cel.nav.faq">FAQ</a>
-      <a class="btn btn--sm btn--cta" href="#plan" data-i18n="cel.cta.plan">Plan my event</a>
+      <a class="btn btn--sm btn--cta" href="#plan" data-i18n="cel.cta.plan">Tell us about your celebration</a>
     </nav>
   </div>
 </header>
@@ -95,22 +123,30 @@
 <main>
 
   <!-- ============ HERO ============ -->
-  <section class="hero">
+  <section class="hero cl-hero">
+    <div class="ph-media" aria-hidden="true">
+      <picture>
+        <source media="(max-width:640px)" type="image/webp" srcset="/shared/hero-celebrations-800.webp">
+        <source media="(max-width:640px)" srcset="/shared/hero-celebrations-800.jpg">
+        <source type="image/webp" srcset="/shared/hero-celebrations-1200.webp 1200w, /shared/hero-celebrations-1920.webp 1920w" sizes="100vw">
+        <img src="/shared/hero-celebrations-1920.jpg" srcset="/shared/hero-celebrations-1200.jpg 1200w, /shared/hero-celebrations-1920.jpg 1920w" sizes="100vw" width="1920" height="1080" alt="" fetchpriority="high" decoding="async">
+      </picture>
+    </div>
     <div class="wrap">
       <div class="reveal">
         <span class="tag tag--accent tag--shadow" data-i18n="cel.hero.tag">Birthdays · Hen &amp; stag · Anniversaries</span>
         <h1 class="h-display" style="margin-top:20px;max-width:13ch"><span data-i18n="cel.hero.h1a">The party game that </span><span class="accent" data-i18n="cel.hero.h1b">steals the show.</span></h1>
         <p class="lead" style="margin:20px 0 0;max-width:46ch" data-i18n="cel.hero.sub">A pub quiz with a live host who runs the whole party. Add a round about the guest of honour, and your inside jokes and most incriminating photos become the round everyone remembers.</p>
         <div class="row" style="gap:12px;margin-top:26px">
-          <a class="btn btn--cta btn--lg" href="#plan"><span data-i18n="cel.cta.plan">Plan my event</span> <span class="arr">&rarr;</span></a>
-          <a class="btn btn--lg" href="#how" data-i18n="cel.cta.how">See how it works</a>
+          <a class="btn btn--cta btn--lg" href="#plan"><span data-i18n="cel.cta.plan">Tell us about your celebration</span> <span class="arr">&rarr;</span></a>
+          <a class="btn btn--lg btn--onDark" href="#how" data-i18n="cel.cta.how">See how it works</a>
         </div>
       </div>
     </div>
 
     <!-- stat strip -->
     <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
-      <div class="card card--flat reveal statbar4" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
+      <div class="card card--flat reveal statbar4 cl-stats" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-i18n="cel.stat.from">€181.50</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.fromlab">from · incl. VAT</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff" data-count="5" data-count-es="4">5</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.cities">host cities</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="90">90</span><span style="font-size:.5em">min</span></div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="cel.stat.run">of carnage</div></div>
@@ -206,8 +242,11 @@
             </ul>
           </div>
           <div class="cl-deal__foot">
-            <p class="cl-deal__where"><span data-i18n="cel.price.inperson">In person in</span> <strong data-i18n="cel.fmt.cities">Valencia, Madrid, Barcelona, Murcia &amp; Santiago de Compostela.</strong></p>
-            <a class="btn btn--cta btn--block" href="#plan"><span data-i18n="cel.cta.plan">Plan my event</span> <span class="arr">&rarr;</span></a>
+            <div>
+              <p class="cl-deal__where"><span data-i18n="cel.price.inperson">In person in</span> <strong data-i18n="cel.fmt.cities">Valencia, Madrid*, Barcelona*, Murcia* &amp; Santiago de Compostela*.</strong></p>
+              <p class="cl-note" style="margin-top:6px" data-i18n="cel.price.citynote">*Outside Valencia we work with local hosts and venues; some services (like live rounds, the photographer or our own sound kit) depend on availability. We'll confirm it on the call.</p>
+            </div>
+            <a class="btn btn--cta btn--block" href="#plan"><span data-i18n="cel.cta.plan">Tell us about your celebration</span> <span class="arr">&rarr;</span></a>
           </div>
         </div>
       </div>
@@ -345,7 +384,7 @@
         </details>
         <details>
           <summary><span data-i18n="cel.faq.q3">Do you travel to us?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="cel.faq.a3">We run it in person in Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela, at a venue or at your place. We bring the host, the sound and the screen (or use the room's own, if it has them); all we need is a socket and a little time to set up.</div>
+          <div class="ans" data-i18n="cel.faq.a3">We run it in person in Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela, at a venue or at your place. We bring the host, the sound and the screen (or use the room's own, if it has them); all we need is a socket and a little time to set up. Outside Valencia we work with local hosts and venues, and some services (like live rounds, the photographer or our own sound kit) depend on availability. We'll confirm it on the call.</div>
         </details>
         <details>
           <summary><span data-i18n="cel.faq.q4">Is it family-friendly?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -368,7 +407,7 @@
     <div class="wrap">
       <div class="card reveal split split--flush" style="--split:0.85fr 1.15fr;overflow:hidden">
         <div class="pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
-          <span class="eyebrow" style="color:rgba(255,255,255,.6)"><span data-i18n="cel.cta.plan">Plan my event</span></span>
+          <span class="eyebrow" style="color:rgba(255,255,255,.6)"><span data-i18n="cel.form.eyebrow">Your celebration</span></span>
           <h2 class="h2" style="color:#fff" data-i18n="cel.form.h2">Tell us who we're celebrating.</h2>
           <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="cel.form.sub">Quick form, real human reply, usually same day. We'll take it from there.</p>
         </div>
@@ -469,33 +508,6 @@
 
   <!-- build:about -->
 
-  <!-- ============ OTHER SERVICES: run trivia yourself (cross-sell) ============ -->
-  <section class="section section--tight">
-    <div class="wrap">
-      <div class="reveal" style="max-width:62ch">
-        <span class="eyebrow" data-i18n="os.eyebrow">Other services</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="xsell.work.h">Got a venue, or want your own business?</h2>
-        <p class="lead" style="margin-top:12px" data-i18n="xsell.work.d">Fill your venue with trivia, or open your own trivia franchise.</p>
-      </div>
-      <div class="split" style="--split-align:stretch;margin-top:30px">
-        <a href="/franchise/" data-i18n-href="foot.partnerhref" class="lift card reveal" data-d="1" style="overflow:hidden;text-decoration:none;color:inherit;background:var(--ink);color:#fff">
-          <div class="pad" style="display:flex;flex-direction:column;gap:10px">
-            <span class="eyebrow eyebrow--plain" style="color:var(--yellow)" data-i18n="os.fran.t">Franchise</span>
-            <h3 class="h3" style="color:#fff" data-i18n="os.fran.d">Run recurring trivia and build a business that grows.</h3>
-            <span class="tag tag--shadow" style="align-self:flex-start;margin-top:6px;background:var(--yellow);border-color:var(--ink)"><span data-i18n="os.fran.link">See franchising</span> &rarr;</span>
-          </div>
-        </a>
-        <a href="/venues/" class="lift card reveal" data-d="2" style="overflow:hidden;text-decoration:none;color:inherit;background:var(--accent-deep);color:#fff">
-          <div class="pad" style="display:flex;flex-direction:column;gap:10px">
-            <span class="eyebrow eyebrow--plain" style="color:#fff" data-i18n="os.venue.t">White-label</span>
-            <h3 class="h3" style="color:#fff" data-i18n="os.venue.d">Fill your venue with your own trivia night. Zero commission.</h3>
-            <span class="tag tag--shadow" style="align-self:flex-start;margin-top:6px;background:#fff;border-color:#fff;color:var(--accent)"><span data-i18n="os.venue.link">See venues</span> &rarr;</span>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <footer class="footer">
@@ -544,7 +556,7 @@
 </footer>
 
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-celebrations.js?v=20261011"></script>
+<script src="/shared/i18n-celebrations.js?v=20261012"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
