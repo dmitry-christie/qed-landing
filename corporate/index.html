@@ -20,111 +20,213 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&family=Inter:wght@600;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css?v=20261010">
 <style>
-  /* Corporate-only components (cx-). Celebrations and venues reuse .cases / .bento / .formats /
-     .fmt / .ticks / .stamp from qed.css, so this page adds its own classes instead of changing
-     those rules. Loaded after qed.css, so a cx- rule wins a same-specificity tie. */
+  /* Corporate page (cx-). One job: turn someone looking for a group activity into an enquiry.
+     The story, top to bottom: a real night (hero photo) → proof → what it is → why it works for a
+     whole company → what we handle → custom rounds (extra) → three steps → occasions → the person
+     organising it → price → FAQ → the form. Shared components come from qed.css; everything here
+     is page-only, loaded after qed.css, so a cx- rule wins a same-specificity tie. */
 
   /* icons: one inline sprite (top of <body>), 24px grid, stroked in currentColor */
   .cx-i{ width:24px; height:24px; flex:0 0 auto; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .cx-hd{ max-width:62ch; }
+  .cx-hd .h2{ margin-top:14px; text-wrap:balance; }
+  .cx-hd .lead{ margin:12px 0 0; text-wrap:pretty; }
+  .cx-tile{ width:50px; height:50px; border-radius:14px; border:2px solid var(--ink); box-shadow:2px 2px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--ink); background:var(--paper); }
 
-  /* --- hero: the pitch on the left, a real night on the right (photo + what we bring) ---
-     No washed-out photo behind the text any more: the same photo, in full colour, is the visual. */
-  .cx-hero{ background:none; }
-  .cx-hero__grid{ display:grid; grid-template-columns:minmax(0,1fr); gap:clamp(30px,5vw,60px); align-items:center; }
-  .cx-hero__h1{ margin-top:20px; max-width:13ch; font-size:clamp(42px,6.4vw,74px); }
-  /* marker stroke under the accent words; clone so a wrapped line keeps its own stroke */
-  .cx-hero__h1 .accent{ background:linear-gradient(transparent 66%, var(--yellow) 66%, var(--yellow) 88%, transparent 88%); -webkit-box-decoration-break:clone; box-decoration-break:clone; padding:0 .05em; margin:0 -.05em; }
-  /* the ?v=cena headline is longer: a size down keeps it to four lines beside the photo */
-  html[data-variant="cena"] .cx-hero__h1{ font-size:clamp(40px,5.5vw,64px); }
-  .cx-hero__sub{ margin:20px 0 0; max-width:46ch; }
-  .cx-hero__facts{ list-style:none; margin:22px 0 0; padding:0; display:grid; gap:9px; }
-  .cx-hero__facts li{ display:flex; gap:11px; align-items:center; line-height:1.4; }
-  .cx-hero__facts .cx-i{ width:22px; height:22px; color:var(--accent-deep); }
-  .cx-hero__price{ font-size:clamp(16px,1.6vw,18px); font-weight:800; }
-  .cx-hero__hold{ font-family:var(--mono); font-size:12.5px; font-weight:700; letter-spacing:.02em; color:var(--accent-deep); }
-  .cx-hero__ctas{ gap:12px; margin-top:26px; }
-  .cx-hero__vis{ position:relative; margin:0 6px 0 0; }
-  .cx-photo{ margin:0; position:relative; aspect-ratio:4 / 3; background:var(--ink); border:2px solid var(--ink); border-radius:var(--r-lg); box-shadow:7px 7px 0 0 var(--ink); overflow:hidden; transform:rotate(1.5deg); }
-  .cx-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 45%; }
-  .cx-photo__tag{ position:absolute; top:-14px; left:22px; z-index:2; transform:rotate(-3deg); background:var(--yellow); }
-  .cx-bring{ position:relative; z-index:2; width:min(310px,86%); margin:-58px 0 0 -14px; padding:16px 18px 17px; transform:rotate(-2deg); }
-  .cx-bring__h{ margin:0 0 10px; font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent-deep); }
-  .cx-bring ul{ list-style:none; margin:0; padding:0; display:grid; gap:9px; }
-  .cx-bring li{ display:flex; gap:10px; align-items:center; font-weight:700; font-size:15px; line-height:1.3; }
-  .cx-bring__i{ width:30px; height:30px; flex:0 0 auto; border-radius:50%; border:2px solid var(--ink); display:flex; align-items:center; justify-content:center; }
-  .cx-bring__i .cx-i{ width:16px; height:16px; stroke-width:2.2; }
-  @media (min-width:961px){
-    .cx-hero__grid{ grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); }
-    .cx-hero__vis{ margin:10px 10px 0 0; }
+  /* ---------- 1. hero: a real night, full bleed, under a dark gradient ----------
+     Desktop: the photo covers the section and the gradient darkens the left half, where the copy
+     sits (the host and the screen stay clear on the right). Phones: the 4:5 crop sits on top and
+     fades into ink; the copy starts over its darkened lower half. White text measures above 4.5:1
+     on the darkest pixel it can land on. .hero stays on the section: qed.js reads it for the
+     cta-click placement. */
+  .cx-hero{ position:relative; isolation:isolate; overflow:hidden; display:flex; align-items:center; padding:0; background:var(--ink); color:#fff; min-height:calc(100vh - 68px); }
+  @supports (min-height:100svh){ .cx-hero{ min-height:calc(100svh - 68px); } }
+  @media (min-width:701px){ .cx-hero{ min-height:clamp(560px, calc(100vh - 68px), 820px); } }
+  @supports (min-height:100svh){ @media (min-width:701px){ .cx-hero{ min-height:clamp(560px, calc(100svh - 68px), 820px); } } }
+  .cx-hero__bg{ position:absolute; inset:0; z-index:-2; margin:0; }
+  .cx-hero__bg img{ width:100%; height:100%; object-fit:cover; object-position:62% 40%; }
+  .cx-hero::before{ content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(22,17,12,.93) 0%, rgba(22,17,12,.86) 40%, rgba(22,17,12,.5) 62%, rgba(22,17,12,.12) 86%),
+      linear-gradient(0deg, rgba(22,17,12,.55) 0%, rgba(22,17,12,0) 32%); }
+  .cx-hero__in{ width:100%; padding-top:clamp(48px,7vw,84px); padding-bottom:clamp(48px,7vw,84px); }
+  .cx-hero__copy{ max-width:680px; }
+  .cx-hero__tag{ max-width:100%; white-space:normal; line-height:1.35; color:var(--ink); }
+  .cx-hero__h1{ margin-top:18px; max-width:12ch; color:#fff; font-size:clamp(42px,5.6vw,68px); text-wrap:balance; text-shadow:0 2px 28px rgba(0,0,0,.35); }
+  .cx-hero__h1 .accent{ color:var(--yellow); }
+  html[data-variant="cena"] .cx-hero__h1{ font-size:clamp(40px,5.2vw,62px); }
+  .cx-hero__sub{ margin:20px 0 0; max-width:40ch; color:rgba(255,255,255,.92); font-size:clamp(17px,1.6vw,20px); line-height:1.5; font-weight:500; text-wrap:pretty; }
+  .cx-hero__facts{ list-style:none; margin:20px 0 0; padding:0; max-width:600px; display:flex; flex-wrap:wrap; gap:8px 20px; }
+  .cx-hero__facts li{ display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:15px; line-height:1.3; color:#fff; }
+  .cx-hero__facts .cx-i{ width:18px; height:18px; color:var(--yellow); }
+  .cx-hero__ctas{ display:flex; flex-wrap:wrap; align-items:center; gap:14px 22px; margin-top:28px; }
+  .cx-hero .btn--cta{ box-shadow:4px 4px 0 0 var(--yellow); }
+  .cx-hero .btn--cta:hover{ box-shadow:6px 6px 0 0 var(--yellow); }
+  .cx-hero .btn--cta:active{ box-shadow:1px 1px 0 0 var(--yellow); }
+  .cx-hero__call{ display:flex; gap:9px; align-items:center; margin:0; max-width:26ch; font-size:14.5px; font-weight:600; line-height:1.4; color:rgba(255,255,255,.88); }
+  .cx-hero__call .cx-i{ width:20px; height:20px; color:var(--yellow); }
+  .cx-hero__price{ margin:22px 0 0; padding-top:16px; border-top:1px dashed rgba(255,255,255,.3); font-size:14.5px; line-height:1.5; color:rgba(255,255,255,.84); max-width:52ch; }
+  .cx-hero__price strong{ color:#fff; font-weight:800; font-size:16.5px; }
+  .cx-hero__price a{ color:var(--yellow); font-weight:700; white-space:nowrap; text-underline-offset:3px; }
+  @media (max-width:700px){
+    .cx-hero{ display:block; min-height:0; }
+    .cx-hero::before{ display:none; }
+    /* the 4:5 crop minus its top (pendant lamps): the screen and the host stay clear above the copy */
+    .cx-hero__bg{ inset:0 0 auto 0; aspect-ratio:8 / 9; }
+    .cx-hero__bg::after{ content:""; position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(22,17,12,.12) 0%, rgba(22,17,12,.22) 26%, rgba(22,17,12,.55) 36%, rgba(22,17,12,.84) 46%, rgba(22,17,12,.94) 64%, var(--ink) 86%); }
+    .cx-hero__bg img{ object-position:center bottom; }
+    .cx-hero__in{ padding-top:clamp(140px,41vw,290px); padding-bottom:46px; }
+    .cx-hero__h1{ font-size:clamp(40px,11.4vw,54px); }
+    html[data-variant="cena"] .cx-hero__h1{ font-size:clamp(36px,10vw,48px); }
+    .cx-hero__facts li{ font-size:14px; }
+    .cx-hero__ctas{ margin-top:24px; }
   }
-  /* tablets: stacked under the copy, the photo and the sticker sit side by side */
-  @media (min-width:561px) and (max-width:960px){
-    .cx-hero__vis{ display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); align-items:end; }
-    .cx-photo{ grid-column:1; grid-row:1; }
-    .cx-bring{ grid-column:2; grid-row:1; width:auto; margin:0 0 -16px -34px; }
-  }
-  @media (max-width:560px){
-    .cx-photo{ aspect-ratio:3 / 2; transform:rotate(1deg); box-shadow:5px 5px 0 0 var(--ink); }
-    .cx-photo__tag{ left:14px; }
-    .cx-bring{ margin:-40px 0 0 6px; width:min(300px,88%); padding:14px 16px 15px; }
-  }
+  @media (max-width:380px){ .cx-hero__in{ padding-left:16px; padding-right:16px; } }
 
-  /* --- use cases: icon sticker | title | text (no numbers: not a sequence) --- */
-  .cx-cases li{ grid-template-columns:auto minmax(0,1fr); grid-template-areas:"ico t" "ico d"; column-gap:18px; row-gap:6px; align-items:start; }
-  .cx-cases h3{ grid-area:t; align-self:end; }
-  .cx-cases p{ grid-area:d; margin:0; line-height:1.55; max-width:62ch; }
-  .cx-ico{ grid-area:ico; width:56px; height:56px; border-radius:50%; border:2px solid var(--ink); box-shadow:3px 3px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; color:var(--ink); }
-  .cx-ico .cx-i{ width:28px; height:28px; }
-  @media (min-width:781px){
-    .cx-cases li{ grid-template-columns:76px minmax(0,15rem) minmax(0,1fr); grid-template-areas:"ico t d"; column-gap:clamp(20px,3vw,34px); align-items:center; }
-    .cx-cases h3{ align-self:center; }
-    .cx-ico{ width:72px; height:72px; }
-    .cx-ico .cx-i{ width:38px; height:38px; }
-  }
-
-  /* --- formats: only what differs (the when and the where), as a spec sheet --- */
-  .cx-fmt .fmt__hd{ flex-wrap:wrap; padding:15px 20px; }
-  .cx-fmt__name{ display:flex; align-items:center; gap:12px; min-width:0; }
-  .cx-fmt__badge{ width:42px; height:42px; border-radius:12px; background:#fff; color:var(--ink); border:2px solid var(--ink); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
-  /* solid tags on the coloured headers: white-on-translucent-red text measured under 4.5:1 */
-  .cx-fmt__tag{ white-space:nowrap; color:var(--ink); }
-  .cx-fmt .fmt__body{ padding:20px 22px 22px; gap:0; }
-  .cx-fmt__pitch{ margin:0 0 16px; font-size:clamp(19px,1.9vw,22px); font-weight:800; line-height:1.25; letter-spacing:-0.02em; }
-  .cx-spec{ margin:0 0 22px; border-top:2px solid var(--ink); }
-  .cx-spec > div{ display:grid; grid-template-columns:6.5rem minmax(0,1fr); gap:12px; padding:13px 0; border-bottom:1px dashed var(--hairline-strong); align-items:baseline; }
-  .cx-spec dt{ font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
-  .cx-spec dd{ margin:0; font-weight:600; line-height:1.45; }
-  .cx-fmt .btn{ margin-top:auto; }
-  @media (max-width:440px){ .cx-spec > div{ grid-template-columns:1fr; gap:3px; } }
-  /* wide cards: the longer dinner title wraps inside its own column, so both tags stay on the right */
-  @media (min-width:1100px){
-    .cx-fmt .fmt__hd{ flex-wrap:nowrap; }
-    .cx-fmt__name{ flex:1 1 auto; }
-    .cx-fmt .fmt__hd h3{ line-height:1.15; text-wrap:balance; }
-  }
-  /* side by side, the rows line up across the two cards (header, pitch, when, where, button) */
-  @media (min-width:781px){
-    @supports (grid-template-rows:subgrid){
-      .cx-formats{ row-gap:0; }
-      .cx-formats > .cx-fmt{ display:grid; grid-row:span 5; grid-template-rows:subgrid; }
-      .cx-fmt .fmt__body{ display:grid; grid-row:span 4; grid-template-rows:subgrid; }
-      .cx-fmt .cx-spec{ display:grid; grid-row:span 2; grid-template-rows:subgrid; }
-    }
+  /* ---------- 2. proof: the numbers, then three real nights ---------- */
+  .cx-kpis{ margin-top:28px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); background:var(--ink); color:#fff; border-radius:var(--r-lg); border:2px solid var(--ink); }
+  .cx-kpis > div{ padding:20px 12px; text-align:center; border-right:1px solid rgba(255,255,255,.16); }
+  .cx-kpis > div:last-child{ border-right:0; }
+  .cx-kpis .kpi-lab{ color:rgba(255,255,255,.74); }
+  .cx-strip{ margin-top:24px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(12px,2vw,22px); }
+  .cx-strip figure{ margin:0; position:relative; aspect-ratio:4 / 3; background:var(--ink); border:2px solid var(--ink); border-radius:var(--r-lg); box-shadow:5px 5px 0 0 var(--ink); overflow:hidden; }
+  .cx-strip figure:nth-child(1){ transform:rotate(-1deg); }
+  .cx-strip figure:nth-child(2){ transform:rotate(.8deg); }
+  .cx-strip figure:nth-child(3){ transform:rotate(-.6deg); }
+  .cx-strip img{ width:100%; height:100%; object-fit:cover; }
+  .cx-strip__tag{ position:absolute; top:12px; left:12px; z-index:1; background:var(--yellow); transform:rotate(-2deg); }
+  @media (max-width:700px){
+    .cx-strip{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .cx-strip figure:first-child{ grid-column:1 / -1; aspect-ratio:16 / 10; }
+    .cx-strip figure{ box-shadow:3px 3px 0 0 var(--ink); border-radius:var(--r-md); }
   }
 
-  /* --- price: one ticket, said once for both formats (founder pricing, 4 Oct 2026: the "Classic"
-     column of the private-events sheet). Stub = the hook | the tiers by group size, with the
-     partner-venue column (-50 €) highlighted; under the tear line, what's included, the extras
-     (no prices: quoted on the call) and how booking works. --- */
+  /* ---------- 3. what it is: four ingredients ---------- */
+  .cx-what{ display:grid; grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr); gap:28px clamp(28px,5vw,64px); align-items:center; }
+  .cx-what__cards{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+  .cx-what__card{ padding:20px; display:flex; flex-direction:column; gap:14px; }
+  .cx-what__card .h3{ font-size:clamp(18px,1.7vw,20px); }
+  .cx-what__card p{ margin:6px 0 0; color:var(--ink-soft); line-height:1.5; font-size:15.5px; }
+  @media (max-width:860px){ .cx-what{ grid-template-columns:1fr; } }
+  @media (max-width:520px){
+    .cx-what__cards{ grid-template-columns:1fr; gap:12px; }
+    .cx-what__card{ flex-direction:row; align-items:flex-start; padding:18px; }
+    .cx-what__card .cx-tile{ width:44px; height:44px; border-radius:12px; }
+  }
+
+  /* ---------- 4. why companies book it: one ink card ---------- */
+  .cx-why{ padding:clamp(26px,4.4vw,52px); }
+  .cx-why .eyebrow{ color:rgba(255,255,255,.74); }
+  .cx-why .h2{ color:#fff; margin-top:14px; max-width:24ch; text-wrap:balance; }
+  .cx-why__grid{ margin-top:30px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px clamp(22px,3vw,40px); }
+  .cx-why__item{ padding-top:20px; border-top:2px dashed rgba(255,255,255,.26); }
+  .cx-why__ico{ width:52px; height:52px; border-radius:50%; background:var(--yellow); color:var(--ink); border:2px solid var(--ink); box-shadow:3px 3px 0 0 rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; }
+  .cx-why__ico .cx-i{ width:26px; height:26px; }
+  .cx-why__item .h3{ color:#fff; margin-top:16px; }
+  .cx-why__item p{ margin:8px 0 0; color:rgba(255,255,255,.8); line-height:1.55; }
+  @media (max-width:780px){ .cx-why__grid{ grid-template-columns:1fr; gap:20px; } }
+
+  /* ---------- 5. we handle everything: included (ticked) | extras + venue ---------- */
+  .cx-inc{ margin-top:30px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-items:stretch; }
+  .cx-inc__main{ padding:clamp(22px,3vw,32px); }
+  .cx-label{ margin:0 0 16px; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); }
+  .cx-label small{ display:block; margin-top:5px; font-family:var(--sans); font-size:14px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--ink-soft); }
+  .cx-list{ list-style:none; margin:0; padding:0; display:grid; gap:12px; }
+  .cx-list li{ display:flex; gap:12px; align-items:flex-start; font-weight:700; font-size:16.5px; line-height:1.4; }
+  .cx-list li::before{ content:""; flex:0 0 auto; width:24px; height:24px; margin-top:-1px; border-radius:50%; border:2px solid var(--ink); background-size:15px; background-position:center; background-repeat:no-repeat; }
+  .cx-list--inc li::before{ background-color:var(--accent); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12l5 5 9-11' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+  .cx-list--ex{ gap:10px; }
+  .cx-list--ex li{ font-size:15.5px; font-weight:600; }
+  .cx-list--ex li::before{ width:22px; height:22px; background-size:13px; background-color:var(--paper); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 5v14M5 12h14' fill='none' stroke='%231F1A14' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  .cx-inc__ex{ padding:clamp(22px,3vw,32px); background:var(--yellow-soft); border:2px dashed var(--ink); border-radius:var(--r-lg); }
+  .cx-inc__venue{ grid-column:1 / -1; display:flex; gap:16px; align-items:center; padding:18px 22px; background:var(--green-soft); }
+  .cx-inc__venue .cx-tile{ background:var(--paper); }
+  .cx-inc__venue p{ margin:0; line-height:1.5; font-size:15px; color:var(--ink-soft); }
+  .cx-inc__venue strong{ color:var(--ink); font-size:16.5px; font-weight:800; line-height:1.3; }
+  .cx-inc__venue a{ color:var(--accent-deep); font-weight:700; white-space:nowrap; }
+  @media (max-width:860px){ .cx-inc{ grid-template-columns:1fr; } .cx-inc__venue{ align-items:flex-start; } .cx-inc__venue strong{ display:block; margin-bottom:4px; } }
+  @media (max-width:420px){ .cx-inc__venue{ gap:13px; padding:18px; } .cx-inc__venue .cx-tile{ width:42px; height:42px; } .cx-inc__ex{ padding:20px 18px; } }
+
+  /* ---------- 6. custom rounds (extra): a real slide | four example rounds ---------- */
+  .cx-cust{ margin-top:30px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:30px clamp(24px,4vw,52px); align-items:center; }
+  .cx-cust__vis{ position:relative; padding:0 8px 18px 0; }
+  .cx-cust__tag{ position:absolute; bottom:0; right:22px; z-index:2; transform:rotate(-3deg); background:var(--yellow); }
+  .cx-rounds{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+  .cx-round{ padding:18px 18px 20px; display:flex; flex-direction:column; align-items:flex-start; }
+  .cx-round__top{ display:flex; width:100%; justify-content:space-between; align-items:center; gap:10px; }
+  .cx-round__top .cx-i{ width:26px; height:26px; color:var(--accent-deep); }
+  .cx-round h3{ margin:12px 0 0; font-weight:800; font-size:17.5px; letter-spacing:-0.015em; line-height:1.22; }
+  .cx-round p{ margin:6px 0 0; color:var(--ink-soft); line-height:1.5; font-size:14.5px; }
+  .cx-flag{ display:inline-block; padding:3px 8px 2px; border:1.5px solid var(--ink); border-radius:999px; background:var(--yellow); font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; line-height:1.3; white-space:nowrap; }
+  @media (max-width:860px){ .cx-cust{ grid-template-columns:1fr; } }
+  @media (max-width:480px){ .cx-rounds{ grid-template-columns:1fr; gap:12px; } }
+
+  /* The real projector slide: a question slide in the control room's "qed" stage skin
+     (control-room-mock-up: css/screen.css + js/control-room-stage.js renderStage), rebuilt in
+     HTML/CSS. The real stage is a 1280x720 canvas; every size below is its canvas px / 12.8, in
+     cqw of .cx-slide, so the frame scales as one picture. max() floors keep the small type
+     legible on phones. Colours are the skin's own, not the page tokens. */
+  .cx-slide{ container-type:inline-size; }
+  .cx-stage{ position:relative; isolation:isolate; overflow:hidden; aspect-ratio:16 / 9; background:#f7efc3; color:#17150f; font-family:"Inter",var(--sans); border:2px solid var(--ink); border-radius:14px; box-shadow:6px 6px 0 0 var(--ink); }
+  /* sunburst: coral and sage rays from the centre, cream gaps between */
+  .cx-stage::before{ content:""; position:absolute; left:50%; top:50%; z-index:-1; width:200%; height:200%; transform:translate(-50%,-50%); background:repeating-conic-gradient(from 0deg at 50% 50%, #e8785c 0deg 3.4deg, transparent 3.4deg 9deg, #8fbcaa 9deg 12.4deg, transparent 12.4deg 18deg); }
+  /* halftone dot screen over the rays */
+  .cx-stage::after{ content:""; position:absolute; inset:0; z-index:-1; background-image:radial-gradient(circle, rgba(90,70,40,.24) max(.125cqw,.7px), transparent max(.133cqw,.8px)); background-size:max(1.016cqw,5px) max(1.016cqw,5px); }
+  .cx-stage__body{ position:absolute; inset:0; display:flex; flex-direction:column; padding:4.06cqw 5.94cqw 4.69cqw; }
+  /* brand slot, top right: the company's logo when "logo on questions" is on */
+  .cx-stage__brand{ position:absolute; top:2.66cqw; right:3.44cqw; z-index:1; font-size:max(1.41cqw,9px); font-weight:900; letter-spacing:.28em; line-height:1; text-transform:uppercase; color:#c9552f; }
+  .cx-stage__kicker{ align-self:flex-start; flex:0 0 auto; padding:.5em 1.1em; background:#c9552f; color:#fff; border:max(.156cqw,1.5px) solid #17150f; border-radius:999px; box-shadow:.234cqw .234cqw 0 rgba(23,21,15,.9); font-family:var(--mono); font-size:max(1.72cqw,7.5px); font-weight:700; letter-spacing:.1em; line-height:1.2; text-transform:uppercase; white-space:nowrap; }
+  .cx-stage__card{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column; justify-content:center; gap:1.69cqw; padding:1.91cqw 2.8cqw; background:#fffdf2; border:max(.234cqw,1.5px) solid #17150f; border-radius:1.72cqw; box-shadow:.47cqw .47cqw 0 rgba(23,21,15,.9); }
+  /* comic-weight question: heavy, tight, outlined in its own ink */
+  .cx-stage__q{ margin:0; font-size:max(4.99cqw,14px); font-weight:900; line-height:1.18; letter-spacing:-.015em; -webkit-text-stroke:.055em #17150f; paint-order:stroke fill; text-wrap:balance; }
+  .cx-stage__opts{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1.1cqw; }
+  .cx-stage__opts li{ display:flex; align-items:center; gap:1.25cqw; min-width:0; padding:1.25cqw 1.7cqw; background:#fff; border:max(.234cqw,1.5px) solid #17150f; border-radius:1.25cqw; box-shadow:.234cqw .234cqw 0 rgba(23,21,15,.85); font-size:max(2.3cqw,9px); font-weight:600; line-height:1.2; white-space:nowrap; }
+  .cx-stage__opts b{ min-width:2.19cqw; font-family:var(--mono); font-weight:700; color:#7d7461; }
+  .cx-stage__opts span{ overflow:hidden; text-overflow:ellipsis; }
+  @media (max-width:420px){
+    .cx-stage{ box-shadow:4px 4px 0 0 var(--ink); }
+    .cx-stage__opts li{ font-size:max(2.3cqw,10.5px); }
+    .cx-stage__kicker{ font-size:max(1.72cqw,8.5px); }
+  }
+
+  /* ---------- 8. occasions: chips ---------- */
+  .cx-occ{ list-style:none; margin:24px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:10px 9px; }
+  .cx-chip{ display:inline-flex; align-items:center; gap:9px; min-height:46px; padding:5px 18px 5px 6px; background:var(--tint, var(--paper)); border:2px solid var(--ink); border-radius:999px; box-shadow:2px 2px 0 0 var(--ink); font-weight:800; font-size:16px; line-height:1.2; letter-spacing:-0.01em; }
+  .cx-chip__i{ width:32px; height:32px; flex:0 0 auto; border-radius:50%; background:var(--paper); border:1.5px solid var(--ink); display:inline-flex; align-items:center; justify-content:center; }
+  .cx-chip__i .cx-i{ width:18px; height:18px; stroke-width:2.1; }
+  @media (max-width:480px){ .cx-occ{ gap:8px 7px; } .cx-chip{ min-height:42px; font-size:15px; padding:4px 14px 4px 5px; gap:8px; } .cx-chip__i{ width:29px; height:29px; } }
+
+  /* ---------- 9. the person organising it ---------- */
+  .cx-org{ display:grid; grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr); gap:28px clamp(28px,4.4vw,56px); padding:clamp(24px,4.2vw,48px); background:var(--yellow); align-items:center; }
+  .cx-org .eyebrow{ color:var(--ink); }
+  .cx-org .h2{ margin-top:14px; text-wrap:balance; }
+  .cx-org__lead{ margin:10px 0 0; font-size:clamp(17px,1.6vw,19px); font-weight:700; }
+  .cx-org .ticks{ margin-top:22px; }
+  .cx-org .ticks li{ font-size:16px; }
+  .cx-pp{ background:var(--paper); border:2px solid var(--ink); border-radius:var(--r-lg); box-shadow:5px 5px 0 0 var(--ink); padding:clamp(20px,2.6vw,28px); }
+  .cx-pp__h{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+  .cx-pp__row{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; padding:14px 0; border-bottom:1px dashed var(--hairline-strong); }
+  .cx-pp__row:last-of-type{ border-bottom:0; }
+  .cx-pp__v{ font-weight:900; font-size:clamp(34px,3.8vw,44px); letter-spacing:-0.045em; line-height:1; }
+  .cx-pp__row--ours .cx-pp__v{ color:var(--accent-deep); }
+  .cx-pp__l{ font-weight:700; color:var(--ink-soft); line-height:1.3; }
+  .cx-pp .btn{ margin-top:10px; }
+  @media (max-width:860px){ .cx-org{ grid-template-columns:1fr; } }
+
+  /* ---------- 10. price: one ticket. Stub = the hook | the tiers by group size, with the
+     partner-venue column (-50 €) highlighted; under the tear line, the extras and how booking
+     works. Founder pricing, 4 Oct 2026. --- */
   .cx-price{ margin-top:30px; }
   .cx-price__top{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); }
   .cx-price__stub{ position:relative; display:flex; flex-direction:column; align-items:flex-start; background:var(--yellow); padding:clamp(22px,3vw,32px); border-right:2px dashed var(--ink); border-radius:18px 0 0 0; }
-  .cx-price__eyebrow, .cx-band__h{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); }
+  .cx-price__eyebrow{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); }
   .cx-price__big{ margin:12px 0 0; font-weight:900; font-size:clamp(46px,4.8vw,64px); letter-spacing:-0.045em; line-height:.95; }
   .cx-price__vat{ margin:7px 0 0; font-family:var(--mono); font-size:13px; font-weight:700; }
   .cx-price__cond{ margin:16px 0 0; padding:7px 13px; border-radius:999px; background:var(--ink); color:#fff; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.02em; line-height:1.35; text-wrap:balance; }
   .cx-price__note{ margin:auto 0 0; padding-top:18px; align-self:stretch; }
   .cx-price__note span{ display:block; padding-top:14px; border-top:2px dashed rgba(31,26,20,.35); font-size:15px; line-height:1.5; font-weight:600; }
+  .cx-price__stub .btn{ margin-top:16px; }
   /* the tiers: a real table (screen readers get rows and headers); the partner-venue column is
      tinted so the -50 € reads at a glance */
   .cx-tiers{ padding:clamp(18px,2.6vw,28px) clamp(18px,3vw,32px) clamp(18px,2.6vw,26px); }
@@ -141,27 +243,27 @@
   .cx-tiers tbody tr:last-child > *{ border-bottom:0; }
   .cx-tiers__quote td{ font-size:16px; font-weight:800; letter-spacing:-0.01em; white-space:normal; color:var(--ink); }
   .cx-tiers__foot{ margin:12px 0 0; font-size:13.5px; line-height:1.5; color:var(--ink-soft); }
-  /* under the tear line: three short lists */
-  .cx-price__band{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px clamp(22px,3vw,40px); padding:clamp(22px,3vw,30px) clamp(20px,3vw,32px); background:var(--cream-soft); border-top:2px dashed var(--ink); border-radius:0 0 18px 18px; }
-  .cx-band__h{ margin-bottom:12px; }
+  /* under the tear line: the extras (as extras) and how booking works */
+  .cx-price__band{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px clamp(22px,3vw,40px); padding:clamp(22px,3vw,30px) clamp(20px,3vw,32px); background:var(--cream-soft); border-top:2px dashed var(--ink); border-radius:0 0 18px 18px; }
+  .cx-band__h{ margin:0 0 12px; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); }
   .cx-band__sub{ display:block; margin-top:4px; font-family:var(--sans); font-size:13.5px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--ink-soft); }
   .cx-band__list{ list-style:none; margin:0; padding:0; display:grid; gap:9px; }
   .cx-band__list li{ display:flex; gap:10px; align-items:flex-start; font-weight:600; font-size:15px; line-height:1.4; }
-  .cx-band__list--inc li::before, .cx-band__list--ex li::before{ content:""; flex:0 0 auto; width:20px; height:20px; border-radius:50%; border:2px solid var(--ink); background-size:13px; background-position:center; background-repeat:no-repeat; }
-  .cx-band__list--inc li::before{ background-color:var(--accent); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12l5 5 9-11' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
-  .cx-band__list--ex li::before{ background-color:var(--yellow); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 5v14M5 12h14' fill='none' stroke='%231F1A14' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  /* in the ticket the extras are pills: they are spelt out once already, in #included */
+  .cx-band__list--ex{ display:flex; flex-wrap:wrap; gap:8px; }
+  .cx-band__list--ex li{ align-items:center; gap:7px; padding:4px 12px 4px 5px; background:var(--paper); border:1.5px solid var(--ink); border-radius:999px; font-size:14px; line-height:1.3; }
+  .cx-band__list--ex li::before{ content:""; flex:0 0 auto; width:20px; height:20px; border-radius:50%; border:2px solid var(--ink); background-color:var(--yellow); background-size:13px; background-position:center; background-repeat:no-repeat; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 5v14M5 12h14' fill='none' stroke='%231F1A14' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
   .cx-band__list--book .cx-i{ width:20px; height:20px; color:var(--accent-deep); }
   .cx-band__list--book strong{ font-weight:800; }
   @media (min-width:961px){
     /* ticket notches wherever a perforation meets the card's edge: the stub's dashed line at the
        top edge, and both ends of the tear line above the band. Cream discs on the edge, half
        clipped; the right one is bigger and centred on the shadow's outer edge, so it bites
-       through the shadow too (as the bottom notch on /celebrations/ does). It stays within the
-       .wrap's 22px gutter: a bigger disc would add a horizontal scroll at 961-1180px. */
+       through the shadow too. It stays within the .wrap's 22px gutter: a bigger disc would add
+       a horizontal scroll at 961-1180px. */
     .cx-price__stub::before, .cx-price__band::before, .cx-price__band::after{ content:""; position:absolute; border-radius:50%; background:var(--cream); border:2px solid var(--ink); }
     .cx-price__stub::before{ top:-15px; right:-14px; width:26px; height:26px; clip-path:inset(50% -3px -3px -3px); }
     .cx-price__band{ position:relative; }
-    /* (top is measured from below the band's 2px dashed border, so these centre the discs on it) */
     .cx-price__band::before{ top:-14px; left:-15px; width:26px; height:26px; clip-path:inset(-3px -3px -3px 50%); }
     .cx-price__band::after{ top:-17px; right:-23px; width:32px; height:32px; clip-path:inset(-3px 50% -3px -3px); }
   }
@@ -170,12 +272,8 @@
     .cx-price__top{ grid-template-columns:1fr; }
     .cx-price__stub{ border-right:0; border-bottom:2px dashed var(--ink); border-radius:18px 18px 0 0; }
     .cx-price__note{ margin-top:0; }
-    .cx-price__band{ grid-template-columns:repeat(2,minmax(0,1fr)); }
-    .cx-price__band > :last-child{ grid-column:1 / -1; }
   }
-  @media (max-width:600px){
-    .cx-price__band{ grid-template-columns:1fr; gap:22px; }
-  }
+  @media (max-width:700px){ .cx-price__band{ grid-template-columns:1fr; gap:22px; } }
   @media (max-width:420px){
     .cx-tiers{ padding-left:16px; padding-right:12px; }
     .cx-tiers th, .cx-tiers td{ padding:12px 9px; }
@@ -186,7 +284,8 @@
   }
 
   /* --- partner venues: the bars where we run a public quiz every week (plus OlHops). Our names
-     for them, grouped by city; the -50 € said once, as a stamp. --- */
+     for them, grouped by city; the -50 € said once, as a stamp. Cities outside Valencia carry the
+     asterisk of the footnote under the list. --- */
   .cx-venues{ position:relative; margin-top:22px; display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.2fr); gap:22px clamp(26px,4vw,52px); padding:clamp(22px,3vw,34px); background:var(--green-soft); }
   .cx-venues__intro{ position:relative; }
   .cx-venues__t{ margin:14px 0 0; padding-right:100px; font-weight:900; font-size:clamp(23px,2.5vw,30px); letter-spacing:-0.027em; line-height:1.1; text-wrap:balance; }
@@ -195,11 +294,11 @@
   .cx-venues__stamp b{ font-size:21px; }
   .cx-vlist{ list-style:none; margin:0; padding:0; border-top:2px solid var(--ink); align-self:start; }
   .cx-vlist > li{ display:grid; grid-template-columns:8.6rem minmax(0,1fr); gap:8px 16px; align-items:center; padding:13px 0; border-bottom:1px dashed rgba(31,26,20,.24); }
-  .cx-vlist > li:last-child{ border-bottom:0; padding-bottom:0; }
   .cx-vlist__city{ display:flex; gap:7px; align-items:center; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; line-height:1.3; }
   .cx-vlist__city .cx-i{ width:17px; height:17px; color:var(--accent-deep); }
   .cx-vchips{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
   .cx-vchip{ display:inline-flex; align-items:center; min-height:36px; padding:5px 13px; background:var(--paper); border:2px solid var(--ink); border-radius:999px; box-shadow:2px 2px 0 0 var(--ink); font-weight:700; font-size:14.5px; line-height:1.2; }
+  .cx-venues__foot{ margin:14px 0 0; font-size:13.5px; line-height:1.5; color:var(--ink-soft); }
   @media (max-width:900px){ .cx-venues{ grid-template-columns:1fr; } }
   @media (max-width:520px){
     .cx-venues__t{ padding-right:86px; }
@@ -211,128 +310,18 @@
     .cx-vchip{ font-size:14px; min-height:34px; }
   }
 
-  /* hero price line: the hook, then what it's for and a jump to the table */
-  .cx-hero__facts .cx-hero__pricefact{ align-items:flex-start; }
-  .cx-hero__pricefact .cx-i{ margin-top:1px; }
-  .cx-hero__cond{ display:block; margin-top:3px; font-size:14.5px; font-weight:600; color:var(--ink-soft); }
-  .cx-hero__cond a{ color:var(--accent-deep); font-weight:700; white-space:nowrap; }
+  /* ---------- 12. "we know trivia": two lines, instead of the About section ---------- */
+  .cx-know{ display:flex; gap:18px; align-items:center; padding:clamp(18px,2.6vw,26px) clamp(18px,3vw,30px); background:var(--cream-soft); border:2px dashed var(--ink); border-radius:var(--r-lg); }
+  .cx-know p{ margin:0; line-height:1.55; font-size:16px; color:var(--ink-soft); max-width:80ch; }
+  .cx-know strong{ display:block; margin-bottom:3px; color:var(--ink); font-weight:900; font-size:clamp(19px,1.9vw,22px); letter-spacing:-0.02em; }
+  .cx-know__ico{ width:54px; height:54px; flex:0 0 auto; border-radius:50%; background:var(--yellow); border:2px solid var(--ink); box-shadow:2px 2px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; transform:rotate(-6deg); }
+  @media (max-width:480px){ .cx-know{ align-items:flex-start; gap:14px; } .cx-know__ico{ width:44px; height:44px; } .cx-know__ico .cx-i{ width:21px; height:21px; } }
 
-  /* "Included" / "Extra" flags on the customize rows and the custom-rounds card */
-  .cx-opt__t .cx-flag{ display:table; margin:0 0 7px; }
-  .cx-flag{ display:inline-block; padding:3px 8px 2px; border:1.5px solid var(--ink); border-radius:999px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; line-height:1.3; white-space:nowrap; }
-  .cx-flag--inc{ background:var(--green-soft); }
-  .cx-flag--ex{ background:var(--yellow); }
-
-  /* --- customize: one card, four aligned rows (what it is | the options, as chips) ---
-     Each row has one tint (--tint), shared by its icon tile and its chips, so a row reads as one
-     group; each chip carries its own small glyph. */
-  .cx-opts{ margin-top:30px; }
-  .cx-opt{ --tint:var(--cream-soft); display:grid; grid-template-columns:minmax(0,.76fr) minmax(0,1.24fr); gap:16px 32px; align-items:center; padding:24px clamp(18px,3vw,30px); }
-  .cx-opt--y{ --tint:var(--yellow-soft); }
-  .cx-opt--o{ --tint:var(--orange-soft); }
-  .cx-opt--g{ --tint:var(--green-soft); }
-  .cx-opt--r{ --tint:var(--red-soft); }
-  .cx-opt + .cx-opt{ border-top:1px dashed var(--hairline-strong); }
-  .cx-opt__hd{ display:flex; gap:16px; align-items:flex-start; }
-  .cx-opt__hd .cx-tile{ background:var(--tint); }
-  .cx-opt__t{ margin:0; font-weight:800; font-size:clamp(18px,1.7vw,20px); letter-spacing:-0.02em; line-height:1.2; padding-top:3px; }
-  .cx-opt__d{ margin:5px 0 0; color:var(--ink-soft); line-height:1.5; font-size:15px; }
-  .cx-chips{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:9px 8px; }
-  .cx-chip{ display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:4px 14px 4px 5px; background:var(--tint); border:2px solid var(--ink); border-radius:999px; box-shadow:2px 2px 0 0 var(--ink); font-weight:700; font-size:14.5px; line-height:1.2; letter-spacing:-0.005em; color:var(--ink); }
-  .cx-chip__i{ width:28px; height:28px; flex:0 0 auto; border-radius:50%; background:var(--paper); border:1.5px solid var(--ink); display:inline-flex; align-items:center; justify-content:center; }
-  .cx-chip__i .cx-i{ width:16px; height:16px; stroke-width:2.1; }
-  /* tablets: chips drop under the text, indented to the text column (tile + gap) */
-  @media (max-width:780px){
-    .cx-opt{ grid-template-columns:minmax(0,1fr); gap:14px; }
-    .cx-chips{ padding-left:66px; gap:8px; }
-  }
-  /* phones: the indent left room for one chip per line, so the chips take the card's full width
-     (two or three to a row) */
-  @media (max-width:480px){
-    .cx-opt{ padding:20px 18px; }
-    .cx-opt__hd{ gap:14px; }
-    .cx-chips{ padding-left:0; gap:8px 7px; }
-    .cx-chip{ min-height:38px; font-size:14px; gap:7px; padding:3px 13px 3px 4px; }
-    .cx-chip__i{ width:27px; height:27px; }
-    .cx-chip__i .cx-i{ width:15px; height:15px; }
-  }
-
-  /* --- features: a real slide in the big card, icon tiles on the rest --- */
-  .cx-feat{ margin-top:30px; display:grid; grid-template-columns:minmax(0,1.12fr) minmax(0,1fr); grid-template-rows:repeat(3,auto); gap:16px; }
-  .cx-feat__big{ grid-row:1 / span 3; background:var(--accent-deep); color:#fff; display:flex; flex-direction:column; gap:26px; }
-  .cx-feat__bigt{ color:#fff; font-size:clamp(24px,2.6vw,30px); margin:16px 0 0; }
-  .cx-feat__bigd{ margin:10px 0 0; color:#fff; line-height:1.55; max-width:48ch; }
-
-  /* The real projector slide: a question slide in the control room's "qed" stage skin
-     (control-room-mock-up: css/screen.css + js/control-room-stage.js renderStage), rebuilt in
-     HTML/CSS. The real stage is a 1280x720 canvas; every size below is its canvas px / 12.8, in
-     cqw of .cx-slide, so the frame scales as one picture. max() floors keep the small type
-     legible on phones. Colours are the skin's own, not the page tokens. */
-  .cx-slide{ margin-top:auto; container-type:inline-size; }
-  .cx-stage{ position:relative; isolation:isolate; overflow:hidden; aspect-ratio:16 / 9; background:#f7efc3; color:#17150f; font-family:"Inter",var(--sans); border:2px solid var(--ink); border-radius:12px; box-shadow:6px 6px 0 0 rgba(31,26,20,.55); }
-  /* sunburst: coral and sage rays from the centre, cream gaps between */
-  .cx-stage::before{ content:""; position:absolute; left:50%; top:50%; z-index:-1; width:200%; height:200%; transform:translate(-50%,-50%); background:repeating-conic-gradient(from 0deg at 50% 50%, #e8785c 0deg 3.4deg, transparent 3.4deg 9deg, #8fbcaa 9deg 12.4deg, transparent 12.4deg 18deg); }
-  /* halftone dot screen over the rays */
-  .cx-stage::after{ content:""; position:absolute; inset:0; z-index:-1; background-image:radial-gradient(circle, rgba(90,70,40,.24) max(.125cqw,.7px), transparent max(.133cqw,.8px)); background-size:max(1.016cqw,5px) max(1.016cqw,5px); }
-  .cx-stage__body{ position:absolute; inset:0; display:flex; flex-direction:column; padding:4.06cqw 5.94cqw 4.69cqw; }
-  /* brand slot, top right: the edition's logo when "logo on questions" is on */
-  .cx-stage__brand{ position:absolute; top:2.66cqw; right:3.44cqw; z-index:1; font-size:max(1.41cqw,9px); font-weight:900; letter-spacing:.28em; line-height:1; text-transform:uppercase; color:#c9552f; }
-  .cx-stage__kicker{ align-self:flex-start; flex:0 0 auto; padding:.5em 1.1em; background:#c9552f; color:#fff; border:max(.156cqw,1.5px) solid #17150f; border-radius:999px; box-shadow:.234cqw .234cqw 0 rgba(23,21,15,.9); font-family:var(--mono); font-size:max(1.72cqw,7.5px); font-weight:700; letter-spacing:.1em; line-height:1.2; text-transform:uppercase; white-space:nowrap; }
-  .cx-stage__card{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column; justify-content:center; gap:1.69cqw; padding:1.91cqw 2.8cqw; background:#fffdf2; border:max(.234cqw,1.5px) solid #17150f; border-radius:1.72cqw; box-shadow:.47cqw .47cqw 0 rgba(23,21,15,.9); }
-  /* comic-weight question: heavy, tight, outlined in its own ink */
-  .cx-stage__q{ margin:0; font-size:max(4.99cqw,14px); font-weight:900; line-height:1.18; letter-spacing:-.015em; -webkit-text-stroke:.055em #17150f; paint-order:stroke fill; text-wrap:balance; }
-  .cx-stage__opts{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1.1cqw; }
-  .cx-stage__opts li{ display:flex; align-items:center; gap:1.25cqw; min-width:0; padding:1.25cqw 1.7cqw; background:#fff; border:max(.234cqw,1.5px) solid #17150f; border-radius:1.25cqw; box-shadow:.234cqw .234cqw 0 rgba(23,21,15,.85); font-size:max(2.3cqw,9px); font-weight:600; line-height:1.2; white-space:nowrap; }
-  .cx-stage__opts b{ min-width:2.19cqw; font-family:var(--mono); font-weight:700; color:#7d7461; }
-  .cx-stage__opts span{ overflow:hidden; text-overflow:ellipsis; }
-  .cx-mini{ display:flex; gap:16px; align-items:flex-start; }
-  /* beside the taller slide card the three rows stretch: centre their content so the extra
-     height splits evenly above and below instead of pooling at the bottom */
-  @media (min-width:821px){ .cx-mini{ align-items:center; gap:18px; } }
-  .cx-mini .h3{ margin:0; }
-  .cx-mini p{ margin:6px 0 0; line-height:1.5; }
-  .cx-tile{ width:50px; height:50px; border-radius:14px; border:2px solid var(--ink); box-shadow:2px 2px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--ink); }
-  @media (max-width:820px){
-    .cx-feat{ grid-template-columns:1fr; grid-template-rows:none; }
-    .cx-feat__big{ grid-row:auto; }
-  }
-  @media (max-width:420px){
-    /* the slide runs almost out to the card's border (slimmer padding, wider bleed) and its
-       smallest type gets a higher floor, so the A-D answers stay readable on a phone */
-    .cx-feat__big{ padding-left:16px; padding-right:16px; }
-    .cx-slide{ margin-left:-10px; margin-right:-10px; }
-    .cx-stage{ box-shadow:4px 4px 0 0 rgba(31,26,20,.55); }
-    .cx-stage__opts li{ font-size:max(2.3cqw,10.5px); }
-    .cx-stage__kicker{ font-size:max(1.72cqw,8.5px); }
-    .cx-mini{ gap:14px; }
-    .cx-tile{ width:44px; height:44px; border-radius:12px; }
-  }
-
-  /* --- "our part is the quiz": one line under the formats, says what we do and what we don't --- */
-  .cx-scope{ display:flex; gap:16px; align-items:center; margin-top:22px; padding:16px clamp(16px,2.6vw,24px); background:var(--cream-soft); border:2px dashed var(--ink); border-radius:var(--r-lg); }
-  .cx-scope p{ margin:0; line-height:1.5; font-size:15.5px; color:var(--ink-soft); max-width:88ch; }
-  .cx-scope strong{ color:var(--ink); font-weight:800; }
-  .cx-scope__ico{ width:46px; height:46px; flex:0 0 auto; border-radius:50%; background:var(--yellow); border:2px solid var(--ink); box-shadow:2px 2px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; }
-  @media (max-width:420px){ .cx-scope{ align-items:flex-start; gap:13px; } .cx-scope__ico{ width:40px; height:40px; } .cx-scope__ico .cx-i{ width:20px; height:20px; } }
-
-  /* --- other services: the franchise only, one calm wide card (white-label stays in the footer).
-     A light sage card, not ink: it is a side door, and an ink card's ink shadow would melt into it. --- */
-  a.cx-xsell{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:14px 22px; padding:clamp(18px,2.6vw,26px) clamp(18px,3vw,30px); background:var(--green-soft); color:var(--ink); text-decoration:none; }
-  .cx-xsell__ico{ width:58px; height:58px; border-radius:50%; background:#89AF96; color:var(--ink); border:2px solid var(--ink); box-shadow:3px 3px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; transform:rotate(6deg); }
-  .cx-xsell__ico .cx-i{ width:28px; height:28px; }
-  .cx-xsell__eyebrow{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
-  .cx-xsell__t{ margin:6px 0 0; font-weight:800; font-size:clamp(20px,2.2vw,26px); letter-spacing:-0.02em; line-height:1.2; text-wrap:balance; }
-  .cx-xsell__go{ background:var(--yellow); color:var(--ink); white-space:nowrap; }
-  .cx-xsell .arr{ display:inline-block; transition:transform .15s; }
-  .cx-xsell:hover .arr{ transform:translateX(3px); }
-  .cx-xsell:focus-visible{ outline:3px solid var(--accent-deep); outline-offset:4px; }
-  @media (max-width:640px){
-    a.cx-xsell{ grid-template-columns:auto minmax(0,1fr); }
-    .cx-xsell__go{ grid-column:1 / -1; justify-self:start; }
-    .cx-xsell__ico{ width:48px; height:48px; }
-    .cx-xsell__ico .cx-i{ width:24px; height:24px; }
-  }
-  @media (prefers-reduced-motion:reduce){ .cx-xsell .arr{ transition:none; } }
+  /* ---------- 13. final CTA: the intro panel beside the form ---------- */
+  .cx-quote__sub{ margin:0; color:rgba(255,255,255,.9); font-size:clamp(17px,1.6vw,19px); line-height:1.5; font-weight:600; }
+  .cx-quote__call{ margin:0; display:flex; gap:10px; align-items:flex-start; color:rgba(255,255,255,.8); line-height:1.5; }
+  .cx-quote__call .cx-i{ width:20px; height:20px; margin-top:2px; color:var(--yellow); }
+  @media (max-width:767px){ .quote-intro{ gap:10px !important; } .cx-quote__sub{ font-size:16px; } }
 
   /* --- event type: four one-tap cards instead of a dropdown ---
      Real radios in a fieldset + legend (keyboard: Tab in, arrows to choose). The input is
@@ -379,36 +368,29 @@
   <symbol id="cx-i-team" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M6.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="5" cy="10" r="2"/><path d="M1.5 18a3.5 3.5 0 0 1 4.3-3.4"/><circle cx="19" cy="10" r="2"/><path d="M22.5 18a3.5 3.5 0 0 0-4.3-3.4"/></symbol>
   <symbol id="cx-i-offsite" viewBox="0 0 24 24"><rect x="3.5" y="3" width="17" height="11.5" rx="1.2"/><path d="M7 11l3-3 2.5 2 4.5-4"/><path d="M12 14.5v3M8 21.5l4-4 4 4"/></symbol>
   <symbol id="cx-i-cheers" viewBox="0 0 24 24"><g transform="rotate(14 7 13)"><path d="M4.5 6h5v3.5a2.5 2.5 0 0 1-5 0z"/><path d="M7 12v7M4.5 19h5"/></g><g transform="rotate(-14 17 13)"><path d="M14.5 6h5v3.5a2.5 2.5 0 0 1-5 0z"/><path d="M17 12v7M14.5 19h5"/></g><path d="M12 1.5v1.8M9.4 2.4l.9 1.3M14.6 2.4l-.9 1.3"/></symbol>
-  <symbol id="cx-i-ticket" viewBox="0 0 24 24"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h15A1.5 1.5 0 0 1 21 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5V14a2 2 0 0 0 0-4z"/><path d="M15 6.5v1.5M15 11.25v1.5M15 16v1.5"/></symbol>
   <symbol id="cx-i-dinner" viewBox="0 0 24 24"><path d="M5 3v6a3 3 0 0 0 6 0V3"/><path d="M8 3v18"/><path d="M18 21V3c-2.2 1.6-3.5 4.3-3.5 7.5V14H18"/></symbol>
   <symbol id="cx-i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M8 14.5h3"/></symbol>
   <symbol id="cx-i-doc" viewBox="0 0 24 24"><path d="M14 3H6.5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8.5z"/><path d="M14 3v5.5h5.5"/><path d="M8.5 14.5l2.3 2.3 4.2-4.6"/></symbol>
   <symbol id="cx-i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
-  <symbol id="cx-i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5c0-4.1-4-7.2-9-7.2z"/><circle cx="7.5" cy="11.5" r="1"/><circle cx="9.5" cy="7.2" r="1"/><circle cx="14.5" cy="7.2" r="1"/></symbol>
-  <symbol id="cx-i-modes" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><circle cx="17" cy="17" r="3.5"/></symbol>
-  <symbol id="cx-i-bolt" viewBox="0 0 24 24"><path d="M13 2.5L4.5 13.5H11l-1 8 8.5-11H12l1-8z"/></symbol>
   <symbol id="cx-i-trophy" viewBox="0 0 24 24"><path d="M7.5 3.5h9V9a4.5 4.5 0 0 1-9 0V3.5z"/><path d="M7.5 5.5h-3a3 3 0 0 0 3.3 4"/><path d="M16.5 5.5h3a3 3 0 0 1-3.3 4"/><path d="M12 13.5V17"/><path d="M8.5 20.5h7"/><path d="M9.5 20.5l.6-3.5h3.8l.6 3.5"/></symbol>
   <symbol id="cx-i-pin" viewBox="0 0 24 24"><path d="M12 21.5s-7-6.1-7-11.5a7 7 0 0 1 14 0c0 5.4-7 11.5-7 11.5z"/><circle cx="12" cy="10" r="2.5"/></symbol>
   <symbol id="cx-i-mic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21M8.5 21h7"/></symbol>
+  <symbol id="cx-i-micoff" viewBox="0 0 24 24"><path d="M15 9.5V5.5a3 3 0 0 0-5.7-1.3"/><path d="M9 9v2a3 3 0 0 0 4.6 2.5"/><path d="M18.5 11a6.5 6.5 0 0 1-1 3.4M5.5 11a6.5 6.5 0 0 0 9.7 5.7"/><path d="M12 17.5V21M8.5 21h7"/><path d="M3 3l18 18"/></symbol>
   <symbol id="cx-i-score" viewBox="0 0 24 24"><rect x="3.5" y="12" width="4.5" height="8.5" rx="1"/><rect x="9.75" y="4" width="4.5" height="16.5" rx="1"/><rect x="16" y="8.5" width="4.5" height="12" rx="1"/></symbol>
-  <symbol id="cx-i-speaker" viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><circle cx="12" cy="14.5" r="3.5"/><path d="M12 7h.01"/></symbol>
   <symbol id="cx-i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.6a4.3 4.3 0 1 0 0 6.8"/><path d="M7.5 10.6h6M7.5 13.4h6"/></symbol>
   <symbol id="cx-i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
   <symbol id="cx-i-store" viewBox="0 0 24 24"><path d="M3.5 9 5 4h14l1.5 5"/><path d="M3.5 9a2.75 2.75 0 0 0 5.5 0 3 3 0 0 0 6 0 2.75 2.75 0 0 0 5.5 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/></symbol>
-  <!-- customize chips -->
   <symbol id="cx-i-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7.5 4.5 3.5 4.5v13c4 0 6.5.5 8.5 2 2-1.5 4.5-2 8.5-2v-13c-4 0-6.5.5-8.5 2z"/><path d="M12 6.5v13"/></symbol>
   <symbol id="cx-i-party" viewBox="0 0 24 24"><path d="M3.5 20.5l4.8-12.3 7.5 7.5z"/><path d="M6.3 13.4l4.3 4.3"/><path d="M13.5 9.5c1.6-1.6 1.6-3.4.6-4.9M14.5 10.5c1.6-1.6 3.4-1.6 4.9-.6"/><path d="M12 3v.01M20.5 4.5v.01M21 12v.01M17.5 3.5l-.6 1.6"/></symbol>
   <symbol id="cx-i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V5.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2V7"/><path d="M3 12.5h18M10.5 12.5v2h3v-2"/></symbol>
-  <symbol id="cx-i-laugh" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.6 10l1.6-1.6 1.6 1.6M13.2 10l1.6-1.6 1.6 1.6"/><path d="M7.5 13.5h9a4.5 4.5 0 0 1-9 0z"/></symbol>
   <symbol id="cx-i-image" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.7"/><path d="M21 15.5l-5-5-9 9"/></symbol>
   <symbol id="cx-i-music" viewBox="0 0 24 24"><path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
-  <symbol id="cx-i-map" viewBox="0 0 24 24"><path d="M9 4.5L3.5 6.5v13L9 17.5l6 2 5.5-2v-13L15 6.5z"/><path d="M9 4.5v13M15 6.5v13"/></symbol>
-  <symbol id="cx-i-wink" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9.8v.01" stroke-width="2.8"/><path d="M13.6 9.8h2.6"/><path d="M8 14a4.6 4.6 0 0 0 8 0"/></symbol>
-  <symbol id="cx-i-flag" viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4.6c3-1.8 5.5 1.6 8.5 0 2.6-1.4 4.4-.7 5.5 0v9c-1.1-.7-2.9-1.4-5.5 0-3 1.6-5.5-1.8-8.5 0"/></symbol>
-  <symbol id="cx-i-cards" viewBox="0 0 24 24"><path d="M12 3l-3.6 7.5M12 3l3.6 7.5"/><path d="M7 11.5h10"/><path d="M7.5 13l-3.5 7.5M7.5 13l3.5 7.5M16.5 13L13 20.5M16.5 13l3.5 7.5"/><path d="M2.5 21h19"/></symbol>
-  <symbol id="cx-i-shapes" viewBox="0 0 24 24"><circle cx="7.5" cy="7.5" r="4"/><path d="M16.5 3.5l4.5 8h-9z"/><rect x="3.5" y="14" width="7" height="7" rx="1.2"/><circle cx="17" cy="17.5" r="3.5"/></symbol>
   <symbol id="cx-i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4.5" rx="1"/><path d="M5 13v7.5h14V13"/><path d="M12 8.5v12"/><path d="M12 8.5C10.7 5.4 6.5 4.6 6.5 7c0 1.3 2.4 1.5 5.5 1.5zM12 8.5c1.3-3.1 5.5-3.9 5.5-1.5 0 1.3-2.4 1.5-5.5 1.5z"/></symbol>
-  <symbol id="cx-i-ribbon" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 13.9L7 21.5l5-2.6 5 2.6-1.5-7.6"/><path d="M12 6.2l.9 1.8 2 .3-1.4 1.4.3 2-1.8-.9-1.8.9.3-2-1.4-1.4 2-.3z"/></symbol>
+  <symbol id="cx-i-chat" viewBox="0 0 24 24"><path d="M4 5.5h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V7A1.5 1.5 0 0 1 4 5.5z"/><path d="M16.5 9H20a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 20 18h-1.5v3L15 18h-4.5a1.5 1.5 0 0 1-1.5-1.5"/></symbol>
+  <symbol id="cx-i-sliders" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+  <symbol id="cx-i-phone" viewBox="0 0 24 24"><path d="M5 3.5h3.2l1.6 4.2-2.1 1.4a11 11 0 0 0 5.2 5.2l1.4-2.1 4.2 1.6V17a2 2 0 0 1-2 2A15.5 15.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="cx-i-quote" viewBox="0 0 24 24"><path d="M4 6.5h16a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 17.5h-9l-4.5 3.5v-3.5H4A1.5 1.5 0 0 1 2.5 16V8A1.5 1.5 0 0 1 4 6.5z"/><path d="M8 10.5v2.5M8 10.5h1.5M13 10.5v2.5M13 10.5h1.5"/></symbol>
+  <symbol id="cx-i-bulb" viewBox="0 0 24 24"><path d="M9 17.5h6M10 21h4"/><path d="M12 2.5a6.5 6.5 0 0 0-4 11.6c.6.5 1 1.3 1 2.1v1.3h6v-1.3c0-.8.4-1.6 1-2.1a6.5 6.5 0 0 0-4-11.6z"/></symbol>
 </svg>
 
 <header class="nav">
@@ -417,182 +399,334 @@
       <span class="brand__en"><img src="/shared/qed-logo.png" alt="Quiz Eat Drink"></span>
       <img class="brand__es" src="/shared/tardeo-logo.svg" alt="Tardeo de Trivia">
     </a>
-    <a class="btn btn--sm btn--cta nav__cta-m" href="#quote" data-i18n="c.cta.quote">Get a quote</a>
+    <a class="btn btn--sm btn--cta nav__cta-m" href="#quote" data-i18n="c.cta.talk">Let's talk</a>
     <button class="nav__toggle" data-i18n-aria="ui.menu" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg>
     </button>
     <nav class="nav__links">
-      <a href="#formats" data-i18n="c.nav.formats">Formats</a>
+      <a href="#what" data-i18n="c.nav.what">What it is</a>
       <a href="#price" data-i18n="c.nav.price">Prices</a>
       <a href="#how" data-i18n="c.nav.how">How it works</a>
       <a href="#faq" data-i18n="c.nav.faq">FAQ</a>
-      <a class="btn btn--sm btn--cta" href="#quote" data-i18n="c.cta.quote">Get a quote</a>
+      <a class="btn btn--sm btn--cta" href="#quote" data-i18n="c.cta.tell">Tell us about your event</a>
     </nav>
   </div>
 </header>
 
 <main>
 
-  <!-- ============ HERO ============ -->
+  <!-- ============ 1. HERO ============ -->
+  <!-- Full-bleed real photo (TR15 quiz night: a host with the mic, teams at their tables), under a
+       dark gradient. The ?v=cena script at the bottom re-points #c-hero-h1, #c-hero-sub and
+       #c-hero-cta to the c.*cena keys. -->
   <section class="hero cx-hero">
-    <div class="wrap cx-hero__grid">
-      <div class="reveal">
+    <picture class="cx-hero__bg">
+      <source media="(max-width:700px)" type="image/webp" srcset="/shared/hero-corporate-800.webp">
+      <source media="(max-width:700px)" srcset="/shared/hero-corporate-800.jpg">
+      <source type="image/webp" srcset="/shared/hero-corporate-1200.webp 1200w, /shared/hero-corporate-1920.webp 1920w" sizes="100vw">
+      <img src="/shared/hero-corporate-1200.jpg" srcset="/shared/hero-corporate-1200.jpg 1200w, /shared/hero-corporate-1920.jpg 1920w" sizes="100vw" width="1920" height="1080" fetchpriority="high" decoding="async" data-i18n-alt="c.hero.photoalt" alt="A host with a microphone running a trivia night for teams at their tables">
+    </picture>
+    <div class="wrap cx-hero__in">
+      <div class="cx-hero__copy reveal">
         <!-- SEASONAL (Sep-Dec 2026): c.hero.tag is the Christmas / cenas de empresa version.
-             Revert it (EN here + ES in i18n-corporate.js) to the plain "Hosted in <cities>" tag after mid-December. -->
-        <span class="tag tag--accent tag--shadow" data-i18n="c.hero.tag">Christmas &amp; end-of-year parties 2026 · Valencia, Madrid, Barcelona, Murcia &amp; Santiago</span>
+             Revert it (EN here + ES in i18n-corporate.js) to a plain "Hosted in <cities>" tag after mid-December. -->
+        <span class="tag tag--accent tag--shadow cx-hero__tag" data-i18n="c.hero.tag">Christmas &amp; end-of-year parties 2026 · Valencia, Madrid, Barcelona, Murcia &amp; Santiago</span>
         <h1 class="h-display cx-hero__h1" id="c-hero-h1"><span data-i18n="c.hero.h1a">Team building people </span><span class="accent" data-i18n="c.hero.h1b">actually enjoy.</span></h1>
-        <p class="lead cx-hero__sub" id="c-hero-sub" data-i18n="c.hero.sub">Forget trust falls and forced fun. 90 minutes of team trivia with a live host, before or after the company dinner: at your office, at the dinner's restaurant or at one of our venues. From 10 to 300+ people.</p>
+        <p class="cx-hero__sub" id="c-hero-sub" data-i18n="c.hero.sub">Team trivia tailored to your group: we bring the host, the questions, the tech and the fun; you bring the people.</p>
         <ul class="cx-hero__facts">
-          <!-- The hook is the lowest tier (up to 25 people at a partner venue), so its condition sits right under it. -->
-          <li class="cx-hero__pricefact"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-coin"/></svg><span><strong class="cx-hero__price" data-i18n="c.hero.price">From €150 +&nbsp;VAT per event (€181.50 incl. VAT)</strong><span class="cx-hero__cond"><span data-i18n="c.hero.pricecond">Up to 25 people, at one of our venues.</span> <a href="#price" data-i18n="c.hero.pricelink">See all prices</a></span></span></li>
-          <!-- SEASONAL (Sep-Dec 2026): drop c.hero.hold (EN here + ES) after mid-December. -->
-          <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span class="cx-hero__hold" data-i18n="c.hero.hold">We hold your date for up to 7 days, no commitment</span></li>
+          <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-clock"/></svg><span data-i18n="c.hero.f1">90 minutes</span></li>
+          <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-team"/></svg><span data-i18n="c.hero.f2">10 to 300+ people</span></li>
+          <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-chat"/></svg><span data-i18n="c.hero.f3">English or Spanish</span></li>
+          <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-sliders"/></svg><span data-i18n="c.hero.f4">Tailored to your team</span></li>
         </ul>
-        <div class="row cx-hero__ctas">
-          <a class="btn btn--cta btn--lg" href="#quote"><span id="c-hero-cta" data-i18n="c.cta.quote">Get a quote</span> <span class="arr">&rarr;</span></a>
-          <a class="btn btn--lg" href="#how" data-i18n="c.cta.how">See how it works</a>
+        <div class="cx-hero__ctas">
+          <a class="btn btn--cta btn--lg" href="#quote"><span id="c-hero-cta" data-i18n="c.cta.tell">Tell us about your event</span> <span class="arr">&rarr;</span></a>
+          <p class="cx-hero__call"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-phone"/></svg><span data-i18n="c.hero.call">We call you back, usually the same working day.</span></p>
         </div>
-      </div>
-
-      <!-- A real night (the photo used to sit washed out behind the text) + what we bring, as a sticker. -->
-      <div class="cx-hero__vis reveal">
-        <figure class="cx-photo">
-          <img src="/shared/header-bg.jpg" width="1024" height="768" fetchpriority="high" decoding="async" data-i18n-alt="c.hero.photoalt" alt="A packed room playing trivia, with the quiz up on the big screen">
-        </figure>
-        <span class="tag tag--shadow cx-photo__tag" data-i18n="c.hero.phototag">A real quiz night</span>
-        <div class="card card--sm cx-bring">
-          <p class="cx-bring__h" data-i18n="c.hero.bringh">We bring</p>
-          <ul>
-            <li><span class="cx-bring__i" style="background:var(--yellow)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-mic"/></svg></span><span data-i18n="c.hero.bring1">A live host</span></li>
-            <li><span class="cx-bring__i" style="background:var(--orange-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-image"/></svg></span><span data-i18n="c.hero.bring2">Picture and music rounds</span></li>
-            <li><span class="cx-bring__i" style="background:var(--green-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-speaker"/></svg></span><span data-i18n="c.hero.bring3">Sound, screen and scoring</span></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- stat strip -->
-    <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
-      <div class="card card--flat reveal statbar4" style="background:var(--ink);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(4,1fr)">
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff" data-count="5" data-count-es="4">5</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.cities">host cities</div></div>
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--accent)">10–300+</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.players">people</div></div>
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="7510">7,510</span>+</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.players2">registered players</div></div>
-        <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--yellow)"><span data-count="78">78</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="c.stat.repeat">of players come back</div></div>
+        <!-- The hook is the lowest tier (up to 25 people at a partner venue), so its condition sits right beside it. -->
+        <p class="cx-hero__price"><strong data-i18n="c.hero.price">From €150 + VAT</strong> <span data-i18n="c.hero.priceiva">(€181.50 incl. VAT)</span><br><span data-i18n="c.hero.pricecond">Up to 25 people, at one of our venues.</span> <a href="#price" data-i18n="c.hero.pricelink">See prices</a></p>
       </div>
     </div>
   </section>
 
-  <!-- ============ USE CASES ============ -->
-  <!-- Three occasions, not a sequence: each row leads with an icon sticker (sprite at the top of
-       <body>), never a number. What's included lives once, in #features. -->
-  <section id="usecases" class="section">
+  <!-- ============ 2. PROOF ============ -->
+  <!-- Real numbers only (no testimonials, logos or client names: none with permission yet).
+       Locations: QED 7, TDT 6 (no Barcelona), via data-count-es. Photos: TR15 (Tony Roma's,
+       Nov 2023) and El Garaje (Valencia, Jun 2023), cropped clear of the QED watermark. -->
+  <section id="proof" class="section section--tight">
     <div class="wrap">
-      <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="c.uc.eyebrow">What it's for</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="c.uc.h2">Three nights your team won't fake-laugh through.</h2>
+      <div class="cx-hd reveal">
+        <span class="eyebrow" data-i18n="c.proof.eyebrow">In numbers</span>
+        <h2 class="h2" data-i18n="c.proof.h2">People come back. That says something.</h2>
       </div>
-      <ul class="cases cx-cases reveal" style="margin-top:30px">
-        <li>
-          <span class="cx-ico rot-1" style="background:var(--orange-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span>
-          <h3 class="h3" data-i18n="c.uc.1t">Team building</h3>
-          <p class="muted" data-i18n="c.uc.1d">Teams mixed across departments. The quiet new hire turns out to be a ringer, and people who never share a meeting end up arguing over the same answer.</p>
-        </li>
-        <li>
-          <span class="cx-ico rot-2" style="background:var(--yellow)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-offsite"/></svg></span>
-          <h3 class="h3" data-i18n="c.uc.2t">Your offsite's big finish</h3>
-          <p class="muted" data-i18n="c.uc.2d">You plan the offsite; we bring the quiz that saves it from being all slides. We slot in after the workshops and send everyone to dinner plotting a rematch.</p>
-        </li>
-        <li>
-          <span class="cx-ico rot-1" style="background:var(--green-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cheers"/></svg></span>
-          <h3 class="h3" data-i18n="c.uc.3t">Client entertainment</h3>
-          <p class="muted" data-i18n="c.uc.3d">A night your clients remember, and one that makes your brand look fun and switched-on. Zero awkward small talk over warm wine.</p>
-        </li>
+      <div class="cx-kpis statbar3 reveal">
+        <div><div class="kpi" style="color:#fff"><span data-count="7510">7,510</span>+</div><div class="kpi-lab" data-i18n="c.stat.players">registered players</div></div>
+        <div><div class="kpi" style="color:var(--yellow)"><span data-count="78">78</span>%</div><div class="kpi-lab" data-i18n="c.stat.repeat">of players come back</div></div>
+        <div><div class="kpi" style="color:#fff" data-count="7" data-count-es="6">7</div><div class="kpi-lab" data-i18n="c.stat.places">places with a weekly quiz</div></div>
+      </div>
+      <div class="cx-strip reveal">
+        <figure>
+          <span class="tag tag--shadow cx-strip__tag" data-i18n="c.proof.tag">A real quiz night</span>
+          <picture><source type="image/webp" srcset="/shared/corp-photo-teams-720.webp"><img src="/shared/corp-photo-teams-720.jpg" width="720" height="540" loading="lazy" decoding="async" data-i18n-alt="c.proof.alt1" alt="Teams at their tables during a quiz night, answer sheets out"></picture>
+        </figure>
+        <figure>
+          <picture><source type="image/webp" srcset="/shared/corp-photo-smiles-720.webp"><img src="/shared/corp-photo-smiles-720.jpg" width="720" height="540" loading="lazy" decoding="async" data-i18n-alt="c.proof.alt2" alt="Two friends smiling at their table during the quiz"></picture>
+        </figure>
+        <figure>
+          <picture><source type="image/webp" srcset="/shared/corp-photo-crowd-720.webp"><img src="/shared/corp-photo-crowd-720.jpg" width="720" height="540" loading="lazy" decoding="async" data-i18n-alt="c.proof.alt3" alt="A packed room facing the quiz screen"></picture>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. WHAT IT IS ============ -->
+  <section id="what" class="section section--tight">
+    <div class="wrap cx-what">
+      <div class="cx-hd reveal">
+        <span class="eyebrow" data-i18n="c.what.eyebrow">What it is</span>
+        <h2 class="h2" data-i18n="c.what.h2">Not your usual pub quiz.</h2>
+        <p class="lead" data-i18n="c.what.lead">A game show for your team, with a host who runs the room. 90 minutes that fly by.</p>
+      </div>
+      <div class="cx-what__cards reveal">
+        <div class="card card--sm cx-what__card">
+          <span class="cx-tile" style="background:var(--orange-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span>
+          <div><h3 class="h3" data-i18n="c.what.1t">In teams</h3><p data-i18n="c.what.1d">Every table is a team. You play by talking, arguing and scribbling answers.</p></div>
+        </div>
+        <div class="card card--sm cx-what__card">
+          <span class="cx-tile" style="background:var(--yellow)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-music"/></svg></span>
+          <div><h3 class="h3" data-i18n="c.what.2t">Not exam questions</h3><p data-i18n="c.what.2d">Music, pictures, maps, emojis and flags, plus a few surprises along the way.</p></div>
+        </div>
+        <div class="card card--sm cx-what__card">
+          <span class="cx-tile" style="background:var(--green-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-score"/></svg></span>
+          <div><h3 class="h3" data-i18n="c.what.3t">A live leaderboard</h3><p data-i18n="c.what.3d">The scores go up on screen after every round. The rivalry starts in round two.</p></div>
+        </div>
+        <div class="card card--sm cx-what__card">
+          <span class="cx-tile" style="background:var(--red-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-trophy"/></svg></span>
+          <div><h3 class="h3" data-i18n="c.what.4t">One team wins</h3><p data-i18n="c.what.4d">And at least one answer gets argued about until dessert.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. WHY COMPANIES BOOK IT ============ -->
+  <section id="why" class="section section--tight">
+    <div class="wrap">
+      <div class="card card--ink cx-why reveal">
+        <span class="eyebrow" data-i18n="c.why.eyebrow">Why companies book it</span>
+        <h2 class="h2" data-i18n="c.why.h2">Everyone plays. Really.</h2>
+        <div class="cx-why__grid">
+          <div class="cx-why__item">
+            <span class="cx-why__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cheers"/></svg></span>
+            <h3 class="h3" data-i18n="c.why.1t">No need to be sporty</h3>
+            <p data-i18n="c.why.1d">No running, no climbing, no trust falls. You play sitting down, drink in hand.</p>
+          </div>
+          <div class="cx-why__item">
+            <span class="cx-why__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-micoff"/></svg></span>
+            <h3 class="h3" data-i18n="c.why.2t">Or outgoing, or a singer</h3>
+            <p data-i18n="c.why.2d">Nobody has to get up on stage. The quiet ones play from the table (and often get it right).</p>
+          </div>
+          <div class="cx-why__item">
+            <span class="cx-why__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-bulb"/></svg></span>
+            <h3 class="h3" data-i18n="c.why.3t">Everyone knows something</h3>
+            <p data-i18n="c.why.3d">Finance nails the music round and the intern knows every flag. That's why the teams mix so well.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. WE HANDLE EVERYTHING ============ -->
+  <!-- Included and extras, said once each (founder pricing, 4 Oct 2026). Extras carry no prices:
+       they are quoted on the call. We run the trivia only; the client organises the dinner or the
+       offsite, and we recommend a venue for free (ours are €50 cheaper). -->
+  <section id="included" class="section section--tight">
+    <div class="wrap">
+      <div class="cx-hd reveal">
+        <span class="eyebrow" data-i18n="c.inc.eyebrow">What's included</span>
+        <h2 class="h2" data-i18n="c.inc.h2">You bring the team. We do the rest.</h2>
+      </div>
+      <div class="cx-inc reveal">
+        <div class="card cx-inc__main">
+          <p class="cx-label" data-i18n="c.inc.inch">Always included</p>
+          <ul class="cx-list cx-list--inc">
+            <li data-i18n="c.inc.1">A live host</li>
+            <li data-i18n="c.inc.2">About 90 minutes of trivia, with picture, music, map, emoji and flag rounds</li>
+            <li data-i18n="c.inc.3">Live scoring on screen</li>
+            <li data-i18n="c.inc.4">Our own sound and screen, set up for you</li>
+            <li data-i18n="c.inc.5">A tech operator for big groups</li>
+          </ul>
+        </div>
+        <div class="cx-inc__ex">
+          <p class="cx-label"><span data-i18n="c.inc.exh">If you want them (extra)</span><small data-i18n="c.inc.exsub">We quote them on the call.</small></p>
+          <ul class="cx-list cx-list--ex">
+            <li data-i18n="c.ex.1">Rounds and a theme about your company</li>
+            <li data-i18n="c.ex.6">Branded slides with your logo</li>
+            <li data-i18n="c.ex.2">Prizes for the winning team</li>
+            <li data-i18n="c.ex.3">Custom trophies</li>
+            <li data-i18n="c.ex.4">Live rounds: card towers, modelling, karaoke</li>
+            <li data-i18n="c.ex.5">A photographer</li>
+          </ul>
+        </div>
+        <div class="card card--sm cx-inc__venue">
+          <span class="cx-tile" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-store"/></svg></span>
+          <p><strong data-i18n="c.inc.venuet">No venue yet? We'll recommend one, free.</strong> <span data-i18n="c.inc.venued">At one of our venues it's also €50 cheaper. Our part is the trivia: the dinner or the offsite is yours to organise.</span> <a href="#venues" data-i18n="c.inc.venuelink">See our venues</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. CUSTOMISED (extra) ============ -->
+  <!-- Custom rounds are an extra (quoted on the call), so every example carries the flag. The
+       slide is one of our real question slides with the logo slot filled; decorative
+       (aria-hidden), the cards say it. -->
+  <section id="custom" class="section section--tight">
+    <div class="wrap">
+      <div class="cx-hd reveal">
+        <span class="eyebrow" data-i18n="c.cust.eyebrow">Make it yours</span>
+        <h2 class="h2" data-i18n="c.cust.h2">What if the questions were about you?</h2>
+        <p class="lead" data-i18n="c.cust.lead">Rounds written for your company. They're an extra: tell us on the call and we'll quote them.</p>
+      </div>
+      <div class="cx-cust">
+        <div class="cx-cust__vis reveal">
+          <span class="tag tag--shadow cx-cust__tag" data-i18n="c.cust.slidetag">Extra · Your logo on screen</span>
+          <div class="cx-slide" aria-hidden="true">
+            <div class="cx-stage">
+              <span class="cx-stage__brand" data-i18n="c.feat.mock.logo">Your logo</span>
+              <div class="cx-stage__body">
+                <span class="cx-stage__kicker" data-i18n="c.feat.mock.round">R3 · Question 4 of 10</span>
+                <div class="cx-stage__card">
+                  <p class="cx-stage__q" data-i18n="c.feat.mock.q">How many coffees does your office get through a day?</p>
+                  <ol class="cx-stage__opts">
+                    <li><b>A</b><span>12</span></li>
+                    <li><b>B</b><span>48</span></li>
+                    <li><b>C</b><span>112</span></li>
+                    <li><b>D</b><span data-i18n="c.feat.mock.d">Too many</span></li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ul class="cx-rounds reveal">
+          <li class="card card--sm cx-round">
+            <span class="cx-round__top"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-quote"/></svg><span class="cx-flag" data-i18n="c.cust.extra">Extra</span></span>
+            <h3 data-i18n="c.cust.r1t">Who in the office said this?</h3>
+            <p data-i18n="c.cust.r1d">The team's legendary lines. Guess who said them.</p>
+          </li>
+          <li class="card card--sm cx-round">
+            <span class="cx-round__top"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-image"/></svg><span class="cx-flag" data-i18n="c.cust.extra">Extra</span></span>
+            <h3 data-i18n="c.cust.r2t">Guess the baby photo</h3>
+            <p data-i18n="c.cust.r2d">Send us childhood photos and the teams guess who's who.</p>
+          </li>
+          <li class="card card--sm cx-round">
+            <span class="cx-round__top"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-book"/></svg><span class="cx-flag" data-i18n="c.cust.extra">Extra</span></span>
+            <h3 data-i18n="c.cust.r3t">Company history</h3>
+            <p data-i18n="c.cust.r3d">Dates, milestones and stories only the old hands know.</p>
+          </li>
+          <li class="card card--sm cx-round">
+            <span class="cx-round__top"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-brief"/></svg><span class="cx-flag" data-i18n="c.cust.extra">Extra</span></span>
+            <h3 data-i18n="c.cust.r4t">Questions about your industry</h3>
+            <p data-i18n="c.cust.r4d">So the experts can prove they are. Or not.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. HOW IT WORKS ============ -->
+  <section id="how" class="section section--tight">
+    <div class="wrap">
+      <div class="cx-hd reveal">
+        <span class="eyebrow" data-i18n="c.how.eyebrow">How it works</span>
+        <h2 class="h2" data-i18n="c.how.h2">From first message to quiz night, in three steps.</h2>
+      </div>
+      <div class="steps reveal" style="margin-top:34px">
+        <div>
+          <div class="step__n">01</div><div class="step__bar"></div>
+          <h3 class="h3" data-i18n="c.how.1t">Tell us about your event</h3>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.1d">Your name, your phone and the kind of event: 30 seconds. We call you, usually the same working day.</p>
+        </div>
+        <div>
+          <div class="step__n">02</div><div class="step__bar"></div>
+          <h3 class="h3" data-i18n="c.how.2t">We sort it on one call</h3>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.2d">Date, city, headcount and any extras. You get a fixed price, and we hold your date for up to 7 days, no commitment.</p>
+        </div>
+        <div>
+          <div class="step__n">03</div><div class="step__bar"></div>
+          <h3 class="h3" data-i18n="c.how.3t">You turn up and play</h3>
+          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.3d">We set up, host and pack away. All you have to do is turn up ready to win.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8. OCCASIONS ============ -->
+  <section id="occasions" class="section section--tight">
+    <div class="wrap">
+      <div class="cx-hd reveal">
+        <span class="eyebrow" data-i18n="c.uc.eyebrow">Occasions</span>
+        <h2 class="h2" data-i18n="c.uc.h2">Any excuse to get the team together.</h2>
+      </div>
+      <ul class="cx-occ reveal">
+        <li class="cx-chip" style="--tint:var(--red-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-gift"/></svg></span><span data-i18n="c.uc.c1">Christmas dinners</span></li>
+        <li class="cx-chip" style="--tint:var(--orange-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-dinner"/></svg></span><span data-i18n="c.uc.c2">Company lunches</span></li>
+        <li class="cx-chip" style="--tint:var(--yellow-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span><span data-i18n="c.uc.c3">Team building</span></li>
+        <li class="cx-chip" style="--tint:var(--green-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-offsite"/></svg></span><span data-i18n="c.uc.c4">Offsites</span></li>
+        <li class="cx-chip" style="--tint:var(--cream-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cheers"/></svg></span><span data-i18n="c.uc.c5">Client events</span></li>
+        <li class="cx-chip" style="--tint:var(--yellow)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-party"/></svg></span><span data-i18n="c.uc.c6">Company celebrations</span></li>
       </ul>
     </div>
   </section>
 
-  <!-- ============ FORMATS ============ -->
-  <!-- Same quiz, same price: each card says only what differs, the when and the where. What both
-       include is listed once in #features; price, length, size and booking terms once, in the
-       .cx-deal panel below. -->
-  <section id="formats" class="section section--tight">
+  <!-- ============ 9. THE PERSON ORGANISING IT ============ -->
+  <!-- Per person, for 25, VAT included: 242 / 25 = 9.68 (their place), 181.50 / 25 = 7.26 (ours). -->
+  <section id="organiser" class="section section--tight">
     <div class="wrap">
-      <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="c.fmt.eyebrow">Two ways to play</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="c.fmt.h2">A night of its own, or part of the company dinner.</h2>
-        <p class="lead" style="margin-top:12px;text-wrap:pretty" data-i18n="c.fmt.lead">Same quiz, same starting price. Only the when and the where change.</p>
-      </div>
-
-      <div class="formats cx-formats reveal" style="margin-top:30px">
-        <article class="card fmt cx-fmt">
-          <div class="fmt__hd" style="background:var(--accent)">
-            <div class="cx-fmt__name">
-              <span class="cx-fmt__badge" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-ticket"/></svg></span>
-              <h3 data-i18n="c.fmt.full">Full Experience</h3>
-            </div>
-            <span class="tag cx-fmt__tag" style="border-color:#fff" data-i18n="c.fmt.yearround">Year-round</span>
-          </div>
-          <div class="fmt__body">
-            <p class="cx-fmt__pitch" data-i18n="c.fmt.fullpitch">The quiz is the plan.</p>
-            <dl class="cx-spec">
-              <div><dt data-i18n="c.fmt.when">When</dt><dd data-i18n="c.fmt.fullwhen">An afternoon, an evening or straight after a workshop</dd></div>
-              <div><dt data-i18n="c.fmt.where">Where</dt><dd data-i18n="c.fmt.fullwhere">Your office, or one of our venues</dd></div>
-            </dl>
-            <a class="btn btn--cta btn--block" href="#quote"><span data-i18n="c.fmt.fullcta">Plan our quiz</span> <span class="arr">&rarr;</span></a>
-          </div>
-        </article>
-
-        <article class="card fmt cx-fmt">
-          <div class="fmt__hd" style="background:var(--ink)">
-            <div class="cx-fmt__name">
-              <span class="cx-fmt__badge" style="background:var(--yellow)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-dinner"/></svg></span>
-              <h3 data-i18n="c.fmt.dinner">Trivia at your company dinner</h3>
-            </div>
-            <!-- SEASONAL: "Christmas 2026" tag (c.fmt.season). Drop or reword it after mid-December. -->
-            <span class="tag cx-fmt__tag" style="background:var(--yellow);border-color:var(--yellow)" data-i18n="c.fmt.season">Christmas 2026</span>
-          </div>
-          <div class="fmt__body">
-            <p class="cx-fmt__pitch" data-i18n="c.fmt.dinnerpitch">The quiz is the best part of the dinner.</p>
-            <dl class="cx-spec">
-              <div><dt data-i18n="c.fmt.when">When</dt><dd data-i18n="c.fmt.dinnerwhen">Right before or after the meal</dd></div>
-              <div><dt data-i18n="c.fmt.where">Where</dt><dd data-i18n="c.fmt.dinnerwhere">At the restaurant you've booked (we sort it out with them), or one of our venues</dd></div>
-            </dl>
-            <a class="btn btn--cta btn--block" href="#quote" data-preselect-event="christmas-dinner"><span data-i18n="c.fmt.dinnercta">Add it to our dinner</span> <span class="arr">&rarr;</span></a>
-          </div>
-        </article>
-      </div>
-
-      <!-- Scope, said once: we run the quiz, not the offsite or the dinner around it. Custom rounds
-           are an extra now, so they are not in this list. -->
-      <div class="cx-scope reveal">
-        <span class="cx-scope__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-mic"/></svg></span>
-        <p><strong data-i18n="c.fmt.scopeh">Our part is the quiz.</strong> <span data-i18n="c.fmt.scoped">Host, questions, scoring, sound and screen. The dinner, catering, travel and the rest of the offsite are yours to organise. Need somewhere to play? We'll recommend one, ideally one of our venues: it's cheaper and they're already set up for the quiz.</span></p>
+      <div class="card cx-org reveal">
+        <div>
+          <span class="eyebrow" data-i18n="c.org.eyebrow">For whoever's organising</span>
+          <h2 class="h2" data-i18n="c.org.h2">Got stuck organising the dinner?</h2>
+          <p class="cx-org__lead" data-i18n="c.org.lead">We make it easy for you.</p>
+          <ul class="ticks">
+            <li data-i18n="c.org.1">You don't need to be the company: you can get in touch yourself.</li>
+            <li data-i18n="c.org.2">One payment, by card link or bank transfer. Split it however you like.</li>
+            <li data-i18n="c.org.3">Ask even if the date is close.</li>
+            <li data-i18n="c.org.4">You can change the headcount until 3 working days before.</li>
+          </ul>
+        </div>
+        <div class="cx-pp">
+          <p class="cx-pp__h" data-i18n="c.org.pph">Per person, for 25, VAT included</p>
+          <div class="cx-pp__row"><span class="cx-pp__v" data-i18n="c.org.pp1v">€9.68</span><span class="cx-pp__l" data-i18n="c.org.pp1l">at your restaurant</span></div>
+          <div class="cx-pp__row cx-pp__row--ours"><span class="cx-pp__v" data-i18n="c.org.pp2v">€7.26</span><span class="cx-pp__l" data-i18n="c.org.pp2l">at one of our venues</span></div>
+          <a class="btn btn--cta btn--block" href="#quote" data-preselect-event="christmas-dinner"><span data-i18n="c.org.cta">Tell us about your dinner</span> <span class="arr">&rarr;</span></a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ PRICE ============ -->
+  <!-- ============ 10. PRICE ============ -->
   <!-- Founder pricing (4 Oct 2026; source: the "Classic" column of the TdT private-events sheet).
-       One price per event by group size (never per person), €50 less at a partner venue because
-       nothing has to be moved, more than 75 people quoted. Only the full hosted format is offered.
-       Extras carry no prices on the page: they are quoted on the call.
-       The 11-12 Dec deposit is said here once, and in the FAQ (payment, changes). -->
+       One price per event by group size, €50 less at a partner venue because nothing has to be
+       moved, more than 75 people quoted. Only the full hosted format is offered. Extras carry no
+       prices on the page: they are quoted on the call. The 11-12 Dec deposit is said here once
+       (and in the FAQ: payment, changes). -->
   <section id="price" class="section section--tight">
     <div class="wrap">
-      <div class="reveal" style="max-width:62ch">
+      <div class="cx-hd reveal">
         <span class="eyebrow" data-i18n="c.price.eyebrow">Price</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="c.price.h2">One fixed price for the whole group.</h2>
-        <p class="lead" style="margin-top:12px;text-wrap:pretty" data-i18n="c.price.lead">One price for the whole group, by size: for 25 people that's €8 + VAT a head, or €6 at one of our venues. The extras are up to you.</p>
+        <h2 class="h2" data-i18n="c.price.h2">One fixed price for the whole group.</h2>
+        <p class="lead" data-i18n="c.price.lead">It goes by group size: for 25 people that's €8 + VAT a head, or €6 at one of our venues.</p>
       </div>
 
       <div class="card cx-price reveal">
         <div class="cx-price__top">
           <div class="cx-price__stub">
-            <p class="cx-price__eyebrow" data-i18n="c.fmt.both">Both formats</p>
+            <p class="cx-price__eyebrow" data-i18n="c.price.stubh">Price per event</p>
             <p class="cx-price__big" data-i18n="c.price.from">From €150</p>
             <p class="cx-price__vat" data-i18n="c.price.vat">+ VAT per event · €181.50 incl. VAT</p>
             <p class="cx-price__cond" data-i18n="c.price.cond">Up to 25 people, at one of our venues</p>
             <p class="cx-price__note"><span data-i18n="c.price.note">You get the fixed price on the call, no surprises.</span></p>
+            <a class="btn btn--cta" href="#quote"><span data-i18n="c.price.cta">Ask for your price</span> <span class="arr">&rarr;</span></a>
           </div>
           <div class="cx-tiers">
             <table>
@@ -616,32 +750,23 @@
         </div>
         <div class="cx-price__band">
           <div>
-            <p class="cx-band__h" data-i18n="c.price.inch">Always included</p>
-            <ul class="cx-band__list cx-band__list--inc">
-              <li data-i18n="c.price.inc1">A live host</li>
-              <li data-i18n="c.price.inc2">The quiz, with picture, music and map rounds</li>
-              <li data-i18n="c.price.inc3">Live scoring on screen</li>
-              <li data-i18n="c.price.inc4">Our sound and screen, set up for you</li>
-              <li data-i18n="c.price.inc5">An operator for big groups</li>
-            </ul>
-          </div>
-          <div>
             <p class="cx-band__h"><span data-i18n="c.price.exh">Extras</span> <span class="cx-band__sub" data-i18n="c.price.exsub">Quoted on the call, only if you want them.</span></p>
             <ul class="cx-band__list cx-band__list--ex">
-              <li data-i18n="c.price.ex1">A theme and rounds about your company</li>
-              <li data-i18n="c.price.ex2">Prizes for the winning team</li>
-              <li data-i18n="c.price.ex3">Custom trophies</li>
-              <li data-i18n="c.price.ex4">Live rounds: card towers, modelling, karaoke</li>
-              <li data-i18n="c.price.ex5">A photographer</li>
+              <li data-i18n="c.ex.1">Rounds and a theme about your company</li>
+              <li data-i18n="c.ex.6">Branded slides with your logo</li>
+              <li data-i18n="c.ex.2">Prizes for the winning team</li>
+              <li data-i18n="c.ex.3">Custom trophies</li>
+              <li data-i18n="c.ex.4">Live rounds: card towers, modelling, karaoke</li>
+              <li data-i18n="c.ex.5">A photographer</li>
             </ul>
           </div>
           <div>
-            <p class="cx-band__h" data-i18n="c.fmt.bookh">How booking works</p>
+            <p class="cx-band__h" data-i18n="c.book.h">How booking works</p>
             <ul class="cx-band__list cx-band__list--book">
-              <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="c.fmt.book1">We hold your date for up to 7 days, no commitment.</span></li>
-              <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-doc"/></svg><span data-i18n="c.fmt.book2">You confirm it by accepting the quote.</span></li>
-              <!-- SEASONAL (Sep-Dec 2026): the 11-12 Dec deposit line (c.fmt.book3a/b, EN here + ES). Drop it after 12 Dec. -->
-              <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-coin"/></svg><span><strong data-i18n="c.fmt.book3a">Friday 11 and Saturday 12 December:</strong> <span data-i18n="c.fmt.book3b">plus a 30% deposit to confirm.</span></span></li>
+              <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="c.book.1">We hold your date for up to 7 days, no commitment.</span></li>
+              <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-doc"/></svg><span data-i18n="c.book.2">You confirm it by accepting the quote, and pay before the event.</span></li>
+              <!-- SEASONAL (Sep-Dec 2026): the 11-12 Dec deposit line (c.book.3a/b, EN here + ES). Drop it after 12 Dec. -->
+              <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-coin"/></svg><span><strong data-i18n="c.book.3a">Friday 11 and Saturday 12 December:</strong> <span data-i18n="c.book.3b">a 30% deposit to confirm.</span></span></li>
             </ul>
           </div>
         </div>
@@ -651,199 +776,40 @@
            checked against tardeodetrivia.com / quizeatdrink.com event listings on 4 Oct 2026.
            A Coruña is not offered for companies yet, so Magpie's Coven is left out; La Canyada
            (one-off nights), Padrón and Sagunto (no events) are not partner venues. Barcelona is
-           QED only (data-lang-hide="es"). Venue names are proper nouns: no i18n keys.
+           QED only (data-lang-hide="es"). Venue and city names are proper nouns: no i18n keys.
+           The asterisk on every city outside Valencia points at c.ven.foot.
            When a weekly venue opens or closes, update this list. -->
-      <div class="card cx-venues reveal" id="our-venues">
+      <div class="card cx-venues reveal" id="venues">
         <div class="cx-venues__intro">
           <span class="eyebrow" data-i18n="c.ven.eyebrow">Our venues</span>
           <h3 class="cx-venues__t" data-i18n="c.ven.t">Play at one of our venues and pay €50 less.</h3>
-          <p class="cx-venues__p" data-i18n="c.ven.p">They're the bars where we run weekly quiz nights (in Spanish or English), plus OlHops in Valencia. They're already set up for the quiz, so there's no kit to move and we take €50 off any group of up to 75. We'll tell you which one fits your group and date; food and drink you sort directly with the bar.</p>
+          <p class="cx-venues__p" data-i18n="c.ven.p">They're the bars where we run weekly quiz nights, plus OlHops in Valencia. They're already set up for the quiz, so there's no kit to move and we take €50 off any group of up to 75. We'll tell you which one fits your group and date; food and drink you sort directly with the bar.</p>
           <span class="stamp cx-venues__stamp" aria-hidden="true"><b data-i18n="c.ven.save">−€50</b><span data-i18n="c.ven.savesub">per event</span></span>
         </div>
-        <ul class="cx-vlist">
-          <li>
-            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Valencia</span>
-            <ul class="cx-vchips"><li class="cx-vchip">Casapueblo Brewhouse</li><li class="cx-vchip">Chester &amp; Co.</li><li class="cx-vchip">Cheeck's n' Beer</li><li class="cx-vchip">OlHops</li></ul>
-          </li>
-          <li>
-            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Madrid</span>
-            <ul class="cx-vchips"><li class="cx-vchip">El Hachazo (Atocha)</li></ul>
-          </li>
-          <li data-lang-hide="es">
-            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Barcelona</span>
-            <ul class="cx-vchips"><li class="cx-vchip">Pasa Tapas</li></ul>
-          </li>
-          <li>
-            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Murcia</span>
-            <ul class="cx-vchips"><li class="cx-vchip">El Hachazo</li></ul>
-          </li>
-          <li>
-            <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Santiago de Compostela</span>
-            <ul class="cx-vchips"><li class="cx-vchip">La Cervecería Internacional</li></ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ HOW IT WORKS ============ -->
-  <section id="how" class="section">
-    <div class="wrap">
-      <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="c.how.eyebrow">How it works</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="c.how.h2">Booked in a day. Sorted in three steps.</h2>
-      </div>
-      <div class="steps reveal" style="margin-top:34px">
         <div>
-          <div class="step__n">01</div><div class="step__bar"></div>
-          <h3 class="h3" data-i18n="c.how.1t">Leave your number</h3>
-          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.1d">Name, phone and email: 30 seconds. We call you, you tell us headcount, date and city, and we send one fixed price.</p>
-        </div>
-        <div>
-          <div class="step__n">02</div><div class="step__bar"></div>
-          <h3 class="h3" data-i18n="c.how.2t">We build your quiz</h3>
-          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.2d">On the call we choose the theme and the rounds with you, plus any extras you want. Then we build the slides.</p>
-        </div>
-        <div>
-          <div class="step__n">03</div><div class="step__bar"></div>
-          <h3 class="h3" data-i18n="c.how.3t">Game on</h3>
-          <p class="muted" style="margin-top:8px;line-height:1.55" data-i18n="c.how.3d">We run it from start to finish. You get the laughs, the banter and a winning team.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ CUSTOMIZE (make it yours) ============ -->
-  <!-- One card, four rows: what can change on the left, the options as chips on the right. The
-       options are a pick-list, not a sequence, so no numbers or courses. Each row is flagged
-       Included (standard themes, standard round types) or Extra (live rounds, prizes): founder
-       pricing, 4 Oct 2026. -->
-  <section id="customize" class="section section--tight">
-    <div class="wrap">
-      <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="c.cust.eyebrow">Make it yours</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="c.cust.h2">Every part of the night can flex.</h2>
-        <p class="lead" style="margin-top:12px;text-wrap:pretty" data-i18n="c.cust.lead">Themes and round types are included. Anything marked Extra, we quote on the call.</p>
-      </div>
-      <div class="card cx-opts reveal">
-        <div class="cx-opt cx-opt--y">
-          <div class="cx-opt__hd">
-            <span class="cx-tile" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-palette"/></svg></span>
-            <div>
-              <h3 class="cx-opt__t"><span class="cx-flag cx-flag--inc" data-i18n="c.cust.inc">Included</span> <span data-i18n="c.cust.themes.t">Pick a theme</span></h3>
-              <p class="cx-opt__d" data-i18n="c.cust.themes.d">Choose the tone of the night from our themes.</p>
-            </div>
-          </div>
-          <ul class="cx-chips">
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-book"/></svg></span><span data-i18n="c.cust.themes.tag1">Educational</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-party"/></svg></span><span data-i18n="c.cust.themes.tag2">Party</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-brief"/></svg></span><span data-i18n="c.cust.themes.tag3">Corporate-style</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-laugh"/></svg></span><span data-i18n="c.cust.themes.tag4">Pure fun</span></li>
+          <ul class="cx-vlist">
+            <li>
+              <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Valencia</span>
+              <ul class="cx-vchips"><li class="cx-vchip">Casapueblo Brewhouse</li><li class="cx-vchip">Chester &amp; Co.</li><li class="cx-vchip">Cheeck's n' Beer</li><li class="cx-vchip">OlHops</li></ul>
+            </li>
+            <li>
+              <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Madrid*</span>
+              <ul class="cx-vchips"><li class="cx-vchip">El Hachazo (Atocha)</li></ul>
+            </li>
+            <li data-lang-hide="es">
+              <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Barcelona*</span>
+              <ul class="cx-vchips"><li class="cx-vchip">Pasa Tapas</li></ul>
+            </li>
+            <li>
+              <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Murcia*</span>
+              <ul class="cx-vchips"><li class="cx-vchip">El Hachazo</li></ul>
+            </li>
+            <li>
+              <span class="cx-vlist__city"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-pin"/></svg>Santiago de Compostela*</span>
+              <ul class="cx-vchips"><li class="cx-vchip">La Cervecería Internacional</li></ul>
+            </li>
           </ul>
-        </div>
-        <div class="cx-opt cx-opt--o">
-          <div class="cx-opt__hd">
-            <span class="cx-tile" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-modes"/></svg></span>
-            <div>
-              <h3 class="cx-opt__t"><span class="cx-flag cx-flag--inc" data-i18n="c.cust.inc">Included</span> <span data-i18n="c.cust.rounds.t">More than multiple choice</span></h3>
-              <p class="cx-opt__d" data-i18n="c.cust.rounds.d">Mix in whichever round formats suit the room.</p>
-            </div>
-          </div>
-          <ul class="cx-chips">
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-image"/></svg></span><span data-i18n="c.cust.rounds.tag1">Pictures</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-music"/></svg></span><span data-i18n="c.cust.rounds.tag2">Music</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-map"/></svg></span><span data-i18n="c.cust.rounds.tag3">Maps</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-wink"/></svg></span><span data-i18n="c.cust.rounds.tag4">Emojis</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-flag"/></svg></span><span data-i18n="c.cust.rounds.tag5">Flags</span></li>
-          </ul>
-        </div>
-        <div class="cx-opt cx-opt--g">
-          <div class="cx-opt__hd">
-            <span class="cx-tile" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-bolt"/></svg></span>
-            <div>
-              <h3 class="cx-opt__t"><span class="cx-flag cx-flag--ex" data-i18n="c.cust.extra">Extra</span> <span data-i18n="c.cust.active.t">Get the room on its feet</span></h3>
-              <p class="cx-opt__d" data-i18n="c.cust.active.d">Add a live round alongside the quiz.</p>
-            </div>
-          </div>
-          <ul class="cx-chips">
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cards"/></svg></span><span data-i18n="c.cust.active.tag1">Card-tower building</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-shapes"/></svg></span><span data-i18n="c.cust.active.tag2">Modelling</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-mic"/></svg></span><span data-i18n="c.cust.active.tag3">Karaoke</span></li>
-          </ul>
-        </div>
-        <div class="cx-opt cx-opt--r">
-          <div class="cx-opt__hd">
-            <span class="cx-tile" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-ribbon"/></svg></span>
-            <div>
-              <h3 class="cx-opt__t"><span class="cx-flag cx-flag--ex" data-i18n="c.cust.extra">Extra</span> <span data-i18n="c.cust.prizes.t">Prizes worth winning</span></h3>
-              <p class="cx-opt__d" data-i18n="c.cust.prizes.d">Give the winning team something to actually keep.</p>
-            </div>
-          </div>
-          <ul class="cx-chips">
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-trophy"/></svg></span><span data-i18n="c.cust.prizes.tag1">Custom trophies</span></li>
-            <li class="cx-chip"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-gift"/></svg></span><span data-i18n="c.cust.prizes.tag2">Experience prizes</span></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ FEATURES (inside the quiz) ============
-       The big card is the custom-rounds extra (personalización), flagged as such; the three small
-       cards (host, scoring, sound and screen) are in every event. -->
-  <section id="features" class="section section--tight">
-    <div class="wrap">
-      <div class="reveal" style="max-width:60ch">
-        <span class="eyebrow" data-i18n="c.feat.eyebrow">Inside the quiz</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="c.feat.h2">More than a list of questions.</h2>
-      </div>
-      <div class="cx-feat reveal">
-        <div class="card pad cx-feat__big">
-          <div>
-            <span class="tag" style="background:var(--yellow);border-color:var(--ink);color:var(--ink)" data-i18n="c.feat.f0tag">Extra · Custom packs</span>
-            <h3 class="h3 cx-feat__bigt" data-i18n="c.feat.f0t">Rounds written about you</h3>
-            <p class="cx-feat__bigd" data-i18n="c.feat.f0d">Your team, your industry, your in-jokes, with your logo and colours on every screen. Add it as an extra and we write the rounds for you.</p>
-          </div>
-          <!-- One of our real question slides (the projector's house look), with a question about
-               "your" office and the logo slot filled. Decorative (aria-hidden): the card's text says it. -->
-          <div class="cx-slide" aria-hidden="true">
-            <div class="cx-stage">
-              <span class="cx-stage__brand" data-i18n="c.feat.mock.logo">Your logo</span>
-              <div class="cx-stage__body">
-                <span class="cx-stage__kicker" data-i18n="c.feat.mock.round">R3 · Question 4 of 10</span>
-                <div class="cx-stage__card">
-                  <p class="cx-stage__q" data-i18n="c.feat.mock.q">How many coffees does your office get through a day?</p>
-                  <ol class="cx-stage__opts">
-                    <li><b>A</b><span>12</span></li>
-                    <li><b>B</b><span>48</span></li>
-                    <li><b>C</b><span>112</span></li>
-                    <li><b>D</b><span data-i18n="c.feat.mock.d">Too many</span></li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card pad lift cx-mini">
-          <span class="cx-tile" style="background:var(--yellow)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-mic"/></svg></span>
-          <div>
-            <h3 class="h3" data-i18n="c.feat.f2t">Professional hosting</h3>
-            <p class="muted" data-i18n="c.feat.f2d">A real host who reads the room and keeps it moving, whichever format you pick.</p>
-          </div>
-        </div>
-        <div class="card pad lift cx-mini" style="background:var(--cream-soft)">
-          <span class="cx-tile" style="background:var(--green-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-score"/></svg></span>
-          <div>
-            <h3 class="h3" data-i18n="c.feat.f1t">Digital platform</h3>
-            <p class="muted" data-i18n="c.feat.f1d">Live scoring, instant leaderboards and automatic tie-breakers. No spreadsheets, no arguments.</p>
-          </div>
-        </div>
-        <div class="card pad lift cx-mini" style="background:var(--yellow-soft)">
-          <span class="cx-tile" style="background:var(--orange-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-speaker"/></svg></span>
-          <div>
-            <h3 class="h3" data-i18n="c.feat.avt">Sound, screen and setup</h3>
-            <p class="muted" data-i18n="c.feat.avd">We bring the sound, a screen or projector, and set it all up. For big groups, an operator runs the tech.</p>
-          </div>
+          <p class="cx-venues__foot" data-i18n="c.ven.foot">*Outside Valencia we work with local hosts and venues; some services (such as live rounds, the photographer or our own sound kit) depend on availability. We'll confirm it on the call.</p>
         </div>
       </div>
     </div>
@@ -917,17 +883,32 @@
     </div>
   </section>
 
-  <!-- ============ QUOTE FORM ============ -->
+  <!-- ============ 12. WE KNOW TRIVIA ============ -->
+  <!-- Two lines instead of the shared About section: this page carries no About partial. -->
+  <section class="section section--tight" style="padding-top:0">
+    <div class="wrap">
+      <div class="cx-know reveal">
+        <span class="cx-know__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-mic"/></svg></span>
+        <p><strong data-i18n="c.know.t">We know trivia.</strong> <span data-i18n="c.know.d">We run open quiz nights every week and write our own questions: what hooks a bar full of strangers will hook your team too.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13. FINAL CTA + QUOTE FORM ============ -->
   <!-- Contact-first (data-contact-first, shared/qed.js): step 1 (event type, first name, phone,
-       email) is the whole lead, and step 2 only enriches it. Celebrations keeps the classic flow. -->
+       email) is the whole lead, and step 2 only enriches it. Celebrations keeps the classic flow.
+       The form's markup, names, ids and data- hooks are unchanged; only the intro panel and the
+       step-1 button's wording (c.form.callme) are new. -->
   <section id="quote" class="section section--tight">
     <div class="wrap">
       <div class="card reveal split split--flush" style="--split:0.85fr 1.15fr;overflow:hidden">
         <div class="pad quote-intro" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
-          <span class="eyebrow quote-intro__more" style="color:rgba(255,255,255,.6)" data-i18n="c.cta.quote">Get a quote</span>
-          <h2 class="h2" style="color:#fff" data-i18n="c.form.h2">Leave your number. We'll call you.</h2>
-          <!-- SEASONAL: drop the "Booking for December?" opener from c.form.sub (EN + ES) after mid-December. -->
-          <p class="quote-intro__more" style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="c.form.sub">Booking for December? We'll hold your date for up to 7 days, no commitment, while you get sign-off. A real person calls you, usually the same working day.</p>
+          <span class="eyebrow quote-intro__more" style="color:rgba(255,255,255,.7)" data-i18n="c.cta.tell">Tell us about your event</span>
+          <h2 class="h2" style="color:#fff" data-i18n="c.form.h2">Shall we give your team something to talk about?</h2>
+          <p class="cx-quote__sub" data-i18n="c.form.sub">Tell us the date, the city and how many of you there are. We'll take care of the rest.</p>
+          <p class="cx-quote__call quote-intro__more"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-phone"/></svg><span data-i18n="c.form.call">We call you, usually the same working day (Mon to Fri, 10:00 to 19:00 Spanish time).</span></p>
+          <!-- SEASONAL: drop c.form.hold (EN + ES) after mid-December. -->
+          <p class="cx-quote__call quote-intro__more"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="c.form.hold">Booking for December? We'll hold your date for up to 7 days, no commitment, while you get sign-off.</span></p>
         </div>
         <div class="pad">
           <form id="event-form" name="corporate-event" novalidate data-action="/.netlify/functions/book-event" data-contact-first>
@@ -976,7 +957,7 @@
                     <input class="input" id="c-email" type="email" name="email" autocomplete="email" inputmode="email" enterkeyhint="send" autocapitalize="none" spellcheck="false" data-i18n-ph="c.ph.email" placeholder="name@company.com" required>
                   </div>
                   <div class="full">
-                    <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="c.form.callme">Call me back</span> <span class="arr">&rarr;</span></button>
+                    <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="c.form.callme">Tell us about your event</span> <span class="arr">&rarr;</span></button>
                     <p class="form__privacy"><span data-i18n="c.form.privacy1">We use your details only to call or email you about this request.</span> <a href="/privacy/" data-i18n="form.privacylink">Privacy policy</a></p>
                   </div>
                 </div>
@@ -1050,23 +1031,6 @@
           </form>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- build:about -->
-
-  <!-- ============ OTHER SERVICES: the franchise (cross-sell) ============ -->
-  <!-- Franchise only: white-label gets no promotion on the focus pages (footer link only). -->
-  <section class="section section--tight">
-    <div class="wrap">
-      <a href="/franchise/" data-i18n-href="foot.partnerhref" class="lift card reveal cx-xsell">
-        <span class="cx-xsell__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-store"/></svg></span>
-        <div class="cx-xsell__txt">
-          <p class="cx-xsell__eyebrow"><span data-i18n="os.eyebrow">Other services</span> · <span data-i18n="os.fran.t">Franchise</span></p>
-          <h2 class="cx-xsell__t" data-i18n="os.fran.d">Run recurring trivia and build a business that grows.</h2>
-        </div>
-        <span class="tag tag--shadow cx-xsell__go"><span data-i18n="os.fran.link">See franchising</span> <span class="arr" aria-hidden="true">&rarr;</span></span>
-      </a>
     </div>
   </section>
 
@@ -1176,14 +1140,14 @@
     swap(parts[1], "c.hero.h1cenab", "with a quiz people remember.");
     h1.style.maxWidth = "17ch"; // longer line than the default H1; keeps it to ~4 lines
   }
-  swap(document.getElementById("c-hero-sub"), "c.hero.subcena", "Before or after the company dinner or lunch: 90 minutes of team trivia with a live host. We come to your restaurant or your office, or you play at one of our venues. For 10 to 300+ people.");
+  swap(document.getElementById("c-hero-sub"), "c.hero.subcena", "Team trivia before or after the company dinner or lunch: we bring the host, the questions, the tech and the fun; you bring the people.");
   swap(document.getElementById("c-hero-cta"), "c.cta.holdcena", "Hold your date");
   preselect("christmas-dinner");
   document.documentElement.setAttribute("data-variant", "cena");
 })();
 </script>
 <script src="/shared/i18n-common.js?v=20261010"></script>
-<script src="/shared/i18n-corporate.js?v=20261011"></script>
+<script src="/shared/i18n-corporate.js?v=20261012"></script>
 <script src="/shared/i18n.js?v=20261010"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js?v=20261010"></script>

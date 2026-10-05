@@ -78,8 +78,9 @@ If they ever go up, the transparency line under the block needs its effective da
 
 ## Shared About section (single source)
 
-The "About us" section is identical on 4 pages (hub, corporate, celebrations, partners; the
-minimal /venues/ page has none), so it is **not** duplicated. It lives once in
+The "About us" section is identical on 3 pages (hub, celebrations, partners; the minimal
+/venues/ page has none, and /corporate/ carries a two-line "We know trivia" block instead), so
+it is **not** duplicated. It lives once in
 `shared/about.partial.html` and is stamped into each page's `<!-- build:about -->` marker by
 `build.mjs` on every build. Edit the partial once; every page updates. Its copy is still
 translated at runtime via the `about.*` keys in `i18n-common.js`.
