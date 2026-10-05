@@ -220,10 +220,17 @@ export function sendPartialTelegram(text: string): Promise<boolean> {
 
 // Call-by target, Madrid time: two hours after the lead inside working hours (Mon-Fri
 // 10:00-19:00), never later than 19:00; before 10:00 it's 11:00 that day; after 19:00 or at the
-// weekend it's 11:00 the next working day. Public holidays aren't known here. The copy promises
-// "the same working day"; this is only the internal target the alert shows.
+// weekend or on a no-call day it's 11:00 the next working day. The copy promises "the same
+// working day"; this is only the internal target the alert shows.
 const CALL_TZ = "Europe/Madrid";
 const CALL_OPEN = 10 * 60, CALL_CLOSE = 19 * 60, CALL_NEXT_DAY = 11 * 60, CALL_SLA = 120;
+
+// Public holidays in Valencia when nobody calls (Madrid dates, YYYY-MM-DD). Extend every year:
+// national + Comunitat Valenciana days that fall Mon-Fri.
+export const NO_CALL_DAYS = new Set([
+  "2026-10-09", "2026-10-12", "2026-12-08", "2026-12-25",
+  "2027-01-01", "2027-01-06",
+]);
 const DOW_ES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
 const DOW_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -240,13 +247,15 @@ export function callByLine(es: boolean, now = new Date()): string {
   const t = madridNow(now);
   const hhmm = (min: number) => `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
   const hours = es ? "(L-V 10-19 h)" : "(Mon-Fri 10:00-19:00 Spain)";
-  const workday = t.dow >= 1 && t.dow <= 5;
-  if (workday && t.min < CALL_CLOSE) {
+  const iso = (dt: Date) => dt.toISOString().slice(0, 10);
+  const callDay = (dt: Date) => dt.getUTCDay() >= 1 && dt.getUTCDay() <= 5 && !NO_CALL_DAYS.has(iso(dt));
+  const today = new Date(Date.UTC(t.y, t.m - 1, t.d));
+  if (callDay(today) && t.min < CALL_CLOSE) {
     const by = t.min < CALL_OPEN ? CALL_NEXT_DAY : Math.min(t.min + CALL_SLA, CALL_CLOSE);
     return es ? `Llamar antes de las ${hhmm(by)} ${hours}` : `Call by ${hhmm(by)} ${hours}`;
   }
-  const next = new Date(Date.UTC(t.y, t.m - 1, t.d));
-  do next.setUTCDate(next.getUTCDate() + 1); while (next.getUTCDay() === 0 || next.getUTCDay() === 6);
+  const next = new Date(today);
+  do next.setUTCDate(next.getUTCDate() + 1); while (!callDay(next));
   const day = next.getUTCDate(), dow = next.getUTCDay();
   return es
     ? `Llamar antes de las ${hhmm(CALL_NEXT_DAY)} del ${DOW_ES[dow]} ${day} ${hours}`

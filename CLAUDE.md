@@ -206,7 +206,9 @@ type is four one-tap radio cards in `fieldset#c-event`, not a dropdown: a tap mo
 first empty contact field, Enter or Space picks a card, and the error hint sits on the fieldset. `qed.js`
 posts it with `_capture:"contact"`, `_variant` and event id E1, waits up to 2.5 s, then shows
 the optional step 2; `book-event` answers `{ok, value, tgRef}` after a "📞 LLAMAR" Telegram
-alert (call-by time in Europe/Madrid, to `TELEGRAM_CALL_CHAT_ID` if set, mentioning
+alert (call-by time in Europe/Madrid, skipping weekends and the `NO_CALL_DAYS` holidays in
+`forms.ts`, which need extending every year (`node scripts/callby.test.mjs` checks it), to
+`TELEGRAM_CALL_CHAT_ID` if set, mentioning
 `TELEGRAM_CALL_MENTION_ES` / `_EN`), the walkerOS `lead complete` (data `step: 1`), Brevo at
 `LEAD_STAGE=contact` with list, deal and template #7/#8 but no reminder, and the portal with
 `_e1`. The browser Pixel `lead complete` fires on that response under E1; there is no `lead
