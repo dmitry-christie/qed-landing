@@ -24,9 +24,24 @@
      Loaded after qed.css, so an hb- rule wins a same-specificity tie. The doors and celebrations
      row carry no .reveal: qed.css pins `.hero .reveal` to transform:none, which would cancel their
      hover lift (and the hero paints instantly anyway). */
-  /* the venue photo washes out to plain cream by the doors, so they sit on a calm ground */
-  .hb-hero{ padding:clamp(28px,4vw,48px) 0 clamp(36px,4.5vw,56px);
-    background:linear-gradient(180deg, rgba(251,246,234,.86) 0%, rgba(251,246,234,.9) 38%, var(--cream) 72%), url('/shared/header-bg.jpg') center 30%/cover; }
+  /* Full-bleed photo hero: a real quiz night (host on the mic, teams at the tables) under a dark
+     shade, so the white copy clears AA wherever it lands on the photo. The shade is darkest where
+     the text is (top) and the doors sit on it as solid cards. Phones get the 4:5 crop over the top
+     of the hero only, faded into the ink ground, so the photo is never blown up behind the doors. */
+  .hero.hb-hero{ padding:clamp(32px,5vw,64px) 0 clamp(36px,4.5vw,56px); background:#17130F; color:#fff; isolation:isolate; }
+  .ph-media{ position:absolute; inset:0; z-index:-1; pointer-events:none; }
+  .ph-media picture, .ph-media img{ display:block; width:100%; height:100%; }
+  .ph-media img{ object-fit:cover; object-position:center 35%; }
+  .ph-media::after{ content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(23,19,15,.8) 0%, rgba(23,19,15,.66) 32%, rgba(23,19,15,.74) 62%, rgba(23,19,15,.92) 100%); }
+  @media (max-width:640px){
+    .ph-media{ bottom:auto; height:min(100%,150vw); -webkit-mask-image:linear-gradient(#000 58%,transparent); mask-image:linear-gradient(#000 58%,transparent); }
+    .ph-media img{ object-position:center 30%; }
+    .ph-media::after{ background:linear-gradient(180deg, rgba(23,19,15,.66), rgba(23,19,15,.78)); }
+  }
+  .hb-hero .hb-h1{ color:#fff; text-shadow:0 2px 18px rgba(0,0,0,.35); }
+  .hb-hero .hb-h1 .accent{ color:var(--yellow); }
+  .hb-hero .hb-sub{ color:rgba(255,255,255,.92); }
   .hb-grid{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-areas:"intro" "doors" "cele" "stats"; gap:18px; }
   .hb-intro{ grid-area:intro; }
   .hb-doors{ grid-area:doors; display:grid; grid-template-columns:minmax(0,1fr); gap:18px; margin-top:clamp(10px,2vw,22px); }
@@ -56,9 +71,12 @@
   /* --pop: stamp + CTA fill; --pop-ink: the same hue light enough for small text (AA on the door) */
   .hb-door--corp{ background:var(--accent-deep); --dot:rgba(255,255,255,.16); --pop:var(--yellow); --pop-ink:var(--yellow-soft); }
   .hb-door--fran{ background:var(--ink); --dot:rgba(137,175,150,.22); --pop:#89AF96; --pop-ink:#89AF96; }
-  /* an ink shadow melts into the ink door (it read ~7px wider than the red one), so its offset
-     is sage, edged in ink like every other sticker */
-  .hb-door--fran{ box-shadow:6px 6px 0 0 #89AF96, 6px 6px 0 2px var(--ink); }
+  /* On the dark photo an ink offset would vanish, so each door's sticker shadow takes its own pop
+     colour (yellow / sage), edged in ink like every other sticker; the ink door also gets a light
+     rim so its edge reads against the shade. */
+  .hb-door--corp{ box-shadow:6px 6px 0 0 var(--yellow), 6px 6px 0 2px var(--ink); }
+  .hb-door--corp:hover{ box-shadow:9px 9px 0 0 var(--yellow), 9px 9px 0 2px var(--ink); }
+  .hb-door--fran{ border-color:rgba(255,255,255,.82); box-shadow:6px 6px 0 0 #89AF96, 6px 6px 0 2px var(--ink); }
   .hb-door--fran:hover{ box-shadow:9px 9px 0 0 #89AF96, 9px 9px 0 2px var(--ink); }
   .hb-door__kicker{ margin:0; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; line-height:1.5; color:var(--pop-ink); }
   .hb-door__head{ display:flex; justify-content:space-between; align-items:center; gap:14px; margin-top:10px; }
@@ -101,6 +119,8 @@
     transition:transform .15s cubic-bezier(.2,.7,.2,1), box-shadow .15s cubic-bezier(.2,.7,.2,1);
   }
   .hb-cele:hover{ transform:translate(-2px,-2px); box-shadow:5px 5px 0 0 var(--ink); }
+  .hb-hero .hb-cele{ color:var(--ink); box-shadow:3px 3px 0 0 var(--accent); }
+  .hb-hero .hb-cele:hover{ box-shadow:5px 5px 0 0 var(--accent); }
   .hb-cele__ico{ width:48px; height:48px; border-radius:50%; border:2px solid var(--ink); background:var(--yellow-soft); display:flex; align-items:center; justify-content:center; color:var(--ink); }
   .hb-cele__ico .hb-i{ width:24px; height:24px; }
   .hb-cele__t{ margin:0; font-size:19px; font-weight:900; letter-spacing:-0.02em; line-height:1.2; }
@@ -115,11 +135,12 @@
      sticker shadow), so it never reads as one more clickable card next to the doors. Each stat is
      dt (label) then dd (number) for screen readers, drawn number-over-label. --- */
   .hb-stats{ margin:clamp(6px,1.4vw,16px) 0 0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
-    background:var(--ink); color:#fff; border:2px solid var(--ink); border-radius:var(--r-lg); overflow:hidden; }
+    background:rgba(23,19,15,.72); color:#fff; border:2px solid rgba(255,255,255,.18); border-radius:var(--r-lg); overflow:hidden;
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
   .hb-stat{ display:flex; flex-direction:column-reverse; align-items:center; justify-content:flex-end; gap:6px; padding:20px 12px; text-align:center; }
   .hb-stat + .hb-stat{ border-left:1px solid rgba(255,255,255,.16); }
   .hb-stat dd{ margin:0; color:#fff; white-space:nowrap; }
-  .hb-stat dt{ margin:0; color:rgba(255,255,255,.62); }
+  .hb-stat dt{ margin:0; color:rgba(255,255,255,.74); }
   .hb-stat:first-child dd{ color:var(--yellow); }
   .hb-stat:last-child dd{ color:var(--accent); }
   /* phones: two up, the third full width under them (the shared .statbar3 pattern) */
@@ -160,6 +181,14 @@
 
   <!-- ============ HERO: who we are + the routes ============ -->
   <section class="hero hb-hero">
+    <div class="ph-media" aria-hidden="true">
+      <picture>
+        <source media="(max-width:640px)" type="image/webp" srcset="/shared/hero-hub-800.webp">
+        <source media="(max-width:640px)" srcset="/shared/hero-hub-800.jpg">
+        <source type="image/webp" srcset="/shared/hero-hub-1200.webp 1200w, /shared/hero-hub-1920.webp 1920w" sizes="100vw">
+        <img src="/shared/hero-hub-1920.jpg" srcset="/shared/hero-hub-1200.jpg 1200w, /shared/hero-hub-1920.jpg 1920w" sizes="100vw" width="1920" height="1080" alt="" fetchpriority="high" decoding="async">
+      </picture>
+    </div>
     <div class="wrap hb-grid">
 
       <div class="hb-intro reveal">

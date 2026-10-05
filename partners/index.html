@@ -24,13 +24,29 @@
      .btn--soft / .stamp / ledger header to green in one move (verified >=4.5:1 contrast
      both as a button fill with dark text and as text on the dark hero). */
   body{ --yellow:#89AF96; --yellow-soft:#DCEDDF; }
-  /* Real venue photo blended into the dark hero bg under gradients. */
-  .hero--dark{ background:
-      radial-gradient(800px 420px at 82% 0%, rgba(137,175,150,.30), transparent 60%),
-      radial-gradient(620px 380px at 0% 100%, rgba(232,99,26,.14), transparent 55%),
-      linear-gradient(rgba(31,26,20,.68),rgba(31,26,20,.68)),
-      url('/shared/header-bg.jpg') center 40%/cover; color:#fff; }
-  .hero--dark .lead{ color:rgba(255,255,255,.74); }
+  /* Full-bleed photo hero: a packed room facing the quiz screen on a weeknight (the proof a
+     franchisee is buying), under a dark shade so the white copy clears AA wherever it lands. The
+     shade is darkest on the left, where the copy sits, and lifts to the right so the room reads.
+     Phones get the 4:5 crop over the top of the hero, faded into the ink ground under the stats. */
+  .hero--dark{ padding:clamp(52px,8vw,112px) 0 clamp(36px,5vw,60px); background:#17130F; color:#fff; isolation:isolate; }
+  .ph-media{ position:absolute; inset:0; z-index:-1; pointer-events:none; }
+  .ph-media picture, .ph-media img{ display:block; width:100%; height:100%; }
+  .ph-media img{ object-fit:cover; object-position:center 45%; }
+  .ph-media::after{ content:""; position:absolute; inset:0;
+    background:radial-gradient(800px 420px at 82% 0%, rgba(137,175,150,.22), transparent 60%),
+      linear-gradient(90deg, rgba(23,19,15,.9) 0%, rgba(23,19,15,.74) 55%, rgba(23,19,15,.5) 100%),
+      linear-gradient(180deg, rgba(23,19,15,0) 55%, rgba(23,19,15,.88) 100%); }
+  @media (max-width:640px){
+    .ph-media{ bottom:auto; height:min(100%,150vw); -webkit-mask-image:linear-gradient(#000 62%,transparent); mask-image:linear-gradient(#000 62%,transparent); }
+    .ph-media img{ object-position:center 35%; }
+    .ph-media::after{ background:linear-gradient(180deg, rgba(23,19,15,.74), rgba(23,19,15,.84) 60%, rgba(23,19,15,.9)); }
+  }
+  .hero--dark .h-display{ text-shadow:0 2px 18px rgba(0,0,0,.35); }
+  .hero--dark .lead{ color:rgba(255,255,255,.9); }
+  .hero--dark .btn--soft{ box-shadow:4px 4px 0 0 #fff, 4px 4px 0 2px var(--ink); }
+  .hero--dark .btn--soft:hover{ box-shadow:6px 6px 0 0 #fff, 6px 6px 0 2px var(--ink); }
+  .p-stats{ background:rgba(23,19,15,.72) !important; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+  .p-stats .kpi-lab{ color:rgba(255,255,255,.76) !important; }
   .btn--onDark{ background:transparent; color:#fff; border-color:#fff; box-shadow:4px 4px 0 0 rgba(137,175,150,.9); }
   .btn--onDark:hover{ background:rgba(255,255,255,.08); }
   .hero__terms{ margin:16px 0 0; font-family:var(--mono); font-size:12.5px; font-weight:700; letter-spacing:.03em; line-height:1.5; color:rgba(255,255,255,.8); }
@@ -87,6 +103,14 @@
 
   <!-- ============ HERO (dark) ============ -->
   <section class="hero hero--dark">
+    <div class="ph-media" aria-hidden="true">
+      <picture>
+        <source media="(max-width:640px)" type="image/webp" srcset="/shared/hero-partners-800.webp">
+        <source media="(max-width:640px)" srcset="/shared/hero-partners-800.jpg">
+        <source type="image/webp" srcset="/shared/hero-partners-1200.webp 1200w, /shared/hero-partners-1920.webp 1920w" sizes="100vw">
+        <img src="/shared/hero-partners-1920.jpg" srcset="/shared/hero-partners-1200.jpg 1200w, /shared/hero-partners-1920.jpg 1920w" sizes="100vw" width="1920" height="1080" alt="" fetchpriority="high" decoding="async">
+      </picture>
+    </div>
     <div class="wrap">
       <div class="reveal">
         <span class="tag tag--shadow" style="background:var(--yellow);border-color:var(--yellow);color:var(--ink)" data-i18n="p.hero.tag">Leisure&nbsp;franchise · No&nbsp;experience&nbsp;needed</span>
@@ -101,7 +125,7 @@
     </div>
 
     <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
-      <div class="card card--flat reveal statbar3" style="background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.18);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(3,1fr)">
+      <div class="card card--flat reveal statbar3 p-stats" style="background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.18);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(3,1fr)">
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-count="7" data-count-es="6">7</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.locations">locations</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="7510">7,510</span>+</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.players">registered players</div></div>
         <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--orange)"><span data-count="78">78</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.return">of players come back</div></div>

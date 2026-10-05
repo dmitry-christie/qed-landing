@@ -76,15 +76,10 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "os.fran.t": "Franquicia",
   "os.fran.d": "Monta tardeos de trivia recurrentes y crea un negocio en expansión.",
   "os.fran.link": "Descubre la franquicia",
-  "os.venue.t": "Marca blanca",
-  "os.venue.d": "Llena tu local con tu propio tardeo de trivia. Sin comisiones.",
-  "os.venue.link": "Descubre Locales",
 
   /* ---- cross-sell headings ---- */
   "xsell.event.h": "¿Solo quieres un evento puntual?",
   "xsell.event.d": "También montamos tardeos de trivia para empresas y celebraciones, sin compromiso.",
-  "xsell.work.h": "¿Tienes un local o quieres tu propio negocio?",
-  "xsell.work.d": "Llena tu local con trivia o abre tu propia franquicia de tardeos de trivia.",
 
   /* ---- About us (shared story, present on every page) ---- */
   "about.eyebrow": "Quiénes somos",
