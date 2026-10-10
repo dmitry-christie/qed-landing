@@ -1,0 +1,400 @@
+  /* Corporate pages (cx-), shared by /corporate/ and /team-events/.
+     One job: turn someone looking for a group activity into an enquiry.
+     The story, top to bottom: a real night (hero photo) → proof → what it is → why it works for a
+     whole company → what we handle → custom rounds (extra) → three steps → occasions → the person
+     organising it → price → FAQ → the form. Shared components come from qed.css; everything here
+     is page-only, loaded after qed.css, so a cx- rule wins a same-specificity tie. */
+
+  /* icons: one inline sprite (top of <body>), 24px grid, stroked in currentColor */
+  .cx-i{ width:24px; height:24px; flex:0 0 auto; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .cx-hd{ max-width:62ch; }
+  .cx-hd .h2{ margin-top:14px; text-wrap:balance; }
+  .cx-hd .lead{ margin:12px 0 0; text-wrap:pretty; }
+  .cx-tile{ width:50px; height:50px; border-radius:14px; border:2px solid var(--ink); box-shadow:2px 2px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--ink); background:var(--paper); }
+
+  /* ---------- 1. hero: a real night, full bleed, under a dark gradient ----------
+     Desktop: the photo covers the section and the gradient darkens the left half, where the copy
+     sits (the host and the screen stay clear on the right). Phones: the 4:5 crop sits on top and
+     fades into ink; the copy starts over its darkened lower half. White text measures above 4.5:1
+     on the darkest pixel it can land on. .hero stays on the section: qed.js reads it for the
+     cta-click placement. */
+  .cx-hero{ position:relative; isolation:isolate; overflow:hidden; display:flex; align-items:center; padding:0; background:var(--ink); color:#fff; min-height:calc(100vh - 68px); }
+  @supports (min-height:100svh){ .cx-hero{ min-height:calc(100svh - 68px); } }
+  @media (min-width:701px){ .cx-hero{ min-height:clamp(560px, calc(100vh - 68px), 820px); } }
+  @supports (min-height:100svh){ @media (min-width:701px){ .cx-hero{ min-height:clamp(560px, calc(100svh - 68px), 820px); } } }
+  .cx-hero__bg{ position:absolute; inset:0; z-index:-2; margin:0; }
+  .cx-hero__bg img{ width:100%; height:100%; object-fit:cover; object-position:62% 40%; }
+  .cx-hero::before{ content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(22,17,12,.93) 0%, rgba(22,17,12,.86) 40%, rgba(22,17,12,.5) 62%, rgba(22,17,12,.12) 86%),
+      linear-gradient(0deg, rgba(22,17,12,.55) 0%, rgba(22,17,12,0) 32%); }
+  .cx-hero__in{ width:100%; padding-top:var(--aud-top); padding-bottom:clamp(48px,7vw,84px); }
+  .cx-hero__copy{ max-width:680px; }
+  .cx-hero__tag{ max-width:100%; white-space:normal; line-height:1.35; color:var(--ink); }
+  .cx-hero__h1{ margin-top:18px; max-width:12ch; color:#fff; font-size:clamp(42px,5.6vw,68px); text-wrap:balance; text-shadow:0 2px 28px rgba(0,0,0,.35); }
+  .cx-hero__h1 .accent{ color:var(--yellow); }
+  html[data-variant="cena"] .cx-hero__h1{ font-size:clamp(40px,5.2vw,62px); }
+  .cx-hero__sub{ margin:20px 0 0; max-width:40ch; color:rgba(255,255,255,.92); font-size:clamp(17px,1.6vw,20px); line-height:1.5; font-weight:500; text-wrap:pretty; }
+  .cx-hero__facts{ list-style:none; margin:20px 0 0; padding:0; max-width:600px; display:flex; flex-wrap:wrap; gap:8px 20px; }
+  .cx-hero__facts li{ display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:15px; line-height:1.3; color:#fff; }
+  .cx-hero__facts .cx-i{ width:18px; height:18px; color:var(--yellow); }
+  .cx-hero__ctas{ display:flex; flex-wrap:wrap; align-items:center; gap:14px 22px; margin-top:28px; }
+  .cx-hero .btn--cta{ box-shadow:4px 4px 0 0 var(--yellow); }
+  .cx-hero .btn--cta:hover{ box-shadow:6px 6px 0 0 var(--yellow); }
+  .cx-hero .btn--cta:active{ box-shadow:1px 1px 0 0 var(--yellow); }
+  .cx-hero__call{ display:flex; gap:9px; align-items:center; margin:0; max-width:26ch; font-size:14.5px; font-weight:600; line-height:1.4; color:rgba(255,255,255,.88); }
+  .cx-hero__call .cx-i{ width:20px; height:20px; color:var(--yellow); }
+  .cx-hero__price{ margin:22px 0 0; padding-top:16px; border-top:1px dashed rgba(255,255,255,.3); font-size:14.5px; line-height:1.5; color:rgba(255,255,255,.84); max-width:52ch; }
+  .cx-hero__price strong{ color:#fff; font-weight:800; font-size:16.5px; }
+  .cx-hero__price a{ color:var(--yellow); font-weight:700; white-space:nowrap; text-underline-offset:3px; }
+  @media (max-width:700px){
+    .cx-hero{ display:block; min-height:0; }
+    .cx-hero::before{ display:none; }
+    /* the 4:5 crop minus its top (pendant lamps): the screen and the host stay clear above the copy */
+    .cx-hero__bg{ inset:0 0 auto 0; aspect-ratio:8 / 9; }
+    .cx-hero__bg::after{ content:""; position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(22,17,12,.12) 0%, rgba(22,17,12,.22) 26%, rgba(22,17,12,.55) 36%, rgba(22,17,12,.84) 46%, rgba(22,17,12,.94) 64%, var(--ink) 86%); }
+    .cx-hero__bg img{ object-position:center bottom; }
+    .cx-hero__in{ padding-top:var(--aud-top); padding-bottom:46px; }
+    .cx-hero__h1{ font-size:clamp(40px,11.4vw,54px); }
+    html[data-variant="cena"] .cx-hero__h1{ font-size:clamp(36px,10vw,48px); }
+    .cx-hero__facts li{ font-size:14px; }
+    .cx-hero__ctas{ margin-top:24px; }
+  }
+  @media (max-width:380px){ .cx-hero__in{ padding-left:16px; padding-right:16px; } }
+
+  /* ---------- audience switch (hero, both corporate pages): two pages, one control ----------
+     Two sticker cards in the page's own radio-card language (see .cx-et__card): the page you are
+     on is the selected one (solid yellow, red tick disc), the other is a link that lifts like a
+     .btn on hover. It sits inside the hero's old top padding: --aud-top + --aud-h + the margin
+     below it equals the padding it replaces, so the tag, H1 and CTA stay where they were on
+     phones and from 1200px up. Between 701 and ~1100px that padding (48 to 84px) is smaller than
+     a 56px switch, so they sit up to 15px lower there. */
+  .cx-hero{ --aud-h:56px; --aud-top:14px; }
+  .cx-aud{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; box-sizing:border-box; height:var(--aud-h); max-width:560px;
+    margin:0 0 max(10px, calc(clamp(48px,7vw,84px) - var(--aud-top) - var(--aud-h))); padding:0; }
+  .cx-aud__opt{ position:relative; display:flex; align-items:center; gap:10px; min-width:0; box-sizing:border-box; height:100%; padding:0 46px 0 8px;
+    border:2px solid rgba(255,255,255,.85); border-radius:var(--r-md); background:rgba(22,17,12,.74); color:#fff;
+    font-weight:800; font-size:14.5px; line-height:1.2; letter-spacing:-0.01em; text-decoration:none; text-wrap:balance;
+    transition:transform .12s cubic-bezier(.2,.7,.2,1), box-shadow .12s cubic-bezier(.2,.7,.2,1), background-color .12s, color .12s, border-color .12s; }
+  .cx-aud__ico{ width:36px; height:36px; flex:0 0 auto; border-radius:50%; border:2px solid rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center;
+    transition:background-color .12s, border-color .12s, color .12s; }
+  .cx-aud__ico .cx-i{ width:20px; height:20px; }
+  .cx-aud__t{ min-width:0; }
+  /* right-hand marker: a red tick disc on the page you are on, an arrow ring on the other one */
+  .cx-aud__go{ position:absolute; top:50%; right:11px; width:24px; height:24px; margin-top:-12px; border-radius:50%; border:2px solid rgba(255,255,255,.85);
+    display:flex; align-items:center; justify-content:center; color:var(--yellow); font-size:14px; font-weight:900; line-height:1;
+    transition:transform .15s, background-color .12s, border-color .12s, color .12s; }
+  .cx-aud__go .cx-i{ width:13px; height:13px; stroke-width:3.4; }
+  a.cx-aud__opt:hover{ transform:translate(-2px,-2px); background:var(--paper); border-color:var(--ink); color:var(--ink); box-shadow:5px 5px 0 0 var(--yellow); }
+  a.cx-aud__opt:hover .cx-aud__ico{ background:var(--yellow); border-color:var(--ink); }
+  a.cx-aud__opt:hover .cx-aud__go{ transform:translateX(3px); border-color:var(--ink); color:var(--ink); }
+  a.cx-aud__opt:active{ transform:translate(1px,1px); box-shadow:1px 1px 0 0 var(--yellow); }
+  a.cx-aud__opt:focus-visible{ outline:3px solid var(--yellow); outline-offset:3px; }
+  .cx-aud__opt[aria-current="page"]{ background:var(--yellow); border-color:var(--ink); color:var(--ink); box-shadow:3px 3px 0 0 rgba(245,197,24,.55); }
+  .cx-aud__opt[aria-current="page"] .cx-aud__ico{ background:var(--paper); border-color:var(--ink); }
+  .cx-aud__opt[aria-current="page"] .cx-aud__go{ background:var(--accent); border-color:var(--ink); color:#fff; }
+  /* phones: each card becomes a tile (icon and marker on top, the label underneath), like .cx-et__card, so the label gets the card's full width */
+  @media (max-width:560px){
+    .cx-hero{ --aud-h:92px; }
+    .cx-aud{ gap:8px; }
+    .cx-aud__opt{ flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:7px; padding:8px 10px 9px; font-size:13px; }
+    .cx-aud__ico{ width:32px; height:32px; }
+    .cx-aud__ico .cx-i{ width:17px; height:17px; }
+    .cx-aud__go{ top:10px; right:10px; margin-top:0; width:22px; height:22px; }
+    .cx-aud__t{ padding-top:1px; }
+  }
+  @media (max-width:700px){
+    .cx-aud{ max-width:none; margin-bottom:calc(clamp(140px,41vw,290px) - var(--aud-top) - var(--aud-h)); }
+  }
+  @media (prefers-reduced-motion:reduce){ .cx-aud__opt, .cx-aud__ico, .cx-aud__go{ transition:none; } a.cx-aud__opt:hover, a.cx-aud__opt:active{ transform:none; } }
+
+  /* ---------- 2. proof: the numbers, then three real nights ---------- */
+  .cx-kpis{ margin-top:28px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); background:var(--ink); color:#fff; border-radius:var(--r-lg); border:2px solid var(--ink); }
+  .cx-kpis > div{ padding:20px 12px; text-align:center; border-right:1px solid rgba(255,255,255,.16); }
+  .cx-kpis > div:last-child{ border-right:0; }
+  .cx-kpis .kpi-lab{ color:rgba(255,255,255,.74); }
+  .cx-strip{ margin-top:24px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(12px,2vw,22px); }
+  .cx-strip figure{ margin:0; position:relative; aspect-ratio:4 / 3; background:var(--ink); border:2px solid var(--ink); border-radius:var(--r-lg); box-shadow:5px 5px 0 0 var(--ink); overflow:hidden; }
+  .cx-strip figure:nth-child(1){ transform:rotate(-1deg); }
+  .cx-strip figure:nth-child(2){ transform:rotate(.8deg); }
+  .cx-strip figure:nth-child(3){ transform:rotate(-.6deg); }
+  .cx-strip img{ width:100%; height:100%; object-fit:cover; }
+  .cx-strip__tag{ position:absolute; top:12px; left:12px; z-index:1; background:var(--yellow); transform:rotate(-2deg); }
+  @media (max-width:700px){
+    .cx-strip{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .cx-strip figure:first-child{ grid-column:1 / -1; aspect-ratio:16 / 10; }
+    .cx-strip figure{ box-shadow:3px 3px 0 0 var(--ink); border-radius:var(--r-md); }
+  }
+
+  /* ---------- 3. what it is: four ingredients ---------- */
+  .cx-what{ display:grid; grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr); gap:28px clamp(28px,5vw,64px); align-items:center; }
+  .cx-what__cards{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+  .cx-what__card{ padding:20px; display:flex; flex-direction:column; gap:14px; }
+  .cx-what__card .h3{ font-size:clamp(18px,1.7vw,20px); }
+  .cx-what__card p{ margin:6px 0 0; color:var(--ink-soft); line-height:1.5; font-size:15.5px; }
+  @media (max-width:860px){ .cx-what{ grid-template-columns:1fr; } }
+  @media (max-width:520px){
+    .cx-what__cards{ grid-template-columns:1fr; gap:12px; }
+    .cx-what__card{ flex-direction:row; align-items:flex-start; padding:18px; }
+    .cx-what__card .cx-tile{ width:44px; height:44px; border-radius:12px; }
+  }
+
+  /* ---------- 4. why companies book it: one ink card ---------- */
+  .cx-why{ padding:clamp(26px,4.4vw,52px); }
+  .cx-why .eyebrow{ color:rgba(255,255,255,.74); }
+  .cx-why .h2{ color:#fff; margin-top:14px; max-width:24ch; text-wrap:balance; }
+  .cx-why__grid{ margin-top:30px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px clamp(22px,3vw,40px); }
+  .cx-why__item{ padding-top:20px; border-top:2px dashed rgba(255,255,255,.26); }
+  .cx-why__ico{ width:52px; height:52px; border-radius:50%; background:var(--yellow); color:var(--ink); border:2px solid var(--ink); box-shadow:3px 3px 0 0 rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; }
+  .cx-why__ico .cx-i{ width:26px; height:26px; }
+  .cx-why__item .h3{ color:#fff; margin-top:16px; }
+  .cx-why__item p{ margin:8px 0 0; color:rgba(255,255,255,.8); line-height:1.55; }
+  @media (max-width:780px){ .cx-why__grid{ grid-template-columns:1fr; gap:20px; } }
+
+  /* ---------- 5. we handle everything: included (ticked) | extras + venue ---------- */
+  .cx-inc{ margin-top:30px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-items:stretch; }
+  .cx-inc__main{ padding:clamp(22px,3vw,32px); }
+  .cx-label{ margin:0 0 16px; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); }
+  .cx-label small{ display:block; margin-top:5px; font-family:var(--sans); font-size:14px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--ink-soft); }
+  .cx-list{ list-style:none; margin:0; padding:0; display:grid; gap:12px; }
+  .cx-list li{ display:flex; gap:12px; align-items:flex-start; font-weight:700; font-size:16.5px; line-height:1.4; }
+  .cx-list li::before{ content:""; flex:0 0 auto; width:24px; height:24px; margin-top:-1px; border-radius:50%; border:2px solid var(--ink); background-size:15px; background-position:center; background-repeat:no-repeat; }
+  .cx-list--inc li::before{ background-color:var(--accent); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12l5 5 9-11' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+  .cx-list--ex{ gap:10px; }
+  .cx-list--ex li{ font-size:15.5px; font-weight:600; }
+  .cx-list--ex li::before{ width:22px; height:22px; background-size:13px; background-color:var(--paper); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 5v14M5 12h14' fill='none' stroke='%231F1A14' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  .cx-inc__ex{ padding:clamp(22px,3vw,32px); background:var(--yellow-soft); border:2px dashed var(--ink); border-radius:var(--r-lg); }
+  .cx-inc__venue{ grid-column:1 / -1; display:flex; gap:16px; align-items:center; padding:18px 22px; background:var(--green-soft); }
+  .cx-inc__venue .cx-tile{ background:var(--paper); }
+  .cx-inc__venue p{ margin:0; line-height:1.5; font-size:15px; color:var(--ink-soft); }
+  .cx-inc__venue strong{ color:var(--ink); font-size:16.5px; font-weight:800; line-height:1.3; }
+  .cx-inc__venue a{ color:var(--accent-deep); font-weight:700; white-space:nowrap; }
+  @media (max-width:860px){ .cx-inc{ grid-template-columns:1fr; } .cx-inc__venue{ align-items:flex-start; } .cx-inc__venue strong{ display:block; margin-bottom:4px; } }
+  @media (max-width:420px){ .cx-inc__venue{ gap:13px; padding:18px; } .cx-inc__venue .cx-tile{ width:42px; height:42px; } .cx-inc__ex{ padding:20px 18px; } }
+
+  /* ---------- 6. custom rounds (extra): a real slide | four example rounds ---------- */
+  .cx-cust{ margin-top:30px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:30px clamp(24px,4vw,52px); align-items:center; }
+  .cx-cust__vis{ position:relative; padding:0 8px 8px 0; }
+  .cx-rounds{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+  .cx-round{ padding:18px 18px 20px; display:flex; flex-direction:column; align-items:flex-start; }
+  .cx-round__top{ display:flex; width:100%; justify-content:space-between; align-items:center; gap:10px; }
+  .cx-round__top .cx-i{ width:26px; height:26px; color:var(--accent-deep); }
+  .cx-round h3{ margin:12px 0 0; font-weight:800; font-size:17.5px; letter-spacing:-0.015em; line-height:1.22; }
+  .cx-round p{ margin:6px 0 0; color:var(--ink-soft); line-height:1.5; font-size:14.5px; }
+  .cx-flag{ display:inline-block; padding:3px 8px 2px; border:1.5px solid var(--ink); border-radius:999px; background:var(--yellow); font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; line-height:1.3; white-space:nowrap; }
+  @media (max-width:860px){ .cx-cust{ grid-template-columns:1fr; } }
+  @media (max-width:480px){ .cx-rounds{ grid-template-columns:1fr; gap:12px; } }
+
+  /* The real projector slide: a question slide in the control room's "qed" stage skin
+     (control-room-mock-up: css/screen.css + js/control-room-stage.js renderStage), rebuilt in
+     HTML/CSS. The real stage is a 1280x720 canvas; every size below is its canvas px / 12.8, in
+     cqw of .cx-slide, so the frame scales as one picture. max() floors keep the small type
+     legible on phones. Colours are the skin's own, not the page tokens. */
+  .cx-slide{ container-type:inline-size; }
+  .cx-stage{ position:relative; isolation:isolate; overflow:hidden; aspect-ratio:16 / 9; background:#f7efc3; color:#17150f; font-family:"Inter",var(--sans); border:2px solid var(--ink); border-radius:14px; box-shadow:6px 6px 0 0 var(--ink); }
+  /* sunburst: coral and sage rays from the centre, cream gaps between */
+  .cx-stage::before{ content:""; position:absolute; left:50%; top:50%; z-index:-1; width:200%; height:200%; transform:translate(-50%,-50%); background:repeating-conic-gradient(from 0deg at 50% 50%, #e8785c 0deg 3.4deg, transparent 3.4deg 9deg, #8fbcaa 9deg 12.4deg, transparent 12.4deg 18deg); }
+  /* halftone dot screen over the rays */
+  .cx-stage::after{ content:""; position:absolute; inset:0; z-index:-1; background-image:radial-gradient(circle, rgba(90,70,40,.24) max(.125cqw,.7px), transparent max(.133cqw,.8px)); background-size:max(1.016cqw,5px) max(1.016cqw,5px); }
+  .cx-stage__body{ position:absolute; inset:0; display:flex; flex-direction:column; padding:4.06cqw 5.94cqw 4.69cqw; }
+  .cx-stage__kicker{ align-self:flex-start; flex:0 0 auto; padding:.5em 1.1em; background:#c9552f; color:#fff; border:max(.156cqw,1.5px) solid #17150f; border-radius:999px; box-shadow:.234cqw .234cqw 0 rgba(23,21,15,.9); font-family:var(--mono); font-size:max(1.72cqw,7.5px); font-weight:700; letter-spacing:.1em; line-height:1.2; text-transform:uppercase; white-space:nowrap; }
+  .cx-stage__card{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column; justify-content:center; gap:1.69cqw; padding:1.91cqw 2.8cqw; background:#fffdf2; border:max(.234cqw,1.5px) solid #17150f; border-radius:1.72cqw; box-shadow:.47cqw .47cqw 0 rgba(23,21,15,.9); }
+  /* comic-weight question: heavy, tight, outlined in its own ink */
+  .cx-stage__q{ margin:0; font-size:max(4.99cqw,14px); font-weight:900; line-height:1.18; letter-spacing:-.015em; -webkit-text-stroke:.055em #17150f; paint-order:stroke fill; text-wrap:balance; }
+  .cx-stage__opts{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1.1cqw; }
+  .cx-stage__opts li{ display:flex; align-items:center; gap:1.25cqw; min-width:0; padding:1.25cqw 1.7cqw; background:#fff; border:max(.234cqw,1.5px) solid #17150f; border-radius:1.25cqw; box-shadow:.234cqw .234cqw 0 rgba(23,21,15,.85); font-size:max(2.3cqw,9px); font-weight:600; line-height:1.2; white-space:nowrap; }
+  .cx-stage__opts b{ min-width:2.19cqw; font-family:var(--mono); font-weight:700; color:#7d7461; }
+  .cx-stage__opts span{ overflow:hidden; text-overflow:ellipsis; }
+  @media (max-width:420px){
+    .cx-stage{ box-shadow:4px 4px 0 0 var(--ink); }
+    .cx-stage__opts li{ font-size:max(2.3cqw,10.5px); }
+    .cx-stage__kicker{ font-size:max(1.72cqw,8.5px); }
+  }
+
+  /* ---------- 8. occasions: chips ---------- */
+  .cx-occ{ list-style:none; margin:24px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:10px 9px; }
+  .cx-chip{ display:inline-flex; align-items:center; gap:9px; min-height:46px; padding:5px 18px 5px 6px; background:var(--tint, var(--paper)); border:2px solid var(--ink); border-radius:999px; box-shadow:2px 2px 0 0 var(--ink); font-weight:800; font-size:16px; line-height:1.2; letter-spacing:-0.01em; }
+  .cx-chip__i{ width:32px; height:32px; flex:0 0 auto; border-radius:50%; background:var(--paper); border:1.5px solid var(--ink); display:inline-flex; align-items:center; justify-content:center; }
+  .cx-chip__i .cx-i{ width:18px; height:18px; stroke-width:2.1; }
+  @media (max-width:480px){ .cx-occ{ gap:8px 7px; } .cx-chip{ min-height:42px; font-size:15px; padding:4px 14px 4px 5px; gap:8px; } .cx-chip__i{ width:29px; height:29px; } }
+  /* #occasions: heading and chips centred; six chips read 3 + 3 on desktop, never 5 + 1 (Oct 2026).
+     The chips stretch to their column, so both rows span the same width and sit on the centre
+     line (centred chips left the two rows offset by up to 37 px). */
+  #occasions .cx-hd{ margin-inline:auto; text-align:center; }
+  .cx-occ{ justify-content:center; }                      /* phones: wrapped rows centre */
+  @media (min-width:560px){
+    .cx-occ{ display:grid; grid-template-columns:repeat(2,max-content); justify-content:center; justify-items:stretch; gap:10px 12px; }
+  }
+  @media (min-width:820px){ .cx-occ{ grid-template-columns:repeat(3,max-content); } }
+
+  /* ---------- 9. the person organising it ---------- */
+  .cx-org{ display:grid; grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr); gap:28px clamp(28px,4.4vw,56px); padding:clamp(24px,4.2vw,48px); background:var(--yellow); align-items:center; }
+  .cx-org .eyebrow{ color:var(--ink); }
+  .cx-org .h2{ margin-top:14px; text-wrap:balance; }
+  .cx-org__lead{ margin:10px 0 0; font-size:clamp(17px,1.6vw,19px); font-weight:700; }
+  .cx-org .ticks{ margin-top:22px; }
+  .cx-org .ticks li{ font-size:16px; }
+  .cx-pp{ background:var(--paper); border:2px solid var(--ink); border-radius:var(--r-lg); box-shadow:5px 5px 0 0 var(--ink); padding:clamp(20px,2.6vw,28px); }
+  .cx-pp__h{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+  .cx-pp__row{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; padding:14px 0; border-bottom:1px dashed var(--hairline-strong); }
+  .cx-pp__row:last-of-type{ border-bottom:0; }
+  .cx-pp__v{ font-weight:900; font-size:clamp(34px,3.8vw,44px); letter-spacing:-0.045em; line-height:1; }
+  .cx-pp__row--ours .cx-pp__v{ color:var(--accent-deep); }
+  .cx-pp__l{ font-weight:700; color:var(--ink-soft); line-height:1.3; }
+  .cx-pp .btn{ margin-top:10px; }
+  @media (max-width:860px){ .cx-org{ grid-template-columns:1fr; } }
+  /* narrow phones: keep "Cuéntanos tu cena →" on one line */
+  @media (max-width:380px){ .cx-pp{ padding:18px 16px; } .cx-pp .btn{ padding-left:14px; padding-right:14px; gap:7px; } }
+
+  /* ---------- pointer to the other corporate page ---------- */
+  .cx-pointer{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px 22px;
+    padding:clamp(16px,2.4vw,22px) clamp(18px,3vw,28px); background:var(--cream-soft); border:2px dashed var(--ink); border-radius:var(--r-lg); }
+  .cx-pointer p{ margin:0; max-width:62ch; line-height:1.5; font-size:16px; color:var(--ink-soft); }
+  .cx-pointer strong{ display:block; margin-bottom:2px; color:var(--ink); font-weight:900; font-size:clamp(18px,1.8vw,21px); letter-spacing:-0.02em; }
+  .cx-pointer__link{ font-weight:800; color:var(--accent-deep); text-underline-offset:3px; white-space:nowrap; }
+  @media (max-width:480px){ .cx-pointer__link{ white-space:normal; } }
+
+  /* ---------- 10. price: one ticket. Stub = the hook | the tiers by group size, with the
+     partner-venue column (-50 €) highlighted; under the tear line, the extras and how booking
+     works. Founder pricing, 4 Oct 2026. --- */
+  .cx-price{ margin-top:30px; }
+  .cx-price__top{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); }
+  .cx-price__stub{ position:relative; display:flex; flex-direction:column; align-items:flex-start; background:var(--yellow); padding:clamp(22px,3vw,32px); border-right:2px dashed var(--ink); border-radius:18px 0 0 0; }
+  .cx-price__eyebrow{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); }
+  .cx-price__big{ margin:12px 0 0; font-weight:900; font-size:clamp(46px,4.8vw,64px); letter-spacing:-0.045em; line-height:.95; }
+  .cx-price__vat{ margin:7px 0 0; font-family:var(--mono); font-size:13px; font-weight:700; }
+  .cx-price__cond{ margin:16px 0 0; padding:7px 13px; border-radius:999px; background:var(--ink); color:#fff; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.02em; line-height:1.35; text-wrap:balance; }
+  .cx-price__note{ margin:auto 0 0; padding-top:18px; align-self:stretch; }
+  .cx-price__note span{ display:block; padding-top:14px; border-top:2px dashed rgba(31,26,20,.35); font-size:15px; line-height:1.5; font-weight:600; }
+  .cx-price__stub .btn{ margin-top:16px; }
+  /* the tiers: a real table (screen readers get rows and headers); the partner-venue column is
+     tinted so the -50 € reads at a glance */
+  .cx-tiers{ padding:clamp(18px,2.6vw,28px) clamp(18px,3vw,32px) clamp(18px,2.6vw,26px); }
+  .cx-tiers table{ width:100%; border-collapse:separate; border-spacing:0; }
+  .cx-tiers th, .cx-tiers td{ padding:13px 14px; text-align:left; vertical-align:middle; border-bottom:1px dashed var(--hairline-strong); }
+  .cx-tiers thead th{ padding-top:12px; padding-bottom:11px; border-bottom:2px solid var(--ink); font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; line-height:1.3; color:var(--ink-soft); }
+  .cx-tiers tbody th{ font-weight:700; font-size:16px; line-height:1.3; white-space:nowrap; }
+  .cx-tiers td{ font-weight:900; font-size:clamp(20px,1.9vw,23px); letter-spacing:-0.025em; white-space:nowrap; }
+  .cx-tiers th:first-child{ padding-left:0; }
+  .cx-tiers .is-ours{ background:var(--yellow-soft); }
+  .cx-tiers thead .is-ours{ color:var(--ink); border-radius:12px 12px 0 0; }
+  .cx-tiers .is-end{ border-radius:0 0 12px 12px; }
+  .cx-tiers__save{ display:inline-block; margin-left:6px; padding:2px 7px; border-radius:999px; background:var(--accent); color:#fff; letter-spacing:.02em; white-space:nowrap; }
+  .cx-tiers tbody tr:last-child > *{ border-bottom:0; }
+  .cx-tiers__quote td{ font-size:16px; font-weight:800; letter-spacing:-0.01em; white-space:normal; color:var(--ink); }
+  .cx-tiers__foot{ margin:12px 0 0; font-size:13.5px; line-height:1.5; color:var(--ink-soft); }
+  /* under the tear line: the extras (as extras) and how booking works */
+  .cx-price__band{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px clamp(22px,3vw,40px); padding:clamp(22px,3vw,30px) clamp(20px,3vw,32px); background:var(--cream-soft); border-top:2px dashed var(--ink); border-radius:0 0 18px 18px; }
+  .cx-band__h{ margin:0 0 12px; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); }
+  .cx-band__sub{ display:block; margin-top:4px; font-family:var(--sans); font-size:13.5px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--ink-soft); }
+  .cx-band__list{ list-style:none; margin:0; padding:0; display:grid; gap:9px; }
+  .cx-band__list li{ display:flex; gap:10px; align-items:flex-start; font-weight:600; font-size:15px; line-height:1.4; }
+  /* in the ticket the extras are pills: they are spelt out once already, in #included */
+  .cx-band__list--ex{ display:flex; flex-wrap:wrap; gap:8px; }
+  .cx-band__list--ex li{ align-items:center; gap:7px; padding:4px 12px 4px 5px; background:var(--paper); border:1.5px solid var(--ink); border-radius:999px; font-size:14px; line-height:1.3; }
+  .cx-band__list--ex li::before{ content:""; flex:0 0 auto; width:20px; height:20px; border-radius:50%; border:2px solid var(--ink); background-color:var(--yellow); background-size:13px; background-position:center; background-repeat:no-repeat; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 5v14M5 12h14' fill='none' stroke='%231F1A14' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  .cx-band__list--book .cx-i{ width:20px; height:20px; color:var(--accent-deep); }
+  .cx-band__list--book strong{ font-weight:800; }
+  @media (min-width:961px){
+    /* ticket notches wherever a perforation meets the card's edge: the stub's dashed line at the
+       top edge, and both ends of the tear line above the band. Cream discs on the edge, half
+       clipped; the right one is bigger and centred on the shadow's outer edge, so it bites
+       through the shadow too. It stays within the .wrap's 22px gutter: a bigger disc would add
+       a horizontal scroll at 961-1180px. */
+    .cx-price__stub::before, .cx-price__band::before, .cx-price__band::after{ content:""; position:absolute; border-radius:50%; background:var(--cream); border:2px solid var(--ink); }
+    .cx-price__stub::before{ top:-15px; right:-14px; width:26px; height:26px; clip-path:inset(50% -3px -3px -3px); }
+    .cx-price__band{ position:relative; }
+    .cx-price__band::before{ top:-14px; left:-15px; width:26px; height:26px; clip-path:inset(-3px -3px -3px 50%); }
+    .cx-price__band::after{ top:-17px; right:-23px; width:32px; height:32px; clip-path:inset(-3px 50% -3px -3px); }
+  }
+  /* tablets and phones: the stub sits on top of the table (the big price needs the full width) */
+  @media (max-width:960px){
+    .cx-price__top{ grid-template-columns:1fr; }
+    .cx-price__stub{ border-right:0; border-bottom:2px dashed var(--ink); border-radius:18px 18px 0 0; }
+    .cx-price__note{ margin-top:0; }
+  }
+  @media (max-width:700px){ .cx-price__band{ grid-template-columns:1fr; gap:22px; } }
+  @media (max-width:420px){
+    .cx-tiers{ padding-left:16px; padding-right:12px; }
+    .cx-tiers th, .cx-tiers td{ padding:12px 9px; }
+    .cx-tiers thead th{ font-size:10.5px; letter-spacing:.06em; }
+    .cx-tiers tbody th{ font-size:15px; }
+    .cx-tiers td{ font-size:19px; }
+    .cx-tiers__save{ display:table; margin:5px 0 0; }
+  }
+
+  /* --- partner venues: the bars where we run a public quiz every week (plus OlHops). Our names
+     for them, grouped by city; the -50 € said once, as a stamp. Cities outside Valencia carry the
+     asterisk of the footnote under the list. --- */
+  .cx-venues{ position:relative; margin-top:22px; display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.2fr); gap:22px clamp(26px,4vw,52px); padding:clamp(22px,3vw,34px); background:var(--green-soft); }
+  .cx-venues__intro{ position:relative; }
+  .cx-venues__t{ margin:14px 0 0; padding-right:100px; font-weight:900; font-size:clamp(23px,2.5vw,30px); letter-spacing:-0.027em; line-height:1.1; text-wrap:balance; }
+  .cx-venues__p{ margin:12px 0 0; line-height:1.55; color:var(--ink-soft); max-width:48ch; }
+  .cx-venues__stamp{ position:absolute; top:-4px; right:0; transform:rotate(8deg); background:var(--yellow); }
+  .cx-venues__stamp b{ font-size:21px; }
+  .cx-vlist{ list-style:none; margin:0; padding:0; border-top:2px solid var(--ink); align-self:start; }
+  .cx-vlist > li{ display:grid; grid-template-columns:8.6rem minmax(0,1fr); gap:8px 16px; align-items:center; padding:13px 0; border-bottom:1px dashed rgba(31,26,20,.24); }
+  .cx-vlist__city{ display:flex; gap:7px; align-items:center; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; line-height:1.3; }
+  .cx-vlist__city .cx-i{ width:17px; height:17px; color:var(--accent-deep); }
+  .cx-vchips{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
+  .cx-vchip{ display:inline-flex; align-items:center; min-height:36px; padding:5px 13px; background:var(--paper); border:2px solid var(--ink); border-radius:999px; box-shadow:2px 2px 0 0 var(--ink); font-weight:700; font-size:14.5px; line-height:1.2; }
+  .cx-venues__foot{ margin:14px 0 0; font-size:13.5px; line-height:1.5; color:var(--ink-soft); }
+  @media (max-width:900px){ .cx-venues{ grid-template-columns:1fr; } }
+  @media (max-width:520px){
+    .cx-venues__t{ padding-right:86px; }
+    /* 78px leaves "POR EVENTO" room inside the circle (72px crowded its edge) */
+    .cx-venues__stamp{ width:78px; height:78px; top:-8px; right:-4px; }
+    .cx-venues__stamp b{ font-size:18px; }
+    .cx-venues__stamp span{ font-size:9px; letter-spacing:.04em; }
+    .cx-vlist > li{ grid-template-columns:1fr; }
+    .cx-vchip{ font-size:14px; min-height:34px; }
+  }
+
+  /* ---------- 12. "we know trivia": two lines, instead of the About section ---------- */
+  .cx-know{ display:flex; gap:18px; align-items:center; padding:clamp(18px,2.6vw,26px) clamp(18px,3vw,30px); background:var(--cream-soft); border:2px dashed var(--ink); border-radius:var(--r-lg); }
+  .cx-know p{ margin:0; line-height:1.55; font-size:16px; color:var(--ink-soft); max-width:80ch; }
+  .cx-know strong{ display:block; margin-bottom:3px; color:var(--ink); font-weight:900; font-size:clamp(19px,1.9vw,22px); letter-spacing:-0.02em; }
+  .cx-know__ico{ width:54px; height:54px; flex:0 0 auto; border-radius:50%; background:var(--yellow); border:2px solid var(--ink); box-shadow:2px 2px 0 0 var(--ink); display:flex; align-items:center; justify-content:center; transform:rotate(-6deg); }
+  @media (max-width:480px){ .cx-know{ align-items:flex-start; gap:14px; } .cx-know__ico{ width:44px; height:44px; } .cx-know__ico .cx-i{ width:21px; height:21px; } }
+
+  /* ---------- 13. final CTA: the intro panel beside the form ---------- */
+  .cx-quote__sub{ margin:0; color:rgba(255,255,255,.9); font-size:clamp(17px,1.6vw,19px); line-height:1.5; font-weight:600; }
+  .cx-quote__call{ margin:0; display:flex; gap:10px; align-items:flex-start; color:rgba(255,255,255,.8); line-height:1.5; }
+  .cx-quote__call .cx-i{ width:20px; height:20px; margin-top:2px; color:var(--yellow); }
+  @media (max-width:767px){ .quote-intro{ gap:10px !important; } .cx-quote__sub{ font-size:16px; } }
+
+  /* --- event type: four one-tap cards instead of a dropdown ---
+     Real radios in a fieldset + legend (keyboard: Tab in, arrows to choose). The input is
+     visually hidden but stays focusable; its card is the next sibling, so :checked and
+     :focus-visible style it without :has(). The step-1 grid clips overflow (for the step
+     transition), so the checked state is drawn inside the border, not as an offset shadow. */
+  .cx-et{ margin:0; padding:0; border:0; min-width:0; }
+  .cx-et > legend{ float:left; width:100%; padding:0; }
+  .cx-et__grid{ clear:both; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .cx-et__opt{ position:relative; display:block; min-width:0; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .cx-et__opt input{ position:absolute; top:50%; left:24px; width:1px; height:1px; margin:0; opacity:0; pointer-events:none; }
+  .cx-et__card{ position:relative; display:flex; align-items:center; gap:11px; height:100%; min-height:64px; padding:10px 34px 10px 11px; background:var(--paper); border:2px solid var(--ink); border-radius:var(--r-md); font-weight:700; font-size:15px; line-height:1.22; color:var(--ink); transition:background-color .15s, box-shadow .15s, border-color .15s; }
+  .cx-et__ico{ width:38px; height:38px; flex:0 0 auto; border-radius:50%; border:2px solid var(--ink); background:var(--cream-soft); display:flex; align-items:center; justify-content:center; transition:background-color .15s, color .15s; }
+  .cx-et__ico .cx-i{ width:20px; height:20px; }
+  /* the tick: an empty ring until chosen, then a filled red disc with a white check */
+  .cx-et__tick{ position:absolute; top:50%; right:10px; width:18px; height:18px; margin-top:-9px; border-radius:50%; border:2px solid var(--hairline-strong); display:flex; align-items:center; justify-content:center; color:transparent; transition:background-color .15s, border-color .15s; }
+  .cx-et__tick .cx-i{ width:12px; height:12px; stroke-width:3.4; }
+  .cx-et__opt:hover .cx-et__card{ background:var(--cream-soft); }
+  .cx-et__opt input:checked + .cx-et__card{ background:var(--yellow-soft); box-shadow:inset 0 0 0 1.5px var(--ink); }
+  .cx-et__opt input:checked + .cx-et__card .cx-et__ico{ background:var(--yellow); }
+  .cx-et__opt input:checked + .cx-et__card .cx-et__tick{ background:var(--accent); border-color:var(--ink); color:#fff; }
+  .cx-et__opt input:focus-visible + .cx-et__card{ border-color:var(--accent-deep); box-shadow:0 0 0 4px var(--accent-soft); }
+  .cx-et__opt input:checked:focus-visible + .cx-et__card{ box-shadow:inset 0 0 0 1.5px var(--accent-deep), 0 0 0 4px var(--accent-soft); }
+  .cx-et[aria-invalid="true"] .cx-et__card{ border-color:var(--red-deep); }
+  .cx-et .field-error{ clear:both; }
+  /* phones: each card becomes a tile (icon and tick on top, the label underneath) so the label
+     gets the card's full width instead of wrapping into three short lines */
+  @media (max-width:520px){
+    .cx-et__grid{ gap:9px; }
+    .cx-et__card{ flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:8px; min-height:0; padding:10px 10px 12px; font-size:14.5px; }
+    .cx-et__ico{ width:34px; height:34px; }
+    .cx-et__ico .cx-i{ width:18px; height:18px; }
+    .cx-et__tick{ top:12px; right:10px; margin-top:0; }
+  }
+  @media (prefers-reduced-motion:reduce){ .cx-et__card, .cx-et__ico, .cx-et__tick{ transition:none; } }

@@ -16,8 +16,9 @@
    each page are unused leftovers from an earlier env-var-driven approach that was never
    actually wired up in this project; harmless to leave in place.
 
-   Every page lives at its natural folder path (/corporate/, /celebrations/, …) and
-   identifies itself with a baked-in window.QED_SITE, so there is no page-copying step. */
+   Every page lives at its natural folder path (/corporate/, /team-events/, /celebrations/, …) and
+   identifies itself with a baked-in window.QED_SITE, so there is no page-copying step. The two
+   corporate pages share QED_SITE "corporate" (one funnel); a hidden audience field tells them apart. */
 
 import { readFileSync, writeFileSync, unlinkSync, readdirSync, renameSync, cpSync, rmSync } from "node:fs";
 
@@ -77,7 +78,9 @@ console.log("[qed build] config:", config);
 // domains). The bare apex domains are a separate, unrelated site — pointing canonical/
 // hreflang tags there would misdirect search engines off this site entirely.
 const DOMAINS = { QED: "landing.quizeatdrink.com", TDT: "landing.tardeodetrivia.com" };
-const PAGES = ["", "corporate/", "celebrations/", "venues/", "partners/", "privacy/", "terms/"];
+// Source folders. Each needs its index.html AND an I18N_FILE entry below: a folder that is missing
+// breaks both brands' builds, a missing I18N_FILE entry breaks the TDT build only.
+const PAGES = ["", "corporate/", "team-events/", "celebrations/", "venues/", "partners/", "privacy/", "terms/"];
 const SEO_MARK = "<!-- build:seo -->";
 
 /* ---- per-brand URL slugs ----
@@ -107,7 +110,7 @@ const BRAND_ASSETS = {
 // otherwise never reach a link-preview bot. Pulled straight from the i18n-*.js files so
 // there is exactly one place each Spanish string is written.
 const I18N_FILE = {
-  "": "hub", "corporate/": "corporate", "celebrations/": "celebrations",
+  "": "hub", "corporate/": "corporate", "team-events/": "team-events", "celebrations/": "celebrations",
   "venues/": "venues", "partners/": "partners", "privacy/": "privacy", "terms/": "terms",
 };
 function loadEsDict(page) {

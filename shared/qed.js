@@ -1266,7 +1266,7 @@
 
     // Delegated clicks → cta / nav / crosssell / outbound. Classified by class + link target so a
     // hero CTA (.btn--cta) and an in-body cross-sell card (.card → another funnel) don't collide.
-    var FUNNEL_HREF = /^\/(corporate|celebrations|venues|partners|franchise|franquicias)\/?($|[?#])/;
+    var FUNNEL_HREF = /^\/(corporate|team-events|celebrations|venues|partners|franchise|franquicias)\/?($|[?#])/;
     function placement(el) {
       if (el.closest(".hero")) return "hero";
       var withId = el.closest("[id]");
@@ -1289,7 +1289,7 @@
         return;
       }
       if (a.tagName === "A" && !a.closest("footer") && FUNNEL_HREF.test(href)) {
-        walkerPush("crosssell click", { to: href.replace(/[?#].*$/, "").replace(/\//g, ""), href: href, label: label });
+        walkerPush("crosssell click", { to: href.replace(/[?#].*$/, "").replace(/\//g, ""), placement: placement(a), href: href, label: label });
         return;
       }
     });

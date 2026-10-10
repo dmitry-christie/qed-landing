@@ -4,21 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.classList.add('js')</script>
-<!-- Audience preselect for ads, same on both pages: ?for=hr opens this page (/corporate/) and ?for=team opens
-     /team-events/, from either URL (?audience= works too; booker and organiser are accepted as values). It runs
+<!-- Audience preselect for ads, same on both pages: ?for=team opens this page (/team-events/) and ?for=hr opens
+     /corporate/, from either URL (?audience= works too; booker and organiser are accepted as values). It runs
      before first paint and carries the whole query string and hash across (utm_*, gclid, v=cena), so attribution
      is untouched. A param that already matches the page does nothing, so it cannot loop. -->
 <script>
 (function(){try{
   var q=new URLSearchParams(location.search),v=(q.get("for")||q.get("audience")||"").toLowerCase();
-  if(/^(team|equipo|organiser|organizer)$/.test(v))location.replace("/team-events/"+location.search+location.hash);
+  if(/^(hr|rrhh|company|empresa|booker)$/.test(v))location.replace("/corporate/"+location.search+location.hash);
 }catch(e){}})();
 </script>
-<title data-i18n="c.title">QED for Corporate · A quiz for your Christmas party or team building</title>
-<meta name="description" data-i18n-content="c.metadesc" content="A genuinely funny quiz night for your team, from €150 + VAT per event with a live host. Offsites, client events and team days in Valencia, Madrid, Barcelona, Murcia & Santiago.">
+<title data-i18n="te.title">QED for Team Events · A quiz for your team dinner</title>
+<meta name="description" data-i18n-content="te.metadesc" content="Got stuck organising the team dinner? A quiz with a live host and nothing to prepare. From €181.50 for the group, VAT included.">
 <meta name="theme-color" content="#FBF6EA">
-<meta property="og:title" data-i18n-content="c.title" content="QED for Corporate · A quiz for your Christmas party or team building">
-<meta property="og:description" data-i18n-content="c.metadesc" content="A genuinely funny quiz night for your team, from €150 + VAT per event with a live host. Offsites, client events and team days in Valencia, Madrid, Barcelona, Murcia & Santiago.">
+<meta property="og:title" data-i18n-content="te.title" content="QED for Team Events · A quiz for your team dinner">
+<meta property="og:description" data-i18n-content="te.metadesc" content="Got stuck organising the team dinner? A quiz with a live host and nothing to prepare. From €181.50 for the group, VAT included.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <!-- build:seo -->
@@ -26,8 +26,7 @@
 <link rel="apple-touch-icon" href="/shared/qed-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Inter (600/900) is only for the projector slide in #features: it is the real slides' face. -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&family=Inter:wght@600;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css?v=20261010">
 <link rel="stylesheet" href="/shared/corporate.css">
 <script>window.QED_SITE = "corporate";</script>
@@ -35,7 +34,8 @@
 <script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
 </head>
 <body>
-<!-- Icon sprite for the cx- sections (24px grid, stroked; styled by .cx-i). Decorative only. -->
+<!-- Icon sprite for the cx- sections (24px grid, stroked; styled by .cx-i). Decorative only.
+     Pruned to the symbols this page uses; /corporate/ carries the full set. -->
 <svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
   <symbol id="cx-i-team" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M6.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="5" cy="10" r="2"/><path d="M1.5 18a3.5 3.5 0 0 1 4.3-3.4"/><circle cx="19" cy="10" r="2"/><path d="M22.5 18a3.5 3.5 0 0 0-4.3-3.4"/></symbol>
   <symbol id="cx-i-offsite" viewBox="0 0 24 24"><rect x="3.5" y="3" width="17" height="11.5" rx="1.2"/><path d="M7 11l3-3 2.5 2 4.5-4"/><path d="M12 14.5v3M8 21.5l4-4 4 4"/></symbol>
@@ -44,24 +44,16 @@
   <symbol id="cx-i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M8 14.5h3"/></symbol>
   <symbol id="cx-i-doc" viewBox="0 0 24 24"><path d="M14 3H6.5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8.5z"/><path d="M14 3v5.5h5.5"/><path d="M8.5 14.5l2.3 2.3 4.2-4.6"/></symbol>
   <symbol id="cx-i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
-  <symbol id="cx-i-trophy" viewBox="0 0 24 24"><path d="M7.5 3.5h9V9a4.5 4.5 0 0 1-9 0V3.5z"/><path d="M7.5 5.5h-3a3 3 0 0 0 3.3 4"/><path d="M16.5 5.5h3a3 3 0 0 1-3.3 4"/><path d="M12 13.5V17"/><path d="M8.5 20.5h7"/><path d="M9.5 20.5l.6-3.5h3.8l.6 3.5"/></symbol>
   <symbol id="cx-i-pin" viewBox="0 0 24 24"><path d="M12 21.5s-7-6.1-7-11.5a7 7 0 0 1 14 0c0 5.4-7 11.5-7 11.5z"/><circle cx="12" cy="10" r="2.5"/></symbol>
   <symbol id="cx-i-mic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21M8.5 21h7"/></symbol>
   <symbol id="cx-i-micoff" viewBox="0 0 24 24"><path d="M15 9.5V5.5a3 3 0 0 0-5.7-1.3"/><path d="M9 9v2a3 3 0 0 0 4.6 2.5"/><path d="M18.5 11a6.5 6.5 0 0 1-1 3.4M5.5 11a6.5 6.5 0 0 0 9.7 5.7"/><path d="M12 17.5V21M8.5 21h7"/><path d="M3 3l18 18"/></symbol>
-  <symbol id="cx-i-score" viewBox="0 0 24 24"><rect x="3.5" y="12" width="4.5" height="8.5" rx="1"/><rect x="9.75" y="4" width="4.5" height="16.5" rx="1"/><rect x="16" y="8.5" width="4.5" height="12" rx="1"/></symbol>
   <symbol id="cx-i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.6a4.3 4.3 0 1 0 0 6.8"/><path d="M7.5 10.6h6M7.5 13.4h6"/></symbol>
   <symbol id="cx-i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
-  <symbol id="cx-i-store" viewBox="0 0 24 24"><path d="M3.5 9 5 4h14l1.5 5"/><path d="M3.5 9a2.75 2.75 0 0 0 5.5 0 3 3 0 0 0 6 0 2.75 2.75 0 0 0 5.5 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/></symbol>
-  <symbol id="cx-i-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7.5 4.5 3.5 4.5v13c4 0 6.5.5 8.5 2 2-1.5 4.5-2 8.5-2v-13c-4 0-6.5.5-8.5 2z"/><path d="M12 6.5v13"/></symbol>
-  <symbol id="cx-i-party" viewBox="0 0 24 24"><path d="M3.5 20.5l4.8-12.3 7.5 7.5z"/><path d="M6.3 13.4l4.3 4.3"/><path d="M13.5 9.5c1.6-1.6 1.6-3.4.6-4.9M14.5 10.5c1.6-1.6 3.4-1.6 4.9-.6"/><path d="M12 3v.01M20.5 4.5v.01M21 12v.01M17.5 3.5l-.6 1.6"/></symbol>
   <symbol id="cx-i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V5.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2V7"/><path d="M3 12.5h18M10.5 12.5v2h3v-2"/></symbol>
-  <symbol id="cx-i-image" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.7"/><path d="M21 15.5l-5-5-9 9"/></symbol>
-  <symbol id="cx-i-music" viewBox="0 0 24 24"><path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
-  <symbol id="cx-i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4.5" rx="1"/><path d="M5 13v7.5h14V13"/><path d="M12 8.5v12"/><path d="M12 8.5C10.7 5.4 6.5 4.6 6.5 7c0 1.3 2.4 1.5 5.5 1.5zM12 8.5c1.3-3.1 5.5-3.9 5.5-1.5 0 1.3-2.4 1.5-5.5 1.5z"/></symbol>
+  <symbol id="cx-i-store" viewBox="0 0 24 24"><path d="M3.5 9 5 4h14l1.5 5"/><path d="M3.5 9a2.75 2.75 0 0 0 5.5 0 3 3 0 0 0 6 0 2.75 2.75 0 0 0 5.5 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="cx-i-party" viewBox="0 0 24 24"><path d="M3.5 20.5l4.8-12.3 7.5 7.5z"/><path d="M6.3 13.4l4.3 4.3"/><path d="M13.5 9.5c1.6-1.6 1.6-3.4.6-4.9M14.5 10.5c1.6-1.6 3.4-1.6 4.9-.6"/><path d="M12 3v.01M20.5 4.5v.01M21 12v.01M17.5 3.5l-.6 1.6"/></symbol>
   <symbol id="cx-i-chat" viewBox="0 0 24 24"><path d="M4 5.5h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V7A1.5 1.5 0 0 1 4 5.5z"/><path d="M16.5 9H20a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 20 18h-1.5v3L15 18h-4.5a1.5 1.5 0 0 1-1.5-1.5"/></symbol>
-  <symbol id="cx-i-sliders" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
   <symbol id="cx-i-phone" viewBox="0 0 24 24"><path d="M5 3.5h3.2l1.6 4.2-2.1 1.4a11 11 0 0 0 5.2 5.2l1.4-2.1 4.2 1.6V17a2 2 0 0 1-2 2A15.5 15.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/></symbol>
-  <symbol id="cx-i-quote" viewBox="0 0 24 24"><path d="M4 6.5h16a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 17.5h-9l-4.5 3.5v-3.5H4A1.5 1.5 0 0 1 2.5 16V8A1.5 1.5 0 0 1 4 6.5z"/><path d="M8 10.5v2.5M8 10.5h1.5M13 10.5v2.5M13 10.5h1.5"/></symbol>
   <symbol id="cx-i-bulb" viewBox="0 0 24 24"><path d="M9 17.5h6M10 21h4"/><path d="M12 2.5a6.5 6.5 0 0 0-4 11.6c.6.5 1 1.3 1 2.1v1.3h6v-1.3c0-.8.4-1.6 1-2.1a6.5 6.5 0 0 0-4-11.6z"/></symbol>
 </svg>
 
@@ -76,7 +68,6 @@
       <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg>
     </button>
     <nav class="nav__links">
-      <a href="#what" data-i18n="c.nav.what">What it is</a>
       <a href="#price" data-i18n="c.nav.price">Prices</a>
       <a href="#how" data-i18n="c.nav.how">How it works</a>
       <a href="#faq" data-i18n="c.nav.faq">FAQ</a>
@@ -89,8 +80,11 @@
 
   <!-- ============ 1. HERO ============ -->
   <!-- Full-bleed real photo (TR15 quiz night: a host with the mic, teams at their tables), under a
-       dark gradient. With ?v=cena, shared/cena-variant.js (configured by window.QED_CENA at the
-       bottom) re-points #c-hero-h1, #c-hero-sub and #c-hero-cta to the c.*cena keys. -->
+       dark gradient. First the audience switch (two pages, one control: the labels name the job, the
+       order is always [company page, team page] so it does not jump between pages, and the current
+       page is not a link), then the self-select H1 and the group-price hook. With ?v=cena,
+       shared/cena-variant.js re-points #c-hero-h1, #c-hero-sub and #c-hero-cta to the keys in
+       window.QED_CENA (bottom of the page). -->
   <section class="hero cx-hero">
     <picture class="cx-hero__bg">
       <source media="(max-width:700px)" type="image/webp" srcset="/shared/hero-host-800.webp">
@@ -100,35 +94,63 @@
     </picture>
     <div class="wrap cx-hero__in">
       <div class="cx-hero__copy reveal">
-        <!-- Audience switch: this page is the one for whoever books for a company; /team-events/ is
-             for the person organising it for their own team. Plain link, no query string (with
-             ?v=cena, shared/cena-variant.js appends it). -->
         <nav class="cx-aud" aria-label="Who is this page for?" data-i18n-aria="aud.label">
-          <span class="cx-aud__opt" aria-current="page"><span class="cx-aud__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-brief"/></svg></span><span class="cx-aud__t" data-i18n="aud.booker.t">HR, office or events</span><span class="cx-aud__go" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span>
-          <a class="cx-aud__opt" href="/team-events/" data-aud-link><span class="cx-aud__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span><span class="cx-aud__t" data-i18n="aud.org.t">Organising it for my team</span><span class="cx-aud__go" aria-hidden="true">&rarr;</span></a>
+          <a class="cx-aud__opt" href="/corporate/" data-aud-link><span class="cx-aud__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-brief"/></svg></span><span class="cx-aud__t" data-i18n="aud.booker.t">HR, office or events</span><span class="cx-aud__go" aria-hidden="true">&rarr;</span></a>
+          <span class="cx-aud__opt" aria-current="page"><span class="cx-aud__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span><span class="cx-aud__t" data-i18n="aud.org.t">Organising it for my team</span><span class="cx-aud__go" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span>
         </nav>
-        <!-- SEASONAL (Sep-Dec 2026): c.hero.tag is the Christmas / cenas de empresa version.
-             Revert it (EN here + ES in i18n-corporate.js) to a plain "Hosted in <cities>" tag after mid-December. -->
-        <span class="tag tag--accent tag--shadow cx-hero__tag" data-i18n="c.hero.tag">Christmas &amp; end-of-year parties 2026 · Valencia, Madrid*, Barcelona*, Murcia* &amp; Santiago*</span>
-        <h1 class="h-display cx-hero__h1" id="c-hero-h1"><span data-i18n="c.hero.h1a">Team building people </span><span class="accent" data-i18n="c.hero.h1b">actually enjoy.</span></h1>
-        <p class="cx-hero__sub" id="c-hero-sub" data-i18n="c.hero.sub">Team trivia tailored to your group: we bring the host, the questions, the tech and the fun; you bring the people.</p>
+        <!-- SEASONAL (Sep-Dec 2026): te.hero.tag is the team-dinner / Christmas version.
+             Revert it (EN here + ES in i18n-team-events.js) to a plain "Hosted in <cities>" tag after mid-December. -->
+        <span class="tag tag--accent tag--shadow cx-hero__tag" data-i18n="te.hero.tag">Team dinners &amp; Christmas 2026 · Valencia, Madrid*, Barcelona*, Murcia* &amp; Santiago*</span>
+        <h1 class="h-display cx-hero__h1" id="c-hero-h1"><span data-i18n="te.hero.h1a">Got stuck organising it? </span><span class="accent" data-i18n="te.hero.h1b">We make it easy.</span></h1>
+        <p class="cx-hero__sub" id="c-hero-sub" data-i18n="te.hero.sub">A team quiz with a live host. Tell us the date, the place and how many of you; we set up, host and pack away.</p>
         <ul class="cx-hero__facts">
           <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-clock"/></svg><span data-i18n="c.hero.f1">90 minutes</span></li>
           <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-team"/></svg><span data-i18n="c.hero.f2">10 to 300+ people</span></li>
           <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-chat"/></svg><span data-i18n="c.hero.f3">English or Spanish</span></li>
-          <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-sliders"/></svg><span data-i18n="c.hero.f4">Tailored to your team</span></li>
+          <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-coin"/></svg><span data-i18n="te.hero.f4">Fixed price</span></li>
         </ul>
         <div class="cx-hero__ctas">
           <a class="btn btn--cta btn--lg" href="#quote"><span id="c-hero-cta" data-i18n="c.cta.tell">Tell us about your event</span> <span class="arr">&rarr;</span></a>
           <p class="cx-hero__call"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-phone"/></svg><span data-i18n="c.hero.call">We call you back, usually the same working day.</span></p>
         </div>
-        <!-- The hook is the lowest tier (up to 25 people at a partner venue), so its condition sits right beside it. -->
-        <p class="cx-hero__price"><strong data-i18n="c.hero.price">From €150 + VAT</strong> <span data-i18n="c.hero.priceiva">(€181.50 incl. VAT)</span><br><span data-i18n="c.hero.pricecond">Up to 25 people, at one of our venues.</span> <a href="#price" data-i18n="c.hero.pricelink">See prices</a></p>
+        <!-- The hook is the GROUP price with VAT included (a price per group, not per head); per head
+             is a worked example, because it is only exact for 25 people at a partner venue.
+             150 x 1.21 = 181.50; 181.50 / 25 = 7.26; 181.50 / 12 = 15.125; 200 x 1.21 = 242. -->
+        <p class="cx-hero__price"><strong data-i18n="te.hero.price">€181.50 for the group, VAT included</strong><br><span data-i18n="te.hero.pricecond">Up to 25 people at one of our venues: €7.26 each if you are 25, about €15 each if you are 12. At your place, €242.</span> <a href="#price" data-i18n="c.hero.pricelink">See prices</a></p>
       </div>
     </div>
   </section>
 
-  <!-- ============ 2. PROOF ============ -->
+  <!-- ============ 2. EASY: THE PERSON ORGANISING IT ============ -->
+  <!-- Moved from the company page's #organiser (Oct 2026): ticks, card and button as they were, only
+       the H2 is new and the payment tick no longer says "one payment" (the 11-12 Dec deposit makes it
+       two). Per person, for 25, VAT included: 242 / 25 = 9.68 (their place), 181.50 / 25 = 7.26
+       (ours). The button preselects the dinner (data-preselect-event, shared/cena-variant.js: on every
+       visit, not only under ?v=cena). -->
+  <section id="easy" class="section section--tight">
+    <div class="wrap">
+      <div class="card cx-org reveal">
+        <div>
+          <span class="eyebrow" data-i18n="te.easy.eyebrow">For whoever's organising</span>
+          <h2 class="h2" data-i18n="te.easy.h2">Easier than it sounds.</h2>
+          <ul class="ticks">
+            <li data-i18n="te.easy.1">You don't need to be the company: you can get in touch yourself.</li>
+            <li data-i18n="te.easy.2">Pay by card link or bank transfer. Split it however you like.</li>
+            <li data-i18n="te.easy.3">Ask even if the date is close.</li>
+            <li data-i18n="te.easy.4">You can change the headcount until 3 working days before.</li>
+          </ul>
+        </div>
+        <div class="cx-pp">
+          <p class="cx-pp__h" data-i18n="te.easy.pph">Per person, for 25, VAT included</p>
+          <div class="cx-pp__row"><span class="cx-pp__v" data-i18n="te.easy.pp1v">€9.68</span><span class="cx-pp__l" data-i18n="te.easy.pp1l">at your restaurant</span></div>
+          <div class="cx-pp__row cx-pp__row--ours"><span class="cx-pp__v" data-i18n="te.easy.pp2v">€7.26</span><span class="cx-pp__l" data-i18n="te.easy.pp2l">at one of our venues</span></div>
+          <a class="btn btn--cta btn--block" href="#quote" data-preselect-event="christmas-dinner"><span data-i18n="te.easy.cta">Tell us about your dinner</span> <span class="arr">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. PROOF ============ -->
   <!-- Real numbers only (no testimonials, logos or client names: none with permission yet).
        Locations: QED 7, TDT 6 (no Barcelona), via data-count-es. Photos: TR15 (Tony Roma's,
        Nov 2023) and El Garaje (Valencia, Jun 2023), cropped clear of the QED watermark. -->
@@ -158,40 +180,11 @@
     </div>
   </section>
 
-  <!-- ============ 3. WHAT IT IS ============ -->
-  <section id="what" class="section section--tight">
-    <div class="wrap cx-what">
-      <div class="cx-hd reveal">
-        <span class="eyebrow" data-i18n="c.what.eyebrow">What it is</span>
-        <h2 class="h2" data-i18n="c.what.h2">Not your usual pub quiz.</h2>
-        <p class="lead" data-i18n="c.what.lead">A game show for your team, with a host who runs the room. 90 minutes that fly by.</p>
-      </div>
-      <div class="cx-what__cards reveal">
-        <div class="card card--sm cx-what__card">
-          <span class="cx-tile" style="background:var(--orange-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span>
-          <div><h3 class="h3" data-i18n="c.what.1t">In teams</h3><p data-i18n="c.what.1d">Every table is a team. You play by talking, arguing and scribbling answers.</p></div>
-        </div>
-        <div class="card card--sm cx-what__card">
-          <span class="cx-tile" style="background:var(--yellow)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-music"/></svg></span>
-          <div><h3 class="h3" data-i18n="c.what.2t">Not exam questions</h3><p data-i18n="c.what.2d">Music, pictures, maps, emojis and flags, plus a few surprises along the way.</p></div>
-        </div>
-        <div class="card card--sm cx-what__card">
-          <span class="cx-tile" style="background:var(--green-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-score"/></svg></span>
-          <div><h3 class="h3" data-i18n="c.what.3t">A live leaderboard</h3><p data-i18n="c.what.3d">The scores go up on screen after every round. The rivalry starts in round two.</p></div>
-        </div>
-        <div class="card card--sm cx-what__card">
-          <span class="cx-tile" style="background:var(--red-soft)" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-trophy"/></svg></span>
-          <div><h3 class="h3" data-i18n="c.what.4t">One team wins</h3><p data-i18n="c.what.4d">And at least one answer gets argued about until dessert.</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 4. WHY COMPANIES BOOK IT ============ -->
+  <!-- ============ 4. WHY IT WORKS FOR TEAMS ============ -->
   <section id="why" class="section section--tight">
     <div class="wrap">
       <div class="card card--ink cx-why reveal">
-        <span class="eyebrow" data-i18n="c.why.eyebrow">Why companies book it</span>
+        <span class="eyebrow" data-i18n="te.why.eyebrow">Why it works for teams</span>
         <h2 class="h2" data-i18n="c.why.h2">Everyone plays. Really.</h2>
         <div class="cx-why__grid">
           <div class="cx-why__item">
@@ -238,8 +231,7 @@
         <div class="cx-inc__ex">
           <p class="cx-label"><span data-i18n="c.inc.exh">If you want them (extra)</span><small data-i18n="c.inc.exsub">We quote them on the call.</small></p>
           <ul class="cx-list cx-list--ex">
-            <li data-i18n="c.ex.1">Rounds and a theme about your company</li>
-            <li data-i18n="c.ex.6">Branded slides with your logo</li>
+            <li data-i18n="te.ex.1">Rounds about your team</li>
             <li data-i18n="c.ex.2">Prizes for the winning team</li>
             <li data-i18n="c.ex.3">Custom trophies</li>
             <li data-i18n="c.ex.4">Live rounds: card towers, modelling, karaoke</li>
@@ -254,62 +246,7 @@
     </div>
   </section>
 
-  <!-- ============ 6. CUSTOMISED (extra) ============ -->
-  <!-- Custom rounds are an extra (quoted on the call), so every example carries the flag. The
-       slide is one of our real question slides; decorative (aria-hidden), the cards say it. -->
-  <section id="custom" class="section section--tight">
-    <div class="wrap">
-      <div class="cx-hd reveal">
-        <span class="eyebrow" data-i18n="c.cust.eyebrow">Make it yours</span>
-        <h2 class="h2" data-i18n="c.cust.h2">What if the questions were about you?</h2>
-        <p class="lead" data-i18n="c.cust.lead">Rounds written for your company. They're an extra: tell us on the call and we'll quote them.</p>
-      </div>
-      <div class="cx-cust">
-        <div class="cx-cust__vis reveal">
-          <div class="cx-slide" aria-hidden="true">
-            <div class="cx-stage">
-              <div class="cx-stage__body">
-                <span class="cx-stage__kicker" data-i18n="c.feat.mock.round">R3 · Question 4 of 10</span>
-                <div class="cx-stage__card">
-                  <p class="cx-stage__q" data-i18n="c.feat.mock.q">How many coffees does your office get through a day?</p>
-                  <ol class="cx-stage__opts">
-                    <li><b>A</b><span>12</span></li>
-                    <li><b>B</b><span>48</span></li>
-                    <li><b>C</b><span>112</span></li>
-                    <li><b>D</b><span data-i18n="c.feat.mock.d">Too many</span></li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <ul class="cx-rounds reveal">
-          <li class="card card--sm cx-round">
-            <span class="cx-round__top"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-quote"/></svg><span class="cx-flag" data-i18n="c.cust.extra">Extra</span></span>
-            <h3 data-i18n="c.cust.r1t">Who in the office said this?</h3>
-            <p data-i18n="c.cust.r1d">The team's legendary lines. Guess who said them.</p>
-          </li>
-          <li class="card card--sm cx-round">
-            <span class="cx-round__top"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-image"/></svg><span class="cx-flag" data-i18n="c.cust.extra">Extra</span></span>
-            <h3 data-i18n="c.cust.r2t">Guess the baby photo</h3>
-            <p data-i18n="c.cust.r2d">Send us childhood photos and the teams guess who's who.</p>
-          </li>
-          <li class="card card--sm cx-round">
-            <span class="cx-round__top"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-book"/></svg><span class="cx-flag" data-i18n="c.cust.extra">Extra</span></span>
-            <h3 data-i18n="c.cust.r3t">Company history</h3>
-            <p data-i18n="c.cust.r3d">Dates, milestones and stories only the old hands know.</p>
-          </li>
-          <li class="card card--sm cx-round">
-            <span class="cx-round__top"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-brief"/></svg><span class="cx-flag" data-i18n="c.cust.extra">Extra</span></span>
-            <h3 data-i18n="c.cust.r4t">Questions about your industry</h3>
-            <p data-i18n="c.cust.r4d">So the experts can prove they are. Or not.</p>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 7. HOW IT WORKS ============ -->
+  <!-- ============ 6. HOW IT WORKS ============ -->
   <section id="how" class="section section--tight">
     <div class="wrap">
       <div class="cx-hd reveal">
@@ -336,46 +273,18 @@
     </div>
   </section>
 
-  <!-- ============ 8. OCCASIONS ============ -->
-  <section id="occasions" class="section section--tight">
-    <div class="wrap">
-      <div class="cx-hd reveal">
-        <span class="eyebrow" data-i18n="c.uc.eyebrow">Occasions</span>
-        <h2 class="h2" data-i18n="c.uc.h2">Any excuse to get the team together.</h2>
-      </div>
-      <ul class="cx-occ reveal">
-        <li class="cx-chip" style="--tint:var(--red-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-gift"/></svg></span><span data-i18n="c.uc.c1">Christmas dinners</span></li>
-        <li class="cx-chip" style="--tint:var(--orange-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-dinner"/></svg></span><span data-i18n="c.uc.c2">Company lunches</span></li>
-        <li class="cx-chip" style="--tint:var(--yellow-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span><span data-i18n="c.uc.c3">Team building</span></li>
-        <li class="cx-chip" style="--tint:var(--green-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-offsite"/></svg></span><span data-i18n="c.uc.c4">Offsites</span></li>
-        <li class="cx-chip" style="--tint:var(--cream-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cheers"/></svg></span><span data-i18n="c.uc.c5">Client events</span></li>
-        <li class="cx-chip" style="--tint:var(--yellow)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-party"/></svg></span><span data-i18n="c.uc.c6">Company celebrations</span></li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ============ 9. POINTER to the team page (the old #organiser card's successor) ============ -->
-  <section id="teaser" class="section section--tight">
-    <div class="wrap">
-      <div class="cx-pointer reveal">
-        <p><strong data-i18n="aud.strip.org.t">Organising it for your own team?</strong> <span data-i18n="aud.strip.org.d">You don't need to be the company to book. There's a shorter page for you.</span></p>
-        <a class="cx-pointer__link" href="/team-events/" data-aud-link><span data-i18n="aud.strip.org.cta">See team events</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 10. PRICE ============ -->
+  <!-- ============ 7. PRICE ============ -->
   <!-- Founder pricing (4 Oct 2026; source: the "Classic" column of the TdT private-events sheet).
        One price per event by group size, €50 less at a partner venue because nothing has to be
        moved, more than 75 people quoted. Only the full hosted format is offered. Extras carry no
        prices on the page: they are quoted on the call. The 11-12 Dec deposit is said here once
-       (and in the FAQ: payment, changes). -->
+       (and in the FAQ: changes). -->
   <section id="price" class="section section--tight">
     <div class="wrap">
       <div class="cx-hd reveal">
         <span class="eyebrow" data-i18n="c.price.eyebrow">Price</span>
         <h2 class="h2" data-i18n="c.price.h2">One fixed price for the whole group.</h2>
-        <p class="lead" data-i18n="c.price.lead">It goes by group size: for 25 people that's €8 + VAT a head, or €6 at one of our venues.</p>
+        <p class="lead" data-i18n="te.price.lead">It goes by group size, not per person: up to 25 people it's €181.50 with VAT at one of our venues, or €242 at your place. If you are 25, that is €7.26 or €9.68 each.</p>
       </div>
 
       <div class="card cx-price reveal">
@@ -412,8 +321,7 @@
           <div>
             <p class="cx-band__h"><span data-i18n="c.price.exh">Extras</span> <span class="cx-band__sub" data-i18n="c.price.exsub">Quoted on the call, only if you want them.</span></p>
             <ul class="cx-band__list cx-band__list--ex">
-              <li data-i18n="c.ex.1">Rounds and a theme about your company</li>
-              <li data-i18n="c.ex.6">Branded slides with your logo</li>
+              <li data-i18n="te.ex.1">Rounds about your team</li>
               <li data-i18n="c.ex.2">Prizes for the winning team</li>
               <li data-i18n="c.ex.3">Custom trophies</li>
               <li data-i18n="c.ex.4">Live rounds: card towers, modelling, karaoke</li>
@@ -475,19 +383,30 @@
     </div>
   </section>
 
-  <!-- ============ FAQ ============ -->
+  <!-- ============ 8. POINTER to the company page ============ -->
+  <section id="teaser" class="section section--tight">
+    <div class="wrap">
+      <div class="cx-pointer reveal">
+        <p><strong data-i18n="aud.strip.booker.t">Booking for a company?</strong> <span data-i18n="aud.strip.booker.d">Need sign-off, an invoice or rounds about your company? The company page has the details.</span></p>
+        <a class="cx-pointer__link" href="/corporate/" data-aud-link><span data-i18n="aud.strip.booker.cta">See company events</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 9. FAQ ============ -->
   <section id="faq" class="section">
     <div class="wrap wrap--narrow">
       <div class="reveal">
         <span class="eyebrow" data-i18n="c.faq.eyebrow">Questions</span>
         <h2 class="h2" style="margin-top:14px" data-i18n="c.faq.h2">The stuff people ask.</h2>
       </div>
-      <!-- Corporate FAQ audit (Oct 2026) + founder answers (4 Oct 2026). Twelve items, in this order:
-           booking (merges the old date-hold item), holding the date while it's approved, price +
-           inclusions, invoice + payment, changes, restaurant/office + set-up, scope, length + time
-           of day, group size, language, cities, see it first. The procurement questions (invoice,
-           changes) moved up from 9th and 10th. Only the first is open. Price and the deposit live
-           once in #price; the FAQ answers in short and doesn't repeat the table. -->
+      <!-- Organiser FAQ (Oct 2026). Eight items, in this order: lead time (open, with the "ask even if
+           the date is close" tick), price per person, restaurant or office, do you organise the dinner,
+           group size, cities, drop-outs and date changes, see it first. Left out against the company
+           page: how long and language (the hero facts and the restaurant answer cover them) and the
+           invoice item, whose answer says "made out to your company" under a page whose first tick
+           says you need not be the company: re-add te.faq.q13 / a13 once a person with no company
+           can be told they get an invoice. Only the first is open. -->
       <div class="faq reveal" style="margin-top:26px">
         <!-- SEASONAL (Sep-Dec 2026): the booking-lead-time item sits first and open for Christmas season.
              After mid-December, move it back to the end, drop its "open", put "open" on whichever
@@ -496,50 +415,32 @@
              to 7 days, no commitment." -->
         <details open>
           <summary><span data-i18n="c.faq.q6">How far ahead should we book?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a6">For December, as early as you can: Fridays and Saturday 12th fill first. After the call we hold your date for up to 7 days, no commitment (72 hours on those dates). The rest of the year, two weeks is usually enough.</div>
+          <div class="ans"><span data-i18n="c.faq.a6">For December, as early as you can: Fridays and Saturday 12th fill first. After the call we hold your date for up to 7 days, no commitment (72 hours on those dates). The rest of the year, two weeks is usually enough.</span> <span data-i18n="te.easy.3">Ask even if the date is close.</span></div>
         </details>
         <details>
-          <summary><span data-i18n="c.faq.q16">Can you hold the date while we get approval?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <!-- SEASONAL (Sep-Dec 2026): after 12 Dec, drop the parenthesis (the 72-hour holds). -->
-          <div class="ans" data-i18n="c.faq.a16">Yes. After a short call you get a fixed price, and we hold your date for up to 7 days, no commitment, while you get sign-off (72 hours on Fridays and Saturday 12 December).</div>
-        </details>
-        <details>
-          <summary><span data-i18n="c.faq.q7">How much is it, and what's included?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a7">From €150 +&nbsp;VAT per event (€181.50 incl. VAT). It goes by group size (€200, €250 or €300 +&nbsp;VAT up to 75 people; more than 75, we quote it) and it's €50 less at one of our venues. The host, the quiz, live scoring, sound and screen are included. Rounds about your company, prizes, trophies, live rounds and a photographer are extras we quote on the call.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="c.faq.q13">Do you invoice? How do we pay?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <!-- SEASONAL (Sep-Dec 2026): drop the last sentence (the 11-12 Dec deposit) after 12 Dec. -->
-          <div class="ans" data-i18n="c.faq.a13">Yes, a VAT invoice made out to your company. You pay by bank transfer or by card (we send you a payment link), before the event and at the latest the day before. For Friday 11 and Saturday 12 December, 30% is paid when you confirm.</div>
-        </details>
-        <details>
-          <!-- SEASONAL (Sep-Dec 2026): after 12 Dec, drop the clause after the semicolon (the deposit). -->
-          <summary><span data-i18n="c.faq.q14">What if the date or the headcount changes?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a14">You can change the headcount until 3 working days before, and the price follows the tier. One date change is free if you tell us at least 7 days ahead, subject to availability. Cancelling is free up to 7 days before; after that, the 11-12 December deposit isn't refunded, but you can use it for another date within 3 months.</div>
+          <summary><span data-i18n="te.faq.q7">How much is it per person?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="te.faq.a7">It's a price per group, not per person: €150 +&nbsp;VAT for up to 25 people at one of our venues (€181.50 with VAT, so €7.26 each for 25), or €200 +&nbsp;VAT at your restaurant or office (€242, so €9.68 each). Fewer of you means a higher price per head: 10 people at one of our venues is €18.15 each (€24.20 at your place). From 26 to 75 people it's €200 to €300 +&nbsp;VAT; more than 75, we quote it. The host, the quiz, live scoring, sound and screen are included. Rounds about your team, prizes, trophies, live rounds and a photographer are extras we quote on the call.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q10">We've booked a restaurant (or it's at the office). Do you come there?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
           <div class="ans" data-i18n="c.faq.a10">Yes, that's the usual setup. We play before or after the meal and sort it out with the place. We bring our own sound and screen; if there's already a screen or projector and sound, we use theirs, which keeps it simple. All we need is a power socket and a little time to set up.</div>
         </details>
         <details>
-          <summary><span data-i18n="c.faq.q12">Do you organise the offsite or the dinner too?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a12">No, our part is the quiz. The dinner, catering, travel and the rest of the offsite are yours to organise (or your event organiser's). No venue yet? We'll recommend one, ideally one of our venues: it's €50 cheaper because they're already set up for the quiz.</div>
-        </details>
-        <details>
-          <summary><span data-i18n="c.faq.q2">How long is it, and when?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a2">About 90 minutes. At lunchtime, in the afternoon or in the evening, right before or after the meal: we fit it to your schedule.</div>
+          <summary><span data-i18n="te.faq.q12">Do you organise the dinner too?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="te.faq.a12">No, our part is the quiz. The dinner, the catering and the travel are yours to organise. No venue yet? We'll recommend one, ideally one of our venues: it's €50 cheaper because they're already set up for the quiz.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q1">How many people can play?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
           <div class="ans" data-i18n="c.faq.a1">From 10 to 300+, in teams at each table. Nobody needs to know everything: there are picture, music and map rounds, and the host keeps it moving so nobody's left out.</div>
         </details>
         <details>
-          <summary><span data-i18n="c.faq.q5">English or Spanish?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="c.faq.a5">Either, or bilingual for international teams. We have hosts in both languages.</div>
-        </details>
-        <details>
           <summary><span data-i18n="c.faq.q3">Which cities do you cover?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
           <div class="ans" data-i18n="c.faq.a3">Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela. Somewhere else? Pick "Elsewhere" in the form and we'll look into it. Outside Valencia we work with local hosts and venues, and some services (such as live rounds, the photographer or our own sound kit) depend on availability. We'll confirm it on the call.</div>
+        </details>
+        <details>
+          <!-- SEASONAL (Sep-Dec 2026): after 12 Dec, drop the clause after the semicolon (the deposit). -->
+          <summary><span data-i18n="c.faq.q14">What if the date or the headcount changes?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans" data-i18n="c.faq.a14">You can change the headcount until 3 working days before, and the price follows the tier. One date change is free if you tell us at least 7 days ahead, subject to availability. Cancelling is free up to 7 days before; after that, the 11-12 December deposit isn't refunded, but you can use it for another date within 3 months.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q15">Can we see it before we book?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -549,7 +450,7 @@
     </div>
   </section>
 
-  <!-- ============ 12. WE KNOW TRIVIA ============ -->
+  <!-- ============ 10. WE KNOW TRIVIA ============ -->
   <!-- Two lines instead of the shared About section: this page carries no About partial. -->
   <section class="section section--tight" style="padding-top:0">
     <div class="wrap">
@@ -560,11 +461,12 @@
     </div>
   </section>
 
-  <!-- ============ 13. FINAL CTA + QUOTE FORM ============ -->
+  <!-- ============ 11. FINAL CTA + QUOTE FORM ============ -->
   <!-- Contact-first (data-contact-first, shared/qed.js): step 1 (event type, first name, phone,
-       email) is the whole lead, and step 2 only enriches it. Celebrations keeps the classic flow.
-       The form's markup, names, ids and data- hooks are unchanged; only the intro panel and the
-       step-1 button's wording (c.form.callme) are new. -->
+       email) is the whole lead, and step 2 only enriches it. The same form as /corporate/, relabelled
+       for the person organising it: it posts page=corporate (one funnel, one lead value, one Brevo
+       list) and audience=organiser (the call alert's headline and the deal name read it). Ids and
+       data- hooks are unchanged: shared/qed.js and shared/cena-variant.js rely on them. -->
   <section id="quote" class="section section--tight">
     <div class="wrap">
       <div class="card reveal split split--flush" style="--split:0.85fr 1.15fr;overflow:hidden">
@@ -577,28 +479,29 @@
           <p class="cx-quote__call quote-intro__more"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="c.form.hold">Booking for December? We'll hold your date, no commitment, while you get sign-off: up to 7 days, or 72 hours on Fridays and Saturday 12th.</span></p>
         </div>
         <div class="pad">
-          <form id="event-form" name="corporate-event" novalidate data-action="/.netlify/functions/book-event" data-contact-first>
+          <form id="event-form" name="team-event" novalidate data-action="/.netlify/functions/book-event" data-contact-first>
             <input type="hidden" name="page" value="corporate">
-            <input type="hidden" name="audience" value="booker">
+            <input type="hidden" name="audience" value="organiser">
             <p class="hp"><label><span data-i18n="form.hp">Leave this empty</span> <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
             <div class="form-body">
               <div data-step="1">
                 <div class="form-grid">
                   <!-- Event type: one tap on a card, not a dropdown (only four options). Real radios, so
-                       keyboard and screen readers get a native radio group. Each radio submits its
-                       localized label, exactly what the old <option>s posted (Telegram and the Brevo deal
-                       read "Company dinner / Christmas" / "Cena de empresa / Navidad"): value= is the
-                       baked English and data-i18n-value swaps in the same ES key as the card's text.
-                       data-key is only for the preselect script below. The fieldset (id c-event) carries
-                       the error hint and aria-invalid (shared/qed.js initContactFirst). -->
+                       keyboard and screen readers get a native radio group. The card text is the team
+                       wording (te.form.et*), but each radio posts the label the portal decodes, exactly as
+                       on /corporate/: value= is the baked English label and data-i18n-value swaps in its ES
+                       one (Company dinner / Christmas, Team building, Company offsite and Something else
+                       decode by their exact EN or ES label, so do not "improve" a value). data-key is only
+                       for the preselect script. The fieldset (id c-event) carries the error hint and
+                       aria-invalid (shared/qed.js initContactFirst). -->
                   <fieldset class="full cx-et" id="c-event" role="radiogroup" aria-labelledby="c-event-lg" aria-required="true">
                     <legend class="label" id="c-event-lg"><span data-i18n="c.form.eventType">What kind of event?</span> <span class="req" aria-hidden="true">*</span></legend>
                     <div class="cx-et__grid">
                       <!-- SEASONAL: listed first Sep-Dec; move it below the others (or drop it) after mid-December. -->
-                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Company dinner / Christmas" data-i18n-value="c.form.et0" data-key="christmas-dinner" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-dinner"/></svg></span><span data-i18n="c.form.et0">Company dinner / Christmas</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
-                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Team building" data-i18n-value="c.form.et1" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span><span data-i18n="c.form.et1">Team building</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
-                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Company offsite" data-i18n-value="c.form.et2" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-offsite"/></svg></span><span data-i18n="c.form.et2">Company offsite</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
-                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Client entertainment" data-i18n-value="c.form.et3" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cheers"/></svg></span><span data-i18n="c.form.et3">Client entertainment</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
+                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Company dinner / Christmas" data-i18n-value="c.form.et0" data-key="christmas-dinner" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-dinner"/></svg></span><span data-i18n="te.form.et0">Team dinner / Christmas</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
+                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Team building" data-i18n-value="c.form.et1" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span><span data-i18n="te.form.et1">Team building / team day</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
+                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Company offsite" data-i18n-value="c.form.et2" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-offsite"/></svg></span><span data-i18n="te.form.et2">Team offsite</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
+                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Something else" data-i18n-value="te.form.et3" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-party"/></svg></span><span data-i18n="te.form.et3">Something else</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
                     </div>
                     <p class="field-error" id="c-event-err" role="alert" data-i18n="c.form.etReq">Choose the type of event.</p>
                   </fieldset>
@@ -620,8 +523,8 @@
                     <p class="form-hint" id="c-phone-hint" data-i18n="c.form.phonehint">So we can call you about the details. Only used for this request.</p>
                   </div>
                   <div class="full">
-                    <label class="label" for="c-email"><span data-i18n="c.form.workemail">Work email</span> <span class="req">*</span></label>
-                    <input class="input" id="c-email" type="email" name="email" autocomplete="email" inputmode="email" enterkeyhint="send" autocapitalize="none" spellcheck="false" data-i18n-ph="c.ph.email" placeholder="name@company.com" required>
+                    <label class="label" for="c-email"><span data-i18n="form.email">Email</span> <span class="req">*</span></label>
+                    <input class="input" id="c-email" type="email" name="email" autocomplete="email" inputmode="email" enterkeyhint="send" autocapitalize="none" spellcheck="false" data-i18n-ph="te.ph.email" placeholder="name@email.com" required>
                   </div>
                   <div class="full">
                     <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="c.form.callme">Tell us about your event</span> <span class="arr">&rarr;</span></button>
@@ -668,7 +571,7 @@
                       </select>
                     </div>
                     <div>
-                      <label class="label" for="c-company" data-i18n="c.form.company">Company</label>
+                      <label class="label" for="c-company" data-i18n="te.form.company">Company or team</label>
                       <input class="input" id="c-company" name="company" autocomplete="organization">
                     </div>
                     <div class="full">
@@ -749,18 +652,20 @@
   </div>
 </footer>
 
-<!-- Christmas ad-group variant (?v=cena, SEASONAL). Config only: the logic is shared/cena-variant.js,
-     which must load BEFORE i18n.js (see its header). Each pair is [i18n key, baked English]; the
-     English is the text i18n.js caches and swaps for the Spanish string. -->
+<!-- Christmas ad-group variant (?v=cena). SEASONAL (Sep-Dec 2026). This page's [i18nKey, English]
+     pairs for the hero H1, sub and CTA; shared/cena-variant.js does the rest and must load before
+     i18n.js (it bakes their English so i18n.js can swap in the ES). The same file wires the
+     [data-preselect-event] button in #easy, on every visit. -->
 <script>window.QED_CENA = {
-  h1a: ["c.hero.h1cenaa", "Your company dinner, "],
+  h1a: ["te.hero.h1cenaa", "Your team dinner, "],
   h1b: ["c.hero.h1cenab", "with a quiz people remember."],
-  sub: ["c.hero.subcena", "Team trivia before or after the company dinner or lunch: we bring the host, the questions, the tech and the fun; you bring the people."],
+  sub: ["te.hero.subcena", "A team quiz before or after the dinner or lunch. Tell us the date and how many of you; we bring the host, the questions and the tech."],
   cta: ["c.cta.holdcena", "Hold your date"]
 };</script>
 <script src="/shared/cena-variant.js"></script>
 <script src="/shared/i18n-common.js?v=20261013"></script>
 <script src="/shared/i18n-corporate.js?v=20261013"></script>
+<script src="/shared/i18n-team-events.js"></script>
 <script src="/shared/i18n.js?v=20261010"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js?v=20261010"></script>

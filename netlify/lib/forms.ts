@@ -61,11 +61,24 @@ export function json(statusCode: number, body: unknown) {
   };
 }
 
+// ---- Audience: /corporate/ (booker) vs /team-events/ (organiser), Oct 2026 ----
+// Both pages post page=corporate, so lead value, Brevo list and templates, product and the
+// portal's source stay identical. The page says which audience it is in a hidden `audience`
+// field. It is client-supplied, so only the exact string "organiser" is honoured; anything else
+// on a corporate post (including no field at all, a page cached from before the split) is the
+// booker. Other pages have no audience.
+export type Audience = "booker" | "organiser";
+export function audienceOf(d: Dict, page: string): Audience | "" {
+  if (page !== "corporate") return "";
+  return d.audience === "organiser" ? "organiser" : "booker";
+}
+
 // Build the "🌐 Lang … | Country … | Page …" footer line shared by every message, plus a
 // "📣 Source:" line when the lead carries campaign attribution — the founders' per-lead
 // lead-quality feedback loop (tell a €50-CPC paid lead from an organic one at a glance).
 export function metaLine(d: Dict, page: string): string {
-  const base = `🌐 Lang: ${d.lang || "—"} | Country: ${d.country || "—"} | Page: ${page}${d._variant ? ` | v=${d._variant}` : ""}`;
+  const aud = audienceOf(d, page);
+  const base = `🌐 Lang: ${d.lang || "—"} | Country: ${d.country || "—"} | Page: ${page}${aud ? ` | Audience: ${aud}` : ""}${d._variant ? ` | v=${d._variant}` : ""}`;
   const hasAttr = d._utm_source || d._utm_campaign || d._utm_content || d._gclid || d._wbraid || d._gbraid || d._fbclid || d._ref;
   if (!hasAttr) return base;
   const src = d._utm_source || d._ref || "direct";
@@ -272,7 +285,8 @@ export function callChatId(): string | undefined {
 
 export function callAlertText(d: Dict, page: string, now = new Date()): string {
   const es = isEs(d);
-  const label = page === "corporate" ? (es ? "Empresa" : "Corporate") : (PARTIAL_LABEL[page] || page);
+  const org = audienceOf(d, page) === "organiser";
+  const label = page === "corporate" ? (es ? (org ? "Equipo" : "Empresa") : (org ? "Team" : "Corporate")) : (PARTIAL_LABEL[page] || page);
   const mention = process.env[es ? "TELEGRAM_CALL_MENTION_ES" : "TELEGRAM_CALL_MENTION_EN"];
   return [
     `📞 ${es ? "LLAMAR" : "CALL"} [${brandTag()}] ${label} · ${d.eventType}`,
@@ -366,13 +380,13 @@ function brandTag(): string {
 
 // Human-readable deal title per funnel — shown in the Brevo pipeline board, so it needs to
 // let the founders tell leads apart at a glance without opening each one.
-function dealName(d: Dict, page: string): string {
+export function dealName(d: Dict, page: string): string {
   const who = `${d.firstName} ${d.lastName}`.trim();
   const tag = `[${brandTag()}]`;
   switch (page) {
     case "corporate":
     case "celebrations":
-      return `${tag} ${d.eventType || "Event"} — ${who}`;
+      return `${tag} ${d.eventType || "Event"} — ${who}${audienceOf(d, page) === "organiser" ? (isEs(d) ? " (equipo)" : " (team)") : ""}`;
     case "venues":
       return `${tag} ${d.venueName || "Venue"} — ${who}`;
     case "partners":

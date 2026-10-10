@@ -20,7 +20,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.hero.h1a": "Team building que de verdad ",
   "c.hero.h1b": "se disfruta.",
   "c.hero.sub": "Una trivia por equipos adaptada a vuestro grupo: nosotros ponemos el anfitrión, las preguntas, la técnica y la diversión; vosotros, la gente.",
-  // ?v=cena variant (Christmas ad group), swapped in by the inline script in corporate/index.html
+  // ?v=cena variant (Christmas ad group), swapped in by shared/cena-variant.js from window.QED_CENA in corporate/index.html
   "c.hero.h1cenaa": "Tu cena de empresa, ",
   "c.hero.h1cenab": "con una trivia que se recuerda.",
   "c.hero.subcena": "Trivia por equipos antes o después de la cena o la comida de empresa: nosotros ponemos el anfitrión, las preguntas, la técnica y la diversión; vosotros, la gente.",
@@ -94,7 +94,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.cust.eyebrow": "A vuestra medida",
   "c.cust.h2": "¿Y si las preguntas van de vosotros?",
   "c.cust.lead": "Rondas escritas para vuestra empresa. Son un extra: nos lo cuentas en la llamada y te lo presupuestamos.",
-  "c.cust.slidetag": "Extra · Vuestro logo en pantalla",
   "c.cust.extra": "Extra",
   "c.cust.r1t": "¿Quién de la oficina dijo esto?",
   "c.cust.r1d": "Las frases míticas del equipo. A ver quién reconoce al autor.",
@@ -104,9 +103,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.cust.r3d": "Fechas, hitos y anécdotas que solo se saben los veteranos.",
   "c.cust.r4t": "Preguntas de vuestro sector",
   "c.cust.r4d": "Para que los expertos demuestren que lo son. O no.",
-  // the real projector slide (a question slide, logo slot filled)
+  // the real projector slide (a question slide)
   "c.feat.mock.round": "R3 · Pregunta 4 de 10",
-  "c.feat.mock.logo": "Tu logo",
   "c.feat.mock.q": "¿Cuántos cafés se toman al día en vuestra oficina?",
   "c.feat.mock.d": "Demasiados",
 
@@ -130,20 +128,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.uc.c5": "Eventos con clientes",
   "c.uc.c6": "Celebraciones de empresa",
 
-  // 9. the person organising it. Per person for 25, IVA incl.: 242 / 25 and 181,50 / 25.
-  "c.org.eyebrow": "Para quien lo organiza",
-  "c.org.h2": "¿Te ha tocado organizar la cena?",
-  "c.org.lead": "Te lo ponemos fácil.",
-  "c.org.1": "No hace falta que lo pida la empresa: puedes escribirnos tú.",
-  "c.org.2": "Un solo pago, con enlace de tarjeta o por transferencia. Luego lo repartís como queráis.",
-  "c.org.3": "Pregunta aunque la fecha esté cerca.",
-  "c.org.4": "Puedes cambiar el número de personas hasta 3 días laborables antes.",
-  "c.org.pph": "Por persona, para 25, IVA incluido",
-  "c.org.pp1v": "9,68 €",
-  "c.org.pp1l": "en vuestro restaurante",
-  "c.org.pp2v": "7,26 €",
-  "c.org.pp2l": "en uno de nuestros locales",
-  "c.org.cta": "Cuéntanos tu cena",
+  // 9. pointer to /team-events/: aud.strip.org.* in i18n-common.js. The organiser card moved to te.easy.* in i18n-team-events.js.
 
   // 10. price: founder pricing (4 Oct 2026), per event + IVA. The hook is the lowest tier at a
   // partner venue. Extras carry no prices (quoted on the call). Currency: "150 €" in ES.
@@ -189,12 +174,15 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // 11. FAQ
   "c.faq.eyebrow": "Preguntas",
   "c.faq.h2": "Lo que la gente pregunta.",
-  // In page order. SEASONAL (Sep-Dec 2026): revert c.faq.a6 to the year-round answer after
+  // The page order is set in corporate/index.html (c.faq.q13 and q14 sit 4th and 5th there).
+  // SEASONAL (Sep-Dec 2026): revert c.faq.a6 to the year-round answer after
   // mid-December ("Con dos semanas suele bastar. Tras la llamada te guardamos la fecha hasta 7 días
-  // sin compromiso."), and after 12 Dec drop the last sentence of c.faq.a13 and the clause after the
-  // semicolon in c.faq.a14 (both the 11-12 Dec deposit).
+  // sin compromiso."), and after 12 Dec drop the last sentence of c.faq.a13, the clause after the
+  // semicolon in c.faq.a14 (both the 11-12 Dec deposit) and the parenthesis in c.faq.a16.
   "c.faq.q6": "¿Con cuánta antelación reservamos?",
   "c.faq.a6": "Para diciembre, cuanto antes: los viernes y el sábado 12 son lo primero que se llena. Tras la llamada te guardamos la fecha hasta 7 días sin compromiso (72 horas en esas fechas). El resto del año, con dos semanas suele bastar.",
+  "c.faq.q16": "¿Podéis guardarnos la fecha mientras lo aprobamos?",
+  "c.faq.a16": "Sí. Tras una llamada breve te damos un precio cerrado y te guardamos la fecha hasta 7 días, sin compromiso, mientras lo aprobáis (72 horas los viernes y el sábado 12 de diciembre).",
   "c.faq.q7": "¿Cuánto cuesta y qué incluye?",
   "c.faq.a7": "Desde 150 € + IVA por evento (181,50 € con IVA). Va por tamaño de grupo (200, 250 o 300 € + IVA hasta 75 personas; más de 75, te lo presupuestamos) y en uno de nuestros locales son 50 € menos. Incluye anfitrión, la trivia, puntuación en directo, sonido y pantalla. Las rondas sobre vuestra empresa, los premios, los trofeos, las rondas en directo y el fotógrafo son extras que te presupuestamos en la llamada.",
   "c.faq.q10": "Ya tenemos restaurante (o es en la oficina). ¿Venís allí?",
