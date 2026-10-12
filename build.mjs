@@ -45,8 +45,8 @@ const devNotice = process.env.DEV_NOTICE != null
 // as function-runtime env (netlify/lib/forms.ts), never written here. Any id left unset is omitted,
 // which keeps that destination inert in scripts/walker.entry.mjs — the "add credentials later" path.
 // Only client-side ids belong here (they ship in config.js). The browser bundle uses the Meta
-// Pixel id + Amplitude key; Google Ads is server-side only (Phase 3, its own function env vars),
-// so no Google id is exposed client-side. debug=true turns on the local console destination.
+// Pixel id, the Amplitude key and the Google Ads conversion id + labels (gtag, client side; only
+// the Meta CAPI token stays server-side). debug=true turns on the local console destination.
 const analyticsEnv = {
   metaPixelId: process.env.META_PIXEL_ID,
   amplitudeKey: process.env.AMPLITUDE_API_KEY,
@@ -58,7 +58,18 @@ const analyticsEnv = {
   ...(process.env.WALKER_DEBUG === "true" ? { debug: true } : {}),
 };
 for (const k of Object.keys(analyticsEnv)) {
+  if (typeof analyticsEnv[k] === "string") analyticsEnv[k] = analyticsEnv[k].trim();
   if (analyticsEnv[k] == null || analyticsEnv[k] === "") delete analyticsEnv[k];
+}
+// A pasted "AW-123/label", an id without "AW-" or a stray space is accepted by Google's tag and
+// records nothing, with no error anywhere. Warn loudly; never fail the build.
+if (analyticsEnv.googleAdsConversionId && !/^AW-\d{6,}$/.test(analyticsEnv.googleAdsConversionId)) {
+  console.warn("[qed build] WARNING: GOOGLE_ADS_CONVERSION_ID should look like AW-1234567890 (no label after a slash, no spaces)");
+}
+for (const [k, envName] of [["googleAdsLabelComplete", "GOOGLE_ADS_LABEL_COMPLETE"], ["googleAdsLabelStart", "GOOGLE_ADS_LABEL_START"]]) {
+  if (analyticsEnv[k] && !/^[A-Za-z0-9_-]{10,}$/.test(analyticsEnv[k])) {
+    console.warn(`[qed build] WARNING: ${envName} should be only the label (letters, digits, - and _), not AW-id/label`);
+  }
 }
 
 const config = { defaultLanguage: lang, devNotice, ...(brand && { brand }), ...analyticsEnv };
@@ -202,6 +213,15 @@ if (brand) {
       } else {
         console.warn(`[qed build] ${file}: no ${SEO_MARK} marker, skipped`);
       }
+
+      // A display:none <img> is still downloaded. The brand that is not this build's is hidden by
+      // html[lang] in CSS, so mark its logo lazy: a lazy image with no layout box is never requested
+      // (TDT stops fetching the 55KB qed-logo.png; QED the 5KB tardeo-logo.svg).
+      const HIDDEN_LOGO = {
+        TDT: ['<img src="/shared/qed-logo.png" alt="Quiz Eat Drink">', '<img src="/shared/qed-logo.png" alt="Quiz Eat Drink" loading="lazy">'],
+        QED: ['<img class="brand__es" src="/shared/tardeo-logo.svg" alt="Tardeo de Trivia">', '<img class="brand__es" src="/shared/tardeo-logo.svg" alt="Tardeo de Trivia" loading="lazy">'],
+      };
+      if (HIDDEN_LOGO[brand]) html = html.split(HIDDEN_LOGO[brand][0]).join(HIDDEN_LOGO[brand][1]);
 
       html = html
         .replace('<link rel="icon" href="/shared/qed-logo.png">', `<link rel="icon" href="/shared/${assets.icon}">`)

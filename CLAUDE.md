@@ -142,7 +142,21 @@ the group price and keeps a shorter FAQ.
   already counts; `shared/cena-variant.js` appends `?v=cena` to it (see "Cena variant"). It is a
   slim band under a dark hero, not a content section, so `shared/corporate.css` sets
   `#teaser{padding-bottom:0}`: the card then sits as far from the next heading as from the hero
-  edge, where `section--tight`'s bottom padding as well would double that gap.
+  edge, where `section--tight`'s bottom padding as well would double that gap. The link is the
+  only route to the other corporate page, so it has a tap target of 44px at every width (its 24px
+  line plus 10px of padding above and below, with a matching negative margin: the card keeps its
+  height; a reading of 43.1px is the card still in `.reveal`'s start state, `scale(.98)`) and
+  `scroll-margin-top:84px`, which keeps a keyboard focus scroll from parking it behind the 68px
+  sticky header; where the phone sticky bar can show (up to 560 px wide, 401px high or more) it
+  also has `scroll-margin-bottom` of 84px plus the safe-area inset: without it Tab from "See
+  prices" parks the link flush with the bottom edge on viewports from about 460 to 620px high,
+  where the bar, which comes on a few px of scroll later once the CTA leaves, covers it. On a phone
+  the strip starts below the first screen (705 px and lower at 375x667), so it never competes with
+  the hero CTA, and the sticky bar waits for its card to clear the bar's zone (see "Phone pass").
+  That wait and the margin guard the same hazard: either one alone keeps the bar off the link.
+  The hero's two links, the CTA and "See prices", carry the same `scroll-margin-top:84px`
+  (`.cx-hero a`): Shift+Tab from the strip reaches them first, neither has an id for qed.css's
+  `[id]` margin to catch, and without it "See prices" can land behind the nav.
 - **Audience preselect (`?for=`).** For ads: `?for=hr` opens `/corporate/` and `?for=team` opens
   `/team-events/`, from either URL (`?audience=` is an alias; `company`, `empresa`, `rrhh`,
   `booker` and `equipo`, `organiser`, `organizer` are accepted values, case-insensitive; anything
@@ -154,19 +168,24 @@ the group price and keeps a shorter FAQ.
   `/team-events/?utm_...` are equivalent. The links between the pages carry no `for`.
 - **Cena variant (`?v=cena`).** Each page defines `window.QED_CENA = { h1a, h1b, sub, cta }`
   (`[key, English]` pairs) and loads `shared/cena-variant.js` before `i18n.js`, so the English it
-  bakes is what `i18n.js` caches and swaps. The script re-points the hero, preselects the dinner
-  card and format, and appends `?v=cena` to the strip's `a[data-aud-link]`: `?v` is stored nowhere
-  (only `utm_campaign` is), so the variant would be lost on the other page. It also holds the
-  `[data-preselect-event]` listener (the organiser's `#easy` card CTA), registered before the
-  variant check so it works on every visit.
+  bakes is what `i18n.js` caches and swaps. The script re-points the hero (and the phone sticky
+  bar's label, `#c-sticky-cta`, with the hero's), preselects the dinner card and format, and
+  appends `?v=cena` to the strip's `a[data-aud-link]`: `?v` is stored nowhere (only `utm_campaign`
+  is), so the variant would be lost on the other page. It also holds the `[data-preselect-event]`
+  listener (the organiser's `#easy` card CTA), registered before the variant check so it works on
+  every visit.
 - **Seasonal ledger.** Christmas copy is marked `SEASONAL` in comments (`grep -rn SEASONAL
   corporate team-events shared`) and most markers appear on both pages. Revert after
   mid-December, the deposit items after 12 Dec: the hero tags (`c.hero.tag`, `te.hero.tag`, each
   with its baked `<span>`); the cena variant (delete `shared/cena-variant.js`, both `QED_CENA`
   blocks and the keys `c.hero.h1cena*`, `c.hero.subcena`, `te.hero.h1cenaa`, `te.hero.subcena`,
   `c.cta.holdcena`; deleting the file also retires the `[data-preselect-event]` listener, so drop
-  that attribute from the `#easy` CTA or move the listener into `qed.js` first); the deposit line
-  `c.book.3a/3b` and its `<li>`; `c.form.hold` and its `<p>`; the FAQ edits in `c.faq.a6`
+  that attribute from the `#easy` CTA or move the listener into `qed.js` first; it retires the
+  phone sticky bar's label swap (`#c-sticky-cta`) too, and the bar then keeps `c.cta.tell`, the
+  all-year wording, with no edit); the deposit line `c.book.3a/3b` and its `<li>`; the
+  hold-date line, `c.form.hold` on `/corporate/` and `te.form.hold` on `/team-events/` (its ES
+  string is in `i18n-team-events.js`), each in two `<p>`s per page: the `.quote-intro__more` line
+  above the form and the phone-only `.cx-form__hold` under Continue; the FAQ edits in `c.faq.a6`
   (both pages: revert, un-open, move last, open the price item), `c.faq.a14` (both: the clause
   after the semicolon), `c.faq.a13` (last sentence) and `c.faq.a16` (the parenthesis), both
   booker only; the dinner card listed first; and `te.easy.2` is already the all-year wording ("Pay by card link or bank
@@ -174,17 +193,125 @@ the group price and keeps a shorter FAQ.
   Brevo confirmations #7/#8 also mention the deposit; they live outside the repo.
 - **Reach.** No footer, nav or hub link points at `/team-events/`: it is reached from the strip
   under the hero on `/corporate/`, and from the sitemap. That is a decision, not an omission.
+- **Phone pass (Oct 2026).** Phone rules for both corporate pages, one item each. The breakpoint is
+  `max-width:560px` unless named. The banner, dial-code and step 2 rules are in `shared/qed.css`, so
+  they reach all eight pages; each is scoped to `.consent`, `[data-contact-first]`, `.form-step2` or
+  `.form-success`.
+  - Hero (`corporate.css`, one `max-width:560px` block after the 700px one, which it overrides): a
+    tight stack under the nav, the tag 12px below it, then the H1 and sub, then the CTA full width
+    and ahead of the fact chips and the price line by visual `order` only (the chips are not
+    focusable, so DOM order, keyboard order and the `cta click` placement are unchanged). The CTA
+    top sits at 377 to 424 px and its bottom at 437 to 484 px on a 375x667 screen in all eight
+    brand, page and `?v=cena` combinations (593 to 640 and 653 to 700 before the pass); the bottoms
+    are 468 to 516 at 320x568, 445 to 476 at 360x740, 442 to 489 at 390x844 and 433 to 498 at
+    412x915, so the CTA is inside the screen in every combination, and the pointer strip starts
+    below the first screen (705 to 801 px at 375x667). The photo is a short 8:6 backdrop
+    (`hero-host-800-s.webp`, exactly that ratio) whose box is pulled 70px above the hero
+    (`inset:-70px 0 auto 0`; the hero clips it), so the tag starts 82px down the box and the copy
+    lies further down the gradient than the box's own top would put it: do not set the inset back to
+    0. The gradient stops are the box's own percentages (30%, 52% and 85% of its height) up to 412 px
+    wide and stay where they are at 412 from 413 px up (`min(100vw,412px)`), because the copy does
+    not move with the width; the declaration before it is the same gradient in plain percentages,
+    the fallback for a browser without `min()`. Legibility, measured on the worst pixel of each text
+    box (the brightest photo pixel anywhere in a text line's box, text shadow off) from 320 to 560
+    px wide, EN and ES, plain and `?v=cena`: the H1's white 5.5:1 or better up to 412 px and 4.7:1
+    or better up to 560 px (AA for large text is 3:1; the 4.5:1 of body text is cleared too) and its
+    yellow accent 5.2:1 or better, and the sub, the chips, the call-back line and the price line sit
+    on solid ink (14.7:1, 17.2:1, 13.5:1 and 12.4:1 or better; AA is 4.5:1). Re-measure after
+    touching the gradient, the photo or the inset. From 561 px up the pass changes no hero rule:
+    561 to 700 px keeps the 8:9 crop and its lighter gradient with the copy below the photo, and
+    from 701 px the photo covers the section.
+  - Hero photo files, both pages: up to 560 px `hero-host-800-s.webp` (800x600: rows 400 to 1000 of
+    the 800x1000 `hero-host-800`, which is what the 8:6 box shows at `object-position:center
+    bottom`, less the top 70px of the box that the hero clips: the hero shows rows 500 to 1000 of
+    `hero-host-800` at 560 px wide, 549 to 1000 at 375 and 575 to 1000 at 320); 561 to 700 px
+    `hero-host-800-c.webp` (800x900: rows 100 to 1000, the 8:9 box never showed the top 100);
+    `hero-host-800.jpg` (800x1000) at 700 px and below where WebP is missing;
+    from 701 px `hero-host-1200` / `-1920`. The `-s` and `-c` names are new on purpose (no stale
+    cache). The hub still uses `hero-host-800.webp` / `.jpg`, at 640 px and with another crop: never
+    overwrite them.
+    The two small proof photos are `corp-photo-smiles-360.webp` and `corp-photo-crowd-360.webp`
+    (360x270), the 360w candidate beside the 720 files, with `sizes="(max-width:700px) calc(50vw -
+    28px), 360px"`; the teams photo keeps its one 720 file.
+  - Consent banner (`qed.css`, all eight pages): 8px margins, 11.5px message, two equal 40px
+    buttons, "Manage" with a 32px hit area. It is 128px high at 375 and 390 px wide; at 320 to 360
+    it is 128 to 160px (the ES text is the tall one). `consent.js` is unchanged, timing included
+    (4 s, or 250 ms after the first scroll settles): holding it longer when it would cover the hero
+    CTA was left out, because it changes how many visitors are ever asked, which is a measurement
+    decision.
+  - Arriving at the form (`#quote`, up to 767 px): a slimmer intro panel with `.cx-quote__sub`
+    hidden (its date, city and headcount are optional step 2 fields) and `scroll-margin-top:68px`,
+    so a jump puts the first name on screen at about y 410 to 450 on a 375x667 screen (Continue is a
+    short scroll away there, and fully on screen from about 812px tall). While the banner is open,
+    `html:has(body > .consent) #quote` scrolls the form 0 to 134px further (950px less the dynamic
+    viewport height, capped) so Continue clears the banner at 812px tall and above; only the scroll
+    target moves, nothing is hidden. The shortest phones (375x667, 360x740) cannot clear it whatever
+    the margin. The event cards are tighter up to 520 px.
+  - Under Continue (up to 767 px): `.cx-form__call` (reuses `c.hero.call`) and the SEASONAL
+    `.cx-form__hold` (reuses `c.form.hold` / `te.form.hold`), because the `.quote-intro__more` lines
+    above the form are hidden below 768 px. Both are `display:none` from 768 px.
+  - Enter and the keyboard's "next" key (`initContactFirst()` in `qed.js`): on the first name and
+    the phone, Enter checks only the field being left (an invalid one keeps focus and shows its own
+    error) and otherwise moves focus to the phone or the email, instead of submitting and flagging
+    every empty field. On the email, and when name, phone and email are all valid, Enter goes
+    through to Continue as before. Android's "next" is a Tab, so on a touch device up to 767 px the
+    dial-code button is out of the Tab order (`tabindex="-1"`; a tap still opens it, and Shift+Tab
+    from the number steps back onto it), or "next" from the name would land on it and drop the
+    keyboard.
+  - Dial code on one row (`[data-contact-first]` only, from `qed.css` and `buildCustomSelect()` in
+    `qed.js`): the closed button shows "+34" in a 94px box (a four-digit code such as "+1242" shows
+    whole) and the number sits beside it. The open list and the native `<select>` keep "Spain +34",
+    and `data-dial` and the submitted value are unchanged. The label and the layout use the same
+    `max-width:560px` query; /celebrations/, /venues/ and /partners/ keep the long label on its own
+    row.
+  - 44px targets on the path: step 2 "Wrong phone or email? Fix it" and "Skip" (up to 767 px,
+    `[data-contact-first]`), the sticky bar's button, the hero's "See prices" link (padding with a
+    matching negative margin, so its layout is unchanged) and the pointer strip's link (44px, see
+    "Pointer strip"). The headings `qed.js` focuses programmatically (`.form-step2 h3`,
+    `.form-success`) show no focus ring.
+  - The header steps aside (up to 860 px): `html.is-typing .nav{ position:static }` while a text
+    field of `#event-form` has focus, the form is on screen and the burger menu is closed (its panel
+    is positioned against the header). It keeps its slot, so nothing shifts. `is-typing` is set by
+    the sticky-bar block in `qed.js`, so removing the `#cx-sticky` markup also switches this off.
+  - Sticky CTA bar, `#cx-sticky`: a fixed bottom bar, 58px high, repeating the hero CTA
+    (`c.cta.tell`, to `#quote`). Markup after `</footer>` on both pages, rules at the end of
+    `shared/corporate.css`, logic in `shared/qed.js` after `initEngagement()`, in a try/catch so it
+    cannot break the scripts after it. It is on once the hero CTA has scrolled off the top and none
+    of these holds: `#quote` or the footer is on screen; a lead was sent on this page view
+    (`qed:leadsent`); the cookie banner is open or due (consent undecided on a production host, so a
+    first-time visitor sees the bar only after answering); the pointer strip's card
+    (`#teaser .cx-pointer`) is in the bar's zone, the bottom bar-height of the viewport (58px, or
+    74px beside the chat launcher, below): its lower edge is below the bar's top edge with its top
+    still on screen. That happens on a short phone only: at 320x568 and 375x553 the card can
+    still be low when the CTA leaves and the bar would cover its link, so the bar waits until the
+    card has cleared, up to about 70px of scroll (about 85px with the 74px bar); from 360x640 up
+    there is no wait. The script measures the card once per animation frame while the CTA is gone
+    (on scroll, resize and the card's `transitionend`, since its reveal moves it) and looks it up
+    once, by that selector: rename the strip's class or id and the rule switches off silently, and
+    the bar goes back to coming on as soon as the CTA leaves. Its taps are `cta click` with
+    `placement` `cx-sticky` (MEASUREMENT-PLAN.md section 4). The same block keeps two `<html>`
+    classes: `is-typing` (above) and `has-chat` (`window.__qedFunctional`, the condition under
+    which `brevo.js` loads the chat launcher at the bottom right: the bar then keeps 84px of right
+    padding, and its label can wrap to two lines, 74px high, at 320 px). The bar is `display:none`
+    at a viewport height of 400px or less (a zoomed desktop window), and while it is on
+    `html:has(.cx-sticky.is-on)` sets `scroll-padding-bottom` (80px plus the safe-area inset) so
+    keyboard focus is not parked behind it; `consent.js` sets the same property inline while its
+    banner is open, and the bar is off then. `shared/cena-variant.js` swaps its label
+    (`#c-sticky-cta`) with the hero's. Kill switch: `display:none` on `.cx-sticky` after the phone
+    block at the end of `corporate.css` (the base rule is already `display:none`; the 560px block
+    turns it on). That leaves `is-typing` working; deleting the `<div>` also switches `is-typing`
+    and `has-chat` off.
 - **Head.** `te.title` and `te.metadesc` own "cena de equipo" and say "de empresa" nowhere,
   because the booker's title owns that phrase and the two near-identical pages should not compete
   for one query. Both pages are canonical to themselves.
 
-Markup both pages share (sprite, proof, why, included, how, ticket, venues card, know-trivia,
-form) is duplicated, not partialled, because a build partial doesn't run under `npm run dev`, so
-a price, tier or city edit goes into both files. This command compares the two blocks that must
-not diverge. Expect `venues card identical`; `price ticket` differs in exactly two places, by
-design (`c.ex.1` against `te.ex.1`, and the `c.ex.6` "branded slides" item, absent from
-`/team-events/`). It relies on the `<!-- Partner venues` comment staying before the venues card on
-both pages:
+Markup both pages share (sprite, hero photo sources, proof, why, included, how, ticket, venues
+card, know-trivia, form, `#cx-sticky`) is duplicated, not partialled, because a build partial
+doesn't run under `npm run dev`, so a price, tier or city edit goes into both files. This command
+compares the two blocks that must not diverge. Expect `venues card identical`; `price ticket`
+differs in exactly two places, by design (`c.ex.1` against `te.ex.1`, and the `c.ex.6` "branded
+slides" item, absent from `/team-events/`). It relies on the `<!-- Partner venues` comment staying
+before the venues card on both pages:
 
 ```bash
 node -e 'const f=require("fs");const cut=(p,open,close)=>{const h=f.readFileSync(p,"utf8");const i=h.indexOf(open);const j=h.indexOf(close,i);return h.slice(i,j).replace(/\s+/g," ")};const A="corporate/index.html",B="team-events/index.html";for (const [name,o,c] of [["venues card","<div class=\"card cx-venues reveal\" id=\"venues\">","</section>"],["price ticket","<div class=\"card cx-price reveal\">","<!-- Partner venues"]]) console.log(name, cut(A,o,c)===cut(B,o,c)?"identical":"DIFFERS")'
@@ -201,6 +328,30 @@ Deliberate choices, not omissions:
   a per-head headline is exact only for 25 people at a partner venue (12 pay about €15 there,
   about €20 at their own place). Its fourth fact is "Fixed price", and the `#easy` payment tick says "Pay by card link or
   bank transfer", not "One payment", because of the December deposit.
+- The organiser H1 says what the page sells: `te.hero.h1a` "Stuck with the team dinner?" and
+  `te.hero.h1b` "We run the quiz." (ES "¿Te toca la cena de equipo?" and "Traemos trivia.").
+  "We make it easy." could be read as "we organise the dinner", which the FAQ says we do not, and
+  "We bring the quiz." is too wide for one line at 320 to 412 px (so is the ES "Traemos la
+  trivia.": 7.6 em in a 7.2 em box at 320 px, hence no article). Both languages carry `&nbsp;`
+  (EN "We&nbsp;run the&nbsp;quiz."; ES between "la cena" and "de equipo") so no weak word ends a
+  line. Both are three lines at every phone width, 320 to 412 px, measured with Plus Jakarta
+  Sans; EN fits the 320 px box by only 0.3 px, so recheck the CTA position at all five widths,
+  in both variants and both languages, before rewording either. The ad-click (cena) H1 is longer
+  and takes four lines in ES at every width: that is the variant, not this string. Not seasonal:
+  the page is about team dinners all year.
+- Price and promise wording on the organiser page: the group price at "your restaurant or office"
+  (not "your place", which reads as at home), and every per-head figure in `te.faq.a7` says
+  whether it is with VAT, because the hero price is VAT included. The first tick (`te.easy.1`) and
+  the booker page's strip (`aud.strip.org.d`: EN baked in `corporate/index.html`, ES unchanged in
+  `i18n-common.js`) say you needn't go through the company, not that you needn't "be the company".
+  Keep that strip's EN sentence near its present length (73 to 74 characters, about 560px
+  unwrapped at 16px): the card's rows step on it, the sentence from two rows to one at about 665px
+  of viewport and the link from under the text to beside it at about 845px. A shorter sentence
+  moves the link beside it sooner (50 characters: a card 36px shorter from 665 to 844px) and a
+  longer one keeps two rows later (92 characters: until 804px), so measure the card from 560 to
+  900px, in EN and ES, before rewording either sentence. The hold-date line has its own key on that
+  page, `te.form.hold` ("while you check with the others"); `c.form.hold` says "while you get
+  sign-off", which is the company page's reason. The two facts (7 days, 72 hours) are the same.
 
 ## build.mjs (runs on Netlify)
 
@@ -216,7 +367,20 @@ Reads deploy env vars and rewrites files in the ephemeral build (never committed
   `GOOGLE_ADS_CONVERSION_ID` + `GOOGLE_ADS_LABEL_COMPLETE`/`GOOGLE_ADS_LABEL_START`, optional
   `WALKER_DEBUG`) into the `config.js` object. Any unset id is omitted, which keeps that
   destination inert in `shared/walker.js`. The one secret (Meta CAPI token) never comes here —
-  it stays as function-runtime env (see Analytics).
+  it stays as function-runtime env (see Analytics). Every build trims these values (a pasted
+  trailing newline would otherwise land in `config.js`) and prints `[qed build] WARNING:` when
+  `GOOGLE_ADS_CONVERSION_ID` is not `AW-` plus six or more digits, or a `GOOGLE_ADS_LABEL_*` is
+  not ten or more of letters, digits, `-` and `_` (an `AW-id/label` pasted into one variable, an id
+  without `AW-`). It warns and builds on, writing the value as given: Google's tag accepts a wrong
+  value and records nothing with no error, so the deploy log is the only place it shows. A
+  variable edit changes nothing until a deploy is triggered, because `config.js` is written at
+  build time.
+- Branded builds also mark the other brand's logo `loading="lazy"` on all eight pages, header and
+  footer (`HIDDEN_LOGO`, an exact-string replace): CSS hides it by `html[lang]`, but a
+  `display:none` image is still downloaded and a lazy one with no layout box is not, so TDT no
+  longer fetches `qed-logo.png` (55 KB) nor QED `tardeo-logo.svg` (10 KB). If a page's logo markup
+  changes, the replace matches nothing and says nothing: check a built page for `loading="lazy"`
+  on the hidden brand's `<img>`.
 
 Committed source keeps the markers; the build fills them. To run locally without dirtying the
 tree: `git add -A`, `node build.mjs`, inspect, then
@@ -324,7 +488,10 @@ event `data` and hashed by gtag). `qed.js` fires `lead start` client-side too (G
 conversion; the Pixel and Amplitude both ignore it). `crosssell click` carries `to`, `placement`
 (`hero` for a link inside a `.hero` section, else the nearest enclosing id; the one cross-sell
 link on each corporate page outside the footer is the pointer strip's, which sits outside the
-hero, so on those pages it is always `teaser`), `href` and `label`. The
+hero, so on those pages it is always `teaser`), `href` and `label`; `cta click` has the same
+`placement` rule, so the phone sticky bar's taps are `cx-sticky` and the header's "Let's talk"
+button, which sits outside the hero and `.nav__links`, is `body` (MEASUREMENT-PLAN.md section 4
+says how to read them). The
 `FUNNEL_HREF` regex in `qed.js` decides which links count, so a new funnel path must be added
 there: a plain link to a path it doesn't list is measured as nothing.
 
@@ -491,21 +658,26 @@ mixed with yesterday's cached file (new HTML needing new JS, like the contact-fi
 `?v=YYYYMMDD` to that page's `/shared/` URLs, as corporate, the hub and privacy carry since
 `?v=20261008`.
 
-The corporate pair carries a `?v=` per file, the same value on `/corporate/` and `/team-events/`:
-`?v=20261014` on `corporate.css` and `i18n-common.js` (moving the strip under the hero edited
-both), `?v=20261013` on `i18n-corporate.js` and `qed.js` (the split edited them), and
-`?v=20261010` on `qed.css`, `i18n.js` and `consent.js`. `cena-variant.js` and
-`i18n-team-events.js` are still plain URLs (new in the split, so no stale copy existed), as are
-`walker.js`, `brevo.js` and `phone-countries.js`.
+The corporate pair carries `?v=20261015` on `qed.css`, `corporate.css`, `cena-variant.js`,
+`qed.js` and `i18n-common.js`, and the organiser page also on `i18n-team-events.js` (the phone
+pass and the strip under the hero edited all six; use one value on both pages, higher than any
+already there, and higher than the `?v=20261014` that moving the strip alone put on
+`corporate.css` and `i18n-common.js`, which may be live first). `i18n-corporate.js` keeps
+`?v=20261013`: the strip move only reworded a comment in it. `i18n.js` and `consent.js` keep
+`?v=20261010`: not edited, so not bumped. `walker.js`, `brevo.js` and `phone-countries.js` are
+plain URLs.
 
-The rule for the next edit: when you change a `/shared/` file these two pages load, bump its
-`?v=` on `/corporate/` AND `/team-events/` together, to a value higher than any already on either
-page; a plain URL gets its first `?v=` in the same change. `corporate.css` is the one that bites.
-It used to be inline, so a CSS fix was atomic with the HTML; as a `/shared/` file a CSS-only edit
-reaches returning visitors up to a day late, and yesterday's stylesheet against today's markup is
-the bad case (that is why moving the strip under the hero bumped it: the old file gives the hero
-a 14 px top padding, which only made sense with the switch inside it). `cena-variant.js` and
-`i18n-team-events.js` follow the same rule once they change.
+The rule for the next edit: when you change a `/shared/` file these two pages load, bump its `?v=`
+on `/corporate/` AND `/team-events/` together, to a value higher than any already on either page; a
+plain URL gets its first `?v=` in the same change. `corporate.css` is the one that bites. It used to
+be inline, so a CSS fix was atomic with the HTML; as a `/shared/` file a CSS-only edit reaches
+returning visitors up to a day late, and yesterday's stylesheet against today's markup is the bad
+case: a `#cx-sticky` with no `.cx-sticky` rule is an unstyled link at the foot of the page, and the
+hero copy lands 14px under the nav, over the photo, with no clear window above it on a phone. The
+other six pages load `qed.css` and `qed.js` under plain URLs and pick the phone-pass changes up when
+their cached copies expire (up to a day): harmless, because the `qed.css` rules are scoped (see
+"Phone pass") and the `qed.js` additions return early without `#cx-sticky` or
+`[data-contact-first]`.
 
 The same window applies to corrected facts and new mechanisms: for up to a day a returning visitor
 can run new HTML against yesterday's `i18n-*.js` / `i18n.js` / `qed.js` (e.g. the TDT city lists

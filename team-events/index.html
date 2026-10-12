@@ -27,8 +27,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared/qed.css?v=20261010">
-<link rel="stylesheet" href="/shared/corporate.css?v=20261014">
+<link rel="stylesheet" href="/shared/qed.css?v=20261015">
+<link rel="stylesheet" href="/shared/corporate.css?v=20261015">
 <script>window.QED_SITE = "corporate";</script>
 <script src="/config.js"></script>
 <script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
@@ -85,7 +85,8 @@
        window.QED_CENA (bottom of the page). -->
   <section class="hero cx-hero">
     <picture class="cx-hero__bg">
-      <source media="(max-width:700px)" type="image/webp" srcset="/shared/hero-host-800.webp">
+      <source media="(max-width:560px)" type="image/webp" srcset="/shared/hero-host-800-s.webp">
+      <source media="(max-width:700px)" type="image/webp" srcset="/shared/hero-host-800-c.webp">
       <source media="(max-width:700px)" srcset="/shared/hero-host-800.jpg">
       <source type="image/webp" srcset="/shared/hero-host-1200.webp 1200w, /shared/hero-host-1920.webp 1920w" sizes="100vw">
       <img src="/shared/hero-host-1200.jpg" srcset="/shared/hero-host-1200.jpg 1200w, /shared/hero-host-1920.jpg 1920w" sizes="100vw" width="1920" height="1080" fetchpriority="high" decoding="async" data-i18n-alt="c.hero.photoalt" alt="A host with a microphone running a trivia night for teams at their tables">
@@ -95,7 +96,12 @@
         <!-- SEASONAL (Sep-Dec 2026): te.hero.tag is the team-dinner / Christmas version.
              Revert it (EN here + ES in i18n-team-events.js) to a plain "Hosted in <cities>" tag after mid-December. -->
         <span class="tag tag--accent tag--shadow cx-hero__tag" data-i18n="te.hero.tag">Team dinners &amp; Christmas 2026 · Valencia, Madrid*, Barcelona*, Murcia* &amp; Santiago*</span>
-        <h1 class="h-display cx-hero__h1" id="c-hero-h1"><span data-i18n="te.hero.h1a">Got stuck organising it? </span><span class="accent" data-i18n="te.hero.h1b">We make it easy.</span></h1>
+        <!-- te.hero.h1b: the NBSPs keep "We" off the end of the question line. "We bring the quiz." is too wide
+             for one line at 320 to 412 px (it split "dinner? We / bring the quiz."), so the answer is "We run
+             the quiz." (three lines at every phone width). ES is "Traemos trivia." with NBSPs in h1a (la cena,
+             de equipo): "Traemos la trivia." (7.6 em) does not fit the 7.2 em box at 320 px and made four lines.
+             Recheck all five widths, in both languages, before rewording either. -->
+        <h1 class="h-display cx-hero__h1" id="c-hero-h1"><span data-i18n="te.hero.h1a">Stuck with the team dinner? </span><span class="accent" data-i18n="te.hero.h1b">We&nbsp;run the&nbsp;quiz.</span></h1>
         <p class="cx-hero__sub" id="c-hero-sub" data-i18n="te.hero.sub">A team quiz with a live host. Tell us the date, the place and how many of you; we set up, host and pack away.</p>
         <ul class="cx-hero__facts">
           <li><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-clock"/></svg><span data-i18n="c.hero.f1">90 minutes</span></li>
@@ -110,7 +116,7 @@
         <!-- The hook is the GROUP price with VAT included (a price per group, not per head); per head
              is a worked example, because it is only exact for 25 people at a partner venue.
              150 x 1.21 = 181.50; 181.50 / 25 = 7.26; 181.50 / 12 = 15.125; 200 x 1.21 = 242. -->
-        <p class="cx-hero__price"><strong data-i18n="te.hero.price">€181.50 for the group, VAT included</strong><br><span data-i18n="te.hero.pricecond">Up to 25 people at one of our venues: €7.26 each if you are 25, about €15 each if you are 12. At your place, €242.</span> <a href="#price" data-i18n="c.hero.pricelink">See prices</a></p>
+        <p class="cx-hero__price"><strong data-i18n="te.hero.price">€181.50 for the group, VAT included</strong><br><span data-i18n="te.hero.pricecond">Up to 25 people at one of our venues: €7.26 each if you are 25, about €15 each if you are 12. At your restaurant or office, €242 for the group.</span> <a href="#price" data-i18n="c.hero.pricelink">See prices</a></p>
       </div>
     </div>
   </section>
@@ -143,7 +149,7 @@
           <span class="eyebrow" data-i18n="te.easy.eyebrow">For whoever's organising</span>
           <h2 class="h2" data-i18n="te.easy.h2">Easier than it sounds.</h2>
           <ul class="ticks">
-            <li data-i18n="te.easy.1">You don't need to be the company: you can get in touch yourself.</li>
+            <li data-i18n="te.easy.1">You don't need to go through the company: you can get in touch yourself.</li>
             <li data-i18n="te.easy.2">Pay by card link or bank transfer. Split it however you like.</li>
             <li data-i18n="te.easy.3">Ask even if the date is close.</li>
             <li data-i18n="te.easy.4">You can change the headcount until 3 working days before.</li>
@@ -180,10 +186,10 @@
           <picture><source type="image/webp" srcset="/shared/corp-photo-teams-720.webp"><img src="/shared/corp-photo-teams-720.jpg" width="720" height="540" loading="lazy" decoding="async" data-i18n-alt="c.proof.alt1" alt="Teams at their tables during a quiz night, answer sheets out"></picture>
         </figure>
         <figure>
-          <picture><source type="image/webp" srcset="/shared/corp-photo-smiles-720.webp"><img src="/shared/corp-photo-smiles-720.jpg" width="720" height="540" loading="lazy" decoding="async" data-i18n-alt="c.proof.alt2" alt="Two friends smiling at their table during the quiz"></picture>
+          <picture><source type="image/webp" srcset="/shared/corp-photo-smiles-360.webp 360w, /shared/corp-photo-smiles-720.webp 720w" sizes="(max-width:700px) calc(50vw - 28px), 360px"><img src="/shared/corp-photo-smiles-720.jpg" width="720" height="540" loading="lazy" decoding="async" data-i18n-alt="c.proof.alt2" alt="Two friends smiling at their table during the quiz"></picture>
         </figure>
         <figure>
-          <picture><source type="image/webp" srcset="/shared/corp-photo-crowd-720.webp"><img src="/shared/corp-photo-crowd-720.jpg" width="720" height="540" loading="lazy" decoding="async" data-i18n-alt="c.proof.alt3" alt="A packed room facing the quiz screen"></picture>
+          <picture><source type="image/webp" srcset="/shared/corp-photo-crowd-360.webp 360w, /shared/corp-photo-crowd-720.webp 720w" sizes="(max-width:700px) calc(50vw - 28px), 360px"><img src="/shared/corp-photo-crowd-720.jpg" width="720" height="540" loading="lazy" decoding="async" data-i18n-alt="c.proof.alt3" alt="A packed room facing the quiz screen"></picture>
         </figure>
       </div>
     </div>
@@ -293,7 +299,7 @@
       <div class="cx-hd reveal">
         <span class="eyebrow" data-i18n="c.price.eyebrow">Price</span>
         <h2 class="h2" data-i18n="c.price.h2">One fixed price for the whole group.</h2>
-        <p class="lead" data-i18n="te.price.lead">It goes by group size, not per person: up to 25 people it's €181.50 with VAT at one of our venues, or €242 at your place. If you are 25, that is €7.26 or €9.68 each.</p>
+        <p class="lead" data-i18n="te.price.lead">It goes by group size, not per person: up to 25 people it's €181.50 with VAT at one of our venues, or €242 at your restaurant or office. If you are 25, that is €7.26 or €9.68 each.</p>
       </div>
 
       <div class="card cx-price reveal">
@@ -418,7 +424,7 @@
         </details>
         <details>
           <summary><span data-i18n="te.faq.q7">How much is it per person?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="te.faq.a7">It's a price per group, not per person: €150 +&nbsp;VAT for up to 25 people at one of our venues (€181.50 with VAT, so €7.26 each for 25), or €200 +&nbsp;VAT at your restaurant or office (€242, so €9.68 each). Fewer of you means a higher price per head: 10 people at one of our venues is €18.15 each (€24.20 at your place). From 26 to 75 people it's €200 to €300 +&nbsp;VAT; more than 75, we quote it. The host, the quiz, live scoring, sound and screen are included. Rounds about your team, prizes, trophies, live rounds and a photographer are extras we quote on the call.</div>
+          <div class="ans" data-i18n="te.faq.a7">It's a price per group, not per person: €150 +&nbsp;VAT for up to 25 people at one of our venues (€181.50 with VAT, so €7.26 each for 25), or €200 +&nbsp;VAT at your restaurant or office (€242 with VAT, so €9.68 each). Fewer of you means a higher price per head: 10 people at one of our venues is €18.15 each with VAT (€24.20 at your restaurant or office). From 26 to 75 people it's €200 to €300 +&nbsp;VAT (€242 to €363 with VAT); more than 75, we quote it. The host, the quiz, live scoring, sound and screen are included. Rounds about your team, prizes, trophies, live rounds and a photographer are extras we quote on the call.</div>
         </details>
         <details>
           <summary><span data-i18n="c.faq.q10">We've booked a restaurant (or it's at the office). Do you come there?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -474,8 +480,8 @@
           <h2 class="h2" style="color:#fff" data-i18n="c.form.h2">Shall we give your team something to talk about?</h2>
           <p class="cx-quote__sub" data-i18n="c.form.sub">Tell us the date, the city and how many of you there are. We'll take care of the rest.</p>
           <p class="cx-quote__call quote-intro__more"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-phone"/></svg><span data-i18n="c.form.call">We call you, usually the same working day (Mon to Fri, 10:00 to 19:00 Spanish time).</span></p>
-          <!-- SEASONAL: drop c.form.hold (EN + ES) after mid-December. -->
-          <p class="cx-quote__call quote-intro__more"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="c.form.hold">Booking for December? We'll hold your date, no commitment, while you get sign-off: up to 7 days, or 72 hours on Fridays and Saturday 12th.</span></p>
+          <!-- SEASONAL: drop te.form.hold (EN + ES) after mid-December. Not c.form.hold: its "sign-off" is the company page's wording. -->
+          <p class="cx-quote__call quote-intro__more"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="te.form.hold">Booking for December? We'll hold your date, no commitment, while you check with the others: up to 7 days, or 72 hours on Fridays and Saturday 12th.</span></p>
         </div>
         <div class="pad">
           <form id="event-form" name="team-event" novalidate data-action="/.netlify/functions/book-event" data-contact-first>
@@ -527,6 +533,9 @@
                   </div>
                   <div class="full">
                     <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="c.form.callme">Tell us about your event</span> <span class="arr">&rarr;</span></button>
+                    <p class="cx-form__call"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-phone"/></svg><span data-i18n="c.hero.call">We call you back, usually the same working day.</span></p>
+                    <!-- SEASONAL: drop this line with te.form.hold (and its .quote-intro__more line above the form) after mid-December. -->
+                    <p class="cx-form__hold"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-cal"/></svg><span data-i18n="te.form.hold">Booking for December? We'll hold your date, no commitment, while you check with the others: up to 7 days, or 72 hours on Fridays and Saturday 12th.</span></p>
                     <p class="form__privacy"><span data-i18n="c.form.privacy1">We use your details only to call or email you about this request.</span> <a href="/privacy/" data-i18n="form.privacylink">Privacy policy</a></p>
                   </div>
                 </div>
@@ -651,6 +660,10 @@
   </div>
 </footer>
 
+<!-- Phone-only sticky CTA (SEASONAL label via shared/cena-variant.js): shared/qed.js shows it once the hero CTA has
+     scrolled away and hides it over the form and the footer. CSS: .cx-sticky in shared/corporate.css. -->
+<div class="cx-sticky" id="cx-sticky"><a class="btn btn--cta btn--block" href="#quote"><span id="c-sticky-cta" data-i18n="c.cta.tell">Tell us about your event</span> <span class="arr">&rarr;</span></a></div>
+
 <!-- Christmas ad-group variant (?v=cena). SEASONAL (Sep-Dec 2026). This page's [i18nKey, English]
      pairs for the hero H1, sub and CTA; shared/cena-variant.js does the rest and must load before
      i18n.js (it bakes their English so i18n.js can swap in the ES). The same file wires the
@@ -661,15 +674,15 @@
   sub: ["te.hero.subcena", "A team quiz before or after the dinner or lunch. Tell us the date and how many of you; we bring the host, the questions and the tech."],
   cta: ["c.cta.holdcena", "Hold your date"]
 };</script>
-<script src="/shared/cena-variant.js"></script>
-<script src="/shared/i18n-common.js?v=20261014"></script>
+<script src="/shared/cena-variant.js?v=20261015"></script>
+<script src="/shared/i18n-common.js?v=20261015"></script>
 <script src="/shared/i18n-corporate.js?v=20261013"></script>
-<script src="/shared/i18n-team-events.js"></script>
+<script src="/shared/i18n-team-events.js?v=20261015"></script>
 <script src="/shared/i18n.js?v=20261010"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js?v=20261010"></script>
 <script src="/shared/brevo.js"></script>
 <script src="/shared/phone-countries.js"></script>
-<script src="/shared/qed.js?v=20261013"></script>
+<script src="/shared/qed.js?v=20261015"></script>
 </body>
 </html>

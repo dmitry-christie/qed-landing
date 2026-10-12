@@ -47,6 +47,17 @@
   .cx-hero__price{ margin:22px 0 0; padding-top:16px; border-top:1px dashed rgba(255,255,255,.3); font-size:14.5px; line-height:1.5; color:rgba(255,255,255,.84); max-width:52ch; }
   .cx-hero__price strong{ color:#fff; font-weight:800; font-size:16.5px; }
   .cx-hero__price a{ color:var(--yellow); font-weight:700; white-space:nowrap; text-underline-offset:3px; }
+  @media (max-width:560px){ .cx-hero__price a{ display:inline-block; padding:13px 8px; margin:-13px -8px; } } /* 18px link, 44px hit area, same layout */
+  /* Keyboard focus (WCAG 2.2 SC 2.4.11). The hero's two links, the CTA and "See prices", are the first stops
+     Shift+Tab reaches when it walks back from the pointer strip, and neither has an id, so qed.css [id] gave
+     them no scroll margin: under the 66-68px sticky nav the focus scroll parked the link flush with the top
+     edge of the viewport, text and focus ring behind the nav (or, with the link already in view but within
+     84px of the top, did not scroll at all). 84px is the [id] value: the link's box now settles 84px or
+     more down, 16px clear of the nav. Layout is unchanged and a link already in view below that line does
+     not move; one brought in from below is centred together with its margin, so Tab forward from the CTA
+     leaves "See prices" 42px lower than before where it starts below the fold (320x568 to 375x667), still
+     wholly in view. */
+  .cx-hero a{ scroll-margin-top:84px; }
   @media (max-width:700px){
     .cx-hero{ display:block; min-height:0; }
     .cx-hero::before{ display:none; }
@@ -60,6 +71,39 @@
     html[data-variant="cena"] .cx-hero__h1{ font-size:clamp(36px,10vw,48px); }
     .cx-hero__facts li{ font-size:14px; }
     .cx-hero__ctas{ margin-top:24px; }
+  }
+  /* PHONES, first screen (Oct 2026 mobile pass). Paid traffic is a first visit on a phone, and with the
+     4:5 crop above the copy (the 561-700px layout above) the CTA started at 585 to 685px at 320 to 412px
+     wide: under the fold on most iPhones once the browser bars are counted. Up to 560px the hero is one
+     tight stack under the nav instead: the tag 12px below it, the H1 and sub, then the CTA ahead of the
+     fact chips and the price line (visual order only: the chips are not focusable and the DOM order is
+     unchanged), the CTA full width. The CTA now starts at 373 to 456px at 320 to 412px wide (377 to
+     392px at 375 wide, EN, plain).
+     The photo is a short backdrop (hero-host-800-s.webp is exactly 8:6) and its box is pulled 70px above
+     the hero, which clips it: the tag starts 82px down the box, and the stops below are fitted to that.
+     Legibility, measured on the worst pixel of each text box at 320 to 560px wide, EN and ES, plain and
+     ?v=cena, both pages: the H1 white >= 4.9:1 (the large-text floor is 3:1; 5.5:1 or better up to
+     412px), its yellow >= 5.2:1, the sub >= 14.7:1 and the fact chips >= 17.2:1 (both on solid ink).
+     Up to 412px the stops are the 8:6 box's own percentages (30%, 52% and 85% of its 0.75 x width
+     height); from 413px they stay where they are at 412 (min(100vw, 412px)): the copy does not move
+     with the width, so a stop that kept sliding down the photo left the H1 under 3:1 at 540 to 560px.
+     The first declaration is the fallback for a browser without min(); the second has no var(), so it is
+     dropped, not voided.
+     This block must stay AFTER the max-width:700px block (it overrides it). 561-700px keeps that
+     block's 4:5 crop and its photo gap. */
+  @media (max-width:560px){
+    .cx-hero__in{ padding-top:12px; }
+    .cx-hero__bg{ inset:-70px 0 auto 0; aspect-ratio:8 / 6; }
+    .cx-hero__bg::after{
+      background:linear-gradient(180deg, rgba(22,17,12,.15) 0%, rgba(22,17,12,.35) 30%, rgba(22,17,12,.70) 52%, var(--ink) 85%);
+      background:linear-gradient(180deg, rgba(22,17,12,.15) 0%, rgba(22,17,12,.35) calc(min(100vw,412px) * .225), rgba(22,17,12,.70) calc(min(100vw,412px) * .39), #1F1A14 calc(min(100vw,412px) * .6375)); }
+    .cx-hero__copy{ display:flex; flex-direction:column; }
+    .cx-hero__tag{ align-self:flex-start; }
+    .cx-hero__h1, .cx-hero__sub{ margin-top:14px; }
+    .cx-hero__ctas{ order:5; }
+    .cx-hero__facts{ order:6; margin-top:22px; }
+    .cx-hero__price{ order:7; }
+    .cx-hero__ctas .btn{ width:100%; }
   }
   @media (max-width:380px){ .cx-hero__in{ padding-left:16px; padding-right:16px; } }
 
@@ -219,6 +263,17 @@
      otherwise park the link at the very top of the viewport, behind the nav, with its focus ring
      hidden. */
   .cx-pointer__link{ padding:10px 0; margin:-10px 0; scroll-margin-top:84px; }
+  /* ...and on phones the sticky CTA bar (below) comes on when this same focus scroll takes the hero CTA
+     out of view, after the scroll target has been worked out, so Tab from "See prices" parked the link
+     flush with the bottom edge, behind the bar (58px, 74px beside the chat launcher), with its focus
+     ring, on viewports up to about 580px high: small phones, or any phone with the browser bars
+     showing. The strip is the first below-fold stop, and its link the only route to the other page.
+     84px clears the bar either way (the safe-area inset is the bar's own bottom padding); the query is
+     the bar's. Where the bar is already on, html's scroll-padding-bottom (below) adds to it: the link
+     then settles a little higher, never lower. */
+  @media (max-width:560px) and (min-height:401px){
+    .cx-pointer__link{ scroll-margin-bottom:calc(84px + env(safe-area-inset-bottom, 0px)); }
+  }
   /* #teaser is a slim band under a dark hero, not a content section. Its section--tight padding
      (36 to 64px) sits above it, as far from the hero edge as a section heading would be; the same
      padding below, plus the next section's own top padding, left 72 to 128px of air under a card
@@ -334,6 +389,45 @@
   .cx-quote__call{ margin:0; display:flex; gap:10px; align-items:flex-start; color:rgba(255,255,255,.8); line-height:1.5; }
   .cx-quote__call .cx-i{ width:20px; height:20px; margin-top:2px; color:var(--yellow); }
   @media (max-width:767px){ .quote-intro{ gap:10px !important; } .cx-quote__sub{ font-size:16px; } }
+  /* phones: arrive on the form with the first field on screen (Oct 2026 mobile pass). Hash jumps
+     (#quote) land under the 66-68px nav (was 36px padding + 84px scroll margin); the sub promises the
+     date, city and headcount, which are optional step 2, so it goes; the H2 stays. */
+  @media (max-width:767px){
+    #quote{ padding-top:12px; scroll-margin-top:68px; }
+    #quote .quote-intro{ padding-top:16px; padding-bottom:16px; }
+    #quote .quote-intro .h2{ font-size:23px; }
+    .cx-quote__sub{ display:none; }
+  }
+  /* ...and with the first-visit consent banner open, which is how a visitor who scrolled before tapping the
+     hero CTA, or used the header's "Let's talk", arrives (consent.js opens it on the first scroll that
+     settles; a tap before any scroll finds it held back and needs none of this). The compact banner is
+     128-144px of the bottom of the screen, and Continue ended 70-125px behind it at 375x812 to 412x915.
+     So the arrival goes up by what the screen is short of. Continue's bottom edge is 784px (EN) to 802px
+     (ES) down the screen at 375 and 390 wide and the banner starts 136px above the bottom edge, so the
+     shift that clears both with 8px of air (Continue's shadow is 4px) is 950px less the dynamic
+     viewport height: 0 to 134px. The cap keeps the top edge of the four event cards under the nav: past
+     it the shortest phones (360x740 and below, where Continue cannot clear the banner whatever we do)
+     would lose the cards, and not only their legend. Only the scroll target moves: nothing is hidden, so
+     the page does not shift when the banner is answered, and this rule is gone with the banner. Without
+     :has() the arrival is the one above; without dvh it is the fixed cap. Portrait phones only: from 561px
+     the banner is the roomy one and Continue already clears it (600x900: 15-20px). */
+  @media (max-width:560px){
+    html:has(body > .consent) #quote{ scroll-margin-top:calc(68px - 134px); }
+    @supports (height:100dvh){
+      html:has(body > .consent) #quote{ scroll-margin-top:calc(68px - clamp(0px, 950px - 100dvh, 134px)); }
+    }
+  }
+  /* the call-back promise and (SEASONAL) the hold-date promise under Continue: the hint under the phone
+     field is the only other reassurance on a phone (the intro's .quote-intro__more lines are hidden
+     below 768px). The call line reuses c.hero.call; the hold line reuses c.form.hold / te.form.hold. */
+  .cx-form__call, .cx-form__hold{ display:none; }
+  @media (max-width:767px){
+    .cx-form__call, .cx-form__hold{ display:flex; gap:8px; align-items:flex-start; justify-content:center; margin:12px 0 0; font-size:14px; font-weight:600; line-height:1.4; color:var(--ink-soft); }
+    .cx-form__call{ align-items:center; }
+    .cx-form__hold{ margin-top:8px; font-size:13.5px; font-weight:500; }
+    .cx-form__call .cx-i, .cx-form__hold .cx-i{ width:18px; height:18px; flex:0 0 auto; color:var(--accent-deep); }
+    .cx-form__hold .cx-i{ margin-top:1px; }
+  }
 
   /* --- event type: four one-tap cards instead of a dropdown ---
      Real radios in a fieldset + legend (keyboard: Tab in, arrows to choose). The input is
@@ -363,9 +457,46 @@
      gets the card's full width instead of wrapping into three short lines */
   @media (max-width:520px){
     .cx-et__grid{ gap:9px; }
-    .cx-et__card{ flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:8px; min-height:0; padding:10px 10px 12px; font-size:14.5px; }
-    .cx-et__ico{ width:34px; height:34px; }
-    .cx-et__ico .cx-i{ width:18px; height:18px; }
-    .cx-et__tick{ top:12px; right:10px; margin-top:0; }
+    .cx-et__card{ flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:6px; min-height:0; padding:8px 9px 9px; font-size:14px; line-height:1.18; }
+    .cx-et__ico{ width:28px; height:28px; }
+    .cx-et__ico .cx-i{ width:15px; height:15px; }
+    .cx-et__tick{ top:9px; right:8px; margin-top:0; }
   }
   @media (prefers-reduced-motion:reduce){ .cx-et__card, .cx-et__ico, .cx-et__tick{ transition:none; } }
+
+  /* ---------- sticky CTA bar (phones): shown by shared/qed.js once the hero CTA has scrolled away, hidden
+     over the form, the footer, after a lead has been sent and while the cookie banner is due or open.
+     z-index 55: under the nav (60), the consent banner (80) and the country list (75). Portrait phones
+     only (landscape phones are 561px and up). Kill switch: .cx-sticky{ display:none }. ---------- */
+  .cx-sticky{ display:none; }
+  @media (max-width:560px){
+    .cx-sticky{ display:block; position:fixed; left:0; right:0; bottom:0; z-index:55; padding:6px 12px calc(6px + env(safe-area-inset-bottom, 0px));
+      background:var(--cream); border-top:2px solid var(--ink); visibility:hidden; transform:translateY(100%);
+      transition:transform .22s cubic-bezier(.2,.7,.2,1), visibility 0s linear .22s; }
+    .cx-sticky.is-on{ visibility:visible; transform:none; transition:transform .22s cubic-bezier(.2,.7,.2,1); }
+    .cx-sticky .btn{ min-height:44px; padding-top:4px; padding-bottom:4px; box-shadow:3px 3px 0 0 var(--ink); }
+    /* the Brevo chat launcher (bottom right, loaded after Functional consent) sits over the bar's right edge */
+    .has-chat .cx-sticky{ padding-right:84px; }
+  }
+  /* a keyboard user's Tab (or any focus() call) scrolls the focused control clear of the bar instead of
+     parking it behind it (WCAG 2.2 SC 2.4.11): the bar is 58px, 74px when its label wraps beside the chat
+     launcher, plus air. Only while the bar is on: it is off over the form, and there the extra padding would
+     shift the form's own focus scrolls (card tap -> first field, Enter -> next) by 34-50px. consent.js sets
+     the same property inline while its banner is open and clears it on close; the bar is off then too. */
+  @media (max-width:560px) and (min-height:401px){
+    html:has(.cx-sticky.is-on){ scroll-padding-bottom:calc(80px + env(safe-area-inset-bottom, 0px)); }
+  }
+  /* a very short viewport (a desktop window at 300-400% zoom is 320px wide and 150-250px high) cannot spare a
+     58px bar under the 66px header: the bar steps out of the way there. No portrait phone is this short. */
+  @media (max-width:560px) and (max-height:400px){ .cx-sticky{ display:none; } }
+  @media (prefers-reduced-motion:reduce){ .cx-sticky, .cx-sticky.is-on{ transition:none; } }
+
+  /* ---------- phones: the sticky header steps aside while a text field has focus ----------
+     With the keyboard up the 66-68px header is a quarter of what is left of the screen. position:static
+     keeps its slot in the flow (nothing shifts) and it is sticky again on blur, or as soon as the
+     visitor scrolls the form away with the field still focused. html.is-typing is set by the sticky-bar
+     block in shared/qed.js: a text field of #event-form has focus, the form is on screen and the burger
+     menu is closed (its panel is positioned against the header). */
+  @media (max-width:860px){
+    html.is-typing .nav{ position:static; }
+  }

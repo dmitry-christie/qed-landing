@@ -76,6 +76,7 @@
   }
   swap(document.getElementById("c-hero-sub"), cfg.sub);
   swap(document.getElementById("c-hero-cta"), cfg.cta);
+  swap(document.getElementById("c-sticky-cta"), cfg.cta); // the phone sticky bar says what the hero button says
   preselect("christmas-dinner");
   document.documentElement.setAttribute("data-variant", "cena");
 

@@ -679,6 +679,26 @@
         fn.addEventListener("blur", function () { if (!etTap && fn.__dirty) fieldError(fn, !fnValid()); });
       }
 
+      // The iPhone keyboard's "next" key sends Enter. Left alone it submits the form, and Continue
+      // flags the phone and email errors before the visitor has reached those fields. Move on
+      // instead and check only the field being left. Email keeps Enter as "send"
+      // (enterkeyhint="send"): the submit handler below routes it to Continue. With the name, phone
+      // and email all valid there is nowhere left to move on to: Enter goes through as before.
+      // (Android's "next" is a Tab, not Enter: the dial-code button is out of the Tab order on
+      // touch devices below 768px, see buildCustomSelect, so it lands on the number natively.)
+      [[fn, phoneInput], [phoneInput, emailInput]].forEach(function (pair) {
+        var from = pair[0], to = pair[1];
+        if (!from || !to) return;
+        from.addEventListener("keydown", function (e) {
+          if (e.key !== "Enter" || e.isComposing) return;
+          if (fnValid() && phoneValid() && emValid()) return;
+          e.preventDefault();
+          if (from === fn) { if (!fnValid()) { fieldError(fn, true); return; } }
+          else if (!phoneValid()) { setPhoneError(true); return; }
+          to.focus();
+        });
+      });
+
       // Every field is checked so all errors show at once; returns the first invalid one.
       function validate() {
         var bad = [];
@@ -1095,11 +1115,37 @@
       });
     }
 
+    // Contact-first forms on a phone show the dial code alone ("+34"): the button is 94px wide so the
+    // number sits beside it (qed.css .tel-field; the same max-width:560px query). The open list and the native
+    // <select> keep "Spain +34". On a touch device below 768px the button also leaves the Tab order (a tap
+    // still opens it): Android's keyboard "next" key is a Tab, and from the first name it must land on the
+    // number, not on this button (it sits before the number in the DOM, and the keyboard would close).
+    // A hardware keyboard on such a device keeps a way in: Shift+Tab from the number steps back onto the
+    // button (then Tab returns to the number, Shift+Tab goes on to the first name). The Tab order follows
+    // the viewport (rotation, split screen) through the query's change event, as the label does.
+    var contactPhone = sel.getAttribute("data-role") === "phone-country" && !!sel.closest("[data-contact-first]") && !!window.matchMedia;
+    var shortDial = contactPhone ? window.matchMedia("(max-width:560px)") : null;
+    var touchTab = contactPhone ? window.matchMedia("(max-width:767px) and (pointer:coarse)") : null;
+    function syncTab() {
+      if (touchTab && touchTab.matches) btn.setAttribute("tabindex", "-1");
+      else btn.removeAttribute("tabindex");
+    }
+    syncTab();
+    if (touchTab && touchTab.addEventListener) touchTab.addEventListener("change", syncTab);
+    var telNum = contactPhone ? sel.closest("[data-contact-first]").querySelector("[data-role='phone-number']") : null;
+    if (telNum) telNum.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab" || !e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (btn.getAttribute("tabindex") !== "-1") return;
+      e.preventDefault();
+      btn.focus();
+    });
     function syncValue() {
       var opt = sel.options[sel.selectedIndex] || sel.options[0];
-      labelSpan.textContent = opt ? opt.textContent : "";
+      var dial = shortDial && shortDial.matches && opt ? opt.getAttribute("data-dial") : "";
+      labelSpan.textContent = dial ? "+" + dial : (opt ? opt.textContent : "");
       btn.classList.toggle("is-placeholder", !!opt && opt.value === "");
     }
+    if (shortDial && shortDial.addEventListener) shortDial.addEventListener("change", syncValue);
 
     function refresh() { renderList(); syncValue(); }
 
@@ -1329,6 +1375,93 @@
     window.addEventListener("scroll", onScroll, { passive: true });
   }
   initEngagement();
+
+  /* ---------- sticky CTA bar (phones; /corporate/ and /team-events/) ----------
+     Markup: <div class="cx-sticky" id="cx-sticky"> at the end of <body>; CSS (corporate.css) shows it
+     below 561px only. It is on while the hero CTA is above the viewport and none of these holds:
+       - the form (#quote) or the footer is on screen (the bar would sit on top of what it points to);
+       - a lead was sent on this page view (qed:leadsent): the visitor has converted, no second invite;
+       - the cookie banner is open, or due: consent undecided on a production host. The banner owns the
+         bottom edge until it is answered, so a first-time visitor sees the bar only after answering;
+       - the strip under the hero (#teaser .cx-pointer) overlaps the bar's zone, the bottom bar-height of
+         the viewport. On a short screen (320x568, or 375x553 with Safari's bars) the card is still low
+         down when the CTA leaves, and the bar would cover its lower edge and link for the next 40 to
+         60 px of scroll. The bar waits until the card's lower edge has cleared it.
+     Its taps are ordinary `cta click` events (placement = "cx-sticky", the nearest [id]).
+     The same block keeps two <html> classes for CSS: is-typing (a text field of #event-form has focus
+     AND the form is on screen: the header steps aside, see corporate.css) and has-chat (the Brevo
+     launcher, loaded when window.__qedFunctional is true, sits bottom right: the bar leaves room). */
+  (function () {
+    try {
+      var bar = document.getElementById("cx-sticky");
+      var cta = document.querySelector(".cx-hero__ctas .btn");
+      var quote = document.getElementById("quote");
+      var foot = document.querySelector("footer");
+      if (!bar || !cta || !quote || !foot || !("IntersectionObserver" in window)) return;
+      var root = document.documentElement;
+      var TEXT = "input:not([type=radio]):not([type=checkbox]):not([type=button]):not([type=submit]):not([type=hidden]), textarea";
+      var gone = false, formOn = false, footOn = false, done = false, stripUnder = false;
+      // The strip card is in the bar's zone: its lower edge is below the bar's top edge and its top edge is
+      // still on screen. Measured, not observed: the zone follows the viewport height (which moves with
+      // the browser's toolbars) and the bar's own height (58px, 74px beside the chat launcher, more with a
+      // safe-area inset), neither of which an IntersectionObserver margin would track. Only worth reading
+      // while the bar could be on (gone), and not at all where the bar is display:none (offsetHeight 0).
+      var strip = document.querySelector("#teaser .cx-pointer");
+      var measureStrip = function () {
+        var bh = bar.offsetHeight, vh = window.innerHeight, r;
+        if (!strip || !gone || !bh) return (stripUnder = false);
+        r = strip.getBoundingClientRect();
+        return (stripUnder = r.bottom > vh - bh && r.top < vh);
+      };
+      var upd = function () {
+        var a = document.activeElement;
+        var typing = !!(formOn && a && a.matches && a.matches(TEXT) && a.closest("#event-form") && !document.querySelector(".nav__links.open"));
+        var asking = !!document.querySelector(".consent") || !!(window.__qedConsentActive && !window.__qedConsentCategories);
+        root.classList.toggle("is-typing", typing);
+        root.classList.toggle("has-chat", !!window.__qedFunctional);
+        measureStrip();
+        bar.classList.toggle("is-on", gone && !formOn && !footOn && !done && !asking && !stripUnder);
+      };
+      // "Gone" is the CTA above the viewport, which one observer cannot tell from still below the fold:
+      // both are "not intersecting" and nothing fires between them, so an instant jump past a CTA that
+      // started below the fold (scroll restoration, an anchor under reduced motion, a short landscape
+      // phone) would leave the bar off. A second observer whose root reaches far above the viewport
+      // says "on screen or above"; gone is that without on screen.
+      var ctaIn = false, ctaUp = false;
+      var ctaMoved = function () { gone = ctaUp && !ctaIn; upd(); };
+      new IntersectionObserver(function (e) { ctaIn = e[e.length - 1].isIntersecting; ctaMoved(); }).observe(cta);
+      new IntersectionObserver(function (e) { ctaUp = e[e.length - 1].isIntersecting; ctaMoved(); }, { rootMargin: "100000px 0px 0px 0px" }).observe(cta);
+      new IntersectionObserver(function (e) { formOn = e[e.length - 1].isIntersecting; upd(); }).observe(quote);
+      new IntersectionObserver(function (e) { footOn = e[e.length - 1].isIntersecting; upd(); }).observe(foot);
+      // Scrolling moves the strip through the zone without any of the observers above firing, so the
+      // zone check runs once per frame while the CTA is gone, and re-decides only when it flips.
+      // transitionend: the card's reveal (translateY and scale, .65s) is measured mid-flight, and a
+      // visitor who has stopped scrolling would otherwise keep that stale answer until the next scroll.
+      var frame = 0;
+      var stripMoved = function () {
+        if (frame || !strip || !gone) return;
+        frame = requestAnimationFrame(function () {
+          frame = 0;
+          var was = stripUnder;
+          if (measureStrip() !== was) upd();
+        });
+      };
+      if (strip && window.requestAnimationFrame) {
+        window.addEventListener("scroll", stripMoved, { passive: true });
+        window.addEventListener("resize", stripMoved);
+        strip.addEventListener("transitionend", stripMoved);
+      }
+      document.addEventListener("focusin", upd);
+      document.addEventListener("focusout", function () { setTimeout(upd, 0); });
+      window.addEventListener("qed:leadsent", function () { done = true; upd(); });
+      window.addEventListener("qed:consentchange", upd);
+      var burger = document.querySelector(".nav__toggle");
+      if (burger) burger.addEventListener("click", function () { setTimeout(upd, 0); });
+      // the banner is appended to <body> by consent.js and removed on a choice
+      if ("MutationObserver" in window) new MutationObserver(upd).observe(document.body, { childList: true });
+      upd();
+    } catch (e) { /* the bar is an extra: never let it break the page's other scripts */ }
+  })();
 
   /* re-open the cookie banner to review/update consent (privacy/legal page button) */
   document.querySelectorAll("[data-consent-open]").forEach(function (el) {

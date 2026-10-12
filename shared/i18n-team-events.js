@@ -8,8 +8,10 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // SEASONAL (Sep-Dec 2026): revert te.hero.tag to "Presencial en <ciudades>" after mid-December.
   // ES city lists name only TDT's 4 host cities (Valencia, Madrid, Murcia, Santiago); the baked EN is QED's longer list.
   "te.hero.tag": "Cenas de equipo y Navidad 2026 · Valencia, Madrid*, Murcia* y Santiago*",
-  "te.hero.h1a": "¿Te ha tocado organizarlo? ",
-  "te.hero.h1b": "Te lo ponemos fácil.",
+  // te.hero.h1a/h1b: three lines at every phone width (320 to 412 px, measured with Plus Jakarta Sans). The NBSPs keep "la" and "de"
+  // with their noun; h1b has no article because "Traemos la trivia." is 7.6 em wide and the 320 px box is 7.2 em (it made four lines).
+  "te.hero.h1a": "¿Te toca la cena de equipo? ",
+  "te.hero.h1b": "Traemos trivia.",
   "te.hero.sub": "Una trivia por equipos con anfitrión en directo. Dinos la fecha, el sitio y cuántos sois; nosotros montamos, presentamos y recogemos.",
   // ?v=cena variant (Christmas ad group), swapped in by shared/cena-variant.js from window.QED_CENA in team-events/index.html
   "te.hero.h1cenaa": "La cena de tu equipo, ",
@@ -18,7 +20,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // the hook is the GROUP price with IVA included; per head is a worked example, exact only for 25 at a venue
   // (150 x 1,21 = 181,50; 181,50 / 25 = 7,26; 181,50 / 12 = 15,125; 200 x 1,21 = 242)
   "te.hero.price": "181,50 € el grupo, IVA incluido",
-  "te.hero.pricecond": "Hasta 25 personas en uno de nuestros locales: 7,26 € por persona si sois 25, unos 15 € si sois 12. En vuestro sitio, 242 €.",
+  "te.hero.pricecond": "Hasta 25 personas en uno de nuestros locales: 7,26 € por persona si sois 25, unos 15 € si sois 12. En vuestro restaurante u oficina, 242 € el grupo.",
 
   // 2. easy: the old #organiser card of the company page, same strings (except te.easy.2), new H2. Per person for 25, IVA incl.: 242 / 25 and 181,50 / 25.
   "te.easy.eyebrow": "Para quien lo organiza",
@@ -38,11 +40,11 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // 3. why, extras, price lead (te.price.lead replaces c.price.lead: a price per group, per head as a worked example)
   "te.why.eyebrow": "Por qué funciona con equipos",
   "te.ex.1": "Rondas sobre vuestro equipo",
-  "te.price.lead": "Va según cuántos sois, no por persona: hasta 25 personas son 181,50 € con IVA en uno de nuestros locales, o 242 € en vuestro sitio. Si sois 25, salen 7,26 € o 9,68 € por persona.",
+  "te.price.lead": "Va según cuántos sois, no por persona: hasta 25 personas son 181,50 € con IVA en uno de nuestros locales, o 242 € en vuestro restaurante u oficina. Si sois 25, salen 7,26 € o 9,68 € por persona.",
 
   // 4. FAQ: the other six items reuse c.faq.* (the invoice item is held back until a person with no company can be promised one)
   "te.faq.q7": "¿Cuánto cuesta por persona?",
-  "te.faq.a7": "Es un precio por grupo, no por persona: 150 € + IVA hasta 25 personas en uno de nuestros locales (181,50 € con IVA, o sea 7,26 € por persona si sois 25), o 200 € + IVA en vuestro restaurante u oficina (242 €, o sea 9,68 € por persona). Cuantos menos seáis, más sale por cabeza: 10 personas en uno de nuestros locales son 18,15 € cada una (24,20 € en vuestro sitio). De 26 a 75 personas son de 200 a 300 € + IVA; más de 75, te lo presupuestamos. Incluye anfitrión, la trivia, puntuación en directo, sonido y pantalla. Las rondas sobre vuestro equipo, los premios, los trofeos, las rondas en directo y el fotógrafo son extras que te presupuestamos en la llamada.",
+  "te.faq.a7": "Es un precio por grupo, no por persona: 150 € + IVA hasta 25 personas en uno de nuestros locales (181,50 € con IVA, o sea 7,26 € por persona si sois 25), o 200 € + IVA en vuestro restaurante u oficina (242 € con IVA, o sea 9,68 € por persona). Cuantos menos seáis, más sale por cabeza: 10 personas en uno de nuestros locales son 18,15 € cada una con IVA (24,20 € en vuestro restaurante u oficina). De 26 a 75 personas son de 200 a 300 € + IVA (de 242 a 363 € con IVA); más de 75, te lo presupuestamos. Incluye anfitrión, la trivia, puntuación en directo, sonido y pantalla. Las rondas sobre vuestro equipo, los premios, los trofeos, las rondas en directo y el fotógrafo son extras que te presupuestamos en la llamada.",
   "te.faq.q12": "¿Organizáis también la cena?",
   "te.faq.a12": "No, lo nuestro es la trivia. La cena, el catering y el transporte los organizáis vosotros. ¿Aún no tenéis sitio? Os recomendamos uno, mejor si es uno de nuestros locales: sale 50 € más barato porque allí ya está todo montado para la trivia.",
 
@@ -53,5 +55,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "te.form.et2": "Offsite de equipo",
   "te.form.et3": "Otra cosa",
   "te.form.company": "Empresa o equipo",
+  // SEASONAL (Sep-Dec 2026): drop te.form.hold after mid-December (same facts as c.form.hold, but the reason is "while you check with the others", not company sign-off).
+  "te.form.hold": "¿Es para diciembre? Te guardamos la fecha sin compromiso mientras lo habláis con el resto: hasta 7 días, o 72 horas los viernes y el sábado 12.",
   "te.ph.email": "nombre@email.com"
 });

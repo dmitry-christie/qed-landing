@@ -2,9 +2,10 @@
 
 > **Status (2026-08-15): implemented on branch `walkeros-migration`.** Segment is gone; walkerOS
 > is the collection layer (client `shared/walker.js` + server `netlify/lib/forms.ts`), Amplitude
-> (EU) for analytics, Meta Pixel+CAPI and Google Ads (server-side) for ads, GA4 dropped. All
-> destinations are inert until their per-brand env vars are set. See CLAUDE.md "Analytics
-> (walkerOS)" for the as-built summary. This doc is the design of record for the taxonomy.
+> (EU) for analytics, Meta Pixel+CAPI and Google Ads (client-side gtag with enhanced
+> conversions) for ads, GA4 dropped. All destinations are inert until their per-brand env vars
+> are set. See CLAUDE.md "Analytics (walkerOS)" for the as-built summary. This doc is the design
+> of record for the taxonomy.
 
 Target stack after the walkerOS migration:
 
@@ -61,7 +62,7 @@ reason to invent parallel event names in the code.
 | `id` | `qed-eid` (localStorage UUID, already exists) | Durable pseudonymous id. Amplitude `user_id` is left unset (anonymous lead-gen); this is the stitch key. |
 | `device` | walkerOS device id (cookie/localStorage) | Per-browser. |
 | `session` | walkerOS session logic | Replaces our implicit sessions. |
-| `hash` (em/ph/fn/ln) | form fields, SHA-256 | **Server-side only, marketing consent only.** Feeds Meta CAPI `user_data` and Google enhanced conversions. |
+| `hash` (em/ph/fn/ln) | form fields, SHA-256 | **Server-side only, marketing consent only.** Feeds Meta CAPI `user_data`. Google enhanced conversions do not use it: gtag hashes email, name and city in the browser from the marketing-gated lead event. |
 
 Click-ids (`gclid`, `wbraid`, `gbraid`, `fbclid`, `msclkid`, `ttclid`) and `fbc`/`fbp` are
 attribution identifiers, captured first-touch (30-day, click-wins — keep the existing
@@ -86,8 +87,9 @@ Server-side CAPI lead quality depends on Meta's browser cookies `_fbc` (click id
   optionally synthesize `_fbp` the same way. All of this is marketing-gated, so an
   analytics-only visitor has no Meta cookies and is measured but never ad-matched — intended.
 
-Google mirrors this: browser gtag/remarketing tag sets its cookies client-side; enhanced
-conversions get hashed PII from the server. `gclid`/`wbraid`/`gbraid` already flow as `data`.
+Google mirrors this on the client: the gtag tag sets its cookies and fires the lead conversions
+in the browser, and enhanced conversions read email, name and city from the marketing-gated lead
+event and are hashed by gtag. `gclid`/`wbraid`/`gbraid` already flow as `data`.
 
 ### Consent mapping (keep the 4 categories)
 | Category | Gates | Destinations that require it |
@@ -203,6 +205,44 @@ Shared `data` (superset — each funnel sends the subset it collects):
 section, else the `id` of the nearest enclosing element (`teaser`, ...), `body` if there is none.
 Which paths count is a regex in `shared/qed.js` (`FUNNEL_HREF`): a funnel path missing from it is
 measured as nothing at all.
+
+### The phone sticky bar (`cx-sticky`)
+`/corporate/` and `/team-events/` carry a fixed bottom bar on phones (viewport 560 px wide or
+less; `display:none` above that and at a viewport height of 400 px or less) that repeats the hero
+CTA. Its tap is an ordinary `cta click`: `placement` = `cx-sticky` (the `id` of its container),
+`href` = `#quote`, and the same `label` as the hero button (`Tell us about your event →`, under
+`?v=cena` `Hold your date →`; ES `Cuéntanos tu evento →` and `Guarda tu fecha →`). The hero button
+and the bar share `href` and `label`, so `placement` is the only thing that tells them apart. No new
+event name or property, and nothing else changes: the jump to `#quote` fires the same `form view`,
+and the lead events are untouched.
+
+`cta click` `placement` values on the corporate pair:
+
+| `placement` | Element | Shown |
+|---|---|---|
+| `hero` | the hero button | all widths |
+| `cx-sticky` | the bottom bar | phones, 560 px and below |
+| `body` | the header's "Let's talk" button (outside the hero and `.nav__links`, no ancestor with an `id`) | 860 px and below |
+| `price` | the price card's "Ask for your price" | all widths |
+| `easy` | the `#easy` card's "Tell us about your dinner" | `/team-events/` only |
+
+The header link "Tell us about your event" inside `.nav__links` is a `nav click`, not a `cta
+click`.
+
+- **When the bar shows.** Once the hero button has scrolled off the top of the screen, and not while
+  `#quote` or the footer is on screen, and not for the rest of the page view once a lead has been
+  sent (`qed:leadsent`, the step-1 response), and not while the cookie banner is open or due, and
+  not while the pointer strip's card under the hero is in the bar's zone (its lower edge below the
+  bar's top edge, its top still on screen), which on the shortest phones (320x568 and 375x553
+  screens; CLAUDE.md "Phone pass" has the numbers) holds for up to about 70 px of scroll right
+  after the hero button leaves: the bar would cover the card's link, so it comes on once the card
+  has cleared. A first-time visitor on a production host therefore first sees it after answering
+  the banner, and every `cx-sticky` event comes from a visitor whose analytics consent is granted,
+  as for every client event.
+- **No impression event.** Nothing records that the bar was shown, so there is no click-through
+  denominator. Read `cx-sticky` taps beside `hero` taps and `lead complete` of the same page
+  (`page_path`), phones only: the bar does not exist on larger screens, so comparing it with the
+  all-device `hero` count understates its share.
 
 ### Two corporate pages, one funnel
 `/corporate/` (the **booker**: HR, office or events people booking for a company) and
