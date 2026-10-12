@@ -1,7 +1,7 @@
 /* Christmas ad-group variant (?v=cena), shared by /corporate/ and /team-events/. SEASONAL
    (Sep-Dec 2026): after mid-December delete this file, the <script> that defines window.QED_CENA
    and the one that loads this file on both pages, and the c.hero.*cena* / te.hero.*cena* /
-   c.cta.holdcena keys. Deleting it retires the variant and the hero-switch rewrite; it also
+   c.cta.holdcena keys. Deleting it retires the variant (the hero rewrite and the ?v=cena carry); it also
    retires the [data-preselect-event] listener (last paragraph: the organiser card CTA on
    /team-events/ then only scrolls to the form), so move that listener to qed.js first if the
    one-tap preselect should survive.
@@ -12,8 +12,8 @@
      window.QED_CENA = { h1a, h1b, sub, cta }   // each a [i18nKey, englishText] pair
    Triggers: ?v=cena, or a utm_campaign containing "cena" (from the URL, else the first-touch record
    qed.js keeps in localStorage "qed-attr"). It also preselects the "christmas-dinner" event type
-   and format, and carries ?v=cena across the hero switch and the pointer (a[data-aud-link]):
-   ?v is not stored anywhere, only utm_campaign is, and a UTM on those links would overwrite the
+   and format, and carries ?v=cena onto the pointer strip's link (a[data-aud-link]) under the hero:
+   ?v is not stored anywhere, only utm_campaign is, and a UTM on that link would overwrite the
    stored first touch.
 
    NOT cena-triggered: any [data-preselect-event="<key>"] control (the organiser card CTA on

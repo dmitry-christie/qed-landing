@@ -29,7 +29,7 @@
 <!-- Inter (600/900) is only for the projector slide in #features: it is the real slides' face. -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&family=Inter:wght@600;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css?v=20261010">
-<link rel="stylesheet" href="/shared/corporate.css">
+<link rel="stylesheet" href="/shared/corporate.css?v=20261014">
 <script>window.QED_SITE = "corporate";</script>
 <script src="/config.js"></script>
 <script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
@@ -100,13 +100,6 @@
     </picture>
     <div class="wrap cx-hero__in">
       <div class="cx-hero__copy reveal">
-        <!-- Audience switch: this page is the one for whoever books for a company; /team-events/ is
-             for the person organising it for their own team. Plain link, no query string (with
-             ?v=cena, shared/cena-variant.js appends it). -->
-        <nav class="cx-aud" aria-label="Who is this page for?" data-i18n-aria="aud.label">
-          <span class="cx-aud__opt" aria-current="page"><span class="cx-aud__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-brief"/></svg></span><span class="cx-aud__t" data-i18n="aud.booker.t">HR, office or events</span><span class="cx-aud__go" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span>
-          <a class="cx-aud__opt" href="/team-events/" data-aud-link><span class="cx-aud__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-team"/></svg></span><span class="cx-aud__t" data-i18n="aud.org.t">Organising it for my team</span><span class="cx-aud__go" aria-hidden="true">&rarr;</span></a>
-        </nav>
         <!-- SEASONAL (Sep-Dec 2026): c.hero.tag is the Christmas / cenas de empresa version.
              Revert it (EN here + ES in i18n-corporate.js) to a plain "Hosted in <cities>" tag after mid-December. -->
         <span class="tag tag--accent tag--shadow cx-hero__tag" data-i18n="c.hero.tag">Christmas &amp; end-of-year parties 2026 · Valencia, Madrid*, Barcelona*, Murcia* &amp; Santiago*</span>
@@ -128,7 +121,20 @@
     </div>
   </section>
 
-  <!-- ============ 2. PROOF ============ -->
+  <!-- ============ 2. POINTER to the team page (the old #organiser card's successor) ============ -->
+  <!-- Directly under the hero: it replaced the audience switch that used to sit inside it, and is the
+       only link to /team-events/ on this page. Plain link, no query string (with ?v=cena,
+       shared/cena-variant.js appends it to every a[data-aud-link]). -->
+  <section id="teaser" class="section section--tight">
+    <div class="wrap">
+      <div class="cx-pointer reveal">
+        <p><strong data-i18n="aud.strip.org.t">Organising it for your own team?</strong> <span data-i18n="aud.strip.org.d">You don't need to be the company to book. There's a shorter page for you.</span></p>
+        <a class="cx-pointer__link" href="/team-events/" data-aud-link><span data-i18n="aud.strip.org.cta">See team events</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. PROOF ============ -->
   <!-- Real numbers only (no testimonials, logos or client names: none with permission yet).
        Locations: QED 7, TDT 6 (no Barcelona), via data-count-es. Photos: TR15 (Tony Roma's,
        Nov 2023) and El Garaje (Valencia, Jun 2023), cropped clear of the QED watermark. -->
@@ -158,7 +164,7 @@
     </div>
   </section>
 
-  <!-- ============ 3. WHAT IT IS ============ -->
+  <!-- ============ 4. WHAT IT IS ============ -->
   <section id="what" class="section section--tight">
     <div class="wrap cx-what">
       <div class="cx-hd reveal">
@@ -187,7 +193,7 @@
     </div>
   </section>
 
-  <!-- ============ 4. WHY COMPANIES BOOK IT ============ -->
+  <!-- ============ 5. WHY COMPANIES BOOK IT ============ -->
   <section id="why" class="section section--tight">
     <div class="wrap">
       <div class="card card--ink cx-why reveal">
@@ -214,7 +220,7 @@
     </div>
   </section>
 
-  <!-- ============ 5. WE HANDLE EVERYTHING ============ -->
+  <!-- ============ 6. WE HANDLE EVERYTHING ============ -->
   <!-- Included and extras, said once each (founder pricing, 4 Oct 2026). Extras carry no prices:
        they are quoted on the call. We run the trivia only; the client organises the dinner or the
        offsite, and we recommend a venue for free (ours are €50 cheaper). -->
@@ -254,7 +260,7 @@
     </div>
   </section>
 
-  <!-- ============ 6. CUSTOMISED (extra) ============ -->
+  <!-- ============ 7. CUSTOMISED (extra) ============ -->
   <!-- Custom rounds are an extra (quoted on the call), so every example carries the flag. The
        slide is one of our real question slides; decorative (aria-hidden), the cards say it. -->
   <section id="custom" class="section section--tight">
@@ -309,7 +315,7 @@
     </div>
   </section>
 
-  <!-- ============ 7. HOW IT WORKS ============ -->
+  <!-- ============ 8. HOW IT WORKS ============ -->
   <section id="how" class="section section--tight">
     <div class="wrap">
       <div class="cx-hd reveal">
@@ -336,7 +342,7 @@
     </div>
   </section>
 
-  <!-- ============ 8. OCCASIONS ============ -->
+  <!-- ============ 9. OCCASIONS ============ -->
   <section id="occasions" class="section section--tight">
     <div class="wrap">
       <div class="cx-hd reveal">
@@ -351,16 +357,6 @@
         <li class="cx-chip" style="--tint:var(--cream-soft)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cheers"/></svg></span><span data-i18n="c.uc.c5">Client events</span></li>
         <li class="cx-chip" style="--tint:var(--yellow)"><span class="cx-chip__i" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-party"/></svg></span><span data-i18n="c.uc.c6">Company celebrations</span></li>
       </ul>
-    </div>
-  </section>
-
-  <!-- ============ 9. POINTER to the team page (the old #organiser card's successor) ============ -->
-  <section id="teaser" class="section section--tight">
-    <div class="wrap">
-      <div class="cx-pointer reveal">
-        <p><strong data-i18n="aud.strip.org.t">Organising it for your own team?</strong> <span data-i18n="aud.strip.org.d">You don't need to be the company to book. There's a shorter page for you.</span></p>
-        <a class="cx-pointer__link" href="/team-events/" data-aud-link><span data-i18n="aud.strip.org.cta">See team events</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
-      </div>
     </div>
   </section>
 
@@ -759,7 +755,7 @@
   cta: ["c.cta.holdcena", "Hold your date"]
 };</script>
 <script src="/shared/cena-variant.js"></script>
-<script src="/shared/i18n-common.js?v=20261013"></script>
+<script src="/shared/i18n-common.js?v=20261014"></script>
 <script src="/shared/i18n-corporate.js?v=20261013"></script>
 <script src="/shared/i18n.js?v=20261010"></script>
 <script src="/shared/walker.js"></script>

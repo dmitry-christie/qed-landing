@@ -38,7 +38,7 @@ Shared CSS/JS/images live in `/shared/`.
 - Spanish strings live in `shared/i18n-*.js` as `window.QED_ES[key]`. `shared/i18n.js`
   replaces the text when the language is ES.
 - Each page loads `i18n-common.js` (shared keys: footer, forms, consent, cross-sell,
-  About, and `aud.` for the audience switch and pointer strips of the two corporate pages) plus
+  About, and `aud.strip.*` for the pointer strips of the two corporate pages) plus
   its own `i18n-<page>.js` (page-specific keys, prefixed
   `h.` hub, `c.` corporate, `te.` team events, `cel.` celebrations, `v.` venues, `p.` partners,
   `pr.` privacy, `tm.` terms). `/team-events/` also loads `i18n-corporate.js`, because most of
@@ -129,19 +129,20 @@ the group price and keeps a shorter FAQ.
 - **Shared CSS.** `shared/corporate.css` holds the `cx-` rules (they used to be inline in
   `corporate/index.html`). Both pages link it directly after `qed.css`, so a `cx-` rule keeps
   winning same-specificity ties. Edit it once; its cache rule is under "Caching gotcha".
-- **Switch and strips.** The first child of each hero is `<nav class="cx-aud">`: two sticker
-  cards in the page's radio-card language (icon disc, label, marker). The current page is the
-  selected card, a non-link `<span aria-current="page">` (yellow, red tick); the other is a plain
-  `<a data-aud-link>` (dark, arrow) that lifts like a `.btn` on hover. Always in the order
-  [booker, organiser]. Each page also has a `#teaser` strip (`aud.strip.*`) pointing at the other.
-  These links must not carry `btn--cta` or `btn--soft` (`qed.js` would file the click as
-  `cta click` and return before `crosssell click`) or UTM parameters (they would overwrite the
-  stored first touch). It sits inside the hero's old top padding (`--aud-top` + `--aud-h` + the
-  margin below it), so the tag, H1 and CTA stay where they were on phones and from 1200 px up
-  (measured against the pre-split build); between 701 and about 1100 px they sit up to 15 px lower,
-  because the hero padding there (48 to 84 px) is smaller than a 56 px switch. Keep `--aud-h` at
-  56px on desktop and 92px on phones, or recompute the margin. The labels fit two lines at 320 px in EN and ES; reword an
-  `aud.*` label only after the same check at 320 and 360 px in both languages.
+- **Pointer strip.** Each page has one strip, `<section id="teaser">`, directly under the hero:
+  the first section after the hero's closing `</section>`. A `cx-pointer` card holds a bold line,
+  one sentence and a link to the other page (`aud.strip.org.*` on `/corporate/`,
+  `aud.strip.booker.*` on `/team-events/`). It is the only audience control: the two-card switch
+  that used to open each hero was removed in Oct 2026 (the founder's call), so there is no
+  `cx-aud` markup, CSS or `aud.*` switch key left to keep in step. The link is a plain
+  `<a class="cx-pointer__link" data-aud-link>` and must not carry `btn--cta` or `btn--soft`
+  (`qed.js` would file the click as `cta click` and return before `crosssell click`) or UTM
+  parameters (they would overwrite the stored first touch). Its click is `crosssell click` with
+  `to` = `team-events` or `corporate` and `placement` = `teaser`, which `FUNNEL_HREF` in `qed.js`
+  already counts; `shared/cena-variant.js` appends `?v=cena` to it (see "Cena variant"). It is a
+  slim band under a dark hero, not a content section, so `shared/corporate.css` sets
+  `#teaser{padding-bottom:0}`: the card then sits as far from the next heading as from the hero
+  edge, where `section--tight`'s bottom padding as well would double that gap.
 - **Audience preselect (`?for=`).** For ads: `?for=hr` opens `/corporate/` and `?for=team` opens
   `/team-events/`, from either URL (`?audience=` is an alias; `company`, `empresa`, `rrhh`,
   `booker` and `equipo`, `organiser`, `organizer` are accepted values, case-insensitive; anything
@@ -154,7 +155,7 @@ the group price and keeps a shorter FAQ.
 - **Cena variant (`?v=cena`).** Each page defines `window.QED_CENA = { h1a, h1b, sub, cta }`
   (`[key, English]` pairs) and loads `shared/cena-variant.js` before `i18n.js`, so the English it
   bakes is what `i18n.js` caches and swaps. The script re-points the hero, preselects the dinner
-  card and format, and appends `?v=cena` to every `a[data-aud-link]`: `?v` is stored nowhere
+  card and format, and appends `?v=cena` to the strip's `a[data-aud-link]`: `?v` is stored nowhere
   (only `utm_campaign` is), so the variant would be lost on the other page. It also holds the
   `[data-preselect-event]` listener (the organiser's `#easy` card CTA), registered before the
   variant check so it works on every visit.
@@ -171,8 +172,8 @@ the group price and keeps a shorter FAQ.
   booker only; the dinner card listed first; and `te.easy.2` is already the all-year wording ("Pay by card link or bank
   transfer. Split it however you like."), so it needs no revert.
   Brevo confirmations #7/#8 also mention the deposit; they live outside the repo.
-- **Reach.** No footer, nav or hub link points at `/team-events/`: it is reached from the switch
-  and the strip on `/corporate/`, and from the sitemap. That is a decision, not an omission.
+- **Reach.** No footer, nav or hub link points at `/team-events/`: it is reached from the strip
+  under the hero on `/corporate/`, and from the sitemap. That is a decision, not an omission.
 - **Head.** `te.title` and `te.metadesc` own "cena de equipo" and say "de empresa" nowhere,
   because the booker's title owns that phrase and the two near-identical pages should not compete
   for one query. Both pages are canonical to themselves.
@@ -260,8 +261,8 @@ name, on both brands, so they need no `foot.*href` key, no `data-i18n-href` and 
 `/team-events/` is therefore an English path on the Spanish site. That is a cost decision, not a
 limit: the language switcher sends `location.pathname` to the other brand, and a `BRAND_SLUGS`
 entry makes the build 301 the other known paths onto each brand's own. A TDT slug would be that
-entry plus a `foot.*href`-style key and a `data-i18n-href` on every `data-aud-link` (the switch
-and the strip on both pages), changed together.
+entry plus a `foot.*href`-style key and a `data-i18n-href` on every `data-aud-link` (the strip's
+link on each page), changed together.
 
 ## Social preview images (og:image / favicon)
 
@@ -321,7 +322,9 @@ destination → EU HTTP V2; ignores the lead events, which are sent server-side)
 with **enhanced conversions for leads** — email + name + city read from the marketing-gated lead
 event `data` and hashed by gtag). `qed.js` fires `lead start` client-side too (Google secondary
 conversion; the Pixel and Amplitude both ignore it). `crosssell click` carries `to`, `placement`
-(`hero` inside the hero, else the nearest enclosing id, e.g. `teaser`), `href` and `label`. The
+(`hero` for a link inside a `.hero` section, else the nearest enclosing id; the one cross-sell
+link on each corporate page outside the footer is the pointer strip's, which sits outside the
+hero, so on those pages it is always `teaser`), `href` and `label`. The
 `FUNNEL_HREF` regex in `qed.js` decides which links count, so a new funnel path must be added
 there: a plain link to a path it doesn't list is measured as nothing.
 
@@ -488,13 +491,21 @@ mixed with yesterday's cached file (new HTML needing new JS, like the contact-fi
 `?v=YYYYMMDD` to that page's `/shared/` URLs, as corporate, the hub and privacy carry since
 `?v=20261008`.
 
-The corporate pair carries `?v=20261013` on `i18n-common.js`, `i18n-corporate.js` and `qed.js`
-(the split edited all three; use one value on both pages, higher than any already there). The
-three files the split added, `corporate.css`, `cena-variant.js` and `i18n-team-events.js`, are
-plain URLs: a file that didn't exist yesterday has no stale copy. That leaves `corporate.css` as
-the catch. It used to be inline, so a CSS fix was atomic with the HTML; as a `/shared/` file a
-CSS-only edit reaches returning visitors up to a day late unless a `?v=` is added or bumped on
-its link on `/corporate/` AND `/team-events/` together. `cena-variant.js` is the same.
+The corporate pair carries a `?v=` per file, the same value on `/corporate/` and `/team-events/`:
+`?v=20261014` on `corporate.css` and `i18n-common.js` (moving the strip under the hero edited
+both), `?v=20261013` on `i18n-corporate.js` and `qed.js` (the split edited them), and
+`?v=20261010` on `qed.css`, `i18n.js` and `consent.js`. `cena-variant.js` and
+`i18n-team-events.js` are still plain URLs (new in the split, so no stale copy existed), as are
+`walker.js`, `brevo.js` and `phone-countries.js`.
+
+The rule for the next edit: when you change a `/shared/` file these two pages load, bump its
+`?v=` on `/corporate/` AND `/team-events/` together, to a value higher than any already on either
+page; a plain URL gets its first `?v=` in the same change. `corporate.css` is the one that bites.
+It used to be inline, so a CSS fix was atomic with the HTML; as a `/shared/` file a CSS-only edit
+reaches returning visitors up to a day late, and yesterday's stylesheet against today's markup is
+the bad case (that is why moving the strip under the hero bumped it: the old file gives the hero
+a 14 px top padding, which only made sense with the switch inside it). `cena-variant.js` and
+`i18n-team-events.js` follow the same rule once they change.
 
 The same window applies to corrected facts and new mechanisms: for up to a day a returning visitor
 can run new HTML against yesterday's `i18n-*.js` / `i18n.js` / `qed.js` (e.g. the TDT city lists
@@ -503,7 +514,8 @@ pending hashed-asset build rewrites the exact string `"/shared/<file>.js"`, so a
 would slip past it and 404. That parked build (branch `build-dist-refactor`) also hard-codes its
 page list (`SRC_PAGES`) and hashed-asset list (`assetsToHash`): before it is revived it must gain
 `team-events/`, `i18n-team-events.js`, `corporate.css` and `cena-variant.js`, and cope with `?v=`
-suffixes, or `/team-events/` 404s on both brands and both hero switches become dead links.
+suffixes, or `/team-events/` 404s on both brands and the strip on `/corporate/` becomes a dead
+link.
 
 ## Deploy
 

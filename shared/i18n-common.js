@@ -26,10 +26,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "foot.emailhref": "mailto:info@tardeodetrivia.com",
   "foot.legal": "Tardeo de Trivia SL · CIF B88885199",
 
-  /* ---- audience switch (/corporate/ and /team-events/) ---- */
-  "aud.label": "¿Para quién es esta página?",
-  "aud.booker.t": "RR. HH., oficina o eventos",
-  "aud.org.t": "Es para mi equipo",
+  /* ---- pointer strip under the hero (/corporate/ and /team-events/): each page points at the other ---- */
   "aud.strip.org.t": "¿Lo organizas para tu propio equipo?",
   "aud.strip.org.d": "No hace falta que lo pida la empresa. Hay una página más corta, para ti.",
   "aud.strip.org.cta": "Ver eventos de equipo",

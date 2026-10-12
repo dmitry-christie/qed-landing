@@ -128,7 +128,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.uc.c5": "Eventos con clientes",
   "c.uc.c6": "Celebraciones de empresa",
 
-  // 9. pointer to /team-events/: aud.strip.org.* in i18n-common.js. The organiser card moved to te.easy.* in i18n-team-events.js.
+  // Pointer to /team-events/ (directly under the hero): aud.strip.org.* in i18n-common.js. The organiser card moved to te.easy.* in i18n-team-events.js.
 
   // 10. price: founder pricing (4 Oct 2026), per event + IVA. The hook is the lowest tier at a
   // partner venue. Extras carry no prices (quoted on the call). Currency: "150 €" in ES.

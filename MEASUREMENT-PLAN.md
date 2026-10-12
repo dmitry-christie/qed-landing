@@ -130,7 +130,7 @@ Tiered so we can ship Tier 1 first and add the rest without re-architecting.
 |---|---|
 | `cta click` | Any primary CTA (hero, sticky, section) — `data.placement` says which |
 | `form view` | A lead form scrolls into view (denominator for start-rate); `data.form` is the form's `name` |
-| `crosssell click` | Cross-sell, comparison-table or audience-switch link to another funnel; `data.to` is the target, `data.placement` where the link sat |
+| `crosssell click` | Cross-sell, comparison-table or audience pointer-strip link to another funnel; `data.to` is the target, `data.placement` where the link sat |
 | `faq open` | A FAQ `<details>` is opened |
 
 ### Tier 3 — diagnostic (nice-to-have)
@@ -220,7 +220,7 @@ How to read them apart:
 |---|---|---|
 | Any Amplitude event, client or server | `page_path` = `/corporate/` | `page_path` = `/team-events/` |
 | `form view` | `form` = `corporate-event` | `form` = `team-event` |
-| `crosssell click` on the hero switch / the pointer strip | `to` = `team-events`, `placement` = `hero` / `teaser` | `to` = `corporate`, `placement` = `hero` / `teaser` |
+| `crosssell click` on the pointer strip, right under the hero | `to` = `team-events`, `placement` = `teaser` | `to` = `corporate`, `placement` = `teaser` |
 | Telegram call alert | headline `Empresa` / `Corporate`, footer `Audience: booker` | headline `Equipo` / `Team`, footer `Audience: organiser` |
 | Brevo `NOTES`, deal description | `Audience: booker` | `Audience: organiser` |
 | Brevo deal name | unchanged | suffix ` (equipo)` on a Spanish lead, ` (team)` on an English one |
@@ -235,9 +235,14 @@ How to read them apart:
   `page=corporate`. The server honours only the exact string `organiser`; anything else, including
   no field at all (a page cached from before the split), reads `booker`.
 - `audience` records the page the lead used, not the person. The persona signal is the interlink:
-  the click rate of the hero switch and the strip (`crosssell click`, `placement` `hero` /
-  `teaser`) against each page's `page view`. Cena ad traffic that lands on `/corporate/?v=cena` and
-  doesn't click the switch counts as booker.
+  the click rate of the pointer strip, that is `crosssell click` with `to` = `team-events` (from
+  `/corporate/`) or `corporate` (from `/team-events/`) and `placement` = `teaser`, over that
+  page's `page view`. The strip now sits right under the hero. Cena ad traffic that lands on
+  `/corporate/?v=cena` and doesn't click the strip counts as booker.
+- On these two pages, a `crosssell click` with `placement` = `hero` is the old two-card audience
+  switch, which the strip replaced, and a `teaser` rate from before the move measured the same
+  strip lower down the page. Don't chain the two series: start the strip's rate from the first
+  day it sat under the hero.
 - **Targeting an audience from an ad.** Use either page URL, or one URL plus a `for` param:
   `/corporate/?for=hr` and `/team-events/?for=team` land where they are; `/corporate/?for=team`
   and `/team-events/?for=hr` redirect once (client-side, before first paint) to the other page

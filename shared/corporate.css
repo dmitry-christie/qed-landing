@@ -1,6 +1,6 @@
   /* Corporate pages (cx-), shared by /corporate/ and /team-events/.
      One job: turn someone looking for a group activity into an enquiry.
-     The story, top to bottom: a real night (hero photo) → proof → what it is → why it works for a
+     The story, top to bottom: a real night (hero photo) → a pointer to the other page → proof → what it is → why it works for a
      whole company → what we handle → custom rounds (extra) → three steps → occasions → the person
      organising it → price → FAQ → the form. Shared components come from qed.css; everything here
      is page-only, loaded after qed.css, so a cx- rule wins a same-specificity tie. */
@@ -28,7 +28,7 @@
     background:
       linear-gradient(90deg, rgba(22,17,12,.93) 0%, rgba(22,17,12,.86) 40%, rgba(22,17,12,.5) 62%, rgba(22,17,12,.12) 86%),
       linear-gradient(0deg, rgba(22,17,12,.55) 0%, rgba(22,17,12,0) 32%); }
-  .cx-hero__in{ width:100%; padding-top:var(--aud-top); padding-bottom:clamp(48px,7vw,84px); }
+  .cx-hero__in{ width:100%; padding-top:clamp(48px,7vw,84px); padding-bottom:clamp(48px,7vw,84px); }
   .cx-hero__copy{ max-width:680px; }
   .cx-hero__tag{ max-width:100%; white-space:normal; line-height:1.35; color:var(--ink); }
   .cx-hero__h1{ margin-top:18px; max-width:12ch; color:#fff; font-size:clamp(42px,5.6vw,68px); text-wrap:balance; text-shadow:0 2px 28px rgba(0,0,0,.35); }
@@ -55,59 +55,13 @@
     .cx-hero__bg::after{ content:""; position:absolute; inset:0;
       background:linear-gradient(180deg, rgba(22,17,12,.12) 0%, rgba(22,17,12,.22) 26%, rgba(22,17,12,.55) 36%, rgba(22,17,12,.84) 46%, rgba(22,17,12,.94) 64%, var(--ink) 86%); }
     .cx-hero__bg img{ object-position:center bottom; }
-    .cx-hero__in{ padding-top:var(--aud-top); padding-bottom:46px; }
+    .cx-hero__in{ padding-top:clamp(140px,41vw,290px); padding-bottom:46px; }
     .cx-hero__h1{ font-size:clamp(40px,11.4vw,54px); }
     html[data-variant="cena"] .cx-hero__h1{ font-size:clamp(36px,10vw,48px); }
     .cx-hero__facts li{ font-size:14px; }
     .cx-hero__ctas{ margin-top:24px; }
   }
   @media (max-width:380px){ .cx-hero__in{ padding-left:16px; padding-right:16px; } }
-
-  /* ---------- audience switch (hero, both corporate pages): two pages, one control ----------
-     Two sticker cards in the page's own radio-card language (see .cx-et__card): the page you are
-     on is the selected one (solid yellow, red tick disc), the other is a link that lifts like a
-     .btn on hover. It sits inside the hero's old top padding: --aud-top + --aud-h + the margin
-     below it equals the padding it replaces, so the tag, H1 and CTA stay where they were on
-     phones and from 1200px up. Between 701 and ~1100px that padding (48 to 84px) is smaller than
-     a 56px switch, so they sit up to 15px lower there. */
-  .cx-hero{ --aud-h:56px; --aud-top:14px; }
-  .cx-aud{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; box-sizing:border-box; height:var(--aud-h); max-width:560px;
-    margin:0 0 max(10px, calc(clamp(48px,7vw,84px) - var(--aud-top) - var(--aud-h))); padding:0; }
-  .cx-aud__opt{ position:relative; display:flex; align-items:center; gap:10px; min-width:0; box-sizing:border-box; height:100%; padding:0 46px 0 8px;
-    border:2px solid rgba(255,255,255,.85); border-radius:var(--r-md); background:rgba(22,17,12,.74); color:#fff;
-    font-weight:800; font-size:14.5px; line-height:1.2; letter-spacing:-0.01em; text-decoration:none; text-wrap:balance;
-    transition:transform .12s cubic-bezier(.2,.7,.2,1), box-shadow .12s cubic-bezier(.2,.7,.2,1), background-color .12s, color .12s, border-color .12s; }
-  .cx-aud__ico{ width:36px; height:36px; flex:0 0 auto; border-radius:50%; border:2px solid rgba(255,255,255,.85); display:flex; align-items:center; justify-content:center;
-    transition:background-color .12s, border-color .12s, color .12s; }
-  .cx-aud__ico .cx-i{ width:20px; height:20px; }
-  .cx-aud__t{ min-width:0; }
-  /* right-hand marker: a red tick disc on the page you are on, an arrow ring on the other one */
-  .cx-aud__go{ position:absolute; top:50%; right:11px; width:24px; height:24px; margin-top:-12px; border-radius:50%; border:2px solid rgba(255,255,255,.85);
-    display:flex; align-items:center; justify-content:center; color:var(--yellow); font-size:14px; font-weight:900; line-height:1;
-    transition:transform .15s, background-color .12s, border-color .12s, color .12s; }
-  .cx-aud__go .cx-i{ width:13px; height:13px; stroke-width:3.4; }
-  a.cx-aud__opt:hover{ transform:translate(-2px,-2px); background:var(--paper); border-color:var(--ink); color:var(--ink); box-shadow:5px 5px 0 0 var(--yellow); }
-  a.cx-aud__opt:hover .cx-aud__ico{ background:var(--yellow); border-color:var(--ink); }
-  a.cx-aud__opt:hover .cx-aud__go{ transform:translateX(3px); border-color:var(--ink); color:var(--ink); }
-  a.cx-aud__opt:active{ transform:translate(1px,1px); box-shadow:1px 1px 0 0 var(--yellow); }
-  a.cx-aud__opt:focus-visible{ outline:3px solid var(--yellow); outline-offset:3px; }
-  .cx-aud__opt[aria-current="page"]{ background:var(--yellow); border-color:var(--ink); color:var(--ink); box-shadow:3px 3px 0 0 rgba(245,197,24,.55); }
-  .cx-aud__opt[aria-current="page"] .cx-aud__ico{ background:var(--paper); border-color:var(--ink); }
-  .cx-aud__opt[aria-current="page"] .cx-aud__go{ background:var(--accent); border-color:var(--ink); color:#fff; }
-  /* phones: each card becomes a tile (icon and marker on top, the label underneath), like .cx-et__card, so the label gets the card's full width */
-  @media (max-width:560px){
-    .cx-hero{ --aud-h:92px; }
-    .cx-aud{ gap:8px; }
-    .cx-aud__opt{ flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:7px; padding:8px 10px 9px; font-size:13px; }
-    .cx-aud__ico{ width:32px; height:32px; }
-    .cx-aud__ico .cx-i{ width:17px; height:17px; }
-    .cx-aud__go{ top:10px; right:10px; margin-top:0; width:22px; height:22px; }
-    .cx-aud__t{ padding-top:1px; }
-  }
-  @media (max-width:700px){
-    .cx-aud{ max-width:none; margin-bottom:calc(clamp(140px,41vw,290px) - var(--aud-top) - var(--aud-h)); }
-  }
-  @media (prefers-reduced-motion:reduce){ .cx-aud__opt, .cx-aud__ico, .cx-aud__go{ transition:none; } a.cx-aud__opt:hover, a.cx-aud__opt:active{ transform:none; } }
 
   /* ---------- 2. proof: the numbers, then three real nights ---------- */
   .cx-kpis{ margin-top:28px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); background:var(--ink); color:#fff; border-radius:var(--r-lg); border:2px solid var(--ink); }
@@ -247,13 +201,30 @@
   /* narrow phones: keep "Cuéntanos tu cena →" on one line */
   @media (max-width:380px){ .cx-pp{ padding:18px 16px; } .cx-pp .btn{ padding-left:14px; padding-right:14px; gap:7px; } }
 
-  /* ---------- pointer to the other corporate page ---------- */
+  /* ---------- pointer to the other corporate page ----------
+     A dashed strip directly under the hero (#teaser): booker and organiser each point at the other. */
   .cx-pointer{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px 22px;
     padding:clamp(16px,2.4vw,22px) clamp(18px,3vw,28px); background:var(--cream-soft); border:2px dashed var(--ink); border-radius:var(--r-lg); }
-  .cx-pointer p{ margin:0; max-width:62ch; line-height:1.5; font-size:16px; color:var(--ink-soft); }
+  .cx-pointer p{ margin:0; max-width:62ch; line-height:1.5; font-size:16px; color:var(--ink-soft); text-wrap:pretty; }
   .cx-pointer strong{ display:block; margin-bottom:2px; color:var(--ink); font-weight:900; font-size:clamp(18px,1.8vw,21px); letter-spacing:-0.02em; }
   .cx-pointer__link{ font-weight:800; color:var(--accent-deep); text-underline-offset:3px; white-space:nowrap; }
   @media (max-width:480px){ .cx-pointer__link{ white-space:normal; } }
+  /* The strip's link is the only route to the other corporate page, so it gets a 44px tap target.
+     The padding grows the border box (24 to 44px) and the equal negative margin gives it back, so
+     the margin box, and with it the card, keeps its height; the 10px above fits inside the 12px row
+     gap on phones, where the link wraps under the text.
+     scroll-margin-top clears the 68px sticky nav (the same 84px as qed.css [id]): focus scrolls the
+     focused link, not its #teaser ancestor, so the [id] rule never reaches it, and with the strip
+     this close to the next focusable (Shift+Tab back from the control after it) Chrome would
+     otherwise park the link at the very top of the viewport, behind the nav, with its focus ring
+     hidden. */
+  .cx-pointer__link{ padding:10px 0; margin:-10px 0; scroll-margin-top:84px; }
+  /* #teaser is a slim band under a dark hero, not a content section. Its section--tight padding
+     (36 to 64px) sits above it, as far from the hero edge as a section heading would be; the same
+     padding below, plus the next section's own top padding, left 72 to 128px of air under a card
+     105 to 225px tall, so drop the bottom one: the card then sits as far from the next heading
+     (36 to 64px) as from the hero edge. */
+  #teaser{ padding-bottom:0; }
 
   /* ---------- 10. price: one ticket. Stub = the hook | the tiers by group size, with the
      partner-venue column (-50 €) highlighted; under the tear line, the extras and how booking
