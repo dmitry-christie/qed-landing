@@ -91,7 +91,7 @@ console.log("[qed build] config:", config);
 const DOMAINS = { QED: "landing.quizeatdrink.com", TDT: "landing.tardeodetrivia.com" };
 // Source folders. Each needs its index.html AND an I18N_FILE entry below: a folder that is missing
 // breaks both brands' builds, a missing I18N_FILE entry breaks the TDT build only.
-const PAGES = ["", "corporate/", "team-events/", "celebrations/", "venues/", "partners/", "privacy/", "terms/"];
+const PAGES = ["", "corporate/", "celebrations/", "venues/", "partners/", "privacy/", "terms/"];
 const SEO_MARK = "<!-- build:seo -->";
 
 /* ---- per-brand URL slugs ----
@@ -121,7 +121,7 @@ const BRAND_ASSETS = {
 // otherwise never reach a link-preview bot. Pulled straight from the i18n-*.js files so
 // there is exactly one place each Spanish string is written.
 const I18N_FILE = {
-  "": "hub", "corporate/": "corporate", "team-events/": "team-events", "celebrations/": "celebrations",
+  "": "hub", "corporate/": "corporate", "celebrations/": "celebrations",
   "venues/": "venues", "partners/": "partners", "privacy/": "privacy", "terms/": "terms",
 };
 function loadEsDict(page) {

@@ -246,7 +246,8 @@
   @media (max-width:380px){ .cx-pp{ padding:18px 16px; } .cx-pp .btn{ padding-left:14px; padding-right:14px; gap:7px; } }
 
   /* ---------- pointer to the other corporate page ----------
-     A dashed strip directly under the hero (#teaser): booker and organiser each point at the other. */
+     A dashed strip directly under the hero (#teaser), for someone organising it for their own
+     team: its link switches the prices to VAT included and jumps to #price. */
   .cx-pointer{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px 22px;
     padding:clamp(16px,2.4vw,22px) clamp(18px,3vw,28px); background:var(--cream-soft); border:2px dashed var(--ink); border-radius:var(--r-lg); }
   .cx-pointer p{ margin:0; max-width:62ch; line-height:1.5; font-size:16px; color:var(--ink-soft); text-wrap:pretty; }
@@ -500,3 +501,13 @@
   @media (max-width:860px){
     html.is-typing .nav{ position:static; }
   }
+
+/* ---------- Prices with or without VAT (the switch in #price) ----------
+   Every price that changes is a pair of spans, .vat-ex (+ VAT, the default) and .vat-inc (VAT
+   included); <html data-vat="inc"> shows the second. The head script sets it before first paint
+   (from ?for=team or the visitor's last choice) and the script at the end of /corporate/ toggles it. */
+html:not([data-vat="inc"]) .vat-inc, html[data-vat="inc"] .vat-ex{ display:none; }
+.cx-vat{ display:inline-flex; margin-top:18px; padding:4px; gap:4px; border:2px solid var(--ink); border-radius:999px; background:var(--paper); }
+.cx-vat__opt{ appearance:none; border:0; margin:0; min-height:40px; padding:0 18px; border-radius:999px; background:transparent; color:var(--ink); font:inherit; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
+.cx-vat__opt[aria-pressed="true"]{ background:var(--ink); color:#fff; }
+.cx-vat__opt:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }

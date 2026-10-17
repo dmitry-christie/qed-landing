@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.classList.add('js')</script>
-<!-- Audience preselect for ads, same on both pages: ?for=hr opens this page (/corporate/) and ?for=team opens
-     /team-events/, from either URL (?audience= works too; booker and organiser are accepted as values). It runs
-     before first paint and carries the whole query string and hash across (utm_*, gclid, v=cena), so attribution
-     is untouched. A param that already matches the page does nothing, so it cannot loop. -->
+<!-- Prices with or without VAT (the switch on the price ticket). ?for=team opens the page with VAT included
+     (equipo, organiser and organizer too; ?audience= is an alias), for ads aimed at people organising it for
+     their own team; ?for=hr (company, empresa, rrhh, booker) forces the default, without VAT. Otherwise the
+     visitor's last choice, kept in localStorage under qed-vat. Set before first paint so prices never flash. -->
 <script>
 (function(){try{
-  var q=new URLSearchParams(location.search),v=(q.get("for")||q.get("audience")||"").toLowerCase();
-  if(/^(team|equipo|organiser|organizer)$/.test(v))location.replace("/team-events/"+location.search+location.hash);
+  var q=new URLSearchParams(location.search),v=(q.get("for")||q.get("audience")||"").toLowerCase(),s=null;
+  try{s=localStorage.getItem("qed-vat")}catch(e){}
+  if(/^(team|equipo|organiser|organizer)$/.test(v)||(!/^(hr|company|empresa|rrhh|booker)$/.test(v)&&s==="inc"))document.documentElement.setAttribute("data-vat","inc");
 }catch(e){}})();
 </script>
 <title data-i18n="c.title">QED for Corporate · A quiz for your Christmas party or team building</title>
@@ -29,7 +30,7 @@
 <!-- Inter (600/900) is only for the projector slide in #features: it is the real slides' face. -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&family=Inter:wght@600;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css?v=20261015">
-<link rel="stylesheet" href="/shared/corporate.css?v=20261015">
+<link rel="stylesheet" href="/shared/corporate.css?v=20261018">
 <script>window.QED_SITE = "corporate";</script>
 <script src="/config.js"></script>
 <script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
@@ -122,14 +123,16 @@
     </div>
   </section>
 
-  <!-- ============ 2. POINTER to the team page (the old #organiser card's successor) ============ -->
-  <!-- Directly under the hero; the only link to /team-events/ on this page. Plain link, no query
-       string (with ?v=cena, shared/cena-variant.js appends it to every a[data-aud-link]). -->
+  <!-- ============ 2. FOR THE ORGANISER ============ -->
+  <!-- Directly under the hero: for someone organising it for their own team, not on the company's
+       behalf (this used to point at a separate /team-events/ page, merged back on 18 Oct 2026).
+       The link switches the prices to VAT included (data-vat-set, handled by the price switch's
+       script at the end of the page) and jumps to them. -->
   <section id="teaser" class="section section--tight">
     <div class="wrap">
       <div class="cx-pointer reveal">
-        <p><strong data-i18n="aud.strip.org.t">Organising it for your own team?</strong> <span data-i18n="aud.strip.org.d">You don't need the company to get in touch. Here's a shorter page for you.</span></p>
-        <a class="cx-pointer__link" href="/team-events/" data-aud-link><span data-i18n="aud.strip.org.cta">See team events</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+        <p><strong data-i18n="c.org.t">Organising it for your own team?</strong> <span data-i18n="c.org.d">You don't need the company to ask: get in touch yourself, pay by card or transfer and split it however you like.</span></p>
+        <a class="cx-pointer__link" href="#price" data-vat-set="inc"><span data-i18n="c.org.cta">See prices with VAT</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
   </section>
@@ -371,37 +374,42 @@
       <div class="cx-hd reveal">
         <span class="eyebrow" data-i18n="c.price.eyebrow">Price</span>
         <h2 class="h2" data-i18n="c.price.h2">One fixed price for the whole group.</h2>
-        <p class="lead" data-i18n="c.price.lead">It goes by group size: for 25 people that's €8 + VAT a head, or €6 at one of our venues.</p>
+        <p class="lead"><span class="vat-ex" data-i18n="c.price.lead">It goes by group size: for 25 people that's €8 + VAT a head, or €6 at one of our venues.</span><span class="vat-inc" data-i18n="c.price.lead.inc">It goes by group size: for 25 people that's €9.68 a head with VAT, or €7.26 at one of our venues.</span></p>
+        <div class="cx-vat" role="group" aria-label="VAT" data-i18n-aria="c.vat.label">
+          <button type="button" class="cx-vat__opt" data-vat-set="ex" aria-pressed="true" data-i18n="c.vat.ex">Without VAT</button>
+          <button type="button" class="cx-vat__opt" data-vat-set="inc" aria-pressed="false" data-i18n="c.vat.inc">With VAT</button>
+        </div>
       </div>
 
       <div class="card cx-price reveal">
         <div class="cx-price__top">
           <div class="cx-price__stub">
             <p class="cx-price__eyebrow" data-i18n="c.price.stubh">Price per event</p>
-            <p class="cx-price__big" data-i18n="c.price.from">From €150</p>
-            <p class="cx-price__vat" data-i18n="c.price.vat">+&nbsp;VAT per event · €181.50&nbsp;incl.&nbsp;VAT</p>
+            <p class="cx-price__big"><span class="vat-ex" data-i18n="c.price.from">From €150</span><span class="vat-inc" data-i18n="c.price.from.inc">From €181.50</span></p>
+            <p class="cx-price__vat"><span class="vat-ex" data-i18n="c.price.vat">+&nbsp;VAT per event · €181.50&nbsp;incl.&nbsp;VAT</span><span class="vat-inc" data-i18n="c.price.vat.inc">incl.&nbsp;VAT, per event · €150&nbsp;+&nbsp;VAT</span></p>
             <p class="cx-price__cond" data-i18n="c.price.cond">Up to 25 people, at one of our venues</p>
             <p class="cx-price__note"><span data-i18n="c.price.note">You get the fixed price on the call, no surprises.</span></p>
             <a class="btn btn--cta" href="#quote"><span data-i18n="c.price.cta">Ask for your price</span> <span class="arr">&rarr;</span></a>
           </div>
           <div class="cx-tiers">
             <table>
-              <caption class="sr-only" data-i18n="c.price.caption">Price per event by group size, + VAT</caption>
+              <caption class="sr-only"><span class="vat-ex" data-i18n="c.price.caption">Price per event by group size, + VAT</span><span class="vat-inc" data-i18n="c.price.caption.inc">Price per event by group size, VAT included</span></caption>
               <thead>
                 <tr>
                   <th scope="col" data-i18n="c.price.th.size">People</th>
                   <th scope="col" data-i18n="c.price.th.yours">At your place</th>
-                  <th scope="col" class="is-ours"><span data-i18n="c.price.th.ours">At our venues</span> <span class="cx-tiers__save" data-i18n="c.ven.save">−€50</span></th>
+                  <th scope="col" class="is-ours"><span data-i18n="c.price.th.ours">At our venues</span> <span class="cx-tiers__save"><span class="vat-ex" data-i18n="c.ven.save">−€50</span><span class="vat-inc" data-i18n="c.ven.save.inc">−€60.50</span></span></th>
                 </tr>
               </thead>
               <tbody>
-                <tr><th scope="row" data-i18n="c.price.r1">Up to 25</th><td data-i18n="c.price.e200">€200</td><td class="is-ours" data-i18n="c.price.e150">€150</td></tr>
-                <tr><th scope="row" data-i18n="c.price.r2">26 to 50</th><td data-i18n="c.price.e250">€250</td><td class="is-ours" data-i18n="c.price.e200">€200</td></tr>
-                <tr><th scope="row" data-i18n="c.price.r3">51 to 75</th><td data-i18n="c.price.e300">€300</td><td class="is-ours is-end" data-i18n="c.price.e250">€250</td></tr>
+                <tr><th scope="row" data-i18n="c.price.r1">Up to 25</th><td><span class="vat-ex" data-i18n="c.price.e200">€200</span><span class="vat-inc" data-i18n="c.price.i242">€242</span></td><td class="is-ours"><span class="vat-ex" data-i18n="c.price.e150">€150</span><span class="vat-inc" data-i18n="c.price.i181">€181.50</span></td></tr>
+                <tr><th scope="row" data-i18n="c.price.r2">26 to 50</th><td><span class="vat-ex" data-i18n="c.price.e250">€250</span><span class="vat-inc" data-i18n="c.price.i302">€302.50</span></td><td class="is-ours"><span class="vat-ex" data-i18n="c.price.e200">€200</span><span class="vat-inc" data-i18n="c.price.i242">€242</span></td></tr>
+                <tr><th scope="row" data-i18n="c.price.r3">51 to 75</th><td><span class="vat-ex" data-i18n="c.price.e300">€300</span><span class="vat-inc" data-i18n="c.price.i363">€363</span></td><td class="is-ours is-end"><span class="vat-ex" data-i18n="c.price.e250">€250</span><span class="vat-inc" data-i18n="c.price.i302">€302.50</span></td></tr>
                 <tr class="cx-tiers__quote"><th scope="row" data-i18n="c.price.r4">More than 75</th><td colspan="2" data-i18n="c.price.quote">We'll quote it</td></tr>
               </tbody>
             </table>
-            <p class="cx-tiers__foot" data-i18n="c.price.foot">Per event, + VAT. Incl. VAT: €242, €302.50 and €363 at your place; €181.50, €242 and €302.50 at our venues. Your place: your office, your restaurant or any other venue.</p>
+            <p class="cx-tiers__foot vat-ex" data-i18n="c.price.foot">Per event, + VAT. Incl. VAT: €242, €302.50 and €363 at your place; €181.50, €242 and €302.50 at our venues. Your place: your office, your restaurant or any other venue.</p>
+            <p class="cx-tiers__foot vat-inc" data-i18n="c.price.foot.inc">Per event, VAT included. Without VAT: €200, €250 and €300 at your place; €150, €200 and €250 at our venues. Your place: your office, your restaurant or any other venue.</p>
           </div>
         </div>
         <div class="cx-price__band">
@@ -440,7 +448,7 @@
           <span class="eyebrow" data-i18n="c.ven.eyebrow">Our venues</span>
           <h3 class="cx-venues__t" data-i18n="c.ven.t">Play at one of our venues and pay €50 less.</h3>
           <p class="cx-venues__p" data-i18n="c.ven.p">They're the bars where we run weekly quiz nights, plus OlHops in Valencia. They're already set up for the quiz, so there's no kit to move and we take €50 off any group of up to 75. We'll tell you which one fits your group and date; food and drink you sort directly with the bar.</p>
-          <span class="stamp cx-venues__stamp" aria-hidden="true"><b data-i18n="c.ven.save">−€50</b><span data-i18n="c.ven.savesub">per event</span></span>
+          <span class="stamp cx-venues__stamp" aria-hidden="true"><b><span class="vat-ex" data-i18n="c.ven.save">−€50</span><span class="vat-inc" data-i18n="c.ven.save.inc">−€60.50</span></b><span data-i18n="c.ven.savesub">per event</span></span>
         </div>
         <div>
           <ul class="cx-vlist">
@@ -761,9 +769,30 @@
   sub: ["c.hero.subcena", "Team trivia before or after the company dinner or lunch: we bring the host, the questions, the tech and the fun; you bring the people."],
   cta: ["c.cta.holdcena", "Hold your date"]
 };</script>
+<!-- The VAT switch (the head script sets the starting state): toggles data-vat on <html>, which
+     shared/corporate.css reads to show .vat-ex or .vat-inc, remembers the choice, and posts the
+     form's hidden audience as "organiser" while prices are shown with VAT, so the call alert and
+     the Brevo deal still say who is likely asking (Equipo / Empresa). -->
+<script>
+(function(){try{
+  var root=document.documentElement;
+  function apply(v){
+    if(v==="inc")root.setAttribute("data-vat","inc");else root.removeAttribute("data-vat");
+    var on=root.getAttribute("data-vat")==="inc";
+    document.querySelectorAll(".cx-vat__opt").forEach(function(b){b.setAttribute("aria-pressed",String((b.getAttribute("data-vat-set")==="inc")===on))});
+    document.querySelectorAll('input[name="audience"]').forEach(function(i){i.value=on?"organiser":"booker"});
+  }
+  apply(root.getAttribute("data-vat"));
+  document.addEventListener("click",function(e){
+    var t=e.target.closest&&e.target.closest("[data-vat-set]");if(!t)return;
+    var v=t.getAttribute("data-vat-set");apply(v);
+    try{localStorage.setItem("qed-vat",v)}catch(x){}
+  });
+}catch(e){}})();
+</script>
 <script src="/shared/cena-variant.js?v=20261015"></script>
-<script src="/shared/i18n-common.js?v=20261015"></script>
-<script src="/shared/i18n-corporate.js?v=20261017"></script>
+<script src="/shared/i18n-common.js?v=20261018"></script>
+<script src="/shared/i18n-corporate.js?v=20261018"></script>
 <script src="/shared/i18n.js?v=20261010"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js?v=20261010"></script>

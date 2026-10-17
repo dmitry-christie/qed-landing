@@ -128,7 +128,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.uc.c5": "Eventos con clientes",
   "c.uc.c6": "Celebraciones de empresa",
 
-  // Pointer to /team-events/ (directly under the hero): aud.strip.org.* in i18n-common.js. The organiser card moved to te.easy.* in i18n-team-events.js.
+  // The strip under the hero is for the organiser now (c.org.*, below with the price switch).
 
   // 10. price: founder pricing (4 Oct 2026), per event + IVA. The hook is the lowest tier at a
   // partner venue. Extras carry no prices (quoted on the call). Currency: "150 €" in ES.
@@ -157,6 +157,23 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.price.foot": "Por evento, + IVA. Con IVA: 242, 302,50 y 363 € en tu sitio; 181,50, 242 y 302,50 € en nuestros locales. Tu sitio: tu oficina, tu restaurante o cualquier otro local.",
   "c.price.exh": "Extras",
   "c.price.exsub": "Te los presupuestamos en la llamada, solo si los queréis.",
+  // Price switch (sin IVA / con IVA) and the strip for the organiser (18 Oct 2026)
+  "c.vat.label": "IVA",
+  "c.vat.ex": "Sin IVA",
+  "c.vat.inc": "Con IVA",
+  "c.price.lead.inc": "Va según cuántos sois: para 25 personas sale a 9,68 € por cabeza con IVA, o 7,26 € en uno de nuestros locales.",
+  "c.price.from.inc": "Desde 181,50\u00a0€",
+  "c.price.vat.inc": "IVA incluido, por evento · 150\u00a0€ + IVA",
+  "c.price.caption.inc": "Precio por evento según el tamaño del grupo, IVA incluido",
+  "c.price.i181": "181,50\u00a0€",
+  "c.price.i242": "242\u00a0€",
+  "c.price.i302": "302,50\u00a0€",
+  "c.price.i363": "363\u00a0€",
+  "c.price.foot.inc": "Por evento, IVA incluido. Sin IVA: 200, 250 y 300 € en tu sitio; 150, 200 y 250 € en nuestros locales. Tu sitio: tu oficina, tu restaurante o cualquier otro local.",
+  "c.ven.save.inc": "−60,50\u00a0€",
+  "c.org.t": "¿Lo organizas para tu propio equipo?",
+  "c.org.d": "No hace falta que lo pida la empresa: escríbenos tú, paga con tarjeta o transferencia y repartidlo como queráis.",
+  "c.org.cta": "Ver precios con IVA",
   "c.book.h": "Cómo se reserva",
   "c.book.1": "Te guardamos la fecha hasta 7 días, sin compromiso.",
   "c.book.2": "La confirmas aceptando el presupuesto y se paga antes del evento.",

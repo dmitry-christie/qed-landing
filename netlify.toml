@@ -13,6 +13,21 @@
 # directory as a separate build phase, so it must survive on disk); block it here instead.
 # Netlify redirect splats only match a TRAILING wildcard ("/netlify/*"), never a suffix
 # ("/*.md") — that's why this used to be a `from = "/*.md"` rule that silently never matched.
+# /team-events/ was a second corporate page (for someone organising it for their own team), merged
+# back into /corporate/ on 18 Oct 2026; its audience is now the price switch there. Netlify passes
+# the query string through, so utm_*, gclid and v=cena survive, and the browser keeps the #hash.
+[[redirects]]
+  from = "/team-events/*"
+  to = "/corporate/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/team-events"
+  to = "/corporate/"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/netlify/*"
   to = "/"
