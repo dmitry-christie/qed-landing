@@ -161,7 +161,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.book.1": "Te guardamos la fecha hasta 7 días, sin compromiso.",
   "c.book.2": "La confirmas aceptando el presupuesto y se paga antes del evento.",
   // SEASONAL (Sep-Dec 2026): drop c.book.3a/b after 12 Dec.
-  "c.book.3a": "Viernes 11 y sábado 12 de diciembre:",
+  "c.book.3a": "Viernes 11 y sábado 12 de diciembre, las fechas con más demanda:",
   "c.book.3b": "señal del 30% para confirmar.",
   // partner venues (the bars with a weekly tardeo, plus OlHops); the venue names are not translated
   "c.ven.eyebrow": "Nuestros locales",

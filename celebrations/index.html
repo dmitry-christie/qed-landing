@@ -18,6 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/shared/qed.css">
+<link rel="stylesheet" href="/shared/corporate.css?v=20261015">
 <style>
   /* Full-bleed photo hero: friends in booths at a real quiz night, under a dark shade so the white
      copy clears AA wherever it lands. Phones get the 4:5 crop over the top of the hero, faded into
@@ -47,53 +48,25 @@
   .cl-stats .kpi-lab{ color:rgba(255,255,255,.76) !important; }
   /* the city footnote under the price block: one asterisk per city outside Valencia */
   .cl-note{ margin:0; font-size:13px; line-height:1.5; color:var(--ink-soft); text-wrap:pretty; }
-  /* Celebrations-only components (cl-). The price panel is a ticket, like the /corporate/ one:
-     a yellow stub with the hook price and the group-size tiers | what is always included and the
-     extras, which are quoted on the call (no prices on the page). Prices are + VAT. */
-  .cl-deal{ margin-top:30px; display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); background:var(--paper); border:2px solid var(--ink); border-radius:var(--r-lg); box-shadow:5px 5px 0 0 var(--ink); }
-  .cl-deal__price{ position:relative; display:flex; flex-direction:column; align-items:flex-start; background:var(--yellow); padding:clamp(22px,3vw,32px); border-right:2px dashed var(--ink); border-radius:18px 0 0 18px; }
-  .cl-deal__body{ display:flex; flex-direction:column; padding:clamp(22px,3vw,32px); }
-  .cl-deal__eyebrow{ margin:0; font-family:var(--mono); font-size:11.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ink); }
-  .cl-deal__big{ margin:12px 0 0; font-weight:900; font-size:clamp(44px,5.4vw,60px); letter-spacing:-0.04em; line-height:.95; }
-  .cl-deal__vat{ margin:6px 0 0; font-family:var(--mono); font-size:13px; font-weight:700; }
-  /* the hook's condition, right under it (same pill as /corporate/) */
-  .cl-deal__cond{ margin:14px 0 0; padding:7px 13px; border-radius:999px; background:var(--ink); color:#fff; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.02em; line-height:1.35; text-wrap:balance; }
-  .cl-tiers{ margin:22px 0 0; align-self:stretch; border-top:2px solid var(--ink); }
-  .cl-tier{ display:flex; justify-content:space-between; align-items:baseline; gap:14px; padding:10px 0; border-bottom:1px dashed rgba(31,26,20,.4); }
-  .cl-tier dt{ font-weight:700; line-height:1.35; }
-  .cl-tier dd{ margin:0; font-weight:900; font-size:20px; letter-spacing:-0.02em; white-space:nowrap; }
-  .cl-tier--quote dd{ font-size:15px; font-weight:800; letter-spacing:-0.01em; white-space:normal; text-align:right; }
-  .cl-deal__partner{ margin:16px 0 0; font-size:15px; font-weight:600; line-height:1.5; }
-  .cl-deal__partner strong{ font-weight:800; }
-  .cl-deal__body .ticks{ margin-top:16px; }
-  .cl-extras{ margin:24px 0 0; padding-top:20px; border-top:1px dashed var(--hairline-strong); }
-  .cl-extras__list{ list-style:none; margin:14px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
-  .cl-extras__list li{ display:inline-flex; align-items:center; gap:6px; padding:7px 13px; border:2px solid var(--ink); border-radius:999px; background:var(--cream-soft); font-size:14.5px; font-weight:700; line-height:1.25; }
-  .cl-extras__list li::before{ content:"+"; font-weight:900; color:var(--accent-deep); }
-  .cl-deal__foot{ margin-top:auto; padding-top:24px; display:grid; gap:14px; }
-  .cl-deal__where{ margin:0; color:var(--ink-soft); font-size:15px; line-height:1.5; }
-  .cl-deal__where strong{ color:var(--ink); }
+  /* The price block is the /corporate/ ticket (.cx-price, .cx-tiers, .cx-band in
+     shared/corporate.css, linked above). Celebrations-only components keep the cl- prefix. */
+  /* Its prices carry VAT, so they are longer than the corporate ones ("302,50 €" against "€300"):
+     on small phones the three columns need tighter cells, or the table runs past the card. */
+  @media (max-width:380px){
+    #price .cx-tiers{ padding-left:14px; padding-right:10px; }
+    #price .cx-tiers th, #price .cx-tiers td{ padding-left:6px; padding-right:6px; }
+    #price .cx-tiers th:first-child{ padding-left:0; }
+    #price .cx-tiers tbody th{ font-size:14px; }
+    #price .cx-tiers td{ font-size:17px; }
+    /* the stub's button is wider than a 320px card in Spanish: let it wrap instead */
+    #price .cx-price__stub .btn{ white-space:normal; text-align:left; }
+  }
   /* "Included" / "Extra" flags on the customize cards (same as /corporate/), on their own line */
   .cl-flag{ display:table; margin:0 0 8px; padding:3px 8px 2px; border:1.5px solid var(--ink); border-radius:999px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; line-height:1.3; white-space:nowrap; }
   .cl-flag--inc{ background:var(--green-soft); }
   .cl-flag--ex{ background:var(--yellow); }
   /* the "+ more" pill in the occasions strip: never split "+ / MORE" over two lines */
   .cases + .card .tag{ flex:0 0 auto; white-space:nowrap; }
-  @media (min-width:781px){
-    /* ticket notches where the perforation meets the edges (same as /corporate/) */
-    .cl-deal__price::before, .cl-deal__price::after{ content:""; position:absolute; border-radius:50%; background:var(--cream); border:2px solid var(--ink); }
-    .cl-deal__price::before{ top:-15px; right:-12px; width:26px; height:26px; clip-path:inset(50% -3px -3px -3px); }
-    .cl-deal__price::after{ bottom:-25px; right:-17px; width:36px; height:36px; clip-path:inset(-3px -3px 50% -3px); }
-  }
-  @media (max-width:780px){
-    .cl-deal{ grid-template-columns:minmax(0,1fr); }
-    .cl-deal__price{ border-right:0; border-bottom:2px dashed var(--ink); border-radius:18px 18px 0 0; }
-  }
-  /* small phones: keep the longest extra ("A round about the guest of honour") on one line */
-  @media (max-width:380px){
-    .cl-extras__list{ gap:7px; }
-    .cl-extras__list li{ padding:6px 11px; font-size:13.5px; gap:5px; }
-  }
 </style>
 <script>window.QED_SITE = "celebrations";</script>
 <script src="/config.js"></script>
@@ -196,11 +169,14 @@
   </section>
 
   <!-- ============ PRICE ============ -->
-  <!-- One format (hosted, in person). Prices are the private-event tiers (+ VAT): 200 / 250 / 300 by
-       group size, more than 75 quoted, 50 less at one of our venues, so the hook is 150 (its condition sits
-       right under it, as on /corporate/). Extras carry
-       no price on the page: they are quoted on the call. Keep cel.stat.from and h.door.corp.fact in
-       step with these. -->
+  <!-- One format (hosted, in person), shown as the /corporate/ price ticket (Mati, 17 Oct 2026: every
+       private event has the same prices and extras). Same tiers as /corporate/, shown with VAT
+       because these are private customers: 200 / 250 / 300 + VAT at your place = 242 / 302.50 / 363,
+       50 + VAT (60.50) less at one of our venues, more than 75 quoted; the hook is 181.50. The band
+       under the tear line is what is always included and the extras (no booking terms: those are
+       the company page's). Extras carry no price on the page: they are quoted on the call. Keep
+       cel.stat.from, h.door.corp.fact and the /corporate/ ticket in step with these. The cx- rules
+       come from shared/corporate.css: bump its ?v= here too whenever it is bumped on /corporate/. -->
   <section id="price" class="section section--tight">
     <div class="wrap">
       <div class="reveal" style="max-width:60ch">
@@ -209,44 +185,57 @@
         <p class="lead" style="margin-top:12px" data-i18n="cel.fmt.lead">We host the whole party. You add the extras that make it theirs.</p>
       </div>
 
-      <div class="cl-deal reveal">
-        <div class="cl-deal__price">
-          <p class="cl-deal__eyebrow" data-i18n="cel.price.eyebrow">Hosted, in person</p>
-          <p class="cl-deal__big" data-i18n="cel.price.from">From €181.50</p>
-          <p class="cl-deal__vat" data-i18n="cel.price.vat">incl. VAT, per event</p>
-          <p class="cl-deal__cond" data-i18n="cel.price.cond">Up to 25 guests, at one of our venues</p>
-          <dl class="cl-tiers">
-            <div class="cl-tier"><dt data-i18n="cel.price.t1">Up to 25 guests</dt><dd data-i18n="cel.price.p1">€242</dd></div>
-            <div class="cl-tier"><dt data-i18n="cel.price.t2">26 to 50 guests</dt><dd data-i18n="cel.price.p2">€302.50</dd></div>
-            <div class="cl-tier"><dt data-i18n="cel.price.t3">51 to 75 guests</dt><dd data-i18n="cel.price.p3">€363</dd></div>
-            <div class="cl-tier cl-tier--quote"><dt data-i18n="cel.price.t4">More than 75</dt><dd data-i18n="cel.price.p4">We quote it</dd></div>
-          </dl>
-          <p class="cl-deal__partner"><strong data-i18n="cel.price.partnera">€60.50 less at one of our venues,</strong> <span data-i18n="cel.price.partnerb">because they're already set up for the quiz.</span></p>
+      <div class="card cx-price reveal">
+        <div class="cx-price__top">
+          <div class="cx-price__stub">
+            <p class="cx-price__eyebrow" data-i18n="cel.price.eyebrow">Hosted, in person</p>
+            <p class="cx-price__big" data-i18n="cel.price.from">From €181.50</p>
+            <p class="cx-price__vat" data-i18n="cel.price.vat">incl. VAT, per event</p>
+            <p class="cx-price__cond" data-i18n="cel.price.cond">Up to 25 guests, at one of our venues</p>
+            <p class="cx-price__note"><span data-i18n="cel.price.note">You get the fixed price on the call, no surprises.</span></p>
+            <a class="btn btn--cta" href="#plan"><span data-i18n="cel.cta.plan">Tell us about your celebration</span> <span class="arr">&rarr;</span></a>
+          </div>
+          <div class="cx-tiers">
+            <table>
+              <caption class="sr-only" data-i18n="cel.price.caption">Price per event by number of guests, incl. VAT</caption>
+              <thead>
+                <tr>
+                  <th scope="col" data-i18n="cel.price.th.size">Guests</th>
+                  <th scope="col" data-i18n="cel.price.th.yours">At your place</th>
+                  <th scope="col" class="is-ours"><span data-i18n="cel.price.th.ours">At our venues</span> <span class="cx-tiers__save" data-i18n="cel.price.save">−€60.50</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row" data-i18n="cel.price.r1">Up to 25</th><td data-i18n="cel.price.p1">€242</td><td class="is-ours" data-i18n="cel.price.o1">€181.50</td></tr>
+                <tr><th scope="row" data-i18n="cel.price.r2">26 to 50</th><td data-i18n="cel.price.p2">€302.50</td><td class="is-ours" data-i18n="cel.price.o2">€242</td></tr>
+                <tr><th scope="row" data-i18n="cel.price.r3">51 to 75</th><td data-i18n="cel.price.p3">€363</td><td class="is-ours is-end" data-i18n="cel.price.o3">€302.50</td></tr>
+                <tr class="cx-tiers__quote"><th scope="row" data-i18n="cel.price.r4">More than 75</th><td colspan="2" data-i18n="cel.price.p4">We quote it</td></tr>
+              </tbody>
+            </table>
+            <p class="cx-tiers__foot" data-i18n="cel.price.foot">Per event, VAT included. Your place: your home, your restaurant or any other venue.</p>
+            <p class="cx-tiers__foot"><span data-i18n="cel.price.inperson">In person in</span> <strong data-i18n="cel.fmt.cities">Valencia, Madrid*, Barcelona*, Murcia* &amp; Santiago de Compostela*.</strong></p>
+            <p class="cx-tiers__foot" data-i18n="cel.price.citynote">*Outside Valencia we work with local hosts and venues; some services (like live rounds, the photographer or our own sound kit) depend on availability. We'll confirm it on the call.</p>
+          </div>
         </div>
-        <div class="cl-deal__body">
-          <p class="cl-deal__eyebrow" data-i18n="cel.price.inh">Always included</p>
-          <ul class="ticks">
-            <li data-i18n="cel.price.in1">A live host who runs the whole party</li>
-            <li data-i18n="cel.price.in2">About 90 minutes of trivia: picture, music, map, emoji and flag rounds</li>
-            <li data-i18n="cel.price.in3">Live scoring, with the leaderboard on screen</li>
-            <li data-i18n="cel.price.in4">Our own sound and screen</li>
-          </ul>
-          <div class="cl-extras">
-            <p class="cl-deal__eyebrow" data-i18n="cel.price.exh">Extras, priced on the call</p>
-            <ul class="cl-extras__list">
+        <div class="cx-price__band">
+          <div>
+            <p class="cx-band__h" data-i18n="cel.price.inh">Always included</p>
+            <ul class="ticks">
+              <li data-i18n="cel.price.in1">A live host who runs the whole party</li>
+              <li data-i18n="cel.price.in2">About 90 minutes of trivia: picture, music, map, emoji and flag rounds</li>
+              <li data-i18n="cel.price.in3">Live scoring, with the leaderboard on screen</li>
+              <li data-i18n="cel.price.in4">Our own sound and screen</li>
+            </ul>
+          </div>
+          <div>
+            <p class="cx-band__h" data-i18n="cel.price.exh">Extras, priced on the call</p>
+            <ul class="cx-band__list cx-band__list--ex">
               <li data-i18n="cel.price.ex1">A round about the guest of honour</li>
               <li data-i18n="cel.price.ex2">Prizes for the winners</li>
               <li data-i18n="cel.price.ex3">Custom trophies</li>
               <li data-i18n="cel.price.ex4">Live rounds</li>
               <li data-i18n="cel.price.ex5">Photographer</li>
             </ul>
-          </div>
-          <div class="cl-deal__foot">
-            <div>
-              <p class="cl-deal__where"><span data-i18n="cel.price.inperson">In person in</span> <strong data-i18n="cel.fmt.cities">Valencia, Madrid*, Barcelona*, Murcia* &amp; Santiago de Compostela*.</strong></p>
-              <p class="cl-note" style="margin-top:6px" data-i18n="cel.price.citynote">*Outside Valencia we work with local hosts and venues; some services (like live rounds, the photographer or our own sound kit) depend on availability. We'll confirm it on the call.</p>
-            </div>
-            <a class="btn btn--cta btn--block" href="#plan"><span data-i18n="cel.cta.plan">Tell us about your celebration</span> <span class="arr">&rarr;</span></a>
           </div>
         </div>
       </div>
@@ -556,7 +545,7 @@
 </footer>
 
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-celebrations.js?v=20261012"></script>
+<script src="/shared/i18n-celebrations.js?v=20261017"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>

@@ -129,6 +129,9 @@ the group price and keeps a shorter FAQ.
 - **Shared CSS.** `shared/corporate.css` holds the `cx-` rules (they used to be inline in
   `corporate/index.html`). Both pages link it directly after `qed.css`, so a `cx-` rule keeps
   winning same-specificity ties. Edit it once; its cache rule is under "Caching gotcha".
+  `/celebrations/` links it too, for the price ticket only (`.cx-price`, `.cx-tiers`, `.cx-band`:
+  every private event has the same prices and extras, shown there with VAT included). So an edit
+  to those rules changes three pages, and a `?v=` bump on `corporate.css` goes on all three.
 - **Pointer strip.** Each page has one strip, `<section id="teaser">`, directly under the hero:
   the first section after the hero's closing `</section>`. A `cx-pointer` card holds a bold line,
   one sentence and a link to the other page (`aud.strip.org.*` on `/corporate/`,
