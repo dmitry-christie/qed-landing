@@ -155,7 +155,7 @@ Tiered so we can ship Tier 1 first and add the rest without re-architecting.
 | `site` | `quiz-eat-drink` / `tardeo-de-trivia` | derived from brand/lang (matches today's values) |
 | `language` | `en` / `es` | `<html lang>` |
 | `page_type` | `landing` | constant for this site |
-| `section` | `home` / `corporate` / `celebrations` / `venues` / `partners` / `privacy` / `terms` | `window.QED_SITE` (hub = `home`; `/team-events/` is `corporate` too, see "Two corporate pages") |
+| `section` | `home` / `corporate` / `celebrations` / `venues` / `partners` / `privacy` / `terms` | `window.QED_SITE` (hub = `home`) |
 | `product` | `corporate-event` / `celebration-event` / `venue-partnership` / `franchise-partnership` / `null` | keep the existing map (`shared/consent.js`, `forms.ts`) |
 | `env` | `production` | never emit off the two prod domains (keep `analyticsEnabled()` guard) |
 
@@ -176,7 +176,7 @@ Shared `data` (superset — each funnel sends the subset it collects):
 
 | Property | Type | Funnels | Source field | Notes |
 |---|---|---|---|---|
-| `funnel` | enum `corporate/celebrations/venues/partners` | all | `page` | the clean funnel dimension (`/team-events/` posts `page=corporate`) |
+| `funnel` | enum `corporate/celebrations/venues/partners` | all | `page` | the clean funnel dimension |
 | `product` | enum (see globals) | all | derived | value-bidding + audience |
 | `step` | `1` / `2` | all | `_step` | redundant with event name, kept for single-query splits |
 | `value` | number (EUR) | all | derived | expected value per lead, `forms.ts` `leadValue(page, city)`: see section 6. `lead start` carries 20% of the complete value |
@@ -200,14 +200,15 @@ Shared `data` (superset — each funnel sends the subset it collects):
 | `cta click` | `placement`, `label`, `href` | a `.btn--cta` or `.btn--soft` link or button, except a form's own submit |
 | `crosssell click` | `to`, `placement`, `href`, `label` | a plain link outside the footer to a funnel page (not a nav link, not a `btn--cta` / `btn--soft`, which classify as `nav click` / `cta click` first) |
 
-`to` is the target path with its slashes stripped (`corporate`, `team-events`, `celebrations`,
-`venues`, `partners`, `franchise`, `franquicias`). `placement` is `hero` for a link inside the hero
-section, else the `id` of the nearest enclosing element (`teaser`, ...), `body` if there is none.
+`to` is the target path with its slashes stripped (`corporate`, `celebrations`, `venues`,
+`partners`, `franchise`, `franquicias`; `team-events` is still in the regex but the page is gone).
+`placement` is `hero` for a link inside the hero section, else the `id` of the nearest enclosing
+element, `body` if there is none.
 Which paths count is a regex in `shared/qed.js` (`FUNNEL_HREF`): a funnel path missing from it is
 measured as nothing at all.
 
 ### The phone sticky bar (`cx-sticky`)
-`/corporate/` and `/team-events/` carry a fixed bottom bar on phones (viewport 560 px wide or
+`/corporate/` carries a fixed bottom bar on phones (viewport 560 px wide or
 less; `display:none` above that and at a viewport height of 400 px or less) that repeats the hero
 CTA. Its tap is an ordinary `cta click`: `placement` = `cx-sticky` (the `id` of its container),
 `href` = `#quote`, and the same `label` as the hero button (`Tell us about your event →`, under
@@ -216,7 +217,7 @@ and the bar share `href` and `label`, so `placement` is the only thing that tell
 event name or property, and nothing else changes: the jump to `#quote` fires the same `form view`,
 and the lead events are untouched.
 
-`cta click` `placement` values on the corporate pair:
+`cta click` `placement` values on `/corporate/`:
 
 | `placement` | Element | Shown |
 |---|---|---|
@@ -224,7 +225,6 @@ and the lead events are untouched.
 | `cx-sticky` | the bottom bar | phones, 560 px and below |
 | `body` | the header's "Let's talk" button (outside the hero and `.nav__links`, no ancestor with an `id`) | 860 px and below |
 | `price` | the price card's "Ask for your price" | all widths |
-| `easy` | the `#easy` card's "Tell us about your dinner" | `/team-events/` only |
 
 The header link "Tell us about your event" inside `.nav__links` is a `nav click`, not a `cta
 click`.
@@ -244,55 +244,46 @@ click`.
   (`page_path`), phones only: the bar does not exist on larger screens, so comparing it with the
   all-device `hero` count understates its share.
 
-### Two corporate pages, one funnel
-`/corporate/` (the **booker**: HR, office or events people booking for a company) and
-`/team-events/` (the **organiser**: someone doing it for their own team) are one funnel. Both set
-`window.QED_SITE = "corporate"` and post `page=corporate`, so `section`, `product`
-(`corporate-event`), `funnel` (`corporate`) and `value` (40) are the same on both, and Meta and
-Google Ads see one conversion. That is deliberate: a `team-events` value would fall through every
-per-page map (lead value 50, no Brevo list, no mapped `product`). The page names its audience in one
-hidden form field, `audience` (`booker` or `organiser`), which only the server reads. It is not an
-event property.
+### One corporate page, two audiences
+`/corporate/` serves both the **booker** (HR, office or events people booking for a company) and
+the **organiser** (someone doing it for their own team). A separate organiser page, `/team-events/`,
+existed from Oct 2026 and was merged back on 18 Oct 2026: its searches were about a tenth of the
+company ones and it differed mainly in showing prices with VAT. `netlify.toml` 301s `/team-events/`
+and everything under it to `/corporate/` with the query string, so old links and ads still work;
+from then on those visits carry `page_path` = `/corporate/`.
+
+The page names the likely audience in one hidden form field, `audience`, which only the server
+reads. It is not an event property. The price section's Sin IVA / Con IVA switch sets it: VAT
+included posts `organiser`, the default (without VAT) posts `booker`.
 
 How to read them apart:
 
-| Where | Booker (`/corporate/`) | Organiser (`/team-events/`) |
+| Where | Booker (VAT off) | Organiser (VAT on) |
 |---|---|---|
-| Any Amplitude event, client or server | `page_path` = `/corporate/` | `page_path` = `/team-events/` |
-| `form view` | `form` = `corporate-event` | `form` = `team-event` |
-| `crosssell click` on the pointer strip, right under the hero | `to` = `team-events`, `placement` = `teaser` | `to` = `corporate`, `placement` = `teaser` |
+| Any Amplitude event, client or server | `page_path` = `/corporate/` | same |
 | Telegram call alert | headline `Empresa` / `Corporate`, footer `Audience: booker` | headline `Equipo` / `Team`, footer `Audience: organiser` |
 | Brevo `NOTES`, deal description | `Audience: booker` | `Audience: organiser` |
 | Brevo deal name | unchanged | suffix ` (equipo)` on a Spanish lead, ` (team)` on an English one |
-| Meta, Google Ads | nothing: same conversion, same value | same |
+| Meta, Google Ads | nothing: same conversion, same value (40) | same |
 | Portal, once the intake is live | the raw `audience` field travels in the payload, uninterpreted | same |
 
-- `page_path` is on every client event (the Amplitude destination adds it) and on every server
-  lead event, so a funnel split by `page_path` needs no extra property. `audience` is deliberately
-  not one, and neither is it a Brevo attribute.
-- The `Audience:` item sits in the footer line `metaLine` builds, so every Telegram message and
-  the Brevo `NOTES` and deal description built from it carry it, for every post on
-  `page=corporate`. The server honours only the exact string `organiser`; anything else, including
-  no field at all (a page cached from before the split), reads `booker`.
-- `audience` records the page the lead used, not the person. The persona signal is the interlink:
-  the click rate of the pointer strip, that is `crosssell click` with `to` = `team-events` (from
-  `/corporate/`) or `corporate` (from `/team-events/`) and `placement` = `teaser`, over that
-  page's `page view`. The strip now sits right under the hero. Cena ad traffic that lands on
-  `/corporate/?v=cena` and doesn't click the strip counts as booker.
-- On these two pages, a `crosssell click` with `placement` = `hero` is the old two-card audience
-  switch, which the strip replaced, and a `teaser` rate from before the move measured the same
-  strip lower down the page. Don't chain the two series: start the strip's rate from the first
-  day it sat under the hero.
-- **Targeting an audience from an ad.** Use either page URL, or one URL plus a `for` param:
-  `/corporate/?for=hr` and `/team-events/?for=team` land where they are; `/corporate/?for=team`
-  and `/team-events/?for=hr` redirect once (client-side, before first paint) to the other page
-  with the whole query string kept. Every event after that carries the destination's `page_path`,
-  so an ad aimed at "my team" shows up under `/team-events/` whichever URL it used, and the
-  portal's `landing_url` keeps the `for` param. Put the audience in `utm_campaign` or
-  `utm_content` as well (for example `es_team_cena_202611`) so it is also visible in the ad
-  platform; `for` itself is not stored as a first-touch field.
-- One lead value (40) for both pages until each has about 20 leads; a per-audience value would be
-  a `forms.ts` change, because `leadValue` is keyed by `page`.
+- `audience` records the VAT state when the form was sent, not the person. The switch starts from
+  `?for=` (`team`, `equipo`, `organiser`, `organizer` turn VAT on; `hr`, `company`, `empresa`,
+  `rrhh`, `booker` force it off; `?audience=` is an alias), else the visitor's last choice
+  (`localStorage` `qed-vat`), else off. Cena ad traffic that never touches the switch counts as
+  booker.
+- Neither the switch buttons nor the strip under the hero (`#teaser`, whose link turns VAT on and
+  jumps to `#price`) fire an event: they are not `.btn--cta` / `.btn--soft` and the link's `#price`
+  is not a funnel path. Organiser interest shows only as the `audience` on leads. A `crosssell
+  click` with `placement` = `teaser` or `hero` on `/corporate/`, or any event with `page_path` =
+  `/team-events/`, comes from before the merge; don't chain those series with anything after it.
+- **Targeting an audience from an ad.** Use `/corporate/?for=team` for "my team" ads (prices with
+  VAT) and `/corporate/?for=hr` or no `for` for company ads. Old `/team-events/` URLs 301 here with
+  their query string. The portal's `landing_url` keeps the `for` param. Put the audience in
+  `utm_campaign` or `utm_content` as well (for example `es_team_cena_202611`) so it is also visible
+  in the ad platform; `for` itself is not stored as a first-touch field.
+- One lead value (40) for both audiences; a per-audience value would be a `forms.ts` change,
+  because `leadValue` is keyed by `page`.
 
 ### City normalization
 The forms collect city as **free text** (a custom `<select>` on most, but partners/venues take
@@ -358,7 +349,7 @@ Notes:
 
   | Funnel | `lead complete` | `lead start` (20%) | Basis |
   |---|---|---|---|
-  | corporate (`/corporate/` and `/team-events/`) | 40 | none (contact-first, step 1 is the `lead complete`) | ~270 € ticket x ~12-15% paid close |
+  | corporate | 40 | none (contact-first, step 1 is the `lead complete`) | ~270 € ticket x ~12-15% paid close |
   | celebrations | 30 | 6 | B2C private event ~150 € x ~20% |
   | venues | 50 | 10 | parked product, placeholder |
   | partners, large city (≥500k: Madrid, Barcelona, Valencia, Sevilla, Zaragoza, Málaga) | 250 | 50 | ~5% signed x 5,000 € first year |

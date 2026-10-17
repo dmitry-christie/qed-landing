@@ -15,11 +15,9 @@ Each page is a folder with its own `index.html`:
 
 - `/` (root `index.html`) — the hub/homepage
 - `/corporate/`, `/celebrations/` — event audiences (2-step lead form → `book-event`)
-- `/team-events/`: the second corporate page. `/corporate/` is the **booker** page (HR, office or
-  events people booking for a company); `/team-events/` is the **organiser** page (someone
-  organising it for their own team, who needn't be the company). Same product, form and lead
-  funnel, told apart by audience (see "Corporate pages"). Published at the same path on both
-  brands.
+  `/corporate/` serves both the booker (HR, office or events people booking for a company) and the
+  organiser (someone organising it for their own team), with a VAT switch on the price (see
+  "Corporate page"). `/team-events/` is gone: `netlify.toml` 301s it to `/corporate/`.
 - `/venues/` — host-venue signup (`venue-apply`)
 - `partners/` — franchise (`franchise-apply`). Folder name ≠ URL: published at `/franchise/`
   on QED and `/franquicias/` on TDT (see "Per-brand URL slugs").
@@ -38,13 +36,9 @@ Shared CSS/JS/images live in `/shared/`.
 - Spanish strings live in `shared/i18n-*.js` as `window.QED_ES[key]`. `shared/i18n.js`
   replaces the text when the language is ES.
 - Each page loads `i18n-common.js` (shared keys: footer, forms, consent, cross-sell,
-  About, and `aud.strip.*` for the pointer strips of the two corporate pages) plus
-  its own `i18n-<page>.js` (page-specific keys, prefixed
-  `h.` hub, `c.` corporate, `te.` team events, `cel.` celebrations, `v.` venues, `p.` partners,
-  `pr.` privacy, `tm.` terms). `/team-events/` also loads `i18n-corporate.js`, because most of
-  its copy is the booker page's `c.*` keys: `c.*` belongs to `/corporate/`, `te.*` to
-  `/team-events/`, so tidying `c.*` against `/corporate/` alone breaks `/team-events/` in Spanish
-  only.
+  About) plus its own `i18n-<page>.js` (page-specific keys, prefixed
+  `h.` hub, `c.` corporate, `cel.` celebrations, `v.` venues, `p.` partners,
+  `pr.` privacy, `tm.` terms).
 
 **When you add or change copy:** edit the baked English in the HTML **and** the matching ES
 key in the right i18n file. Every `data-i18n*` key must have a Spanish string, or the ES
@@ -55,28 +49,23 @@ page file that page loads. Quickest check: eval those dictionaries into a `windo
 diff against every key in the page **plus `shared/about.partial.html`** on pages with a
 `build:about` marker (the partial's keys only appear post-build, so the command adds it) and the
 keys of the page's `window.QED_CENA` block, which no attribute names. Arguments: the page folder
-(`.` for the hub), then its dictionaries besides common (`/team-events/` takes two):
+(`.` for the hub), then its dictionaries besides common:
 
 ```bash
 CHECK='global.window={};const f=require("fs"),L=p=>new Function("window","Object",f.readFileSync(p,"utf8"))(window,Object);const[pg,...ds]=process.argv.slice(1);["common",...ds].forEach(d=>L(`shared/i18n-${d}.js`));let h=f.readFileSync(`${pg}/index.html`,"utf8");if(h.includes("build:about"))h+=f.readFileSync("shared/about.partial.html","utf8");const u=new Set([...h.matchAll(/data-i18n(?:-(?:content|ph|aria|href|alt|value))?="([^"]+)"/g)].map(m=>m[1]));for(const m of(h.match(/QED_CENA\s*=\s*\{[\s\S]*?\};/)||[""])[0].matchAll(/\["([^"]+)"/g))u.add(m[1]);console.log([...u].filter(k=>!(k in window.QED_ES)))'
 node -e "$CHECK" partners partners
 node -e "$CHECK" corporate corporate
-node -e "$CHECK" team-events corporate team-events
 ```
 
-Don't judge `/team-events/` against `i18n-common.js` and `i18n-team-events.js` alone: that
-reports the reused `c.*` keys as missing, and copying them into `i18n-team-events.js` makes the
-orphan check below flag them. The exception is the head: `te.title` and `te.metadesc` must live
-in `i18n-team-events.js`, because `localizeHead` reads only `i18n-common.js` plus the page's own
-file (a head key in `i18n-corporate.js` ships English on TDT, with no error). The check cannot see
-the keys `qed.js` hardcodes (`c.form.phoneReq`, `c.form.phoneErrES`, `form.phoneErr`,
-`form.emailErr`), which is why `/team-events/` must load `i18n-corporate.js`.
+`localizeHead` reads only `i18n-common.js` plus the page's own file, so a head key must live in
+one of those two. The check cannot see the keys `qed.js` hardcodes (`c.form.phoneReq`,
+`c.form.phoneErrES`, `form.phoneErr`, `form.emailErr`).
 
-The reverse, keys left orphaned after a section is rewritten, is a separate check. Judge the
-corporate dictionaries against both pages at once, since `c.*` is shared (expect `[]`):
+The reverse, keys left orphaned after a section is rewritten, is a separate check. It judges the
+corporate dictionary against `corporate/index.html` (expect `[]`):
 
 ```bash
-ORPHANS='global.window={};const f=require("fs"),L=p=>new Function("window","Object",f.readFileSync(p,"utf8"))(window,Object);["common","corporate","team-events"].forEach(d=>L(`shared/i18n-${d}.js`));const used=new Set(["c.form.phoneReq","c.form.phoneErrES"]);for(const p of["corporate","team-events"]){const h=f.readFileSync(`${p}/index.html`,"utf8");for(const m of h.matchAll(/data-i18n(?:-(?:content|ph|aria|href|alt|value))?="([^"]+)"/g))used.add(m[1]);for(const m of(h.match(/QED_CENA\s*=\s*\{[\s\S]*?\};/)||[""])[0].matchAll(/\["([^"]+)"/g))used.add(m[1])}console.log(Object.keys(window.QED_ES).filter(k=>/^(c|te|aud)\./.test(k)&&!used.has(k)))'
+ORPHANS='global.window={};const f=require("fs"),L=p=>new Function("window","Object",f.readFileSync(p,"utf8"))(window,Object);["common","corporate"].forEach(d=>L(`shared/i18n-${d}.js`));const used=new Set(["c.form.phoneReq","c.form.phoneErrES"]);const h=f.readFileSync("corporate/index.html","utf8");for(const m of h.matchAll(/data-i18n(?:-(?:content|ph|aria|href|alt|value))?="([^"]+)"/g))used.add(m[1]);for(const m of(h.match(/QED_CENA\s*=\s*\{[\s\S]*?\};/)||[""])[0].matchAll(/\["([^"]+)"/g))used.add(m[1]);console.log(Object.keys(window.QED_ES).filter(k=>/^c\./.test(k)&&!used.has(k)))'
 node -e "$ORPHANS"
 ```
 
@@ -93,11 +82,9 @@ restored on toggle: `<option>`s are detached, since iOS Safari lists a hidden op
 everything else, SVG included, gets `display:none`). A counter whose value differs gets
 `data-count-es="N"` beside `data-count`. Both are handled in `shared/i18n.js` (`applyLangHide`,
 `applyCounts`) and `shared/qed.js` (`countTarget`); pages only add the attributes. When TDT opens or
-closes a city, update the ES strings, these attributes, and the TDT OG image. The corporate
-product is two pages, so on each of `/corporate/` and `/team-events/` that means the hero tag
-(`c.hero.tag` / `te.hero.tag` plus the baked English in its `<span>`), the `#venues` list, the
-city `<option>`s and the `data-count-es` counter; the drift guard under "Corporate pages" checks
-the venues card.
+closes a city, update the ES strings, these attributes, and the TDT OG image. On `/corporate/`
+that means the hero tag (`c.hero.tag` plus the baked English in its `<span>`), the `#venues` list,
+the city `<option>`s and the `data-count-es` counter.
 
 The legal entity differs by brand: baked English names **QED Imperium Ltd** (UK), the ES
 strings name **Tardeo de Trivia SL · CIF B88885199**. TDT must show only the Spanish entity —
@@ -112,42 +99,56 @@ If they ever go up, the transparency line under the block needs its effective da
 ## Shared About section (single source)
 
 The "About us" section is identical on 3 pages (hub, celebrations, partners; the minimal
-/venues/ page has none, and /corporate/ and /team-events/ carry a two-line "We know trivia" block
+/venues/ page has none, and /corporate/ carries a two-line "We know trivia" block
 instead), so it is **not** duplicated. It lives once in
 `shared/about.partial.html` and is stamped into each page's `<!-- build:about -->` marker by
 `build.mjs` on every build. Edit the partial once; every page updates. Its copy is still
 translated at runtime via the `about.*` keys in `i18n-common.js`.
 
-## Corporate pages: booker and organiser
+## Corporate page: booker and organiser
 
-One product and one lead funnel on two pages, split by who is reading (Oct 2026). `/corporate/`
-is the booker: HR, office or events people booking on behalf of a company. `/team-events/` is the
-organiser: someone doing it for their own team, with no company in the way. Price, venues, form
-and most copy are shared; the organiser page drops `#what`, `#custom` and `#occasions`, leads with
-the group price and keeps a shorter FAQ.
+One product, one page and one lead funnel for two readers: the booker (HR, office or events people
+booking on behalf of a company) and the organiser (someone doing it for their own team, with no
+company in the way). The organiser had its own page, `/team-events/`, from Oct 2026; it was merged
+back into `/corporate/` on 18 Oct 2026, because its searches were about a tenth of the company ones
+and it differed mainly in showing prices with VAT included. `netlify.toml` 301s `/team-events` and
+`/team-events/*` to `/corporate/` (Netlify keeps the query string, the browser keeps the hash), so
+old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` still mention
+`/team-events/` in comments and `FUNNEL_HREF` still lists it: harmless, left on purpose.
 
 - **Shared CSS.** `shared/corporate.css` holds the `cx-` rules (they used to be inline in
-  `corporate/index.html`). Both pages link it directly after `qed.css`, so a `cx-` rule keeps
+  `corporate/index.html`). `/corporate/` links it directly after `qed.css`, so a `cx-` rule keeps
   winning same-specificity ties. Edit it once; its cache rule is under "Caching gotcha".
   `/celebrations/` links it too, for the price ticket only (`.cx-price`, `.cx-tiers`, `.cx-band`:
   every private event has the same prices and extras, shown there with VAT included). So an edit
-  to those rules changes three pages, and a `?v=` bump on `corporate.css` goes on all three.
-- **Pointer strip.** Each page has one strip, `<section id="teaser">`, directly under the hero:
-  the first section after the hero's closing `</section>`. A `cx-pointer` card holds a bold line,
-  one sentence and a link to the other page (`aud.strip.org.*` on `/corporate/`,
-  `aud.strip.booker.*` on `/team-events/`). It is the only audience control: the two-card switch
-  that used to open each hero was removed in Oct 2026 (the founder's call), so there is no
-  `cx-aud` markup, CSS or `aud.*` switch key left to keep in step. The link is a plain
-  `<a class="cx-pointer__link" data-aud-link>` and must not carry `btn--cta` or `btn--soft`
-  (`qed.js` would file the click as `cta click` and return before `crosssell click`) or UTM
-  parameters (they would overwrite the stored first touch). Its click is `crosssell click` with
-  `to` = `team-events` or `corporate` and `placement` = `teaser`, which `FUNNEL_HREF` in `qed.js`
-  already counts; `shared/cena-variant.js` appends `?v=cena` to it (see "Cena variant"). It is a
-  slim band under a dark hero, not a content section, so `shared/corporate.css` sets
-  `#teaser{padding-bottom:0}`: the card then sits as far from the next heading as from the hero
-  edge, where `section--tight`'s bottom padding as well would double that gap. The link is the
-  only route to the other corporate page, so it has a tap target of 44px at every width (its 24px
-  line plus 10px of padding above and below, with a matching negative margin: the card keeps its
+  to those rules changes both pages, and a `?v=` bump on `corporate.css` goes on both.
+- **VAT switch.** `#price` has a Sin IVA / Con IVA switch (`.cx-vat`: two buttons with
+  `data-vat-set="ex"` / `"inc"` and `aria-pressed`, keys `c.vat.*`). Every price that changes is a
+  pair of spans, `.vat-ex` and `.vat-inc` (the hook, the ticket, the tiers, the partner-venue
+  saving, the venues stamp and the per-head lead; keys `c.price.*.inc`, `c.price.i181` / `i242` /
+  `i302` / `i363`, `c.ven.save.inc`), and `html[data-vat="inc"]` shows the second (rules at the end
+  of `shared/corporate.css`). A new price on the page needs both spans and both ES keys. The head
+  script sets `data-vat` before first paint, so prices never flash: on for `?for=` `team`,
+  `equipo`, `organiser` or `organizer`; forced off, ignoring a stored choice, for `hr`, `company`,
+  `empresa`, `rrhh` or `booker` (`?audience=` is an alias, case-insensitive; anything else is
+  ignored); otherwise the visitor's last choice (`localStorage` `qed-vat`); else off. There is no
+  redirect, and the param stays in the URL, so the portal's `landing_url` shows which ad URL was
+  used. An inline script before `cena-variant.js` handles a click on any `[data-vat-set]`, stores
+  the choice and sets the form's hidden `audience` to `organiser` while VAT is on, `booker`
+  otherwise (see "One corporate page, two audiences" under Analytics).
+- **Pointer strip.** The page has one strip, `<section id="teaser">`, directly under the hero: the
+  first section after the hero's closing `</section>`. It speaks to the organiser: a `cx-pointer`
+  card holds a bold line, one sentence and a link (`c.org.t`, `c.org.d`, `c.org.cta`). The link is
+  `<a class="cx-pointer__link" href="#price" data-vat-set="inc">`: it turns VAT on and jumps to the
+  prices. Until 18 Oct 2026 it pointed at `/team-events/`, and before that the hero opened with a
+  two-card audience switch (removed in Oct 2026, the founder's call), so there is no `cx-aud`
+  markup, CSS or `aud.*` key left. It must not carry `btn--cta` or `btn--soft` (`qed.js` would file
+  the click as `cta click`). Its click fires no event (`#price` is not a funnel path for
+  `FUNNEL_HREF`); the lead's `audience` is the signal. It is a slim band under a dark hero, not a
+  content section, so `shared/corporate.css` sets `#teaser{padding-bottom:0}`: the card then sits
+  as far from the next heading as from the hero edge, where `section--tight`'s bottom padding as
+  well would double that gap. The link has a tap target of 44px at every width (its 24px line plus
+  10px of padding above and below, with a matching negative margin: the card keeps its
   height; a reading of 43.1px is the card still in `.reveal`'s start state, `scale(.98)`) and
   `scroll-margin-top:84px`, which keeps a keyboard focus scroll from parking it behind the 68px
   sticky header; where the phone sticky bar can show (up to 560 px wide, 401px high or more) it
@@ -160,52 +161,34 @@ the group price and keeps a shorter FAQ.
   The hero's two links, the CTA and "See prices", carry the same `scroll-margin-top:84px`
   (`.cx-hero a`): Shift+Tab from the strip reaches them first, neither has an id for qed.css's
   `[id]` margin to catch, and without it "See prices" can land behind the nav.
-- **Audience preselect (`?for=`).** For ads: `?for=hr` opens `/corporate/` and `?for=team` opens
-  `/team-events/`, from either URL (`?audience=` is an alias; `company`, `empresa`, `rrhh`,
-  `booker` and `equipo`, `organiser`, `organizer` are accepted values, case-insensitive; anything
-  else is ignored). One inline script at the top of each page's `<head>` does a
-  `location.replace()` to the other page only when the param names it, keeping the whole query
-  string and hash (utm_*, gclid, `v=cena`, `#quote`), so attribution is captured on the
-  destination and a matching param cannot loop. The param stays in the URL, so the portal's
-  `landing_url` shows which ad URL was used. Examples: `/corporate/?for=team&v=cena&utm_...` and
-  `/team-events/?utm_...` are equivalent. The links between the pages carry no `for`.
-- **Cena variant (`?v=cena`).** Each page defines `window.QED_CENA = { h1a, h1b, sub, cta }`
+- **Cena variant (`?v=cena`).** The page defines `window.QED_CENA = { h1a, h1b, sub, cta }`
   (`[key, English]` pairs) and loads `shared/cena-variant.js` before `i18n.js`, so the English it
   bakes is what `i18n.js` caches and swaps. The script re-points the hero (and the phone sticky
-  bar's label, `#c-sticky-cta`, with the hero's), preselects the dinner card and format, and
-  appends `?v=cena` to the strip's `a[data-aud-link]`: `?v` is stored nowhere (only `utm_campaign`
-  is), so the variant would be lost on the other page. It also holds the `[data-preselect-event]`
-  listener (the organiser's `#easy` card CTA), registered before the variant check so it works on
-  every visit.
+  bar's label, `#c-sticky-cta`, with the hero's) and preselects the dinner card and format. It also
+  appends `?v=cena` to any `a[data-aud-link]` and holds a `[data-preselect-event]` listener; since
+  the merge nothing on the page carries either attribute, so both do nothing.
 - **Seasonal ledger.** Christmas copy is marked `SEASONAL` in comments (`grep -rn SEASONAL
-  corporate team-events shared`) and most markers appear on both pages. Revert after
-  mid-December, the deposit items after 12 Dec: the hero tags (`c.hero.tag`, `te.hero.tag`, each
-  with its baked `<span>`); the cena variant (delete `shared/cena-variant.js`, both `QED_CENA`
-  blocks and the keys `c.hero.h1cena*`, `c.hero.subcena`, `te.hero.h1cenaa`, `te.hero.subcena`,
-  `c.cta.holdcena`; deleting the file also retires the `[data-preselect-event]` listener, so drop
-  that attribute from the `#easy` CTA or move the listener into `qed.js` first; it retires the
+  corporate shared`). Revert after mid-December, the deposit items after 12 Dec: the hero tag
+  (`c.hero.tag`, with its baked `<span>`); the cena variant (delete `shared/cena-variant.js`, the
+  `QED_CENA` block and the keys `c.hero.h1cena*`, `c.hero.subcena`, `c.cta.holdcena`; it retires the
   phone sticky bar's label swap (`#c-sticky-cta`) too, and the bar then keeps `c.cta.tell`, the
-  all-year wording, with no edit); the deposit line `c.book.3a/3b` and its `<li>`; the
-  hold-date line, `c.form.hold` on `/corporate/` and `te.form.hold` on `/team-events/` (its ES
-  string is in `i18n-team-events.js`), each in two `<p>`s per page: the `.quote-intro__more` line
-  above the form and the phone-only `.cx-form__hold` under Continue; the FAQ edits in `c.faq.a6`
-  (both pages: revert, un-open, move last, open the price item), `c.faq.a14` (both: the clause
-  after the semicolon), `c.faq.a13` (last sentence) and `c.faq.a16` (the parenthesis), both
-  booker only; the dinner card listed first; and `te.easy.2` is already the all-year wording ("Pay by card link or bank
-  transfer. Split it however you like."), so it needs no revert.
+  all-year wording, with no edit); the deposit line `c.book.3a/3b` and its `<li>`; the hold-date
+  line `c.form.hold`, in two `<p>`s: the `.quote-intro__more` line above the form and the
+  phone-only `.cx-form__hold` under Continue; the FAQ edits in `c.faq.a6` (revert, un-open, move
+  last, open the price item), `c.faq.a14` (the clause after the semicolon), `c.faq.a13` (last
+  sentence) and `c.faq.a16` (the parenthesis); the dinner card listed first.
   Brevo confirmations #7/#8 also mention the deposit; they live outside the repo.
-- **Reach.** No footer, nav or hub link points at `/team-events/`: it is reached from the strip
-  under the hero on `/corporate/`, and from the sitemap. That is a decision, not an omission.
-- **Phone pass (Oct 2026).** Phone rules for both corporate pages, one item each. The breakpoint is
+- **Phone pass (Oct 2026).** Phone rules for `/corporate/`, one item each. The breakpoint is
   `max-width:560px` unless named. The banner, dial-code and step 2 rules are in `shared/qed.css`, so
-  they reach all eight pages; each is scoped to `.consent`, `[data-contact-first]`, `.form-step2` or
+  they reach all seven pages; each is scoped to `.consent`, `[data-contact-first]`, `.form-step2` or
   `.form-success`.
   - Hero (`corporate.css`, one `max-width:560px` block after the 700px one, which it overrides): a
     tight stack under the nav, the tag 12px below it, then the H1 and sub, then the CTA full width
     and ahead of the fact chips and the price line by visual `order` only (the chips are not
     focusable, so DOM order, keyboard order and the `cta click` placement are unchanged). The CTA
-    top sits at 377 to 424 px and its bottom at 437 to 484 px on a 375x667 screen in all eight
-    brand, page and `?v=cena` combinations (593 to 640 and 653 to 700 before the pass); the bottoms
+    top sits at 377 to 424 px and its bottom at 437 to 484 px on a 375x667 screen in every brand
+    and `?v=cena` combination (measured across eight combinations while `/team-events/` was a
+    second page; 593 to 640 and 653 to 700 before the pass); the bottoms
     are 468 to 516 at 320x568, 445 to 476 at 360x740, 442 to 489 at 390x844 and 433 to 498 at
     412x915, so the CTA is inside the screen in every combination, and the pointer strip starts
     below the first screen (705 to 801 px at 375x667). The photo is a short 8:6 backdrop
@@ -224,7 +207,7 @@ the group price and keeps a shorter FAQ.
     touching the gradient, the photo or the inset. From 561 px up the pass changes no hero rule:
     561 to 700 px keeps the 8:9 crop and its lighter gradient with the copy below the photo, and
     from 701 px the photo covers the section.
-  - Hero photo files, both pages: up to 560 px `hero-host-800-s.webp` (800x600: rows 400 to 1000 of
+  - Hero photo files: up to 560 px `hero-host-800-s.webp` (800x600: rows 400 to 1000 of
     the 800x1000 `hero-host-800`, which is what the 8:6 box shows at `object-position:center
     bottom`, less the top 70px of the box that the hero clips: the hero shows rows 500 to 1000 of
     `hero-host-800` at 560 px wide, 549 to 1000 at 375 and 575 to 1000 at 320); 561 to 700 px
@@ -236,7 +219,7 @@ the group price and keeps a shorter FAQ.
     The two small proof photos are `corp-photo-smiles-360.webp` and `corp-photo-crowd-360.webp`
     (360x270), the 360w candidate beside the 720 files, with `sizes="(max-width:700px) calc(50vw -
     28px), 360px"`; the teams photo keeps its one 720 file.
-  - Consent banner (`qed.css`, all eight pages): 8px margins, 11.5px message, two equal 40px
+  - Consent banner (`qed.css`, all seven pages): 8px margins, 11.5px message, two equal 40px
     buttons, "Manage" with a 32px hit area. It is 128px high at 375 and 390 px wide; at 320 to 360
     it is 128 to 160px (the ES text is the tall one). `consent.js` is unchanged, timing included
     (4 s, or 250 ms after the first scroll settles): holding it longer when it would cover the hero
@@ -251,7 +234,7 @@ the group price and keeps a shorter FAQ.
     target moves, nothing is hidden. The shortest phones (375x667, 360x740) cannot clear it whatever
     the margin. The event cards are tighter up to 520 px.
   - Under Continue (up to 767 px): `.cx-form__call` (reuses `c.hero.call`) and the SEASONAL
-    `.cx-form__hold` (reuses `c.form.hold` / `te.form.hold`), because the `.quote-intro__more` lines
+    `.cx-form__hold` (reuses `c.form.hold`), because the `.quote-intro__more` lines
     above the form are hidden below 768 px. Both are `display:none` from 768 px.
   - Enter and the keyboard's "next" key (`initContactFirst()` in `qed.js`): on the first name and
     the phone, Enter checks only the field being left (an invalid one keeps focus and shows its own
@@ -277,7 +260,7 @@ the group price and keeps a shorter FAQ.
     is positioned against the header). It keeps its slot, so nothing shifts. `is-typing` is set by
     the sticky-bar block in `qed.js`, so removing the `#cx-sticky` markup also switches this off.
   - Sticky CTA bar, `#cx-sticky`: a fixed bottom bar, 58px high, repeating the hero CTA
-    (`c.cta.tell`, to `#quote`). Markup after `</footer>` on both pages, rules at the end of
+    (`c.cta.tell`, to `#quote`). Markup after `</footer>`, rules at the end of
     `shared/corporate.css`, logic in `shared/qed.js` after `initEngagement()`, in a try/catch so it
     cannot break the scripts after it. It is on once the hero CTA has scrolled off the top and none
     of these holds: `#quote` or the footer is on screen; a lead was sent on this page view
@@ -288,7 +271,8 @@ the group price and keeps a shorter FAQ.
     still on screen. That happens on a short phone only: at 320x568 and 375x553 the card can
     still be low when the CTA leaves and the bar would cover its link, so the bar waits until the
     card has cleared, up to about 70px of scroll (about 85px with the 74px bar); from 360x640 up
-    there is no wait. The script measures the card once per animation frame while the CTA is gone
+    there is no wait (measured with the strip's earlier, shorter text; its organiser sentence is
+    longer now, so re-measure before relying on these numbers). The script measures the card once per animation frame while the CTA is gone
     (on scroll, resize and the card's `transitionend`, since its reveal moves it) and looks it up
     once, by that selector: rename the strip's class or id and the rule switches off silently, and
     the bar goes back to coming on as soon as the CTA leaves. Its taps are `cta click` with
@@ -304,57 +288,11 @@ the group price and keeps a shorter FAQ.
     block at the end of `corporate.css` (the base rule is already `display:none`; the 560px block
     turns it on). That leaves `is-typing` working; deleting the `<div>` also switches `is-typing`
     and `has-chat` off.
-- **Head.** `te.title` and `te.metadesc` own "cena de equipo" and say "de empresa" nowhere,
-  because the booker's title owns that phrase and the two near-identical pages should not compete
-  for one query. Both pages are canonical to themselves.
-
-Markup both pages share (sprite, hero photo sources, proof, why, included, how, ticket, venues
-card, know-trivia, form, `#cx-sticky`) is duplicated, not partialled, because a build partial
-doesn't run under `npm run dev`, so a price, tier or city edit goes into both files. This command
-compares the two blocks that must not diverge. Expect `venues card identical`; `price ticket`
-differs in exactly two places, by design (`c.ex.1` against `te.ex.1`, and the `c.ex.6` "branded
-slides" item, absent from `/team-events/`). It relies on the `<!-- Partner venues` comment staying
-before the venues card on both pages:
-
-```bash
-node -e 'const f=require("fs");const cut=(p,open,close)=>{const h=f.readFileSync(p,"utf8");const i=h.indexOf(open);const j=h.indexOf(close,i);return h.slice(i,j).replace(/\s+/g," ")};const A="corporate/index.html",B="team-events/index.html";for (const [name,o,c] of [["venues card","<div class=\"card cx-venues reveal\" id=\"venues\">","</section>"],["price ticket","<div class=\"card cx-price reveal\">","<!-- Partner venues"]]) console.log(name, cut(A,o,c)===cut(B,o,c)?"identical":"DIFFERS")'
-```
 
 Deliberate choices, not omissions:
 
 - No written quote or forwardable document is promised anywhere. The FAQ promises "a fixed
   price" and a held date; add a quote line only once the founders confirm one is sent.
-- The organiser page has no invoice FAQ item: `c.faq.a13` says the invoice is made out to your
-  company, against that page's first tick (`te.easy.1`). Re-add a `te.faq.q13` / `a13` pair once a
-  person with no company can be told they get one.
-- The organiser hero leads with the group price, VAT included, with per head as a worked example:
-  a per-head headline is exact only for 25 people at a partner venue (12 pay about €15 there,
-  about €20 at their own place). Its fourth fact is "Fixed price", and the `#easy` payment tick says "Pay by card link or
-  bank transfer", not "One payment", because of the December deposit.
-- The organiser H1 says what the page sells: `te.hero.h1a` "Stuck with the team dinner?" and
-  `te.hero.h1b` "We run the quiz." (ES "¿Te toca la cena de equipo?" and "Traemos trivia.").
-  "We make it easy." could be read as "we organise the dinner", which the FAQ says we do not, and
-  "We bring the quiz." is too wide for one line at 320 to 412 px (so is the ES "Traemos la
-  trivia.": 7.6 em in a 7.2 em box at 320 px, hence no article). Both languages carry `&nbsp;`
-  (EN "We&nbsp;run the&nbsp;quiz."; ES between "la cena" and "de equipo") so no weak word ends a
-  line. Both are three lines at every phone width, 320 to 412 px, measured with Plus Jakarta
-  Sans; EN fits the 320 px box by only 0.3 px, so recheck the CTA position at all five widths,
-  in both variants and both languages, before rewording either. The ad-click (cena) H1 is longer
-  and takes four lines in ES at every width: that is the variant, not this string. Not seasonal:
-  the page is about team dinners all year.
-- Price and promise wording on the organiser page: the group price at "your restaurant or office"
-  (not "your place", which reads as at home), and every per-head figure in `te.faq.a7` says
-  whether it is with VAT, because the hero price is VAT included. The first tick (`te.easy.1`) and
-  the booker page's strip (`aud.strip.org.d`: EN baked in `corporate/index.html`, ES unchanged in
-  `i18n-common.js`) say you needn't go through the company, not that you needn't "be the company".
-  Keep that strip's EN sentence near its present length (73 to 74 characters, about 560px
-  unwrapped at 16px): the card's rows step on it, the sentence from two rows to one at about 665px
-  of viewport and the link from under the text to beside it at about 845px. A shorter sentence
-  moves the link beside it sooner (50 characters: a card 36px shorter from 665 to 844px) and a
-  longer one keeps two rows later (92 characters: until 804px), so measure the card from 560 to
-  900px, in EN and ES, before rewording either sentence. The hold-date line has its own key on that
-  page, `te.form.hold` ("while you check with the others"); `c.form.hold` says "while you get
-  sign-off", which is the company page's reason. The two facts (7 days, 72 hours) are the same.
 
 ## build.mjs (runs on Netlify)
 
@@ -378,7 +316,7 @@ Reads deploy env vars and rewrites files in the ephemeral build (never committed
   value and records nothing with no error, so the deploy log is the only place it shows. A
   variable edit changes nothing until a deploy is triggered, because `config.js` is written at
   build time.
-- Branded builds also mark the other brand's logo `loading="lazy"` on all eight pages, header and
+- Branded builds also mark the other brand's logo `loading="lazy"` on all seven pages, header and
   footer (`HIDDEN_LOGO`, an exact-string replace): CSS hides it by `html[lang]`, but a
   `display:none` image is still downloaded and a lazy one with no layout box is not, so TDT no
   longer fetches `qed-logo.png` (55 KB) nor QED `tardeo-logo.svg` (10 KB). If a page's logo markup
@@ -423,13 +361,9 @@ with the **QED** path and only swapped to the TDT one at runtime by `data-i18n-h
 Unbranded local builds copy the folder to every brand's path instead of renaming, so both the
 baked EN links and the ES ones resolve in preview.
 
-`corporate/`, `celebrations/` and `team-events/` have no `BRAND_SLUGS` entry: one slug, the folder
-name, on both brands, so they need no `foot.*href` key, no `data-i18n-href` and no 301 map.
-`/team-events/` is therefore an English path on the Spanish site. That is a cost decision, not a
-limit: the language switcher sends `location.pathname` to the other brand, and a `BRAND_SLUGS`
-entry makes the build 301 the other known paths onto each brand's own. A TDT slug would be that
-entry plus a `foot.*href`-style key and a `data-i18n-href` on every `data-aud-link` (the strip's
-link on each page), changed together.
+`corporate/` and `celebrations/` have no `BRAND_SLUGS` entry: one slug, the folder name, on both
+brands, so they need no `foot.*href` key, no `data-i18n-href` and no 301 map. The old
+`/team-events/` path is not a slug either: `netlify.toml` 301s it to `/corporate/` on both brands.
 
 ## Social preview images (og:image / favicon)
 
@@ -478,7 +412,7 @@ is baked into `walker.js` — it reads them from `window.QED_CONFIG` (per-brand 
 `build.mjs` env vars). Inert-safe: a destination loads only when its id is set AND the host is a
 real production domain (never localhost / `*.netlify.app`).
 
-**Client (`shared/walker.js`, loaded on all 8 pages before `consent.js`).** The browser source
+**Client (`shared/walker.js`, loaded on all 7 pages before `consent.js`).** The browser source
 auto-fires `page view`; `shared/qed.js` fires engagement (Tier 2/3: `cta click`, `form view`,
 `crosssell click`, `faq open`, `scroll reach`, `nav click`, `outbound click`) and the browser
 Pixel `lead complete` (id = the submission's `_event_id`, so it dedups against the server CAPI
@@ -489,9 +423,9 @@ destination → EU HTTP V2; ignores the lead events, which are sent server-side)
 with **enhanced conversions for leads** — email + name + city read from the marketing-gated lead
 event `data` and hashed by gtag). `qed.js` fires `lead start` client-side too (Google secondary
 conversion; the Pixel and Amplitude both ignore it). `crosssell click` carries `to`, `placement`
-(`hero` for a link inside a `.hero` section, else the nearest enclosing id; the one cross-sell
-link on each corporate page outside the footer is the pointer strip's, which sits outside the
-hero, so on those pages it is always `teaser`), `href` and `label`; `cta click` has the same
+(`hero` for a link inside a `.hero` section, else the nearest enclosing id; `/corporate/` has no
+cross-sell link outside the footer since its strip became an in-page `#price` link), `href` and
+`label`; `cta click` has the same
 `placement` rule, so the phone sticky bar's taps are `cx-sticky` and the header's "Let's talk"
 button, which sits outside the hero and `.nav__links`, is `body` (MEASUREMENT-PLAN.md section 4
 says how to read them). The
@@ -499,8 +433,8 @@ says how to read them). The
 there: a plain link to a path it doesn't list is measured as nothing.
 
 **Lead value** (`leadValue(page, city)` in `forms.ts`, EUR per completed lead = typical deal x
-assumed close rate; assumptions, recalibrate from real Brevo close rates): corporate 40 (both
-corporate pages; ~270 € x ~12-15% paid close), celebrations 30 (~150 € x ~20%), both cut in Oct
+assumed close rate; assumptions, recalibrate from real Brevo close rates): corporate 40 (~270 € x
+~12-15% paid close), celebrations 30 (~150 € x ~20%), both cut in Oct
 2026 for the cenas push and due a recalibration after 20 ad leads; venues 50 (placeholder),
 partners by city population tier: large ≥500k 250, medium 100k-500k 150, small/unknown 100
 (~5% signed x first-year 5,000 / 3,000 / 2,000 €). `lead start` = 20% of that. The step-2 response is
@@ -508,7 +442,7 @@ partners by city population tier: large ≥500k 250, medium 100k-500k 150, small
 Pixel/CAPI pair agrees; its fallback and `lead start` use the page default (partners 150).
 Corporate gets its value from the step-1 response instead (see Contact-first below).
 
-**Contact-first corporate form (Oct 2026).** `<form data-contact-first>` (both corporate pages;
+**Contact-first corporate form (Oct 2026).** `<form data-contact-first>` (`/corporate/`;
 celebrations keeps the classic flow) makes step 1 (event type, first name, phone, email; phone
 required and checked by `isPhone()`, Spain = 9 digits starting 6-9) the whole lead. The event
 type is four one-tap radio cards in `fieldset#c-event`, not a dropdown: a tap moves focus to the
@@ -527,29 +461,28 @@ Amplitude, the portal row. Skip posts nothing (client `lead skip`, Amplitude onl
 back to step 1 and re-posts only if the phone or email changed (`_correction:"1"`, same E1,
 `_prevEmail`): a "✏️" reply, the contact and confirmation under the new address, no new deal.
 Consent replays map step 1 → `lead complete`, step 2 → `lead details`. A post without
-`_capture` takes the classic path. The organiser form relabels the cards (`te.form.et*`) but
-posts the same four labels through `data-i18n-value`: the portal decodes `eventType` by exact
-EN/ES label (an unknown one becomes null) and the server requires it, so don't "improve" them or
+`_capture` takes the classic path. The cards post their labels through `data-i18n-value`:
+the portal decodes `eventType` by exact EN/ES label (an unknown one becomes null) and the server requires it, so don't "improve" them or
 drop a card. The step-2 format select keeps an empty first option, because `collect()` snapshots
 the whole form and without it step 1 posts the select's default for everyone.
 
-**Two corporate pages, one funnel (Oct 2026).** Both set `window.QED_SITE = "corporate"` and post
-`page=corporate`, so section, product, funnel, lead value, Brevo list, templates #7/#8 and the
-portal's source are identical by construction. Don't give `/team-events/` its own `QED_SITE` or
-`page`: an unknown `page` falls through every per-page map (lead value 50, no Brevo list, no
-mapped product). The page says which audience it is in one hidden field, `audience` (`booker` or
-`organiser`), which `collect()` posts on every step and consent replay. The server honours only
-the exact string `organiser`; anything else on a corporate post, including no field at all (a
-page cached from before the split), is `booker` (`audienceOf` in `forms.ts`). It is read in three
-places: the Telegram call alert's headline (`Equipo` / `Team` against `Empresa` / `Corporate`),
-the `Audience:` item in `metaLine` (Brevo `NOTES` and the deal description are built from the
-same text) and the Brevo deal name (suffix ` (equipo)` on a Spanish lead, ` (team)` on an
+**One corporate page, two audiences (Oct 2026).** `/corporate/` sets `window.QED_SITE =
+"corporate"` and posts `page=corporate` for booker and organiser alike, so section, product,
+funnel, lead value, Brevo list, templates #7/#8 and the portal's source are the same for both.
+(While `/team-events/` existed it did the same; an unknown `page` falls through every per-page map:
+lead value 50, no Brevo list, no mapped product.) The likely audience travels in one hidden field,
+`audience` (`booker` or `organiser`), which `collect()` posts on every step and consent replay. The
+VAT switch sets it (see "VAT switch"): `organiser` while prices show VAT included, `booker`
+otherwise. The server honours only the exact string `organiser`; anything else on a corporate post,
+including no field at all, is `booker` (`audienceOf` in `forms.ts`, unchanged by the merge). It is
+read in three places: the Telegram call alert's headline (`Equipo` / `Team` against `Empresa` /
+`Corporate`), the `Audience:` item in `metaLine` (Brevo `NOTES` and the deal description are built
+from the same text) and the Brevo deal name (suffix ` (equipo)` on a Spanish lead, ` (team)` on an
 English one, organiser only); `node scripts/audience.test.mjs` checks all three. Nothing else
-reads it: no client global, no Amplitude property, no Brevo attribute, no `walker.js` rebuild.
-Amplitude tells the pages apart by `page_path`, which every client and server event carries; the
+reads it: no client global, no Amplitude property, no Brevo attribute, no `walker.js` rebuild. The
 portal receives the raw field with the rest of the payload and interprets nothing. It records the
-page the lead used, not the person. `MEASUREMENT-PLAN.md` section 4 says how to read the two
-apart.
+VAT state when the form was sent, not the person. `MEASUREMENT-PLAN.md` section 4 says how to read
+the two apart.
 
 **walkerOS mapping gotchas (4.3.2).** A rule's `data` must be `{ map: { value: "data.value" } }`;
 a bare `{ value: "data.value" }` is a static value and resolves to the literal string (every
@@ -642,8 +575,8 @@ retries and double-clicks) is skipped, tracked via the contact's `LAST_DEAL` att
 set (`leadValue()` is an expected-value bidding weight, not a real deal size) — founders fill
 that in once a lead is qualified.
 
-A lead from `/team-events/` is a corporate lead for all of this (list `BREVO_LIST_ID_CORPORATE`,
-`LEAD_SOURCE=corporate`, templates #7/#8). The audience shows only as the deal name suffix and as
+An organiser lead (VAT switch on) is a corporate lead for all of this (list
+`BREVO_LIST_ID_CORPORATE`, `LEAD_SOURCE=corporate`, templates #7/#8). The audience shows only as the deal name suffix and as
 `Audience:` in `NOTES` and the deal description; there is no `LEAD_AUDIENCE` attribute, so nothing
 to create in Brevo.
 
@@ -661,19 +594,16 @@ mixed with yesterday's cached file (new HTML needing new JS, like the contact-fi
 `?v=YYYYMMDD` to that page's `/shared/` URLs, as corporate, the hub and privacy carry since
 `?v=20261008`.
 
-The corporate pair carries `?v=20261015` on `qed.css`, `corporate.css`, `cena-variant.js`,
-`qed.js` and `i18n-common.js`, and the organiser page also on `i18n-team-events.js` (the phone
-pass and the strip under the hero edited all six; use one value on both pages, higher than any
-already there, and higher than the `?v=20261014` that moving the strip alone put on
-`corporate.css` and `i18n-common.js`, which may be live first). `i18n-corporate.js` keeps
-`?v=20261013`: the strip move only reworded a comment in it. `i18n.js` and `consent.js` keep
-`?v=20261010`: not edited, so not bumped. `walker.js`, `brevo.js` and `phone-countries.js` are
+`/corporate/` carries `?v=20261018` on `corporate.css`, `i18n-common.js` and `i18n-corporate.js`
+(the VAT switch and the organiser strip), `?v=20261015` on `qed.css`, `cena-variant.js` and
+`qed.js`, and `?v=20261010` on `i18n.js` and `consent.js`. `/celebrations/` loads `corporate.css`
+at `?v=20261018` too, for the price ticket. `walker.js`, `brevo.js` and `phone-countries.js` are
 plain URLs.
 
-The rule for the next edit: when you change a `/shared/` file these two pages load, bump its `?v=`
-on `/corporate/` AND `/team-events/` together, to a value higher than any already on either page; a
-plain URL gets its first `?v=` in the same change. `corporate.css` is the one that bites. It used to
-be inline, so a CSS fix was atomic with the HTML; as a `/shared/` file a CSS-only edit reaches
+The rule for the next edit: when you change a `/shared/` file `/corporate/` loads, bump its `?v=`
+there to a value higher than any already on the page, and on `/celebrations/` too when the file is
+`corporate.css`; a plain URL gets its first `?v=` in the same change. `corporate.css` is the one
+that bites. It used to be inline, so a CSS fix was atomic with the HTML; as a `/shared/` file a CSS-only edit reaches
 returning visitors up to a day late, and yesterday's stylesheet against today's markup is the bad
 case: a `#cx-sticky` with no `.cx-sticky` rule is an unstyled link at the foot of the page, and the
 hero copy lands 14px under the nav, over the photo, with no clear window above it on a phone. The
@@ -688,9 +618,8 @@ still naming Barcelona, `data-lang-hide` ignored). Don't hand-add `?v=` queries 
 pending hashed-asset build rewrites the exact string `"/shared/<file>.js"`, so a versioned URL
 would slip past it and 404. That parked build (branch `build-dist-refactor`) also hard-codes its
 page list (`SRC_PAGES`) and hashed-asset list (`assetsToHash`): before it is revived it must gain
-`team-events/`, `i18n-team-events.js`, `corporate.css` and `cena-variant.js`, and cope with `?v=`
-suffixes, or `/team-events/` 404s on both brands and the strip on `/corporate/` becomes a dead
-link.
+`corporate.css` and `cena-variant.js`, keep the `/team-events/` 301 in `netlify.toml`, and cope with
+`?v=` suffixes.
 
 ## Deploy
 
