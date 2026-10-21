@@ -58,7 +58,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "consent.cat.analytics": "Analítica",
   "consent.cat.analyticsd": "Medición: cómo funcionan el sitio y las campañas publicitarias (Amplitude, Meta, Google).",
   "consent.cat.marketing": "Marketing",
-  "consent.cat.marketingd": "Optimización y segmentación de campañas publicitarias (Meta, Google).",
+  "consent.cat.marketingd": "Optimización y segmentación de campañas publicitarias (Meta, Google, LinkedIn).",
 
   /* ---- cross-sell: "explore" links on the franchise page ---- */
   "os.corp.link": "Descubre Empresas",

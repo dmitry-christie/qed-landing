@@ -419,7 +419,7 @@ Pixel `lead complete` (id = the submission's `_event_id`, so it dedups against t
 Lead). Every event carries globals (`brand`/`site`/`section`/`product`/`language`/`env`) and a
 `user` seeded from the durable `qed-eid`. Client destinations: **Amplitude** (via the API
 destination → EU HTTP V2; ignores the lead events, which are sent server-side), the **Meta Pixel**
-(allowlist: only PageView + Lead), and **Google Ads** (gtag, allowlist: only the lead conversions,
+(allowlist: only PageView + Lead), **LinkedIn** (Insight Tag, allowlist: only `lead complete`) and **Google Ads** (gtag, allowlist: only the lead conversions,
 with **enhanced conversions for leads** — email + name + city read from the marketing-gated lead
 event `data` and hashed by gtag). `qed.js` fires `lead start` client-side too (Google secondary
 conversion; the Pixel and Amplitude both ignore it). `crosssell click` carries `to`, `placement`
@@ -523,7 +523,14 @@ Consent-gated: analytics to send at all, marketing to attach identity. GA4 is dr
 `META_CAPI_TOKEN` (+ `META_TEST_EVENT_CODE` for CAPI smoke tests — while set, Meta events go to
 Test Events only). `AMPLITUDE_API_KEY` is used both client (config.js) and server. Google Ads needs
 no secrets (client gtag; enable "enhanced conversions for leads → Google tag method" in the Google
-Ads UI). (Leftover `PUBLIC_AMPLITUDE_API_KEY` / `PUBLIC_RUDDERSTACK_WRITE_KEY` are unused — safe to
+Ads UI). LinkedIn Insight Tag (client-side, marketing consent) takes `LINKEDIN_PARTNER_ID` (digits) and
+`LINKEDIN_CONVERSION_ID_COMPLETE` (the Campaign Manager conversion rule id for `lead complete`, digits).
+With no Partner ID nothing loads; with a Partner ID and no conversion id the tag loads after
+marketing consent and records its own page view but sends no conversion. The conversion carries the
+lead value in EUR and the submission's `_event_id` as `event_id`. The destination calls the Partner ID
+`apiKey`. There is no server-side LinkedIn send yet (the Conversions API package exists:
+`@walkeros/server-destination-linkedin`). A variable edit needs a redeploy, as for the other ids.
+(Leftover `PUBLIC_AMPLITUDE_API_KEY` / `PUBLIC_RUDDERSTACK_WRITE_KEY` are unused — safe to
 delete.)
 
 ## CRM (Brevo)

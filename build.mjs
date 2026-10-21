@@ -55,6 +55,10 @@ const analyticsEnv = {
   googleAdsConversionId: process.env.GOOGLE_ADS_CONVERSION_ID,
   googleAdsLabelComplete: process.env.GOOGLE_ADS_LABEL_COMPLETE,
   googleAdsLabelStart: process.env.GOOGLE_ADS_LABEL_START,
+  // LinkedIn Insight Tag (client-side): the Partner ID (numeric) and the Campaign Manager
+  // conversion rule id for the completed lead. Both are public ids that ship in config.js.
+  linkedinPartnerId: process.env.LINKEDIN_PARTNER_ID,
+  linkedinConversionIdComplete: process.env.LINKEDIN_CONVERSION_ID_COMPLETE,
   ...(process.env.WALKER_DEBUG === "true" ? { debug: true } : {}),
 };
 for (const k of Object.keys(analyticsEnv)) {
@@ -69,6 +73,13 @@ if (analyticsEnv.googleAdsConversionId && !/^AW-\d{6,}$/.test(analyticsEnv.googl
 for (const [k, envName] of [["googleAdsLabelComplete", "GOOGLE_ADS_LABEL_COMPLETE"], ["googleAdsLabelStart", "GOOGLE_ADS_LABEL_START"]]) {
   if (analyticsEnv[k] && !/^[A-Za-z0-9_-]{10,}$/.test(analyticsEnv[k])) {
     console.warn(`[qed build] WARNING: ${envName} should be only the label (letters, digits, - and _), not AW-id/label`);
+  }
+}
+
+// LinkedIn takes numeric ids only; anything else is accepted by the tag and records nothing.
+for (const [k, envName] of [["linkedinPartnerId", "LINKEDIN_PARTNER_ID"], ["linkedinConversionIdComplete", "LINKEDIN_CONVERSION_ID_COMPLETE"]]) {
+  if (analyticsEnv[k] && !/^\d{4,}$/.test(analyticsEnv[k])) {
+    console.warn(`[qed build] WARNING: ${envName} should be digits only`);
   }
 }
 

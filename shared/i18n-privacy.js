@@ -44,6 +44,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.ck.r5d": "90 días",
   "pr.ck.r6p": "Identificador de clic de Meta para medición y segmentación (si está presente).",
   "pr.ck.r6d": "90 días",
+  "pr.ck.r8p": "Etiqueta Insight de LinkedIn: medición y segmentación publicitaria.",
+  "pr.ck.r8d": "De 24 horas a 1 año",
   "pr.ck.r7p": "Hace funcionar el chat en directo y mantiene tu conversación.",
   "pr.ck.r7d": "Sesión / hasta 1 año",
 
@@ -52,7 +54,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.share.li1": "Netlify: alojamiento y entrega de formularios.",
   "pr.share.li2": "Telegram: tu solicitud, con tu teléfono si nos lo das, llega como un mensaje a las personas de nuestro equipo que te llaman. Telegram es un destinatario fuera del Espacio Económico Europeo.",
   "pr.share.li3": "Amplitude: analítica de producto sobre cómo funcionan el sitio y las campañas.",
-  "pr.share.li4": "Meta y Google: medición y segmentación publicitaria, solo con tu consentimiento de Marketing.",
+  "pr.share.li4": "Meta, Google y LinkedIn: medición y segmentación publicitaria, solo con tu consentimiento de Marketing.",
   "pr.share.li5": "Brevo: el chat en directo y el seguimiento de tu solicitud.",
   "pr.share.li6": "Supabase: nuestro sistema de gestión de clientes (CRM), alojado en la UE, donde nuestro equipo gestiona tu solicitud.",
 

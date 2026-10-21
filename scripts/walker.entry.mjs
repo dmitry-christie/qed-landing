@@ -22,6 +22,7 @@ import { startFlow } from "@walkeros/collector";
 import { sourceBrowser } from "@walkeros/web-source-browser";
 import { destinationMeta } from "@walkeros/web-destination-meta";
 import { destinationGtag } from "@walkeros/web-destination-gtag";
+import { destinationLinkedIn } from "@walkeros/web-destination-linkedin";
 import { destinationAPI } from "@walkeros/web-destination-api";
 
 // Google Ads is CLIENT-side (gtag) with enhanced conversions for leads — simpler than the server
@@ -302,6 +303,47 @@ function googleAdsDestination() {
   };
 }
 
+// ---- LinkedIn Insight Tag (client-side) ----
+// Marketing-gated, like the Pixel and gtag. The destination's init waits for marketing consent,
+// then loads insight.min.js, which also records the page view that feeds LinkedIn retargeting and
+// demographics (the tag does that itself, outside the allowlist below). The allowlist floor
+// leaves the conversion to one rule: `lead complete` → the Campaign Manager conversion rule, with
+// the lead value in EUR and the walker event id (the submission's _event_id) as event_id, which
+// is the key a future server-side Conversions API send would dedup against. The destination
+// ignores any event whose rule resolves no conversion id, so with no
+// LINKEDIN_CONVERSION_ID_COMPLETE the tag loads and no conversion is sent.
+// `value` is a static in a mapping, so the id and currency are { value: ... } and the rest are
+// paths (a bare string path resolves from the event; see the Meta note on bare objects).
+function linkedinDestination() {
+  if (!cfg.linkedinPartnerId) return null;
+  var rules = { "*": { "*": { ignore: true } } };
+  if (cfg.linkedinConversionIdComplete) {
+    rules.lead = {
+      complete: {
+        settings: {
+          conversion: {
+            map: {
+              id: { value: Number(cfg.linkedinConversionIdComplete) },
+              value: "data.value",
+              currency: { value: "EUR" },
+              eventId: "id",
+            },
+          },
+        },
+      },
+    };
+  }
+  return {
+    code: destinationLinkedIn,
+    config: {
+      consent: { marketing: true },
+      loadScript: true,
+      settings: { apiKey: cfg.linkedinPartnerId }, // the Partner ID; the package names it apiKey
+      mapping: rules,
+    },
+  };
+}
+
 // Local/preview debug destination — logs the events walker builds so `netlify dev` can verify
 // event construction without sending anything (production-domain gate keeps real destinations off
 // previews). Off entirely on production. Off unless QED_CONFIG.debug is truthy, so it's opt-in.
@@ -328,6 +370,8 @@ function buildDestinations() {
     if (meta) out.meta = meta;
     var gads = googleAdsDestination();
     if (gads) out.googleAds = gads;
+    var li = linkedinDestination();
+    if (li) out.linkedin = li;
   }
   var dbg = debugDestination();
   if (dbg) out.debug = dbg;
