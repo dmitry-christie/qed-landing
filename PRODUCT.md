@@ -31,3 +31,4 @@ Generic event-booking apps (Eventbrite, Meetup): too corporate, too neutral. Any
 ## Accessibility & Inclusion
 
 WCAG AA minimum. aria-labels present on icon buttons. Functional in bright outdoor light on mobile. English and Spanish content (some events in Spanish).
+
