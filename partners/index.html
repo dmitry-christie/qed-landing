@@ -54,6 +54,11 @@
   .ledger__row{ display:grid; grid-template-columns:1fr auto; gap:18px; align-items:baseline; padding:16px 0; border-bottom:1px dashed var(--hairline-strong); }
   .ledger__row:last-child{ border-bottom:0; }
   .ledger__amt{ font-weight:700; font-size:22px; letter-spacing:-0.02em; white-space:nowrap; }
+  .ledger__price{ text-align:right; }
+  /* Opens the onboarding FAQ item; padding with a matching negative margin gives a 44px tap target. */
+  .ledger__more{ display:inline-block; margin-top:-6px; padding:12px 0; font-family:var(--sans); font-weight:700; font-size:13px; color:var(--accent-deep); text-decoration:underline; text-underline-offset:3px; white-space:nowrap; }
+  .faq .ans ul{ margin:0; padding-left:20px; }
+  .faq .ans li + li{ margin-top:4px; }
   .whoin{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(14px,2vw,20px); }
   .whoin__card{ display:flex; flex-direction:column; background:var(--paper); border:1.5px solid var(--hairline-strong); border-radius:var(--r-lg); padding:20px 22px; }
   @media (max-width:700px){ .whoin{ grid-template-columns:1fr; } }
@@ -162,7 +167,10 @@
                 <div style="font-family:var(--sans);font-weight:800;font-size:17px"><span data-i18n="p.ledger.1n">Onboarding</span> <span class="tag" style="margin-left:6px;vertical-align:middle" data-i18n="p.ledger.onetime">one-time</span></div>
                 <div class="muted" style="font-family:var(--sans);font-weight:500;margin-top:5px;font-size:14px" data-i18n="p.ledger.1d">Initial workshop, platform setup and your first set of questions.</div>
               </div>
-              <div class="ledger__amt"><span data-i18n="p.ledger.1amt">€99</span> <span style="font-weight:600;font-size:13px;opacity:.7" data-i18n="p.ledger.1vat">+ VAT</span></div>
+              <div class="ledger__price">
+                <div class="ledger__amt"><span data-i18n="p.ledger.1amt">€99</span> <span style="font-weight:600;font-size:13px;opacity:.7" data-i18n="p.ledger.1vat">+ VAT</span></div>
+                <a class="ledger__more" href="#faq-onboarding" data-faq-open data-i18n="p.ledger.more">What's included?</a>
+              </div>
             </div>
             <div class="ledger__row">
               <div>
@@ -390,7 +398,22 @@
       <div class="faq reveal" style="margin-top:26px">
         <details>
           <summary><span data-i18n="p.faq.q6">How much do I need to invest to start?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
-          <div class="ans" data-i18n="p.faq.a6">€99 + VAT onboarding, no monthly fee, and nothing to pay until you sign. Beyond that you need a laptop that runs Chrome and printed answer sheets; the venue usually has the screen and sound. No fit-out, no expensive kit. Ads over the first months come on top, and we size them with you.</div>
+          <div class="ans" data-i18n="p.faq.a6">€99 + VAT onboarding, no monthly fee, and nothing to pay until you sign. Beyond that you need a laptop that runs Chrome and printed answer sheets; the venue usually has the screen and sound. Team Mac? No drama: install Chrome, it's free and it's where we test everything. Other browsers may work, but we wouldn't bet the trophy on it. No fit-out, no expensive kit. Ads over the first months come on top, and we size them with you.</div>
+        </details>
+        <details id="faq-onboarding">
+          <summary><span data-i18n="p.faq.q11">What does the €99 + VAT onboarding include?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
+          <div class="ans">
+            <ul>
+              <li data-i18n="p.faq.a11.1">Initial training to learn how to run and host the quiz nights.</li>
+              <li data-i18n="p.faq.a11.2">Setting up your franchise profile on our platform.</li>
+              <li data-i18n="p.faq.a11.3">Access to the management dashboard.</li>
+              <li data-i18n="p.faq.a11.4">Setting up your events and bookings page.</li>
+              <li data-i18n="p.faq.a11.5">Launching your local social media accounts.</li>
+              <li data-i18n="p.faq.a11.6">The digital brand materials you need for launch.</li>
+              <li data-i18n="p.faq.a11.7">Your first full set of questions.</li>
+              <li data-i18n="p.faq.a11.8">Online support through the early phase.</li>
+            </ul>
+          </div>
         </details>
         <details>
           <summary><span data-i18n="p.faq.q7">How much can I earn?</span> <span class="pm"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#1F1A14" stroke-width="2.4" stroke-linecap="round"/></svg></span></summary>
@@ -598,12 +621,22 @@
 </footer>
 
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-partners.js?v=20261011"></script>
+<script src="/shared/i18n-partners.js?v=20261021"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
 <script src="/shared/brevo.js"></script>
 <script src="/shared/phone-countries.js"></script>
 <script src="/shared/qed.js"></script>
+<script>
+  // "What's included?" in the ledger: open the onboarding FAQ item (through its summary, so the
+  // accordion animates and `faq open` fires), then let the anchor scroll to it.
+  document.querySelectorAll("[data-faq-open]").forEach(function (a) {
+    a.addEventListener("click", function () {
+      var d = document.querySelector(a.getAttribute("href"));
+      if (d && !d.open) { var s = d.querySelector("summary"); if (s) s.click(); }
+    });
+  });
+</script>
 </body>
 </html>

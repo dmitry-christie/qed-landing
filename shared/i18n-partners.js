@@ -46,6 +46,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.ledger.4n": "Trofeos personalizados y materiales",
   "p.ledger.perset": "por set",
   "p.ledger.4d": "Complemento con coste adicional, por set.",
+  "p.ledger.more": "¿Qué está incluido?",
 
   "p.rev.tag": "Reparto de ingresos",
   "p.rev.h3": "Tú diriges el tardeo. Compartimos lo que sale bien.",
@@ -142,7 +143,16 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // the answer points to the pre-contract document instead. El Hachazo is a partner, not a
   // franchisee, and La Cañada is not franchise proof (a restaurant runs it), so neither is cited.
   "p.faq.q6": "¿Cuánto tengo que invertir para empezar?",
-  "p.faq.a6": "El alta son 99 € + IVA, sin cuota mensual, y no pagas nada hasta firmar. Además necesitas un portátil con Chrome y las hojas de respuestas impresas; la pantalla y el sonido suele tenerlos el local. Sin obras ni equipo caro. Aparte va la publicidad de los primeros meses, que ajustamos contigo.",
+  "p.faq.a6": "El alta son 99 € + IVA, sin cuota mensual, y no pagas nada hasta firmar. Además necesitas un portátil con Chrome y las hojas de respuestas impresas; la pantalla y el sonido suele tenerlos el local. ¿Eres de Mac? Sin drama: instala Chrome, que es gratis y es donde lo probamos todo. Con otros navegadores igual va, pero no ponemos la mano en el fuego. Sin obras ni equipo caro. Aparte va la publicidad de los primeros meses, que ajustamos contigo.",
+  "p.faq.q11": "¿Qué incluye el alta de 99 € + IVA?",
+  "p.faq.a11.1": "Formación inicial para aprender a operar y presentar los tardeos.",
+  "p.faq.a11.2": "Configuración del perfil de la franquicia dentro de nuestra plataforma.",
+  "p.faq.a11.3": "Acceso al dashboard de gestión.",
+  "p.faq.a11.4": "Configuración de la página de eventos y reservas.",
+  "p.faq.a11.5": "Puesta en marcha de las redes sociales locales.",
+  "p.faq.a11.6": "Materiales digitales de marca necesarios para el lanzamiento.",
+  "p.faq.a11.7": "Primer set completo de preguntas.",
+  "p.faq.a11.8": "Acompañamiento online durante la fase inicial.",
   "p.faq.q7": "¿Cuánto puedo ganar?",
   "p.faq.a7": "Depende de cuántos jugadores llenen la sala, del precio de la entrada (lo pones tú) y de cuántos tardeos hagas a la semana. Las entradas se cobran en tu propia cuenta de Stripe y nosotros te facturamos nuestra parte a mes vencido. En la llamada hacemos las cuentas para tu ciudad.",
   "p.faq.q5": "¿Necesito local propio?",
