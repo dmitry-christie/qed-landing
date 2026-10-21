@@ -131,7 +131,7 @@
 
     <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
       <div class="card card--flat reveal statbar3 p-stats" style="background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.18);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(3,1fr)">
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-count="7" data-count-es="6">7</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.locations">locations</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-count="8" data-count-es="7">8</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.locations">locations</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="7510">7,510</span>+</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.players">registered players</div></div>
         <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--orange)"><span data-count="78">78</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.return">of players come back</div></div>
       </div>
@@ -312,10 +312,11 @@
 
       <div class="card reveal esmap" style="margin-top:30px;padding:clamp(16px,3vw,30px);background:var(--cream-soft)">
         <svg class="esmap__svg" viewBox="0 0 600 480" role="img" aria-labelledby="esmap-title" xmlns="http://www.w3.org/2000/svg">
-          <title id="esmap-title" data-i18n="p.map.alt">Map of Spain showing the 7 locations where QED runs trivia nights: Valencia (home base), La Cañada, Madrid, Barcelona, Murcia, Santiago de Compostela and A Coruña.</title>
+          <title id="esmap-title" data-i18n="p.map.alt">Map of Spain showing the 8 locations where QED runs trivia nights: Valencia (home base), La Cañada, Sagunto, Madrid, Barcelona, Murcia, Santiago de Compostela and A Coruña.</title>
           <defs>
             <pattern id="esgrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 H0 V40" class="esmap__grid"/></pattern>
             <marker id="esArrow" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L11 6 L1 11 Z" class="esmap__arrowhead"/></marker>
+            <marker id="esArrowSm" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="4.6" markerHeight="4.6" orient="auto-start-reverse"><path d="M1 1 L11 6 L1 11 Z" class="esmap__arrowhead"/></marker>
           </defs>
           <rect width="600" height="480" fill="url(#esgrid)"/>
 
@@ -334,6 +335,8 @@
             <path class="esmap__arrow" marker-end="url(#esArrow)" d="M380 254 Q322 202 277 216"/>
             <path class="esmap__arrow" marker-end="url(#esArrow)" d="M388 250 Q448 203 461 180" data-lang-hide="es"/><!-- Barcelona: QED only, TDT does not run there -->
             <path class="esmap__arrow" marker-end="url(#esArrow)" d="M381 262 Q380 300 362 320"/>
+            <!-- Sagunto is ~25 km up the coast, 10px from Valencia at this scale (inside its marker), so its pin is drawn offset and the arrow is a short hop with a smaller head -->
+            <path class="esmap__arrow" marker-end="url(#esArrowSm)" d="M389 221 Q397 211 404 202"/>
           </g>
 
           <!-- satellite venue (La Cañada, next to Valencia) -->
@@ -363,6 +366,10 @@
             <circle class="esmap__pulse" cx="355.0" cy="328.1" r="8" style="animation-delay:1.5s"/>
             <circle class="esmap__pinring" cx="355.0" cy="328.1" r="8"/><circle class="esmap__pindot" cx="355.0" cy="328.1" r="3.5"/>
             <text x="378" y="332" class="esmap__label">Murcia</text>
+
+            <circle class="esmap__pulse" cx="410" cy="192" r="8" style="animation-delay:1.25s"/>
+            <circle class="esmap__pinring" cx="410" cy="192" r="8"/><circle class="esmap__pindot" cx="410" cy="192" r="3.5"/>
+            <text x="396" y="194" text-anchor="end" class="esmap__label">Sagunto</text>
           </g>
 
           <!-- Valencia: home base -->
@@ -379,7 +386,7 @@
         </svg>
 
         <div class="esmap__foot">
-          <span class="tag tag--solid" data-i18n="p.map.note">7 locations and growing</span>
+          <span class="tag tag--solid" data-i18n="p.map.note">8 locations and growing</span>
           <a class="btn btn--soft btn--sm" href="#apply" data-i18n="p.map.cta">Put your city on the map</a>
         </div>
       </div>
@@ -621,7 +628,7 @@
 </footer>
 
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-partners.js?v=20261021"></script>
+<script src="/shared/i18n-partners.js?v=20261022"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
