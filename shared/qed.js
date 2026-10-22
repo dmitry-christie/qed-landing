@@ -356,6 +356,10 @@
      persists attribution locally so it survives until the lead is submitted. */
   var ATTR_KEY = "qed-attr";
   var ATTR_TTL = 30 * 24 * 60 * 60 * 1000;
+  // This page view's own click params, kept in memory too: where localStorage is blocked or
+  // throws (seen in Instagram's in-app browser, Oct 2026) the stored record is empty and the
+  // lead posted no source at all, though its _url carried the UTMs.
+  var memAttr = null;
   var ATTR_FIELDS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "wbraid", "gbraid", "fbclid", "msclkid", "ttclid"];
 
   function refHost() {
@@ -383,6 +387,7 @@
         // new ad click silently swallowed and convert as "direct".
         found.ts = Date.now();
         found.ref = refHost();
+        memAttr = found;
         localStorage.setItem(ATTR_KEY, JSON.stringify(found));
       } else if (!fresh) {
         // No click params on this visit: only (re-)seed an organic/direct touch once the
@@ -395,7 +400,9 @@
   captureAttribution();
 
   function storedAttr() {
-    try { return JSON.parse(localStorage.getItem(ATTR_KEY) || "null") || {}; } catch (e) { return {}; }
+    var a = null;
+    try { a = JSON.parse(localStorage.getItem(ATTR_KEY) || "null"); } catch (e) {}
+    return memAttr || ((a && a.ts) ? a : {});
   }
 
   // Durable first-party pseudonymous id — a non-PII match key (Meta CAPI external_id /
