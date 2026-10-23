@@ -134,7 +134,7 @@ Tiered so we can ship Tier 1 first and add the rest without re-architecting.
 | `form view` | A lead form scrolls into view (denominator for start-rate); `data.form` is the form's `name` |
 | `crosssell click` | Cross-sell, comparison-table or audience pointer-strip link to another funnel; `data.to` is the target, `data.placement` where the link sat |
 | `faq open` | A FAQ `<details>` is opened |
-| `contact click` | Call or WhatsApp link: `.cx-direct` on /corporate/ and /celebrations/, and the `.wa-float` WhatsApp button on every page; `data.method` is `phone` or `whatsapp`, `data.placement` where it sat (`hero`, `quote`, `event-form`, `plan`, `float`). A tap, not a lead: the call or chat itself happens off-site and is not measured |
+| `contact click` | Call or WhatsApp link: `.cx-direct` on /corporate/ and /celebrations/, and the `.wa-float` WhatsApp button on every page; `data.method` is `phone` or `whatsapp`, `data.placement` where it sat (`hero`, `quote`, `event-form`, `plan`, `float`), `data.first` true on the first tap on that method in the page view. A tap, not a lead: the call or chat itself happens off-site and is not measured. Also a **secondary** conversion in Meta and Google (first taps only, see section 5) |
 
 ### Tier 3 — diagnostic (nice-to-have)
 | walkerOS event | Fires when |
@@ -318,11 +318,11 @@ code names.
 | `lead start` | `Lead Started` | `Lead` *(or `InitiateCheckout`)* — **step-1 conversion action** | conversion: `Lead Started` |
 | `lead complete` | `Lead Submitted` | `Lead` / `CompleteRegistration` — **step-2 conversion action** (corporate: step 1) | conversion: `Lead Submitted` (primary) |
 | `lead details` | `Lead Details Added` | — (allowlist drops it) | — |
-| `lead skip` | `lead skip` (raw name; add it to `AMPLITUDE_NAMES` on the next `walker:build`) | — | — |
+| `lead skip` | `Lead Skipped` (`lead skip` until 23 Oct 2026) | — | — |
 | `cta click` | `CTA Clicked` | (optional custom `CTAClick`) | — |
 | `crosssell click` | `Cross-sell Clicked` | — | — |
 | `faq open` | `FAQ Opened` | — | — |
-| `contact click` | `contact click` (raw name; add `Contact Clicked` to `AMPLITUDE_NAMES` on the next `walker:build`) | — (allowlist drops it) | — |
+| `contact click` | `Contact Clicked` (every tap; `contact click` on 23 Oct 2026, before the rebuild) | `Contact` (standard), first tap per method per page view, marketing consent; register as a **secondary** goal | conversion on `GOOGLE_ADS_LABEL_CONTACT` (secondary, first taps only; inert until set) |
 | `scroll reach` | `Scroll Depth Reached` | — | — |
 | `consent update` | `Consent Updated` | — | — |
 

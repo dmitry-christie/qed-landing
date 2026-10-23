@@ -99,6 +99,8 @@ var AMPLITUDE_NAMES = {
   "language switch": "Language Switched",
   "consent update": "Consent Updated",
   "outbound click": "Outbound Clicked",
+  "contact click": "Contact Clicked",
+  "lead skip": "Lead Skipped",
 };
 
 // ---- Amplitude session ----
@@ -208,6 +210,14 @@ function metaDestination() {
       mapping: {
         "*": { "*": { ignore: true } }, // allowlist floor — only the rules below reach the Pixel
         page: { view: {} }, // the Meta destination auto-maps "page view" → standard "PageView"
+        // A call / WhatsApp tap → standard Contact, the first per link per page view (firstTapOnly,
+        // below). No value: it is a secondary goal, not the one the campaigns bid on.
+        contact: {
+          click: firstTapOnly({
+            settings: { track: "Contact" },
+            data: { map: { content_name: "data.method", content_category: "data.placement" } },
+          }),
+        },
         lead: {
           // `lead complete` → standard Lead with value/currency. `lead start` intentionally stays
           // off the Pixel (it's a server-side secondary conversion only), so the wildcard drops it.
@@ -270,6 +280,15 @@ function adsLeadRule(label) {
   };
 }
 
+// A call / WhatsApp tap (`contact click`) is a secondary conversion: a tap is not a lead (the WhatsApp
+// button is on every page, and plenty of taps are accidental), so it is registered as a secondary
+// goal in Meta and Google and counted once per link per page view. qed.js marks that first tap with
+// data.first; a rule whose condition fails falls through to the "*" allowlist floor and is dropped.
+function firstTapOnly(rule) {
+  if (!rule.ignore) rule.condition = function (event) { return !!(event.data && event.data.first); };
+  return rule;
+}
+
 function googleAdsDestination() {
   if (!cfg.googleAdsConversionId) return null;
   return {
@@ -297,6 +316,8 @@ function googleAdsDestination() {
           complete: adsLeadRule(cfg.googleAdsLabelComplete),
           start: adsLeadRule(cfg.googleAdsLabelStart),
         },
+        // Secondary conversion, inert until GOOGLE_ADS_LABEL_CONTACT is set.
+        contact: { click: firstTapOnly(adsLeadRule(cfg.googleAdsLabelContact)) },
       },
     },
   };

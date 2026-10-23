@@ -298,8 +298,11 @@ old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` sti
   hero copy sits below the CTA, so the CTA's measured position is unchanged (375x667: bottom 452 QED,
   463 TDT). `/celebrations/` has the same block under its hero buttons and in the `#plan` intro
   (`cel.direct.*`, inline SVGs: that page has no sprite). Rules in `shared/corporate.css`; links are
-  44px targets. Clicks are `contact click` (`method`, `placement`) from `qed.js`, checked before
-  outbound so `wa.me` is not an outbound click. The number appears in five places in the HTML plus the
+  44px targets. Clicks are `contact click` (`method`, `placement`, `first`) from `qed.js`, checked before
+  outbound so `wa.me` is not an outbound click. The first tap on each method per page view is also a
+  secondary conversion: Meta's standard `Contact` (marketing consent) and, once
+  `GOOGLE_ADS_LABEL_CONTACT` is set, a Google Ads conversion (`firstTapOnly` in `walker.entry`). Keep
+  both secondary in the ad accounts: a tap is not a lead, and the campaigns bid on `lead complete`. The number appears in five places in the HTML plus the
   two `*.direct.wa` keys per language: change them together. The lead line carries the call hours,
   Mon to Fri 10:00 to 19:00 (ES `L-V, 10-19 h`), the same as `c.form.call`.
 - **WhatsApp button, all seven pages (Oct 2026).** `.wa-float`, a fixed 56px green button at the bottom
@@ -441,7 +444,8 @@ Pixel `lead complete` (id = the submission's `_event_id`, so it dedups against t
 Lead). Every event carries globals (`brand`/`site`/`section`/`product`/`language`/`env`) and a
 `user` seeded from the durable `qed-eid`. Client destinations: **Amplitude** (via the API
 destination → EU HTTP V2; ignores the lead events, which are sent server-side), the **Meta Pixel**
-(allowlist: only PageView + Lead), and **Google Ads** (gtag, allowlist: only the lead conversions,
+(allowlist: only PageView + Lead, plus Contact for a call / WhatsApp tap), and **Google Ads** (gtag,
+allowlist: only the lead conversions and the optional contact one,
 with **enhanced conversions for leads** — email + name + city read from the marketing-gated lead
 event `data` and hashed by gtag). `qed.js` fires `lead start` client-side too (Google secondary
 conversion; the Pixel and Amplitude both ignore it). `crosssell click` carries `to`, `placement`
@@ -541,7 +545,8 @@ Consent-gated: analytics to send at all, marketing to attach identity. GA4 is dr
 
 **Env vars per brand's Netlify site (all inert until set):** client ids in `config.js` (build.mjs) —
 `META_PIXEL_ID`, `AMPLITUDE_API_KEY`, and for Google Ads `GOOGLE_ADS_CONVERSION_ID` (`AW-XXXX`) +
-`GOOGLE_ADS_LABEL_COMPLETE` + `GOOGLE_ADS_LABEL_START`. Server secrets read at function runtime:
+`GOOGLE_ADS_LABEL_COMPLETE` + `GOOGLE_ADS_LABEL_START` (+ optional `GOOGLE_ADS_LABEL_CONTACT`, the secondary
+call / WhatsApp tap conversion). Server secrets read at function runtime:
 `META_CAPI_TOKEN` (+ `META_TEST_EVENT_CODE` for CAPI smoke tests — while set, Meta events go to
 Test Events only). `AMPLITUDE_API_KEY` is used both client (config.js) and server. Google Ads needs
 no secrets (client gtag; enable "enhanced conversions for leads → Google tag method" in the Google
@@ -617,8 +622,8 @@ mixed with yesterday's cached file (new HTML needing new JS, like the contact-fi
 `?v=20261008`.
 
 `/corporate/` carries `?v=20261023` on `qed.css`, `corporate.css`, `i18n-common.js`,
-`i18n-corporate.js`, `consent.js` and `qed.js` (the call / WhatsApp block and the WhatsApp button that
-replaced the Brevo chat), `?v=20261015` on `cena-variant.js` and `?v=20261010` on `i18n.js`.
+`i18n-corporate.js` and `consent.js` (the call / WhatsApp block and the WhatsApp button that replaced
+the Brevo chat), `?v=20261024` on `qed.js` (the first-tap marker), `?v=20261015` on `cena-variant.js` and `?v=20261010` on `i18n.js`.
 `/celebrations/` loads `corporate.css` and `i18n-celebrations.js` at `?v=20261023` too. The other pages
 load `qed.css` and `qed.js` under plain URLs, so for up to a day a returning visitor there can get the
 WhatsApp button unstyled (the SVG's own `width`/`height` keep it a 30px icon at the foot of the page)

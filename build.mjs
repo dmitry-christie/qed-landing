@@ -55,6 +55,8 @@ const analyticsEnv = {
   googleAdsConversionId: process.env.GOOGLE_ADS_CONVERSION_ID,
   googleAdsLabelComplete: process.env.GOOGLE_ADS_LABEL_COMPLETE,
   googleAdsLabelStart: process.env.GOOGLE_ADS_LABEL_START,
+  // Secondary conversion for a call / WhatsApp tap (`contact click`); optional.
+  googleAdsLabelContact: process.env.GOOGLE_ADS_LABEL_CONTACT,
   ...(process.env.WALKER_DEBUG === "true" ? { debug: true } : {}),
 };
 for (const k of Object.keys(analyticsEnv)) {
@@ -66,7 +68,7 @@ for (const k of Object.keys(analyticsEnv)) {
 if (analyticsEnv.googleAdsConversionId && !/^AW-\d{6,}$/.test(analyticsEnv.googleAdsConversionId)) {
   console.warn("[qed build] WARNING: GOOGLE_ADS_CONVERSION_ID should look like AW-1234567890 (no label after a slash, no spaces)");
 }
-for (const [k, envName] of [["googleAdsLabelComplete", "GOOGLE_ADS_LABEL_COMPLETE"], ["googleAdsLabelStart", "GOOGLE_ADS_LABEL_START"]]) {
+for (const [k, envName] of [["googleAdsLabelComplete", "GOOGLE_ADS_LABEL_COMPLETE"], ["googleAdsLabelStart", "GOOGLE_ADS_LABEL_START"], ["googleAdsLabelContact", "GOOGLE_ADS_LABEL_CONTACT"]]) {
   if (analyticsEnv[k] && !/^[A-Za-z0-9_-]{10,}$/.test(analyticsEnv[k])) {
     console.warn(`[qed build] WARNING: ${envName} should be only the label (letters, digits, - and _), not AW-id/label`);
   }
