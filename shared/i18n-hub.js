@@ -1,5 +1,6 @@
 /* Spanish: Hub / homepage. English is baked into /index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
+  "h.wa": "https://wa.me/34643380980?text=%C2%A1Hola%21%20Quiero%20informaci%C3%B3n%20sobre%20Tardeo%20de%20Trivia.",
   "h.title": "Tardeo de Trivia · Tardeos de trivia por toda España",
   "h.metadesc": "Tardeos de trivia con anfitrión en directo para cenas de empresa, team building y celebraciones, y una franquicia para montar los tuyos. Eventos en Valencia, Madrid, Murcia y Santiago de Compostela, y tardeos también en A Coruña.",
   "h.ogtitle": "Tardeo de Trivia",

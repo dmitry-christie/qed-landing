@@ -1,5 +1,6 @@
 /* Spanish: Privacy & Cookies page. English is baked into privacy/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
+  "pr.wa": "https://wa.me/34643380980?text=%C2%A1Hola%21%20Tengo%20una%20pregunta.",
   "pr.title": "Privacidad y Cookies · Tardeo de Trivia",
   "pr.metadesc": "Cómo Tardeo de Trivia recoge, usa y protege tus datos, qué cookies utilizamos y cómo gestionar tu consentimiento.",
 
@@ -44,8 +45,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.ck.r5d": "90 días",
   "pr.ck.r6p": "Identificador de clic de Meta para medición y segmentación (si está presente).",
   "pr.ck.r6d": "90 días",
-  "pr.ck.r7p": "Hace funcionar el chat en directo y mantiene tu conversación.",
-  "pr.ck.r7d": "Sesión / hasta 1 año",
 
   "pr.share.h": "Con quién compartimos los datos",
   "pr.share.p": "Nunca vendemos tus datos. Solo los compartimos con los proveedores que hacen funcionar este sitio y nuestra medición, cada uno bajo un contrato de encargo de tratamiento:",
@@ -53,7 +52,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.share.li2": "Telegram: tu solicitud, con tu teléfono si nos lo das, llega como un mensaje a las personas de nuestro equipo que te llaman. Telegram es un destinatario fuera del Espacio Económico Europeo.",
   "pr.share.li3": "Amplitude: analítica de producto sobre cómo funcionan el sitio y las campañas.",
   "pr.share.li4": "Meta y Google: medición y segmentación publicitaria, solo con tu consentimiento de Marketing.",
-  "pr.share.li5": "Brevo: el chat en directo y el seguimiento de tu solicitud.",
+  "pr.share.li5": "Brevo: el seguimiento de tu solicitud.",
+  "pr.share.li7": "WhatsApp (Meta): si nos escribes por WhatsApp, tus mensajes y tu número pasan por WhatsApp.",
   "pr.share.li6": "Supabase: nuestro sistema de gestión de clientes (CRM), alojado en la UE, donde nuestro equipo gestiona tu solicitud.",
 
   "pr.retention.h": "Cuánto tiempo los conservamos",

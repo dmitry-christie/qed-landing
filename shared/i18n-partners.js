@@ -1,5 +1,6 @@
 /* Spanish: Partners (franchise) page. English is baked into partners/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
+  "p.wa": "https://wa.me/34643380980?text=%C2%A1Hola%21%20Quiero%20informaci%C3%B3n%20sobre%20la%20franquicia%20de%20Tardeo%20de%20Trivia.",
   "p.title": "Franquicia de ocio sin experiencia previa · Tardeo de Trivia",
   "p.metadesc": "Abre una franquicia de ocio sin experiencia previa: tardeos de trivia semanales con nuestra plataforma, contenido y marca. Alta de 99 € + IVA y sin cuota mensual.",
   "p.ogdesc": "Una franquicia de ocio basada en tardeos de trivia semanales. Alta de 99 € + IVA, sin cuota mensual, formación y soporte completos.",

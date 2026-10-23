@@ -267,7 +267,7 @@ old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` sti
     (`qed:leadsent`); the cookie banner is open or due (consent undecided on a production host, so a
     first-time visitor sees the bar only after answering); the pointer strip's card
     (`#teaser .cx-pointer`) is in the bar's zone, the bottom bar-height of the viewport (58px, or
-    74px beside the chat launcher, below): its lower edge is below the bar's top edge with its top
+    74px beside the WhatsApp button, below): its lower edge is below the bar's top edge with its top
     still on screen. That happens on a short phone only: at 320x568 and 375x553 the card can
     still be low when the CTA leaves and the bar would cover its link, so the bar waits until the
     card has cleared, up to about 70px of scroll (about 85px with the 74px bar); from 360x640 up
@@ -277,9 +277,10 @@ old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` sti
     once, by that selector: rename the strip's class or id and the rule switches off silently, and
     the bar goes back to coming on as soon as the CTA leaves. Its taps are `cta click` with
     `placement` `cx-sticky` (MEASUREMENT-PLAN.md section 4). The same block keeps two `<html>`
-    classes: `is-typing` (above) and `has-chat` (`window.__qedFunctional`, the condition under
-    which `brevo.js` loads the chat launcher at the bottom right: the bar then keeps 84px of right
-    padding, and its label can wrap to two lines, 74px high, at 320 px). The bar is `display:none`
+    classes: `is-typing` (above) and `has-chat` (set when the page has the `.wa-float` WhatsApp
+    button, which sits at the bottom right: the bar then keeps 84px of right padding, its button ends
+    14px short of the WhatsApp one at 375 and 320 px wide, and its label can wrap to two lines, 74px
+    high, at 320 px). The bar is `display:none`
     at a viewport height of 400px or less (a zoomed desktop window), and while it is on
     `html:has(.cx-sticky.is-on)` sets `scroll-padding-bottom` (80px plus the safe-area inset) so
     keyboard focus is not parked behind it; `consent.js` sets the same property inline while its
@@ -299,7 +300,16 @@ old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` sti
   (`cel.direct.*`, inline SVGs: that page has no sprite). Rules in `shared/corporate.css`; links are
   44px targets. Clicks are `contact click` (`method`, `placement`) from `qed.js`, checked before
   outbound so `wa.me` is not an outbound click. The number appears in five places in the HTML plus the
-  two `*.direct.wa` keys per language: change them together.
+  two `*.direct.wa` keys per language: change them together. The lead line carries the call hours,
+  Mon to Fri 10:00 to 19:00 (ES `L-V, 10-19 h`), the same as `c.form.call`.
+- **WhatsApp button, all seven pages (Oct 2026).** `.wa-float`, a fixed 56px green button at the bottom
+  right, replaced the Brevo Conversations chat launcher (`shared/brevo.js` is gone; Brevo is still the
+  CRM, server-side). It is a plain `wa.me` link to the same number, so it loads nothing and needs no
+  consent; the Functional category now only covers the language memory, and the privacy page lists
+  WhatsApp under who we share data with (`pr.share.li7`). Each page's prefilled message is its own key:
+  `h.wa`, `c.direct.wa`, `cel.direct.wa`, `v.wa`, `p.wa`, `pr.wa`, `tm.wa`. Hidden while the consent
+  banner is open and while `html.is-typing` is set. Rules at the end of `shared/qed.css`; clicks are
+  `contact click` with `placement` `float`.
 
 Deliberate choices, not omissions:
 
@@ -606,13 +616,14 @@ mixed with yesterday's cached file (new HTML needing new JS, like the contact-fi
 `?v=YYYYMMDD` to that page's `/shared/` URLs, as corporate, the hub and privacy carry since
 `?v=20261008`.
 
-`/corporate/` carries `?v=20261023` on `corporate.css`, `i18n-corporate.js` and `qed.js` (the call /
-WhatsApp block), `?v=20261018` on `i18n-common.js`, `?v=20261015` on `qed.css` and
-`cena-variant.js`, and `?v=20261010` on `i18n.js` and `consent.js`. `/celebrations/` loads
-`corporate.css` and `i18n-celebrations.js` at `?v=20261023` too (the price ticket and the call /
-WhatsApp block); its `qed.js` is a plain URL, so for up to a day a returning visitor's clicks there
-are an `outbound click` (WhatsApp) or nothing (phone) instead of `contact click`. `walker.js`, `brevo.js` and `phone-countries.js` are
-plain URLs.
+`/corporate/` carries `?v=20261023` on `qed.css`, `corporate.css`, `i18n-common.js`,
+`i18n-corporate.js`, `consent.js` and `qed.js` (the call / WhatsApp block and the WhatsApp button that
+replaced the Brevo chat), `?v=20261015` on `cena-variant.js` and `?v=20261010` on `i18n.js`.
+`/celebrations/` loads `corporate.css` and `i18n-celebrations.js` at `?v=20261023` too. The other pages
+load `qed.css` and `qed.js` under plain URLs, so for up to a day a returning visitor there can get the
+WhatsApp button unstyled (the SVG's own `width`/`height` keep it a 30px icon at the foot of the page)
+and clicks filed as `outbound click` instead of `contact click`. `walker.js` and `phone-countries.js`
+are plain URLs.
 
 The rule for the next edit: when you change a `/shared/` file `/corporate/` loads, bump its `?v=`
 there to a value higher than any already on the page, and on `/celebrations/` too when the file is

@@ -1,5 +1,6 @@
 /* Spanish: Terms & Legal Notice page. English is baked into terms/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
+  "tm.wa": "https://wa.me/34643380980?text=%C2%A1Hola%21%20Tengo%20una%20pregunta.",
   "tm.title": "Términos y Aviso Legal · Tardeo de Trivia",
   "tm.metadesc": "Las condiciones de uso y el aviso legal de este sitio web de Tardeo de Trivia.",
 

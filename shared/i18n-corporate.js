@@ -28,7 +28,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.hero.f2": "10 a 300+ personas",
   "c.hero.f3": "Español o inglés",
   "c.hero.f4": "Adaptado a tu equipo",
-  "c.direct.lead": "¿Prefieres hablar ya?",
+  "c.direct.lead": "¿Prefieres hablar ya? L-V, 10-19 h.",
   "c.direct.wa": "https://wa.me/34643380980?text=%C2%A1Hola%21%20Quiero%20informaci%C3%B3n%20sobre%20un%20tardeo%20de%20trivia%20para%20mi%20equipo.",
   "c.hero.call": "Te llamamos, normalmente el mismo día laborable.",
   "c.hero.price": "Desde 150 € + IVA",

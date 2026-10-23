@@ -1,7 +1,7 @@
 /* Consent banner — owns the granular consent UI + storage. It no longer loads any analytics
    SDK itself: walkerOS (shared/walker.js) is the collection layer now. This file just records
    the visitor's choice and hands it off — it sets window.__qedConsent* (read by walker.entry,
-   i18n.js and brevo.js) and dispatches a "qed:consentchange" event on every decision;
+   i18n.js) and dispatches a "qed:consentchange" event on every decision;
    scripts/walker.entry.mjs reads the stored categories on init and listens for that event, then
    pushes elb('walker consent', …). No write key, no SDK snippet, and no page() call here — the
    walker browser source fires `page view` itself, gated on Analytics consent.
@@ -99,7 +99,7 @@
     categories = cats;
     saveCategories(cats);
     applyCategories(cats);
-    // Hand the fresh decision to walkerOS and to other consent-gated features (shared/brevo.js).
+    // Hand the fresh decision to walkerOS and to other consent-gated features (i18n.js).
     // walker.entry pushes elb('walker consent', …) from this; nothing analytics fired before it.
     try { window.dispatchEvent(new CustomEvent("qed:consentchange", { detail: cats })); } catch (e) {}
   }
@@ -155,7 +155,7 @@
 
     var catDefs = [
       { id: "necessary", labelKey: "consent.cat.necessary", label: "Necessary", descKey: "consent.cat.necessaryd", desc: "Essential for the site to work and to remember this choice. Always on.", locked: true },
-      { id: "functional", labelKey: "consent.cat.functional", label: "Functional", descKey: "consent.cat.functionald", desc: "Remembers your preferences (like language) and powers the live chat. Without them the site still works, but forgets you." },
+      { id: "functional", labelKey: "consent.cat.functional", label: "Functional", descKey: "consent.cat.functionald", desc: "Remembers your preferences (like language). Without them the site still works, but forgets you." },
       { id: "analytics", labelKey: "consent.cat.analytics", label: "Analytics", descKey: "consent.cat.analyticsd", desc: "Measurement: how the site and ad campaigns are performing (Amplitude, Meta, Google)." },
       { id: "marketing", labelKey: "consent.cat.marketing", label: "Marketing", descKey: "consent.cat.marketingd", desc: "Ad campaign optimization and targeting (Meta, Google)." }
     ];

@@ -1,5 +1,6 @@
 /* Spanish: Venues page. English is baked into venues/index.html. */
 Object.assign(window.QED_ES = window.QED_ES || {}, {
+  "v.wa": "https://wa.me/34643380980?text=%C2%A1Hola%21%20Me%20gustar%C3%ADa%20organizar%20tardeos%20de%20trivia%20en%20mi%20local.",
   "v.title": "Tardeo de Trivia para Locales · Llena tu local con tu propio tardeo de trivia",
   "v.metadesc": "Nosotros ponemos la trivia, tú la montas con tu propia marca cuando te venga bien. Llena tu local con 0% de comisión sobre barra y comida y términos flexibles.",
   "v.ogdesc": "Tu propio tardeo de trivia, con nuestro motor detrás. Llena tu sala. 0% de comisión, términos flexibles.",

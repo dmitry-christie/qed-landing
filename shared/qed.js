@@ -1329,11 +1329,11 @@
       var a = e.target.closest && e.target.closest("a[href], button.btn");
       if (!a) return;
       var href = a.getAttribute("href") || "";
-      var label = (a.textContent || "").trim().replace(/\s+/g, " ").slice(0, 80);
+      var label = ((a.textContent || "").trim() || a.getAttribute("aria-label") || "").replace(/\s+/g, " ").slice(0, 80);
       // Call / WhatsApp now (data-contact="phone" | "whatsapp", the .cx-direct links on /corporate/ and
       // /celebrations/). Ahead of outbound, which would otherwise file the wa.me link as an off-site click.
       var contact = a.getAttribute("data-contact");
-      if (contact) { walkerPush("contact click", { method: contact, placement: placement(a), label: label }); return; }
+      if (contact) { walkerPush("contact click", { method: contact, placement: a.getAttribute("data-placement") || placement(a), label: label }); return; }
       // External link → outbound (skip in-page #anchors and same-host links).
       if (a.tagName === "A" && a.hostname && a.hostname !== location.hostname && /^https?:/i.test(a.protocol)) {
         walkerPush("outbound click", { href: href, label: label });
@@ -1400,8 +1400,8 @@
          60 px of scroll. The bar waits until the card's lower edge has cleared it.
      Its taps are ordinary `cta click` events (placement = "cx-sticky", the nearest [id]).
      The same block keeps two <html> classes for CSS: is-typing (a text field of #event-form has focus
-     AND the form is on screen: the header steps aside, see corporate.css) and has-chat (the Brevo
-     launcher, loaded when window.__qedFunctional is true, sits bottom right: the bar leaves room). */
+     AND the form is on screen: the header steps aside, see corporate.css) and has-chat (the WhatsApp
+     button, .wa-float, sits bottom right: the bar leaves room). */
   (function () {
     try {
       var bar = document.getElementById("cx-sticky");
@@ -1429,7 +1429,7 @@
         var typing = !!(formOn && a && a.matches && a.matches(TEXT) && a.closest("#event-form") && !document.querySelector(".nav__links.open"));
         var asking = !!document.querySelector(".consent") || !!(window.__qedConsentActive && !window.__qedConsentCategories);
         root.classList.toggle("is-typing", typing);
-        root.classList.toggle("has-chat", !!window.__qedFunctional);
+        root.classList.toggle("has-chat", !!document.querySelector(".wa-float"));
         measureStrip();
         bar.classList.toggle("is-on", gone && !formOn && !footOn && !done && !asking && !stripUnder);
       };
