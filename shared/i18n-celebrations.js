@@ -155,6 +155,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "cel.form.eyebrow": "Tu celebración",
   "cel.form.h2": "Cuéntanos a quién celebramos.",
+  "cel.direct.lead": "¿Prefieres hablar ya?",
+  "cel.direct.wa": "https://wa.me/34643380980?text=%C2%A1Hola%21%20Quiero%20informaci%C3%B3n%20sobre%20un%20tardeo%20de%20trivia%20para%20una%20celebraci%C3%B3n.",
   "cel.form.sub": "Formulario rápido, respuesta de una persona de verdad, normalmente el mismo día. A partir de ahí nos encargamos nosotros.",
   "cel.form.eventType": "¿Qué celebramos?",
   "cel.form.etph": "Elige una…",

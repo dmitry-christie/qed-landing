@@ -289,6 +289,18 @@ old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` sti
     turns it on). That leaves `is-typing` working; deleting the `<div>` also switches `is-typing`
     and `has-chat` off.
 
+- **Call or WhatsApp now (Oct 2026).** A `.cx-direct` block (lead line `c.direct.lead`, a `tel:` link
+  and a `wa.me` link with a prefilled message, `c.direct.wa` via `data-i18n-href`) for the company
+  line, +34 643 380 980, on both brands. Three copies: under the hero CTA, in the `#quote` intro
+  (`quote-intro__more`, 768px and up) and under Continue on phones (`.cx-form__direct`), so the intro
+  panel keeps its height and the first field still lands where "Arriving at the form" says. The
+  hero copy sits below the CTA, so the CTA's measured position is unchanged (375x667: bottom 452 QED,
+  463 TDT). `/celebrations/` has the same block under its hero buttons and in the `#plan` intro
+  (`cel.direct.*`, inline SVGs: that page has no sprite). Rules in `shared/corporate.css`; links are
+  44px targets. Clicks are `contact click` (`method`, `placement`) from `qed.js`, checked before
+  outbound so `wa.me` is not an outbound click. The number appears in five places in the HTML plus the
+  two `*.direct.wa` keys per language: change them together.
+
 Deliberate choices, not omissions:
 
 - No written quote or forwardable document is promised anywhere. The FAQ promises "a fixed
@@ -594,10 +606,12 @@ mixed with yesterday's cached file (new HTML needing new JS, like the contact-fi
 `?v=YYYYMMDD` to that page's `/shared/` URLs, as corporate, the hub and privacy carry since
 `?v=20261008`.
 
-`/corporate/` carries `?v=20261018` on `corporate.css`, `i18n-common.js` and `i18n-corporate.js`
-(the VAT switch and the organiser strip), `?v=20261015` on `qed.css`, `cena-variant.js` and
-`qed.js`, and `?v=20261010` on `i18n.js` and `consent.js`. `/celebrations/` loads `corporate.css`
-at `?v=20261018` too, for the price ticket. `walker.js`, `brevo.js` and `phone-countries.js` are
+`/corporate/` carries `?v=20261023` on `corporate.css`, `i18n-corporate.js` and `qed.js` (the call /
+WhatsApp block), `?v=20261018` on `i18n-common.js`, `?v=20261015` on `qed.css` and
+`cena-variant.js`, and `?v=20261010` on `i18n.js` and `consent.js`. `/celebrations/` loads
+`corporate.css` and `i18n-celebrations.js` at `?v=20261023` too (the price ticket and the call /
+WhatsApp block); its `qed.js` is a plain URL, so for up to a day a returning visitor's clicks there
+are an `outbound click` (WhatsApp) or nothing (phone) instead of `contact click`. `walker.js`, `brevo.js` and `phone-countries.js` are
 plain URLs.
 
 The rule for the next edit: when you change a `/shared/` file `/corporate/` loads, bump its `?v=`

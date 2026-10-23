@@ -430,6 +430,36 @@
     .cx-form__hold .cx-i{ margin-top:1px; }
   }
 
+  /* ---------- call or WhatsApp now (company line, Oct 2026) ----------
+     A lead line and two links: tel: and wa.me (with a prefilled message, swapped per language by
+     data-i18n-href). On /corporate/: under the hero CTA, in the #quote intro from 768px (a
+     .quote-intro__more line) and under Continue on phones (.cx-form__direct, so the intro panel keeps
+     its measured height and the first field still lands where "Phone pass" says). On /celebrations/:
+     under the hero buttons and in the #plan intro. Each link is a 44px tap target on a 20px line
+     (padding with a matching negative margin, as on "See prices"). Clicks are `contact click` in qed.js. */
+  .cx-direct{ margin:0; font-size:14.5px; font-weight:600; line-height:1.4; }
+  .cx-direct__lead{ margin:0; }
+  .cx-direct__links{ display:flex; flex-wrap:wrap; gap:4px 22px; margin:6px 0 0; }
+  .cx-direct__link{ display:inline-flex; align-items:center; gap:8px; padding:12px 0; margin:-12px 0; min-height:20px; font-weight:700; white-space:nowrap; text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px; color:inherit; }
+  .cx-direct__link .cx-i{ width:19px; height:19px; }
+  .cx-wa{ width:19px; height:19px; flex:0 0 auto; fill:currentColor; }
+  .cx-direct--dark{ color:rgba(255,255,255,.88); }
+  .cx-direct--dark .cx-direct__link{ color:#fff; }
+  .cx-direct--dark .cx-direct__link .cx-i{ color:var(--yellow); }
+  .cx-direct--dark .cx-wa{ color:#25D366; }
+  .cx-direct--light{ color:var(--ink-soft); }
+  .cx-direct--light .cx-direct__link{ color:var(--ink); }
+  .cx-direct--light .cx-direct__link .cx-i{ color:var(--accent-deep); }
+  .cx-direct--light .cx-wa{ color:#128C4B; }
+  .cx-direct__link:hover{ text-decoration-thickness:2.5px; }
+  .cx-hero__ctas .cx-direct{ flex:0 0 100%; }
+  .cl-direct{ margin-top:20px; }
+  .cx-form__direct{ display:none; }
+  @media (max-width:767px){
+    .cx-form__direct{ display:block; margin:12px 0 0; text-align:center; font-size:14px; }
+    .cx-form__direct .cx-direct__links{ justify-content:center; }
+  }
+
   /* --- event type: four one-tap cards instead of a dropdown ---
      Real radios in a fieldset + legend (keyboard: Tab in, arrows to choose). The input is
      visually hidden but stays focusable; its card is the next sibling, so :checked and

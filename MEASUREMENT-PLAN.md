@@ -134,6 +134,7 @@ Tiered so we can ship Tier 1 first and add the rest without re-architecting.
 | `form view` | A lead form scrolls into view (denominator for start-rate); `data.form` is the form's `name` |
 | `crosssell click` | Cross-sell, comparison-table or audience pointer-strip link to another funnel; `data.to` is the target, `data.placement` where the link sat |
 | `faq open` | A FAQ `<details>` is opened |
+| `contact click` | Call or WhatsApp link (`.cx-direct`, /corporate/ and /celebrations/); `data.method` is `phone` or `whatsapp`, `data.placement` where it sat (`hero`, `quote`, `event-form`, `plan`). A tap, not a lead: the call or chat itself happens off-site and is not measured |
 
 ### Tier 3 — diagnostic (nice-to-have)
 | walkerOS event | Fires when |
@@ -321,6 +322,7 @@ code names.
 | `cta click` | `CTA Clicked` | (optional custom `CTAClick`) | — |
 | `crosssell click` | `Cross-sell Clicked` | — | — |
 | `faq open` | `FAQ Opened` | — | — |
+| `contact click` | `contact click` (raw name; add `Contact Clicked` to `AMPLITUDE_NAMES` on the next `walker:build`) | — (allowlist drops it) | — |
 | `scroll reach` | `Scroll Depth Reached` | — | — |
 | `consent update` | `Consent Updated` | — | — |
 

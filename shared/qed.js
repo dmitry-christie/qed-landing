@@ -1317,7 +1317,7 @@
   function initEngagement() {
     var section = window.QED_SITE || "home";
 
-    // Delegated clicks → cta / nav / crosssell / outbound. Classified by class + link target so a
+    // Delegated clicks → contact / cta / nav / crosssell / outbound. Classified by class + link target so a
     // hero CTA (.btn--cta) and an in-body cross-sell card (.card → another funnel) don't collide.
     var FUNNEL_HREF = /^\/(corporate|team-events|celebrations|venues|partners|franchise|franquicias)\/?($|[?#])/;
     function placement(el) {
@@ -1330,6 +1330,10 @@
       if (!a) return;
       var href = a.getAttribute("href") || "";
       var label = (a.textContent || "").trim().replace(/\s+/g, " ").slice(0, 80);
+      // Call / WhatsApp now (data-contact="phone" | "whatsapp", the .cx-direct links on /corporate/ and
+      // /celebrations/). Ahead of outbound, which would otherwise file the wa.me link as an off-site click.
+      var contact = a.getAttribute("data-contact");
+      if (contact) { walkerPush("contact click", { method: contact, placement: placement(a), label: label }); return; }
       // External link → outbound (skip in-page #anchors and same-host links).
       if (a.tagName === "A" && a.hostname && a.hostname !== location.hostname && /^https?:/i.test(a.protocol)) {
         walkerPush("outbound click", { href: href, label: label });
