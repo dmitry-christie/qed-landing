@@ -435,29 +435,45 @@
      data-i18n-href). On /corporate/: under the hero CTA, in the #quote intro from 768px (a
      .quote-intro__more line) and under Continue on phones (.cx-form__direct, so the intro panel keeps
      its measured height and the first field still lands where "Phone pass" says). On /celebrations/:
-     under the hero buttons and in the #plan intro. Each link is a 44px tap target on a 20px line
-     (padding with a matching negative margin, as on "See prices"). Clicks are `contact click` in qed.js. */
-  .cx-direct{ margin:0; font-size:14.5px; font-weight:600; line-height:1.4; }
-  .cx-direct__lead{ margin:0; }
-  .cx-direct__links{ display:flex; flex-wrap:wrap; gap:4px 22px; margin:6px 0 0; }
-  .cx-direct__link{ display:inline-flex; align-items:center; gap:8px; padding:12px 0; margin:-12px 0; min-height:20px; font-weight:700; white-space:nowrap; text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px; color:inherit; }
-  .cx-direct__link .cx-i{ width:19px; height:19px; }
-  .cx-wa{ width:19px; height:19px; flex:0 0 auto; fill:currentColor; }
-  .cx-direct--dark{ color:rgba(255,255,255,.88); }
-  .cx-direct--dark .cx-direct__link{ color:#fff; }
+     under the hero buttons and in the #plan intro. The links are pills, 44px high: outlined on the dark
+     panels, ink-bordered with the site's offset shadow on the light form. The call hours sit in their own
+     span (`*.direct.hours`) and are hidden in the #quote intro, where the call-back line above already
+     gives them. Clicks are `contact click` in qed.js. */
+  .cx-direct{ margin:0; }
+  .cx-direct__lead{ margin:0; font-size:14px; font-weight:700; line-height:1.4; }
+  .cx-direct__hours{ font-weight:500; opacity:.72; white-space:nowrap; }
+  .cx-direct__hours::before{ content:"· "; }
+  .quote-intro .cx-direct__hours{ display:none; }
+  .cx-direct__links{ display:flex; flex-wrap:wrap; gap:10px; margin:10px 0 0; }
+  .cx-direct__link{ display:inline-flex; align-items:center; gap:9px; min-height:44px; padding:0 18px 0 14px; border:2px solid; border-radius:999px; font-size:15px; font-weight:700; line-height:1; white-space:nowrap; text-decoration:none; transition:background-color .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+  .cx-direct__link .cx-i, .cx-wa{ width:18px; height:18px; flex:0 0 auto; }
+  .cx-wa{ fill:currentColor; }
+  .cx-direct--dark{ color:rgba(255,255,255,.9); }
+  .cx-direct--dark .cx-direct__link{ color:#fff; border-color:rgba(255,255,255,.42); background:rgba(255,255,255,.06); }
+  .cx-direct--dark .cx-direct__link:hover{ border-color:#fff; background:rgba(255,255,255,.14); }
   .cx-direct--dark .cx-direct__link .cx-i{ color:var(--yellow); }
   .cx-direct--dark .cx-wa{ color:#25D366; }
-  .cx-direct--light{ color:var(--ink-soft); }
-  .cx-direct--light .cx-direct__link{ color:var(--ink); }
+  .cx-direct--dark .cx-direct__link:focus-visible{ outline:3px solid var(--yellow); outline-offset:3px; }
+  .cx-direct--light{ color:var(--ink); }
+  .cx-direct--light .cx-direct__link{ color:var(--ink); border-color:var(--ink); background:var(--paper); box-shadow:2px 2px 0 0 var(--ink); }
+  .cx-direct--light .cx-direct__link:hover{ transform:translate(-1px,-1px); box-shadow:3px 3px 0 0 var(--ink); }
   .cx-direct--light .cx-direct__link .cx-i{ color:var(--accent-deep); }
   .cx-direct--light .cx-wa{ color:#128C4B; }
-  .cx-direct__link:hover{ text-decoration-thickness:2.5px; }
-  .cx-hero__ctas .cx-direct{ flex:0 0 100%; }
-  .cl-direct{ margin-top:20px; }
+  .cx-direct--light .cx-direct__link:focus-visible{ outline:3px solid var(--ink); outline-offset:3px; }
+  @media (prefers-reduced-motion:reduce){ .cx-direct__link{ transition:none; } .cx-direct--light .cx-direct__link:hover{ transform:none; } }
+  .cx-hero__ctas .cx-direct{ flex:0 0 100%; margin-top:6px; }
+  .cl-direct{ margin-top:24px; }
   .cx-form__direct{ display:none; }
   @media (max-width:767px){
-    .cx-form__direct{ display:block; margin:12px 0 0; text-align:center; font-size:14px; }
+    .cx-form__direct{ display:block; margin:16px 0 0; text-align:center; }
     .cx-form__direct .cx-direct__links{ justify-content:center; }
+    .cx-form__direct .cx-direct__link{ flex:1 1 auto; justify-content:center; }
+  }
+  /* phones: the pills grow, so two that fit share the row evenly and two that wrap each take a full
+     row (under Continue the form is ~290px wide and they always wrap) instead of a ragged pair */
+  @media (max-width:560px){
+    .cx-direct__links{ gap:8px; }
+    .cx-direct__link{ flex:1 1 auto; justify-content:center; padding:0 14px 0 12px; font-size:14.5px; gap:8px; }
   }
 
   /* --- event type: four one-tap cards instead of a dropdown ---

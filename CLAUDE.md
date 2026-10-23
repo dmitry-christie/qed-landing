@@ -298,7 +298,9 @@ old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` sti
   hero copy sits below the CTA, so the CTA's measured position is unchanged (375x667: bottom 452 QED,
   463 TDT). `/celebrations/` has the same block under its hero buttons and in the `#plan` intro
   (`cel.direct.*`, inline SVGs: that page has no sprite). Rules in `shared/corporate.css`; links are
-  44px targets. Clicks are `contact click` (`method`, `placement`) from `qed.js`, checked before
+  44px pill buttons (outlined on the dark panels, ink-bordered on the light form; on phones they grow to
+  share a row, or take a full row each where they wrap). The hours are their own span (`*.direct.hours`),
+  hidden in the `#quote` intro, where `c.form.call` above already gives them. Clicks are `contact click` (`method`, `placement`) from `qed.js`, checked before
   outbound so `wa.me` is not an outbound click. The number appears in five places in the HTML plus the
   two `*.direct.wa` keys per language: change them together. The lead line carries the call hours,
   Mon to Fri 10:00 to 19:00 (ES `L-V, 10-19 h`), the same as `c.form.call`.
@@ -616,10 +618,10 @@ mixed with yesterday's cached file (new HTML needing new JS, like the contact-fi
 `?v=YYYYMMDD` to that page's `/shared/` URLs, as corporate, the hub and privacy carry since
 `?v=20261008`.
 
-`/corporate/` carries `?v=20261023` on `qed.css`, `corporate.css`, `i18n-common.js`,
-`i18n-corporate.js`, `consent.js` and `qed.js` (the call / WhatsApp block and the WhatsApp button that
-replaced the Brevo chat), `?v=20261015` on `cena-variant.js` and `?v=20261010` on `i18n.js`.
-`/celebrations/` loads `corporate.css` and `i18n-celebrations.js` at `?v=20261023` too. The other pages
+`/corporate/` carries `?v=20261024` on `corporate.css` and `i18n-corporate.js` (the call / WhatsApp
+pills), `?v=20261023` on `qed.css`, `i18n-common.js`, `consent.js` and `qed.js` (the call / WhatsApp
+block and the WhatsApp button that replaced the Brevo chat), `?v=20261015` on `cena-variant.js` and `?v=20261010` on `i18n.js`.
+`/celebrations/` loads `corporate.css` and `i18n-celebrations.js` at `?v=20261024` too. The other pages
 load `qed.css` and `qed.js` under plain URLs, so for up to a day a returning visitor there can get the
 WhatsApp button unstyled (the SVG's own `width`/`height` keep it a 30px icon at the foot of the page)
 and clicks filed as `outbound click` instead of `contact click`. `walker.js` and `phone-countries.js`
