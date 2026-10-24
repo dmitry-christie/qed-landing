@@ -138,6 +138,19 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "cel.feat.f4t": "Te recomendamos el local",
   "cel.feat.f4d": "Conocemos los sitios. Te proponemos uno, a ser posible uno de nuestros locales, donde ya está todo montado para la trivia y cuesta 60,50\u00a0€ menos. O lo llevamos todo a vuestra casa.",
 
+  // Reviews: the Spanish originals, verbatim (cuts marked […]; only the ¡ and one comma added).
+  // The baked English is the translation. Never reword them.
+  "cel.rev.eyebrow": "Reseñas",
+  "cel.rev.h2": "No lo decimos nosotros.",
+  "cel.rev.1a": "Buscaba algo diferente para celebrar mi cumpleaños […] Contacté con ellos, me explicaron cómo funcionaba el juego y ",
+  "cel.rev.1b": "no tuve que preocuparme de nada más.",
+  "cel.rev.1c": " El día del evento nos estaban ya esperando en el sitio con todo el material preparado, música incluida, y entre preguntas, risas y unas cervezas, pasamos una tarde genial. […] Y si además elegís el pack que permite personalizar alguna ronda de preguntas, la experiencia es aún mejor.",
+  "cel.rev.1tag": "Cumpleaños",
+  "cel.rev.2a": "Fue una experiencia realmente divertida. El máster súper bien, se integró muchísimo con nosotros, lo que hizo que cogiéramos también más confianza y nos soltásemos más. Las preguntas son muy variadas, para todos los gustos, y el puntito de competitividad entre amigos es una risa total. Yo no lo conocía, y ahora ",
+  "cel.rev.2b": "sin duda me parece un plan para repetir",
+  "cel.rev.2c": " (¡y eso que yo no soy muy de juegos!)",
+  "cel.rev.2tag": "Evento privado",
+
   "cel.faq.eyebrow": "Preguntas",
   "cel.faq.h2": "Lo que todo el mundo quiere saber.",
   "cel.faq.q1": "¿Cuánto se personaliza?",

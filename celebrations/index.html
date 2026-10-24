@@ -65,6 +65,16 @@
   .cl-flag{ display:table; margin:0 0 8px; padding:3px 8px 2px; border:1.5px solid var(--ink); border-radius:999px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; line-height:1.3; white-space:nowrap; }
   .cl-flag--inc{ background:var(--green-soft); }
   .cl-flag--ex{ background:var(--yellow); }
+  /* Reviews: two quote cards, side by side above 760px. The highlighted line is part of the quote. */
+  .cl-reviews{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:30px; }
+  .cl-review{ margin:0; padding:clamp(22px,2.6vw,30px); display:flex; flex-direction:column; gap:18px; }
+  .cl-review + .cl-review{ background:var(--cream-soft); }
+  .cl-review__q{ margin:0; }
+  .cl-review__q::before{ content:"\201C"; content:"\201C" / ""; display:block; height:30px; font-weight:900; font-size:64px; line-height:.75; color:var(--accent); }
+  .cl-review__q p{ margin:0; font-size:clamp(16px,1.5vw,17px); line-height:1.6; color:var(--ink); text-wrap:pretty; }
+  .cl-review__q mark{ color:inherit; font-weight:800; padding:0 2px; background:linear-gradient(180deg,transparent 58%,var(--yellow) 58%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+  .cl-review__by{ margin-top:auto; padding-top:16px; border-top:2px dashed var(--hairline-strong); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-weight:800; }
+  @media (max-width:760px){ .cl-reviews{ grid-template-columns:1fr; } }
   /* the "+ more" pill in the occasions strip: never split "+ / MORE" over two lines */
   .cases + .card .tag{ flex:0 0 auto; white-space:nowrap; }
 </style>
@@ -357,6 +367,35 @@
     </div>
   </section>
 
+  <!-- ============ REVIEWS ============ -->
+  <!-- Two real reviews sent to the team in Oct 2026, written in Spanish: the ES strings are the
+       originals, the baked English is our translation (the note under the cards says so; the ES page
+       drops it). Excerpts are verbatim with cuts marked […], and the first cut drops the brand name,
+       so the same excerpt reads on both brands. Never reword them. Reviewers by first name and initial. -->
+  <section id="reviews" class="section section--tight">
+    <div class="wrap">
+      <div class="reveal" style="max-width:60ch">
+        <span class="eyebrow" data-i18n="cel.rev.eyebrow">Reviews</span>
+        <h2 class="h2" style="margin-top:14px" data-i18n="cel.rev.h2">Don't take our word for it.</h2>
+      </div>
+      <div class="cl-reviews reveal">
+        <figure class="card cl-review">
+          <blockquote class="cl-review__q">
+            <p><span data-i18n="cel.rev.1a">I was looking for something different to celebrate my birthday […] I got in touch, they explained how the game worked and </span><mark data-i18n="cel.rev.1b">I didn't have to worry about anything else.</mark><span data-i18n="cel.rev.1c"> On the day they were already waiting for us at the venue with everything ready, music included, and between questions, laughs and a few beers we had a great afternoon. […] And if you go for the pack that lets you personalise a round of questions, it's even better.</span></p>
+          </blockquote>
+          <figcaption class="cl-review__by"><span>Lucas B.</span> <span class="tag tag--accent" data-i18n="cel.rev.1tag">Birthday</span></figcaption>
+        </figure>
+        <figure class="card cl-review">
+          <blockquote class="cl-review__q">
+            <p><span data-i18n="cel.rev.2a">It was a really fun experience. The quizmaster was great and really joined in with us, which gave us more confidence and helped us loosen up. The questions are really varied, something for everyone, and that little bit of competition between friends is a total laugh. I'd never heard of it, and now </span><mark data-i18n="cel.rev.2b">it's definitely one to do again</mark><span data-i18n="cel.rev.2c"> (and I'm not really a games person!)</span></p>
+          </blockquote>
+          <figcaption class="cl-review__by"><span>Carmen G.</span> <span class="tag" data-i18n="cel.rev.2tag">Private event</span></figcaption>
+        </figure>
+      </div>
+      <p class="cl-note" style="margin-top:16px" data-lang-hide="es">Reviews translated from Spanish.</p>
+    </div>
+  </section>
+
   <!-- ============ FAQ ============ -->
   <section id="faq" class="section">
     <div class="wrap wrap--narrow">
@@ -551,7 +590,7 @@
      so no consent needed. Rules in qed.css (.wa-float); clicks are `contact click`, placement "float". -->
 <a class="wa-float" href="https://wa.me/34643380980?text=Hi%21%20I%27d%20like%20info%20about%20a%20quiz%20party%20for%20a%20celebration." data-i18n-href="cel.direct.wa" data-contact="whatsapp" data-placement="float" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-celebrations.js?v=20261023"></script>
+<script src="/shared/i18n-celebrations.js?v=20261024"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
