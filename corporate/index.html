@@ -711,8 +711,8 @@
                    once this block is showing, and Zoho's code runs inside the frame,
                    never on this page. -->
               <div class="cx-book" data-lang-hide="en">
-                <h3 class="h3" data-i18n="c.callbook.h">Rather pick the time yourself?</h3>
-                <p class="cx-book__p" data-i18n="c.callbook.p">Choose when we call you. It takes ten seconds, and the date and group size you gave us are already with us.</p>
+                <h3 class="h3 cx-book__title" data-i18n="c.callbook.h">Rather pick the time yourself?</h3>
+                <p class="cx-book__p cx-book__lead" data-i18n="c.callbook.p">Choose when we call you. It takes ten seconds, and the date and group size you gave us are already with us.</p>
                 <div id="cx-book-embed" class="cx-book__embed"></div>
               </div>
             </div>
@@ -743,6 +743,28 @@
     f.className = "cx-book__frame";
     box.appendChild(f);
   }, 1000);
+
+  /* Booked: Zoho redirects the frame to /shared/reserva-ok.html, which says
+     so. Believed only from our own site (the production one too, for the
+     staging preview), and it carries no personal data. The words change to
+     a booked call, and `call booked` is recorded once (MEASUREMENT-PLAN.md). */
+  var OURS = [location.origin, "https://landing.tardeodetrivia.com"];
+  var booked = false;
+  window.addEventListener("message", function (e) {
+    if (booked || OURS.indexOf(e.origin) === -1 || !e.data || e.data.type !== "tdt-call-booked") return;
+    booked = true;
+    var es = (document.documentElement.lang || "").slice(0, 2) === "es";
+    var W = window.QED_ES || {};
+    var head = document.querySelector('.form-success [data-i18n="c.form.successh"]');
+    var line = document.querySelector('.form-success [data-i18n="c.form.successp"]');
+    var title = document.querySelector(".cx-book__title");
+    var lead = document.querySelector(".cx-book__lead");
+    if (head) head.textContent = es ? (W["c.booked.h"] || "Llamada reservada.") : "Call booked.";
+    if (line) line.textContent = es ? (W["c.booked.p"] || "") : "We'll call you at the time you chose. The confirmation is in your inbox.";
+    if (title) title.textContent = es ? (W["c.booked.t"] || "") : "All set";
+    if (lead) lead.textContent = es ? (W["c.booked.l"] || "") : "Need to change it? Use the link in the confirmation email.";
+    try { if (window.elb) window.elb({ name: "call booked", data: { placement: "quote", page: "corporate" } }); } catch (err) {}
+  });
 })();
 </script>
 

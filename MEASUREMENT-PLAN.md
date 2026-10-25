@@ -126,6 +126,7 @@ Tiered so we can ship Tier 1 first and add the rest without re-architecting.
 | `lead complete` | Full step-2 submission accepted (corporate: step 1, contact-first) | **server** (+ client pixel for dedup) |
 | `lead details` | Corporate only: the optional step-2 details after a contact-first `lead complete` | **server**, Amplitude only |
 | `lead skip` | Corporate only: the visitor skipped step 2 (nothing is posted) | client, Amplitude only |
+| `call booked` | Corporate only (staging, 25 Oct 2026): the visitor booked their call in the Zoho Bookings frame on the success screen. Zoho redirects the frame to `/shared/reserva-ok.html`, which tells the page; `data.placement` `quote`, `data.page` `corporate`. Carries no personal data. The booking itself, with its time, is Zoho's | client, Amplitude only (not a Pixel or Ads event unless added to their allowlists) |
 
 ### Tier 2 — engagement (high value, fast follow)
 | walkerOS event | Fires when |

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Llamada reservada · Tardeo de Trivia</title>
+<style>
+  body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #fff; color: #1F1A14;
+         display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; }
+  .b { padding: 32px 20px; max-width: 420px; }
+  .t { font-size: 22px; font-weight: 800; margin: 0 0 8px; }
+  .p { margin: 0; color: #5C5044; line-height: 1.5; }
+</style>
+</head>
+<body>
+<!-- Where Zoho Bookings sends somebody once they have booked (25 Oct 2026). Inside the
+     booking frame on /corporate/ it tells the page, which changes its words and records
+     `call booked`; opened on its own it just says the call is booked. Reads nothing but
+     whatever Zoho adds to the address, and sends no personal data anywhere. -->
+<div class="b">
+  <p class="t">Llamada reservada</p>
+  <p class="p">Te hemos enviado la confirmación por email. Te llamamos a la hora que has elegido.</p>
+</div>
+<script>
+(function () {
+  if (window.parent === window) return;
+  var q = new URLSearchParams(location.search);
+  /* Only a time Zoho may add, never a name or an email. */
+  var when = q.get("start_time") || q.get("startTime") || q.get("time") || q.get("appointment_time") || "";
+  try { window.parent.postMessage({ type: "tdt-call-booked", when: String(when).slice(0, 40) }, "*"); } catch (e) {}
+})();
+</script>
+</body>
+</html>
