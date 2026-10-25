@@ -707,9 +707,9 @@
                 <p class="lead" style="margin-top:10px" data-i18n="c.form.successp">We'll call you during working hours (Mon to Fri, 10:00 to 19:00 Spanish time), usually the same working day. On the call we'll hold your date for up to 7 days, no commitment.</p>
               </div>
               <!-- STAGING (booking): step 3, the call booked at a time they choose, in
-                   Zoho Bookings. TDT only (data-lang-hide="en"); the script loads only
-                   once this block is on screen, so nothing of Zoho's runs before the lead
-                   is sent. -->
+                   Zoho Bookings. TDT only (data-lang-hide="en"); the frame is made only
+                   once this block is showing, and Zoho's code runs inside the frame,
+                   never on this page. -->
               <div class="cx-book" data-lang-hide="en">
                 <h3 class="h3" data-i18n="c.callbook.h">Rather pick the time yourself?</h3>
                 <p class="cx-book__p" data-i18n="c.callbook.p">Choose when we call you. It takes ten seconds, and the date and group size you gave us are already with us.</p>
@@ -724,29 +724,25 @@
 
 </main>
 <script>
-/* STAGING (booking): load Zoho Bookings' inline embed when step 3 comes into
-   view, on the Spanish page only. */
+/* STAGING (booking): Zoho Bookings in a frame once step 3 is showing, on the
+   Spanish page only. Checked once a second rather than by an
+   IntersectionObserver, which did not fire when the success screen appeared
+   without a scroll; stops as soon as the frame is made. No Zoho script runs
+   on this page: the booking page runs inside its own frame. */
 (function () {
   var box = document.getElementById("cx-book-embed");
-  if (!box || !("IntersectionObserver" in window)) return;
-  var done = false;
-  var io = new IntersectionObserver(function (entries) {
-    if (done || !entries.some(function (e) { return e.isIntersecting; })) return;
+  if (!box) return;
+  var timer = setInterval(function () {
+    if (box.offsetParent === null) return;
     if ((document.documentElement.lang || "").slice(0, 2) !== "es") return;
-    done = true; io.disconnect();
-    var s = document.createElement("script");
-    s.src = "https://bookings.nimbuspop.com/assets/embed.js";
-    s.onload = function () {
-      try {
-        window.Bookings.inlineEmbed({
-          url: "https://tardeodetriviasl.zohobookings.eu/portal-embed#/273706000000034045",
-          parent: "#cx-book-embed", height: "600px"
-        });
-      } catch (e) {}
-    };
-    document.head.appendChild(s);
-  });
-  io.observe(box);
+    clearInterval(timer);
+    var f = document.createElement("iframe");
+    f.src = "https://tardeodetriviasl.zohobookings.eu/portal-embed#/273706000000034045";
+    f.title = "Reserva tu llamada con Tardeo de Trivia";
+    f.setAttribute("allowfullscreen", "");
+    f.style.cssText = "width:100%;height:600px;border:0;display:block";
+    box.appendChild(f);
+  }, 1000);
 })();
 </script>
 
