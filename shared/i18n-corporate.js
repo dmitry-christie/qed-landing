@@ -279,6 +279,8 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.ph.msg": "Ocasión, local, cómo sería para vosotros un gran tardeo…",
   "c.form.sent": "enviado",
   "c.form.successh": "Hecho. Te llamamos.",
+  "c.callbook.h": "¿Prefieres elegir tú la hora?",
+  "c.callbook.p": "Elige cuándo te llamamos. Son diez segundos, y la fecha y el número de personas que nos has dado ya los tenemos.",
   "c.form.successp": "Te llamamos en horario laboral (L-V, 10-19 h), normalmente el mismo día laborable. En la llamada te guardamos la fecha hasta 7 días sin compromiso.",
 
   "c.foot.tagline": "Team building que de verdad se disfruta. Presencial en Valencia, Madrid, Murcia y Santiago de Compostela."
