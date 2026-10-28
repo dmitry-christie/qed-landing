@@ -134,7 +134,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.map.note": "8 localidades y creciendo",
   "p.map.cta": "Pon tu ciudad en el mapa",
   "p.map.country": "ESPAÑA",
-  "p.map.alt": "Mapa de España con las 8 localidades donde montamos tardeos de trivia: Valencia (nuestra casa), La Cañada, Sagunto, Madrid, Zaragoza, Murcia, Santiago de Compostela y A Coruña.",
+  "p.map.alt": "Mapa de España con las 8 localidades donde montamos tardeos de trivia: Valencia (nuestra casa), La Cañada, Puerto de Sagunto, Madrid, Zaragoza, Murcia, Santiago de Compostela y A Coruña.",
 
   "p.faq.eyebrow": "Preguntas",
   "p.faq.h2": "Lo que nos preguntan antes de empezar.",
