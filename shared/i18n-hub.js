@@ -12,7 +12,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "h.hero.h1b": "con anfitrión en directo.",
   "h.hero.sub": "Ponemos la trivia en cenas de empresa, team building y celebraciones: las preguntas, el anfitrión y el marcador. Y con nuestra franquicia, montas los tuyos.",
 
-  // Stat strip under the route cards. Locations differ per brand (data-count-es="6": TDT has no Barcelona).
+  // Stat strip under the route cards. Locations differ per brand (data-count-es="8": TDT has no Barcelona).
   "h.stat.locations": "Localidades",
   "h.stat.players": "Jugadores registrados",
   "h.stat.return": "Jugadores que repiten",

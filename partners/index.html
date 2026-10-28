@@ -131,7 +131,7 @@
 
     <div class="wrap" style="margin-top:clamp(34px,5vw,56px)">
       <div class="card card--flat reveal statbar3 p-stats" style="background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.18);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(3,1fr)">
-        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-count="8" data-count-es="7">8</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.locations">locations</div></div>
+        <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-count="9" data-count-es="8">9</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.locations">locations</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-count="7510">7,510</span>+</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.players">registered players</div></div>
         <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--orange)"><span data-count="78">78</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.return">of players come back</div></div>
       </div>
@@ -312,7 +312,7 @@
 
       <div class="card reveal esmap" style="margin-top:30px;padding:clamp(16px,3vw,30px);background:var(--cream-soft)">
         <svg class="esmap__svg" viewBox="0 0 600 480" role="img" aria-labelledby="esmap-title" xmlns="http://www.w3.org/2000/svg">
-          <title id="esmap-title" data-i18n="p.map.alt">Map of Spain showing the 8 locations where QED runs trivia nights: Valencia (home base), La Cañada, Sagunto, Madrid, Barcelona, Murcia, Santiago de Compostela and A Coruña.</title>
+          <title id="esmap-title" data-i18n="p.map.alt">Map of Spain showing the 9 locations where QED runs trivia nights: Valencia (home base), La Cañada, Sagunto, Madrid, Zaragoza, Barcelona, Murcia, Santiago de Compostela and A Coruña.</title>
           <defs>
             <pattern id="esgrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 H0 V40" class="esmap__grid"/></pattern>
             <marker id="esArrow" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L11 6 L1 11 Z" class="esmap__arrowhead"/></marker>
@@ -331,10 +331,14 @@
 
           <!-- arrows out of Valencia -->
           <g>
-            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M376 251 Q215 118 101 104"/>
+            <!-- Galicia: one route that forks near the end. Two paths share the trunk exactly (same start, same
+                 curve, same dash phase), so their dots coincide and they draw in together, splitting at 160,96. -->
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M376 251 Q215 110 160 96 Q128 93 101 99"/><!-- Santiago -->
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M376 251 Q215 110 160 96 Q132 85 108 77"/><!-- A Coruña -->
             <path class="esmap__arrow" marker-end="url(#esArrow)" d="M380 254 Q322 202 277 216"/>
             <path class="esmap__arrow" marker-end="url(#esArrow)" d="M388 250 Q448 203 461 180" data-lang-hide="es"/><!-- Barcelona: QED only, TDT does not run there -->
             <path class="esmap__arrow" marker-end="url(#esArrow)" d="M381 262 Q380 300 362 320"/>
+            <path class="esmap__arrow" marker-end="url(#esArrow)" d="M372 224 Q352 200 359 170"/><!-- Zaragoza -->
             <!-- Sagunto is ~25 km up the coast, 10px from Valencia at this scale (inside its marker), so its pin is drawn offset and the arrow is a short hop with a smaller head -->
             <path class="esmap__arrow" marker-end="url(#esArrowSm)" d="M389 221 Q397 211 404 202"/>
           </g>
@@ -347,7 +351,7 @@
           <g>
             <circle class="esmap__pulse" cx="87.1" cy="98.7" r="8" style="animation-delay:0s"/>
             <circle class="esmap__pinring" cx="87.1" cy="98.7" r="8"/><circle class="esmap__pindot" cx="87.1" cy="98.7" r="3.5"/>
-            <text x="103" y="95" class="esmap__label">Santiago</text>
+            <text x="87" y="124" text-anchor="middle" class="esmap__label">Santiago</text><!-- under its pin: the Galicia fork comes in from the right -->
 
             <circle class="esmap__pulse" cx="95.0" cy="73.0" r="8" style="animation-delay:.75s"/>
             <circle class="esmap__pinring" cx="95.0" cy="73.0" r="8"/><circle class="esmap__pindot" cx="95.0" cy="73.0" r="3.5"/>
@@ -360,16 +364,20 @@
             <g data-lang-hide="es"><!-- Barcelona: QED only, so hidden on the Spanish (TDT) site -->
               <circle class="esmap__pulse" cx="471.7" cy="172.9" r="8" style="animation-delay:1s"/>
               <circle class="esmap__pinring" cx="471.7" cy="172.9" r="8"/><circle class="esmap__pindot" cx="471.7" cy="172.9" r="3.5"/>
-              <text x="459" y="168" text-anchor="end" class="esmap__label">Barcelona</text>
+              <text x="485" y="178" class="esmap__label">Barcelona</text>
             </g>
 
             <circle class="esmap__pulse" cx="355.0" cy="328.1" r="8" style="animation-delay:1.5s"/>
             <circle class="esmap__pinring" cx="355.0" cy="328.1" r="8"/><circle class="esmap__pindot" cx="355.0" cy="328.1" r="3.5"/>
             <text x="378" y="332" class="esmap__label">Murcia</text>
 
+            <circle class="esmap__pulse" cx="363.6" cy="156.1" r="8" style="animation-delay:1.75s"/>
+            <circle class="esmap__pinring" cx="363.6" cy="156.1" r="8"/><circle class="esmap__pindot" cx="363.6" cy="156.1" r="3.5"/>
+            <text x="364" y="139" text-anchor="middle" class="esmap__label">Zaragoza</text>
+
             <circle class="esmap__pulse" cx="410" cy="192" r="8" style="animation-delay:1.25s"/>
             <circle class="esmap__pinring" cx="410" cy="192" r="8"/><circle class="esmap__pindot" cx="410" cy="192" r="3.5"/>
-            <text x="396" y="194" text-anchor="end" class="esmap__label">Sagunto</text>
+            <text x="414" y="178" text-anchor="middle" class="esmap__label">Sagunto</text><!-- above its pin: left of it, the Zaragoza arrow ran through it -->
           </g>
 
           <!-- Valencia: home base -->
@@ -386,7 +394,7 @@
         </svg>
 
         <div class="esmap__foot">
-          <span class="tag tag--solid" data-i18n="p.map.note">8 locations and growing</span>
+          <span class="tag tag--solid" data-i18n="p.map.note">9 locations and growing</span>
           <a class="btn btn--soft btn--sm" href="#apply" data-i18n="p.map.cta">Put your city on the map</a>
         </div>
       </div>
@@ -631,7 +639,7 @@
      so no consent needed. Rules in qed.css (.wa-float); clicks are `contact click`, placement "float". -->
 <a class="wa-float" href="https://wa.me/34643380980?text=Hi%21%20I%27d%20like%20info%20about%20the%20QED%20franchise." data-i18n-href="p.wa" data-contact="whatsapp" data-placement="float" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-partners.js?v=20261023"></script>
+<script src="/shared/i18n-partners.js?v=20261028"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
