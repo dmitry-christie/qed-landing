@@ -74,6 +74,17 @@ Conventions: no em dashes in copy. Localize currency and tax (`€99` / `+ VAT` 
 reads `6.700`; the ES default drops the separator on four digits and would disagree with the
 printed one-pager.
 
+**Registered players come from Supabase.** The counter is `<span data-stat="players"
+data-count="N">` on the hub, `/corporate/` and `/partners/`, and N is `select count(*) from users`
+in the Supabase project "QED" (`nilgyhkfkeotpqpqkjwf`; the 7,510 of 27 Sep 2026 matches it
+exactly). A PreToolUse hook (`.claude/hooks/stats-before-push.mjs`, wired in
+`.claude/settings.json`) holds any `git push` Claude runs until the count was refreshed in the last
+hour: query it through the Supabase MCP, run `node scripts/update-stats.mjs <count>` (it refuses a
+drop of more than 5% without `--force` and stamps `.git/qed-stats-refreshed`), commit, push again.
+Pushes from your own terminal skip it. Locations counts stay manual (they follow the map, the city
+lists and the OG images). The ad docs (`AD-COPY.md`, `PAID-ADS-PLAN.md`) quote 7,510 and are not
+updated by it.
+
 **ES is the TDT brand, EN is QED, and they don't run in the same places** (TDT has no
 Barcelona: 6 locations and 4 event cities in ES, against QED's 7 and 5). So city lists and counts
 are facts per language, not translations. ES strings name only TDT cities; for markup that exists
