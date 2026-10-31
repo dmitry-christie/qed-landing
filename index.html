@@ -93,26 +93,40 @@
   .hb-row__t{ margin:0; font-weight:900; letter-spacing:-0.03em; line-height:1; font-size:clamp(30px,3.6vw,44px); color:#fff; }
   .hb-row__d{ margin:8px 0 0; max-width:58ch; font-size:clamp(15.5px,1.4vw,17px); font-weight:600; line-height:1.5; color:rgba(255,255,255,.92); text-wrap:pretty; }
   .hb-row__fact{ margin:10px 0 0; font-family:var(--mono); font-size:12.5px; font-weight:700; letter-spacing:.02em; line-height:1.5; color:var(--pop-ink); }
-  .hb-row__cta{
+  /* The link stays untransformed: a transform would make it the containing block of its ::after
+     and shrink the overlay to the button on hover, exactly when the row gets clicked. The pill and
+     its hover lift live on the inner .hb-row__btn instead. */
+  .hb-row__cta{ display:flex; text-decoration:none; color:var(--ink); }
+  .hb-row__btn{
     display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:50px; padding:8px 22px; border:2px solid var(--ink); border-radius:999px;
-    background:var(--pop); color:var(--ink); box-shadow:4px 4px 0 0 var(--ink); text-decoration:none;
+    background:var(--pop); color:var(--ink); box-shadow:4px 4px 0 0 var(--ink);
     font-size:16px; font-weight:800; letter-spacing:-0.01em; white-space:nowrap;
     transition:transform .15s cubic-bezier(.2,.7,.2,1), box-shadow .15s cubic-bezier(.2,.7,.2,1);
   }
-  .hb-row:hover .hb-row__cta{ transform:translate(-2px,-2px); box-shadow:6px 6px 0 0 var(--ink); }
-  .hb-card--fran .hb-row__cta{ border-color:#fff; box-shadow:4px 4px 0 0 rgba(255,255,255,.9); }
-  .hb-card--fran .hb-row:hover .hb-row__cta{ box-shadow:6px 6px 0 0 rgba(255,255,255,.9); }
+  .hb-row:hover .hb-row__btn{ transform:translate(-2px,-2px); box-shadow:6px 6px 0 0 var(--ink); }
+  .hb-card--fran .hb-row__btn{ border-color:#fff; box-shadow:4px 4px 0 0 rgba(255,255,255,.9); }
+  .hb-card--fran .hb-row:hover .hb-row__btn{ box-shadow:6px 6px 0 0 rgba(255,255,255,.9); }
   .hb-row__cta::after{ content:""; position:absolute; inset:0; border-radius:var(--r-lg); }
-  .hb-row__cta:focus-visible{ outline:3px solid #fff; outline-offset:3px; }
+  .hb-row__cta:focus-visible{ outline:none; }
+  .hb-row__cta:focus-visible .hb-row__btn{ outline:3px solid #fff; outline-offset:3px; }
   .hb-row .arr{ display:inline-block; transition:transform .15s; }
   .hb-row:hover .arr{ transform:translateX(3px); }
-  @media (min-width:760px){ .hb-row__cta{ min-width:260px; } }
-  /* below 760px: the stamp sits beside the title only; the line, fact and CTA take the full width */
+  @media (min-width:760px){ .hb-row__btn{ min-width:260px; } }
+  /* below 760px: centred. The stamp and title sit side by side as one centred pair (the two auto
+     columns between flexible gutters); the line, fact and CTA take the full width, centred. The card
+     gives up 6px on the right so card plus its 6px sticker shadow sits centred in the page. */
   @media (max-width:759px){
-    .hb-row{ grid-template-columns:auto minmax(0,1fr); gap:12px 14px; }
+    .hb-intro, .hb-card__head{ text-align:center; }
+    .hb-h1, .hb-sub{ margin-left:auto; margin-right:auto; }
+    .hb-card{ margin-right:6px; }
+    .hb-row{ grid-template-columns:minmax(0,1fr) auto auto minmax(0,1fr); gap:12px 0; text-align:center; }
+    .hb-row__stamp{ grid-column:2; margin-right:14px; }
+    .hb-row__t{ grid-column:3; }
     .hb-row__body{ display:contents; }
     .hb-row__d, .hb-row__fact, .hb-row__cta{ grid-column:1 / -1; margin:0; }
-    .hb-row__cta{ white-space:normal; text-align:center; margin-top:4px; }
+    .hb-row__d{ margin:0 auto; }
+    .hb-row__cta{ margin-top:4px; }
+    .hb-row__btn{ width:100%; white-space:normal; text-align:center; }
     .hb-row__stamp{ width:52px; height:52px; }
     .hb-row__stamp .hb-i{ width:24px; height:24px; }
   }
@@ -209,7 +223,7 @@
               <p class="hb-row__d" data-i18n="h.door.corp.d">You plan the dinner or the offsite; we bring the quiz, with a live host and, if you like, rounds about your company.</p>
               <p class="hb-row__fact" data-i18n="h.door.corp.fact">From&nbsp;€150&nbsp;+&nbsp;VAT&nbsp;per&nbsp;event&nbsp;· Priced&nbsp;by&nbsp;group&nbsp;size</p>
             </div>
-            <a class="hb-row__cta" href="/corporate/"><span data-i18n="h.door.corp.cta">See company events</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+            <a class="hb-row__cta" href="/corporate/"><span class="hb-row__btn"><span data-i18n="h.door.corp.cta">See company events</span> <span class="arr" aria-hidden="true">&rarr;</span></span></a>
           </div>
 
           <div class="hb-row hb-row--cele">
@@ -219,7 +233,7 @@
               <p class="hb-row__d" data-i18n="h.cele.d">Birthdays, hen and stag dos and anniversaries, with a live host and, if you like, a round about the guest of honour.</p>
               <p class="hb-row__fact" data-i18n="h.cele.fact">From&nbsp;€181.50&nbsp;incl.&nbsp;VAT&nbsp;· Priced&nbsp;by&nbsp;group&nbsp;size</p>
             </div>
-            <a class="hb-row__cta" href="/celebrations/"><span data-i18n="h.cele.cta">See celebrations</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+            <a class="hb-row__cta" href="/celebrations/"><span class="hb-row__btn"><span data-i18n="h.cele.cta">See celebrations</span> <span class="arr" aria-hidden="true">&rarr;</span></span></a>
           </div>
         </section>
 
@@ -234,7 +248,7 @@
               <p class="hb-row__d" data-i18n="h.door.fran.d">Run weekly quiz nights in your city with our platform, our questions and our brand. No experience needed.</p>
               <p class="hb-row__fact" data-i18n="h.door.fran.fact">€99&nbsp;+&nbsp;VAT&nbsp;setup&nbsp;· No&nbsp;monthly&nbsp;fee</p>
             </div>
-            <a class="hb-row__cta" href="/franchise/" data-i18n-href="foot.partnerhref"><span data-i18n="h.door.fran.cta">See the franchise</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+            <a class="hb-row__cta" href="/franchise/" data-i18n-href="foot.partnerhref"><span class="hb-row__btn"><span data-i18n="h.door.fran.cta">See the franchise</span> <span class="arr" aria-hidden="true">&rarr;</span></span></a>
           </div>
         </section>
 
