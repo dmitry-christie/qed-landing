@@ -32,5 +32,9 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "v.form.successh": "Vamos a dejarte reservado.",
   "v.form.successp": "Gracias. Tenemos los datos de tu local y te escribirá una persona de verdad de nuestro equipo, normalmente el mismo día.",
 
-  "v.foot.tagline": "Nosotros ponemos la trivia, tú la montas con tu propia marca. Un tardeo de trivia que llena tu local, sin comisiones."
+  "v.foot.tagline": "Nosotros ponemos la trivia, tú la montas con tu propia marca. Un tardeo de trivia que llena tu local, sin comisiones.",
+
+  // Moved here from i18n-common.js when the page was archived (1 Nov 2026): only this page used them.
+  "form.note": "Respondemos por email, normalmente el mismo día. Sin spam, jamás.",
+  "foot.venue": "Marca blanca"
 });

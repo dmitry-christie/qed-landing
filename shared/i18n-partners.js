@@ -174,9 +174,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.faq.q10": "¿Puedo montarlo también en inglés?",
   "p.faq.a10": "En principio, sí. El formato en inglés es Quiz Eat Drink, una empresa distinta, así que serían dos contratos, uno con cada una. Si te interesa, cuéntanoslo en el formulario.",
 
-  "p.xsell.venue.h": "¿Buscas organizar eventos puntuales?",
-  "p.xsell.venue.d": "Hazte local anfitrión: sin franquicia ni permanencia.",
-  "p.xsell.venue.cta": "Descubre cómo funciona",
 
   "p.foot.tagline": "Monta tardeos de trivia. Crea un negocio de verdad. Una franquicia de Tardeo de Trivia, impulsada por nuestra plataforma y nuestra marca."
 });

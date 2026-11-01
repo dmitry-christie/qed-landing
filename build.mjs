@@ -91,7 +91,8 @@ console.log("[qed build] config:", config);
 const DOMAINS = { QED: "landing.quizeatdrink.com", TDT: "landing.tardeodetrivia.com" };
 // Source folders. Each needs its index.html AND an I18N_FILE entry below: a folder that is missing
 // breaks both brands' builds, a missing I18N_FILE entry breaks the TDT build only.
-const PAGES = ["", "corporate/", "celebrations/", "venues/", "partners/", "privacy/", "terms/"];
+// venues/ (white-label) was taken down on 1 Nov 2026; it lives in archive/venues/ and /venues 301s to /.
+const PAGES = ["", "corporate/", "celebrations/", "partners/", "privacy/", "terms/"];
 const SEO_MARK = "<!-- build:seo -->";
 
 /* ---- per-brand URL slugs ----
@@ -122,7 +123,7 @@ const BRAND_ASSETS = {
 // there is exactly one place each Spanish string is written.
 const I18N_FILE = {
   "": "hub", "corporate/": "corporate", "celebrations/": "celebrations",
-  "venues/": "venues", "partners/": "partners", "privacy/": "privacy", "terms/": "terms",
+  "partners/": "partners", "privacy/": "privacy", "terms/": "terms",
 };
 function loadEsDict(page) {
   return readFileSync("shared/i18n-common.js", "utf8") + readFileSync(`shared/i18n-${I18N_FILE[page]}.js`, "utf8");
@@ -296,5 +297,7 @@ console.log(`[qed build] stripped ${stripped} internal file(s) from the publish 
 // walker build tooling (entry source + esbuild script) — only the built shared/walker.js ships,
 // same spirit as the internal files above. force:true so an absent dir (already stripped) no-ops.
 rmSync("scripts", { recursive: true, force: true });
+// Retired pages kept for reference (archive/venues/: the white-label page). Never served.
+rmSync("archive", { recursive: true, force: true });
 
 unlinkSync("build.mjs");

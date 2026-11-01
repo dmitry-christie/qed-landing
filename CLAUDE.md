@@ -18,7 +18,11 @@ Each page is a folder with its own `index.html`:
   `/corporate/` serves both the booker (HR, office or events people booking for a company) and the
   organiser (someone organising it for their own team), with a VAT switch on the price (see
   "Corporate page"). `/team-events/` is gone: `netlify.toml` 301s it to `/corporate/`.
-- `/venues/` — host-venue signup (`venue-apply`)
+- `/venues/` (white-label / marca blanca) — **taken down 1 Nov 2026.** The page, its ES dictionary
+  and the `venue-apply` function sit in `archive/venues/` (see its README; tag `archive/venues-page`
+  is the last commit with it live). `build.mjs` deletes `archive/` from the publish tree and
+  `netlify.toml` 301s `/venues` to `/`. Mentions of "seven pages" and of venues elsewhere in this
+  file predate that; six pages ship now.
 - `partners/` — franchise (`franchise-apply`). Folder name ≠ URL: published at `/franchise/`
   on QED and `/franquicias/` on TDT (see "Per-brand URL slugs").
 - `/privacy/`, `/terms/` — legal

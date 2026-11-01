@@ -18,7 +18,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
      one, so the ES site links straight there instead of bouncing through the 301. The two
      must change together. */
   "foot.partnerhref": "/franquicias/",
-  "foot.venue": "Marca blanca",
   "foot.privacy": "Política de privacidad",
   "foot.terms": "Términos y aviso legal",
   "foot.cookies": "Preferencias de cookies",
@@ -33,7 +32,6 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "form.city": "Ciudad",
   "form.cityph": "Elige una ciudad…",
   "form.else": "¿Algo más?",
-  "form.note": "Respondemos por email, normalmente el mismo día. Sin spam, jamás.",
   "form.generr": "Algo ha fallado. Escríbenos a info@tardeodetrivia.com.",
   "form.phoneCC": "Prefijo del país",
   "form.phoneErr": "Introduce un número de teléfono válido.",
