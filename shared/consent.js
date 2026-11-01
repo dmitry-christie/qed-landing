@@ -246,6 +246,8 @@
       var h = Math.ceil(bar.offsetHeight + gap) + "px";
       document.body.style.paddingBottom = h;
       document.documentElement.style.scrollPaddingBottom = h;
+      // the WhatsApp button (.wa-float in qed.css) sits this far up while the banner is open
+      document.documentElement.style.setProperty("--consent-h", h);
     }
     apply();
     if ("ResizeObserver" in window) {
@@ -261,6 +263,7 @@
     if (spaceObserver) { spaceObserver.disconnect(); spaceObserver = null; }
     document.body.style.paddingBottom = "";
     document.documentElement.style.scrollPaddingBottom = "";
+    document.documentElement.style.removeProperty("--consent-h");
   }
 
   // Re-open the banner to review/update consent (wired to the button on /privacy/).

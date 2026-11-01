@@ -318,9 +318,11 @@ old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` sti
   CRM, server-side). It is a plain `wa.me` link to the same number, so it loads nothing and needs no
   consent; the Functional category now only covers the language memory, and the privacy page lists
   WhatsApp under who we share data with (`pr.share.li7`). Each page's prefilled message is its own key:
-  `h.wa`, `c.direct.wa`, `cel.direct.wa`, `v.wa`, `p.wa`, `pr.wa`, `tm.wa`. Hidden while the consent
-  banner is open and while `html.is-typing` is set. Rules at the end of `shared/qed.css`; clicks are
-  `contact click` with `placement` `float`.
+  `h.wa`, `c.direct.wa`, `cel.direct.wa`, `v.wa`, `p.wa`, `pr.wa`, `tm.wa`. While the consent banner
+  is open it stays on and sits just above it (since 1 Nov 2026; before, it was hidden): `consent.js`
+  sets `--consent-h` on `<html>` to the height it reserves as body padding and clears it on close, and
+  the button's `bottom` adds it. Hidden while `html.is-typing` is set. Rules at the end of
+  `shared/qed.css`; clicks are `contact click` with `placement` `float`.
 
 Deliberate choices, not omissions:
 
@@ -627,9 +629,10 @@ mixed with yesterday's cached file (new HTML needing new JS, like the contact-fi
 `?v=YYYYMMDD` to that page's `/shared/` URLs, as corporate, the hub and privacy carry since
 `?v=20261008`.
 
-`/corporate/` carries `?v=20261023` on `qed.css`, `corporate.css`, `i18n-common.js`,
-`i18n-corporate.js`, `consent.js` and `qed.js` (the call / WhatsApp block and the WhatsApp button that
-replaced the Brevo chat), `?v=20261015` on `cena-variant.js` and `?v=20261010` on `i18n.js`.
+`/corporate/` carries `?v=20261101` on `qed.css` and `consent.js` (the WhatsApp button above the open
+consent banner; `/venues/` loads `consent.js` at `?v=20261101` too), `?v=20261023` on `corporate.css`,
+`i18n-common.js`, `i18n-corporate.js` and `qed.js` (the call / WhatsApp block and the WhatsApp button
+that replaced the Brevo chat), `?v=20261015` on `cena-variant.js` and `?v=20261010` on `i18n.js`.
 `/celebrations/` loads `corporate.css` and `i18n-celebrations.js` at `?v=20261023` too. The other pages
 load `qed.css` and `qed.js` under plain URLs, so for up to a day a returning visitor there can get the
 WhatsApp button unstyled (the SVG's own `width`/`height` keep it a 30px icon at the foot of the page)

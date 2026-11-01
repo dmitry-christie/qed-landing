@@ -484,6 +484,7 @@ html.js .hero .reveal{ opacity:1; transform:none; transition:none; }
   .btn,.lift,.btn .arr{ transition:none; }
   .nav__links{ transition:none; }
   .consent__categories{ transition:none; }
+  .wa-float{ transition:none; }
 }
 
 /* ============================================================
@@ -606,12 +607,14 @@ html:not([lang="es"]) .brand__es{ display:none; }
 @media (max-width:560px){ .brand{ --brand-h:38px; } .footer .brand{ --brand-h:50px; } }
 
 /* WhatsApp button (all seven pages; replaced the Brevo chat launcher, Oct 2026). Bottom right, 56px,
-   inside the 84px the corporate sticky bar keeps free on its right (.has-chat). Off while the consent
-   banner is open (it spans the bottom edge) and while a corporate form field has focus on a phone
-   (html.is-typing), where it would float over the fields above the keyboard. */
-.wa-float{ position:fixed; z-index:58; right:max(14px, env(safe-area-inset-right)); bottom:calc(14px + env(safe-area-inset-bottom)); width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#25D366; color:#fff; border:2px solid var(--ink); box-shadow:3px 3px 0 0 var(--ink); transition:transform .15s ease; }
+   inside the 84px the corporate sticky bar keeps free on its right (.has-chat). While the consent
+   banner is open it stays on and sits just above it: consent.js sets --consent-h to the banner's
+   height plus its gap (the same value it reserves as body padding) and clears it on close. Off
+   while a corporate form field has focus on a phone (html.is-typing), where it would float over
+   the fields above the keyboard. */
+.wa-float{ position:fixed; z-index:58; right:max(14px, env(safe-area-inset-right)); bottom:calc(14px + env(safe-area-inset-bottom) + var(--consent-h, 0px)); width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#25D366; color:#fff; border:2px solid var(--ink); box-shadow:3px 3px 0 0 var(--ink); transition:transform .15s ease, bottom .25s cubic-bezier(.2,.7,.2,1); }
 .wa-float svg{ fill:currentColor; width:30px; height:30px; }
 .wa-float:hover{ transform:translate(-1px,-1px); box-shadow:4px 4px 0 0 var(--ink); }
 .wa-float:focus-visible{ outline:3px solid var(--ink); outline-offset:3px; }
-html:has(body > .consent) .wa-float, html.is-typing .wa-float{ display:none; }
+html.is-typing .wa-float{ display:none; }
 @media print{ .wa-float{ display:none; } }
