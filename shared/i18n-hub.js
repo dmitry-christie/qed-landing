@@ -15,7 +15,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   // Stat strip under the route cards. Locations differ per brand (data-count-es="8": TDT has no Barcelona).
   "h.stat.locations": "Localidades",
   "h.stat.players": "Jugadores registrados",
-  "h.stat.return": "Jugadores que repiten",
+  "h.stat.seats": "Plazas para jugadores que repiten",
 
   // The routes, three rows. "Eventos privados" is one card holding the two event rows (same
   // product and prices: the corporate fact shows them + IVA, the celebrations one IVA incluido, as

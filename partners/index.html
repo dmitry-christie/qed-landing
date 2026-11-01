@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared/qed.css">
+<link rel="stylesheet" href="/shared/qed.css?v=20261102">
 <style>
   /* Franchise page accent: the logo's green replaces the site's yellow accent on this
      page only. Overriding the token flips every var(--yellow) reference plus the inherited
@@ -133,7 +133,7 @@
       <div class="card card--flat reveal statbar3 p-stats" style="background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.18);color:#fff;border-radius:var(--r-lg);display:grid;grid-template-columns:repeat(3,1fr)">
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:var(--yellow)" data-count="9" data-count-es="8">9</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.locations">locations</div></div>
         <div style="padding:18px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.16)"><div class="kpi" style="color:#fff"><span data-stat="players" data-count="8037">8,037</span>+</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.players">registered players</div></div>
-        <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--orange)"><span data-count="78">78</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.return">of players come back</div></div>
+        <div style="padding:18px 10px;text-align:center"><div class="kpi" style="color:var(--orange)"><span data-count="74">74</span>%</div><div class="kpi-lab" style="color:rgba(255,255,255,.55)" data-i18n="p.stat.seats">of seats go to returning players</div></div>
       </div>
     </div>
   </section>
@@ -279,24 +279,27 @@
   </section>
 
   <!-- ============ CASE STUDY ============ -->
+  <!-- Madrid only (Nov 2026; Murcia paused over the summer). Figures are check-ins on the platform,
+       public non-cancelled nights, 13 Mar to 26 Oct 2026, from Supabase: 34 nights at 2 venues, 742
+       check-ins, 406 different players, 21.8 a night (20.8 Mar-May, 22.3 Aug-Oct). Check-ins undercount
+       the room (not everyone checks in), so they are the safe number. Re-query before updating. -->
   <section class="section section--tight">
     <div class="wrap">
       <div class="card reveal split split--flush" style="overflow:hidden">
         <div class="pad" style="display:flex;flex-direction:column;justify-content:center;gap:14px">
           <img src="/shared/logo_elhachazo@2x.png" alt="El Hachazo" style="height:40px;width:auto;align-self:flex-start">
-          <span class="eyebrow" data-i18n="p.case.eyebrow">Real case · El Hachazo</span>
-          <h3 class="h2" data-i18n="p.case.h3">One partner. Two cities. Both climbing.</h3>
-          <p class="muted" style="line-height:1.6;margin:0" data-i18n="p.case.p">El Hachazo launched in Murcia and Madrid in March. In June, Murcia's circuit drew 125 players and Madrid drew 134.</p>
-          <p class="muted" style="font-size:12px;opacity:.65;line-height:1.5;margin:0" data-i18n="p.case.note">First four months in each city. Results vary by city and operator.</p>
+          <span class="eyebrow" data-i18n="p.case.eyebrow">Real case · El Hachazo, Madrid</span>
+          <h3 class="h2" data-i18n="p.case.h3">One partner. Two venues. Every week since March.</h3>
+          <p class="muted" style="line-height:1.6;margin:0" data-i18n="p.case.p">El Hachazo opened in Madrid in March 2026 with two venues and hasn't missed a month since: 34 nights by the end of October, around 22 players a night and 406 different people through the door.</p>
+          <p class="muted" style="font-size:12px;opacity:.65;line-height:1.5;margin:0" data-i18n="p.case.note">13 March to 26 October 2026, counted from check-ins on our platform. Results vary by city and operator.</p>
           <a class="btn btn--sm" href="#apply" style="align-self:flex-start;margin-top:6px" data-i18n="p.case.cta">Do this in your city</a>
         </div>
         <div class="pad" style="background:var(--ink);color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:2px;align-content:center">
-          <div style="padding:16px 12px 4px;grid-column:1/-1;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)" data-i18n="p.case.murcia">Murcia</div>
-          <div style="padding:0 12px 14px"><div class="kpi" style="color:var(--yellow)" data-count="16">16</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="p.case.s1">events since launch</div></div>
-          <div style="padding:0 12px 14px"><div class="kpi" style="color:#fff" data-count="401">401</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="p.case.s2">players through the door</div></div>
-          <div style="padding:14px 12px 4px;grid-column:1/-1;border-top:1px solid rgba(255,255,255,.15);font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)" data-i18n="p.case.madrid">Madrid</div>
-          <div style="padding:0 12px 16px"><div class="kpi" style="color:var(--yellow)" data-count="16">16</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="p.case.s1">events since launch</div></div>
-          <div style="padding:0 12px 16px"><div class="kpi" style="color:#fff" data-count="226">226</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="p.case.s2">players through the door</div></div>
+          <div style="padding:16px 12px 4px;grid-column:1/-1;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)" data-i18n="p.case.city">Madrid · 2 venues</div>
+          <div style="padding:0 12px 14px"><div class="kpi" style="color:var(--yellow)" data-count="34">34</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="p.case.k1">nights since March</div></div>
+          <div style="padding:0 12px 14px"><div class="kpi" style="color:#fff" data-count="22">22</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="p.case.k2">players a night, on average</div></div>
+          <div style="padding:14px 12px 16px;border-top:1px solid rgba(255,255,255,.15)"><div class="kpi" style="color:var(--yellow)" data-count="742">742</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="p.case.k3">player visits</div></div>
+          <div style="padding:14px 12px 16px;border-top:1px solid rgba(255,255,255,.15)"><div class="kpi" style="color:#fff" data-count="406">406</div><div class="kpi-lab" style="color:rgba(255,255,255,.6)" data-i18n="p.case.k4">different players</div></div>
         </div>
       </div>
     </div>
@@ -635,16 +638,21 @@
   </div>
 </footer>
 
+<!-- Phone sticky CTA bar (Nov 2026): on once the hero's "Talk to the founders" has scrolled away, off over
+     #apply, the footer and the cookie banner, and after a lead is sent. Logic in shared/qed.js (it reads
+     data-cta and data-form), CSS in shared/qed.css (.cx-sticky). Taps are `cta click`, placement cx-sticky. -->
+<div class="cx-sticky" id="cx-sticky" data-cta=".hero .btn--soft" data-form="apply"><a class="btn btn--soft btn--block" href="#apply"><span data-i18n="p.cta.apply">Talk to the founders</span> <span class="arr">&rarr;</span></a></div>
+
 <!-- WhatsApp the company line (replaced the Brevo chat launcher, Oct 2026). A plain link: no script, no cookies,
      so no consent needed. Rules in qed.css (.wa-float); clicks are `contact click`, placement "float". -->
 <a class="wa-float" href="https://wa.me/34643380980?text=Hi%21%20I%27d%20like%20info%20about%20the%20QED%20franchise." data-i18n-href="p.wa" data-contact="whatsapp" data-placement="float" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
 <script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-partners.js?v=20261029"></script>
+<script src="/shared/i18n-partners.js?v=20261101"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
 <script src="/shared/phone-countries.js"></script>
-<script src="/shared/qed.js"></script>
+<script src="/shared/qed.js?v=20261102"></script>
 <script>
   // "What's included?" in the ledger: open the onboarding FAQ item (through its summary, so the
   // accordion animates and `faq open` fires), then let the anchor scroll to it.

@@ -27,7 +27,7 @@ export const handler: Handler = async (event) => {
   d._ua = event.headers["user-agent"] || "";
   d._ip = event.headers["x-nf-client-connection-ip"] || "";
 
-  // Contact-first (the corporate form, data-contact-first in shared/qed.js): step 1 is the lead
+  // Contact-first (the corporate and celebrations forms, data-contact-first in shared/qed.js): step 1 is the lead
   // and needs a phone; last name moves to the optional step 2.
   const contact = d._capture === "contact";
   const required = contact ? ["firstName", "email", "eventType", "phone"] : ["firstName", "lastName", "email", "eventType"];
@@ -116,7 +116,7 @@ async function contactFirst(d: Dict, page: string) {
   if (d._step === "2") {
     const [tg, brevo] = await Promise.allSettled([
       sendTelegramMessage(detailsText(d), { chatId, replyTo }),
-      enrichBrevo(d, bookingText(d, page, "🎯 Corporate lead (details added)")),
+      enrichBrevo(d, bookingText(d, page, page === "celebrations" ? "🎉 Celebration lead (details added)" : "🎯 Corporate lead (details added)")),
       sendLeadEvent("lead details", d, page),
       sendToPortal(d, page),
     ]);

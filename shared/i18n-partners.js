@@ -22,7 +22,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
 
   "p.stat.locations": "localidades",
   "p.stat.players": "jugadores registrados",
-  "p.stat.return": "de los jugadores repite",
+  "p.stat.seats": "de las plazas, para jugadores que repiten",
 
   "p.model.eyebrow": "El modelo",
   "p.model.h2": "Empiezas con poco. Pensado para crecer.",
@@ -89,15 +89,16 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "p.steps.5t": "Firma y primer tardeo oficial",
   "p.steps.5d": "Firmamos el contrato y montas tu primer tardeo oficial, con soporte online.",
 
-  "p.case.eyebrow": "Caso real · El Hachazo",
-  "p.case.h3": "Un partner. Dos ciudades. Las dos creciendo.",
-  "p.case.p": "El Hachazo abrió en Murcia y Madrid en marzo. En junio, 125 asistentes en el circuito de Murcia y 134 en Madrid.",
-  "p.case.note": "Primeros cuatro meses en cada ciudad. Los resultados varían según la ciudad y el operador.",
+  "p.case.eyebrow": "Caso real · El Hachazo, Madrid",
+  "p.case.h3": "Un partner. Dos locales. Cada semana desde marzo.",
+  "p.case.p": "El Hachazo abrió en Madrid en marzo de 2026 con dos locales y no ha fallado ningún mes: 34 tardeos a finales de octubre, unos 22 jugadores por tardeo y 406 personas distintas.",
+  "p.case.note": "Del 13 de marzo al 26 de octubre de 2026, según los check-ins de nuestra plataforma. Los resultados varían según la ciudad y el operador.",
   "p.case.cta": "Haz esto en tu ciudad",
-  "p.case.s1": "eventos desde el lanzamiento",
-  "p.case.s2": "asistentes en total",
-  "p.case.murcia": "Murcia",
-  "p.case.madrid": "Madrid",
+  "p.case.city": "Madrid · 2 locales",
+  "p.case.k1": "tardeos desde marzo",
+  "p.case.k2": "jugadores por tardeo, de media",
+  "p.case.k3": "asistencias",
+  "p.case.k4": "jugadores distintos",
 
   "p.apply.eyebrow": "Solicita información",
   "p.apply.h2": "Habla con los fundadores.",

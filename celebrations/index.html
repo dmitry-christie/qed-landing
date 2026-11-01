@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.classList.add('js')</script>
-<title data-i18n="cel.title">QED for Celebrations · The party game that steals the show</title>
+<title data-i18n="cel.title">Quiz party for birthdays and hen &amp; stag dos in Valencia · QED</title>
 <meta name="description" data-i18n-content="cel.metadesc" content="A pub quiz with a live host for birthdays, hen and stag parties, weddings and anniversaries, with a round about the guest of honour if you want one. Valencia, Madrid, Barcelona, Murcia and Santiago de Compostela.">
 <meta name="theme-color" content="#FBF6EA">
 <meta property="og:title" data-i18n-content="cel.ogtitle" content="QED for Celebrations · The party game that steals the show">
@@ -17,8 +17,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared/qed.css">
-<link rel="stylesheet" href="/shared/corporate.css?v=20261023">
+<link rel="stylesheet" href="/shared/qed.css?v=20261102">
+<link rel="stylesheet" href="/shared/corporate.css?v=20261102">
 <style>
   /* Full-bleed photo hero: friends in booths at a real quiz night, under a dark shade so the white
      copy clears AA wherever it lands. Phones get the 4:5 crop over the top of the hero, faded into
@@ -75,6 +75,11 @@
   .cl-review__q mark{ color:inherit; font-weight:800; padding:0 2px; background:linear-gradient(180deg,transparent 58%,var(--yellow) 58%); -webkit-box-decoration-break:clone; box-decoration-break:clone; }
   .cl-review__by{ margin-top:auto; padding-top:16px; border-top:2px dashed var(--hairline-strong); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-weight:800; }
   @media (max-width:760px){ .cl-reviews{ grid-template-columns:1fr; } }
+  /* per-head line under the from-price: groups split the bill, so the share is the number they compare.
+     181.50 / 25 = 7.26; the tiers run from 302.50 / 75 = 4.03 to 242 / 25 = 9.68 a head. */
+  .cl-perhead{ margin:8px 0 0; font-weight:800; font-size:15px; line-height:1.35; }
+  /* the fifth event-type card ("Something else") takes the whole row under the 2x2 grid */
+  .cl-et__wide{ grid-column:1 / -1; }
   /* the "+ more" pill in the occasions strip: never split "+ / MORE" over two lines */
   .cases + .card .tag{ flex:0 0 auto; white-space:nowrap; }
 </style>
@@ -83,6 +88,17 @@
 <script>if(window.QED_CONFIG&&QED_CONFIG.brand==="TDT"){document.documentElement.classList.add("i18n-veil");setTimeout(function(){document.documentElement.classList.remove("i18n-veil")},1500)}</script>
 </head>
 <body>
+<!-- Icon sprite for the event-type cards and the call lines (24px grid, stroked; styled by .cx-i in
+     shared/corporate.css). check, phone, cheers and party are copies of /corporate/'s. Decorative only. -->
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+  <symbol id="cx-i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="cx-i-phone" viewBox="0 0 24 24"><path d="M5 3.5h3.2l1.6 4.2-2.1 1.4a11 11 0 0 0 5.2 5.2l1.4-2.1 4.2 1.6V17a2 2 0 0 1-2 2A15.5 15.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="cx-i-cheers" viewBox="0 0 24 24"><g transform="rotate(14 7 13)"><path d="M4.5 6h5v3.5a2.5 2.5 0 0 1-5 0z"/><path d="M7 12v7M4.5 19h5"/></g><g transform="rotate(-14 17 13)"><path d="M14.5 6h5v3.5a2.5 2.5 0 0 1-5 0z"/><path d="M17 12v7M14.5 19h5"/></g><path d="M12 1.5v1.8M9.4 2.4l.9 1.3M14.6 2.4l-.9 1.3"/></symbol>
+  <symbol id="cx-i-party" viewBox="0 0 24 24"><path d="M3.5 20.5l4.8-12.3 7.5 7.5z"/><path d="M6.3 13.4l4.3 4.3"/><path d="M13.5 9.5c1.6-1.6 1.6-3.4.6-4.9M14.5 10.5c1.6-1.6 3.4-1.6 4.9-.6"/><path d="M12 3v.01M20.5 4.5v.01M21 12v.01M17.5 3.5l-.6 1.6"/></symbol>
+  <symbol id="cx-i-cake" viewBox="0 0 24 24"><path d="M3.5 20.5h17"/><path d="M5 20.5v-6.8A1.7 1.7 0 0 1 6.7 12h10.6a1.7 1.7 0 0 1 1.7 1.7v6.8"/><path d="M5 16.2c1.2.9 2.3.9 3.5 0s2.3-.9 3.5 0 2.3.9 3.5 0 2.3-.9 3.5 0"/><path d="M12 12V8.8"/><path d="M12 3.5c1 1.1 1.4 2.1 0 3.2-1.4-1.1-1-2.1 0-3.2z"/></symbol>
+  <symbol id="cx-i-rings" viewBox="0 0 24 24"><circle cx="9" cy="14.5" r="5.5"/><circle cx="15" cy="14.5" r="5.5"/><path d="M7.2 6.5L9 4l1.8 2.5L9 9z"/></symbol>
+  <symbol id="cx-i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.1A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></symbol>
+</svg>
 
 <header class="nav">
   <div class="nav__in">
@@ -145,7 +161,7 @@
     <div class="wrap">
       <div class="reveal" style="max-width:60ch">
         <span class="eyebrow" data-i18n="cel.ev.eyebrow">What we celebrate</span>
-        <h2 class="h2" style="margin-top:14px" data-i18n="cel.ev.h2">Three occasions, one party to remember.</h2>
+        <h2 class="h2" style="margin-top:14px" data-i18n="cel.ev.h2">Four occasions, one party to remember.</h2>
       </div>
       <ol class="cases reveal" style="margin-top:30px">
         <li>
@@ -159,13 +175,21 @@
         <li>
           <span class="case-n">02</span>
           <div>
+            <h3 class="h3" data-i18n="cel.ev.4t">Hen &amp; stag parties</h3>
+            <p class="muted" style="margin:8px 0 0;line-height:1.55;max-width:60ch" data-i18n="cel.ev.4d">The night before the big day, with a plan. Add a round about whoever's getting married: the stories, the photos and who really knows them best. Then the night carries on.</p>
+          </div>
+          <span class="case-side stamp rot-2" style="background:var(--orange-soft)"><b style="font-size:13px" data-i18n="cel.ev.4b">Before</b><span data-i18n="cel.ev.4s">the big day</span></span>
+        </li>
+        <li>
+          <span class="case-n">03</span>
+          <div>
             <h3 class="h3" data-i18n="cel.ev.2t">Weddings</h3>
             <p class="muted" style="margin:8px 0 0;line-height:1.55;max-width:60ch" data-i18n="cel.ev.2d">The icebreaker that actually mixes both sides. Add the couple round: Team Bride versus Team Groom, how they met, and the photo evidence.</p>
           </div>
           <span class="case-side stamp rot-3" style="background:var(--red-soft)"><b style="font-size:13px" data-i18n="cel.ev.2b">Bride</b><span data-i18n="cel.ev.2s">vs groom</span></span>
         </li>
         <li>
-          <span class="case-n">03</span>
+          <span class="case-n">04</span>
           <div>
             <h3 class="h3" data-i18n="cel.ev.3t">Anniversaries</h3>
             <p class="muted" style="margin:8px 0 0;line-height:1.55;max-width:60ch" data-i18n="cel.ev.3d">A toast disguised as a trivia night. Add a round set in the year it all began: the number-one song, the price of a pint, the headlines.</p>
@@ -203,6 +227,7 @@
             <p class="cx-price__eyebrow" data-i18n="cel.price.eyebrow">Hosted, in person</p>
             <p class="cx-price__big" data-i18n="cel.price.from">From €181.50</p>
             <p class="cx-price__vat" data-i18n="cel.price.vat">incl. VAT, per event</p>
+            <p class="cl-perhead" data-i18n="cel.price.perhead">That's €7.26 a head with 25 guests</p>
             <p class="cx-price__cond" data-i18n="cel.price.cond">Up to 25 guests, at one of our venues</p>
             <p class="cx-price__note"><span data-i18n="cel.price.note">You get the fixed price on the call, no surprises.</span></p>
             <a class="btn btn--cta" href="#plan"><span data-i18n="cel.cta.plan">Tell us about your celebration</span> <span class="arr">&rarr;</span></a>
@@ -224,6 +249,7 @@
                 <tr class="cx-tiers__quote"><th scope="row" data-i18n="cel.price.r4">More than 75</th><td colspan="2" data-i18n="cel.price.p4">We quote it</td></tr>
               </tbody>
             </table>
+            <p class="cx-tiers__foot" data-i18n="cel.price.split">Split across a full group, it comes to €4 to €10 a head.</p>
             <p class="cx-tiers__foot" data-i18n="cel.price.foot">Per event, VAT included. Your place: your home, your restaurant or any other venue.</p>
             <p class="cx-tiers__foot"><span data-i18n="cel.price.inperson">In person in</span> <strong data-i18n="cel.fmt.cities">Valencia, Madrid*, Barcelona*, Murcia* &amp; Santiago de Compostela*.</strong></p>
             <p class="cx-tiers__foot" data-i18n="cel.price.citynote">*Outside Valencia we work with local hosts and venues; some services (like live rounds, the photographer or our own sound kit) depend on availability. We'll confirm it on the call.</p>
@@ -433,66 +459,72 @@
   </section>
 
   <!-- ============ PLAN FORM ============ -->
+  <!-- Contact-first (Nov 2026, data-contact-first, shared/qed.js), as on /corporate/: step 1 (what we're
+       celebrating, first name, phone, email) is the whole lead and sends the call alert; step 2 only adds
+       details. The cards post the same labels the old <select> did (cel.form.et1-et5, via data-i18n-value),
+       so Telegram, Brevo and the portal read the same strings. Icons: the sprite at the top of <body>. -->
   <section id="plan" class="section section--tight">
     <div class="wrap">
       <div class="card reveal split split--flush" style="--split:0.85fr 1.15fr;overflow:hidden">
-        <div class="pad" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
-          <span class="eyebrow" style="color:rgba(255,255,255,.6)"><span data-i18n="cel.form.eyebrow">Your celebration</span></span>
+        <div class="pad quote-intro" style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px">
+          <span class="eyebrow quote-intro__more" style="color:rgba(255,255,255,.6)"><span data-i18n="cel.form.eyebrow">Your celebration</span></span>
           <h2 class="h2" style="color:#fff" data-i18n="cel.form.h2">Tell us who we're celebrating.</h2>
-          <p style="color:rgba(255,255,255,.78);line-height:1.6;margin:0" data-i18n="cel.form.sub">Quick form, real human reply, usually same day. We'll take it from there.</p>
-          <div class="cx-direct cx-direct--dark"><p class="cx-direct__lead" data-i18n="cel.direct.lead">Prefer to talk now? Mon to Fri, 10:00 to 19:00 Spanish time.</p><p class="cx-direct__links"><a class="cx-direct__link" href="tel:+34643380980" data-contact="phone"><svg class="cx-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 3.5h3.2l1.6 4.2-2.1 1.4a11 11 0 0 0 5.2 5.2l1.4-2.1 4.2 1.6V17a2 2 0 0 1-2 2A15.5 15.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/></svg><span>+34 643 380 980</span></a><a class="cx-direct__link" href="https://wa.me/34643380980?text=Hi%21%20I%27d%20like%20info%20about%20a%20quiz%20party%20for%20a%20celebration." data-i18n-href="cel.direct.wa" data-contact="whatsapp" target="_blank" rel="noopener"><svg class="cx-wa" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><span>WhatsApp</span></a></p></div>
+          <p class="cx-quote__sub" data-i18n="cel.form.sub">Leave us a phone number and a real person gets back to you, usually the same working day. Date and guest count can come later.</p>
+          <div class="cx-direct cx-direct--dark quote-intro__more"><p class="cx-direct__lead" data-i18n="cel.direct.lead">Prefer to talk now? Mon to Fri, 10:00 to 19:00 Spanish time.</p><p class="cx-direct__links"><a class="cx-direct__link" href="tel:+34643380980" data-contact="phone"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-phone"/></svg><span>+34 643 380 980</span></a><a class="cx-direct__link" href="https://wa.me/34643380980?text=Hi%21%20I%27d%20like%20info%20about%20a%20quiz%20party%20for%20a%20celebration." data-i18n-href="cel.direct.wa" data-contact="whatsapp" target="_blank" rel="noopener"><svg class="cx-wa" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><span>WhatsApp</span></a></p></div>
         </div>
         <div class="pad">
-          <form id="event-form" name="celebrations-event" novalidate data-action="/.netlify/functions/book-event">
+          <form id="event-form" name="celebrations-event" novalidate data-action="/.netlify/functions/book-event" data-contact-first>
             <input type="hidden" name="page" value="celebrations">
             <p class="hp"><label><span data-i18n="form.hp">Leave this empty</span> <input name="_honey" tabindex="-1" autocomplete="off"></label></p>
             <div class="form-body">
               <div data-step="1">
                 <div class="form-grid">
+                  <fieldset class="full cx-et" id="e-event" role="radiogroup" aria-labelledby="e-event-lg" aria-required="true">
+                    <legend class="label" id="e-event-lg"><span data-i18n="cel.form.eventType">What are we celebrating?</span> <span class="req" aria-hidden="true">*</span></legend>
+                    <div class="cx-et__grid">
+                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Birthday" data-i18n-value="cel.form.et1" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cake"/></svg></span><span data-i18n="cel.form.et1">Birthday</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
+                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Hen &amp; stag party" data-i18n-value="cel.form.et5" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-cheers"/></svg></span><span data-i18n="cel.form.et5">Hen &amp; stag party</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
+                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Wedding" data-i18n-value="cel.form.et2" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-rings"/></svg></span><span data-i18n="cel.form.et2">Wedding</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
+                      <label class="cx-et__opt"><input type="radio" name="eventType" value="Anniversary" data-i18n-value="cel.form.et3" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-heart"/></svg></span><span data-i18n="cel.form.et3">Anniversary</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
+                      <label class="cx-et__opt cl-et__wide"><input type="radio" name="eventType" value="Something else" data-i18n-value="cel.form.et4" required><span class="cx-et__card"><span class="cx-et__ico" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-party"/></svg></span><span data-i18n="cel.form.et4">Something else</span><span class="cx-et__tick" aria-hidden="true"><svg class="cx-i" focusable="false"><use href="#cx-i-check"/></svg></span></span></label>
+                    </div>
+                    <p class="field-error" id="e-event-err" role="alert" data-i18n="cel.form.etReq">Choose what we're celebrating.</p>
+                  </fieldset>
                   <div class="full">
-                    <label class="label" for="e-occasion"><span data-i18n="cel.form.eventType">What are we celebrating?</span> <span class="req">*</span></label>
-                    <select class="input" id="e-occasion" name="eventType" required>
-                      <option value="" data-i18n="cel.form.etph">Choose one…</option>
-                      <option data-i18n="cel.form.et1">Birthday</option>
-                      <option data-i18n="cel.form.et2">Wedding</option>
-                      <option data-i18n="cel.form.et3">Anniversary</option>
-                      <option data-i18n="cel.form.et5">Hen &amp; stag party</option>
-                      <option data-i18n="cel.form.et4">Something else</option>
-                    </select>
-                  </div>
-                  <div>
                     <label class="label" for="e-first"><span data-i18n="cel.form.first">First name</span> <span class="req">*</span></label>
-                    <input class="input" id="e-first" name="firstName" autocomplete="given-name" required>
+                    <input class="input" id="e-first" name="firstName" autocomplete="given-name" enterkeyhint="next" maxlength="60" required>
+                    <p class="field-error" id="e-first-err" role="alert" data-i18n="cel.form.firstReq">Tell us your first name.</p>
                   </div>
-                  <div>
-                    <label class="label" for="e-last"><span data-i18n="cel.form.last">Last name</span> <span class="req">*</span></label>
-                    <input class="input" id="e-last" name="lastName" autocomplete="family-name" required>
+                  <div class="full">
+                    <label class="label" for="e-phone"><span data-i18n="cel.form.phonereq">Phone / WhatsApp</span> <span class="req">*</span></label>
+                    <div class="tel-field">
+                      <label class="sr-only" for="e-phone-cc" data-i18n="form.phoneCC">Country code</label>
+                      <select class="input" id="e-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
+                        <option value="ES" data-dial="34" selected>Spain +34</option>
+                      </select>
+                      <input class="input tel-field__num" id="e-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" enterkeyhint="next" data-role="phone-number" placeholder="600 12 34 56" aria-describedby="e-phone-hint" required>
+                    </div>
+                    <p class="field-error" id="e-phone-err" role="alert" data-role="phone-error" data-i18n="c.form.phoneReq">Add a phone number so we can call you.</p>
+                    <p class="form-hint" id="e-phone-hint" data-i18n="cel.form.phonehint">So we can call or WhatsApp you about the party. Only used for this request.</p>
                   </div>
                   <div class="full">
                     <label class="label" for="e-email"><span data-i18n="form.email">Email</span> <span class="req">*</span></label>
-                    <input class="input" id="e-email" type="email" name="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" required>
+                    <input class="input" id="e-email" type="email" name="email" autocomplete="email" inputmode="email" enterkeyhint="send" autocapitalize="none" spellcheck="false" required>
                   </div>
                   <div class="full">
-                    <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="cel.form.continue">Continue</span> <span class="arr">&rarr;</span></button>
-                    <p class="form__privacy"><span data-i18n="form.privacy">We only use your details to answer your request. If you stop after this step, we may send you one reminder email.</span> <a href="/privacy/" data-i18n="form.privacylink">Privacy policy</a></p>
+                    <button type="button" class="btn btn--cta btn--lg btn--block" data-continue><span data-i18n="cel.cta.navm">Tell us about it</span> <span class="arr">&rarr;</span></button>
+                    <p class="cx-form__call"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-phone"/></svg><span data-i18n="cel.form.call">We get back to you by phone or WhatsApp, usually the same working day.</span></p>
+                    <div class="cx-direct cx-direct--light cx-form__direct"><p class="cx-direct__lead" data-i18n="cel.direct.lead">Prefer to talk now? Mon to Fri, 10:00 to 19:00 Spanish time.</p><p class="cx-direct__links"><a class="cx-direct__link" href="tel:+34643380980" data-contact="phone"><svg class="cx-i" aria-hidden="true" focusable="false"><use href="#cx-i-phone"/></svg><span>+34 643 380 980</span></a><a class="cx-direct__link" href="https://wa.me/34643380980?text=Hi%21%20I%27d%20like%20info%20about%20a%20quiz%20party%20for%20a%20celebration." data-i18n-href="cel.direct.wa" data-contact="whatsapp" target="_blank" rel="noopener"><svg class="cx-wa" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><span>WhatsApp</span></a></p></div>
+                    <p class="form__privacy"><span data-i18n="cel.form.privacy1">We use your details only to contact you about this request.</span> <a href="/privacy/" data-i18n="form.privacylink">Privacy policy</a></p>
                   </div>
                 </div>
               </div>
               <div class="form-step2" data-step="2">
                 <div class="form-step2__in">
-                  <button type="button" class="form-back" data-back><span class="arr">&rarr;</span> <span data-i18n="form.back">Back</span></button>
+                  <button type="button" class="form-back" data-back><span class="arr">&rarr;</span> <span data-i18n="cel.form.edit">Wrong phone or email? Fix it</span></button>
+                  <h3 class="h3" id="e-s2h" tabindex="-1" data-i18n="cel.form.s2h">Got it. Want to tell us more? (optional)</h3>
+                  <p class="muted" style="margin:6px 0 18px;line-height:1.5" data-i18n="cel.form.s2p">We'll be in touch either way. With these we can give you the price straight away.</p>
                   <div class="form-grid">
-                    <div class="full">
-                      <label class="label" for="e-phone" data-i18n="cel.form.phone">Phone / WhatsApp (optional)</label>
-                      <div class="tel-field">
-                        <label class="sr-only" for="e-phone-cc" data-i18n="form.phoneCC">Country code</label>
-                        <select class="input" id="e-phone-cc" name="phoneCountry" data-role="phone-country" data-default="ES">
-                          <option value="ES" data-dial="34" selected>Spain +34</option>
-                        </select>
-                        <input class="input tel-field__num" id="e-phone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" data-role="phone-number" placeholder="600 12 34 56">
-                      </div>
-                      <p class="field-error" role="alert" data-role="phone-error" data-i18n="form.phoneErr">Please enter a valid phone number.</p>
-                    </div>
                     <div class="full">
                       <label class="label" for="e-guest" data-i18n="cel.form.guest">Guest of honour</label>
                       <input class="input" id="e-guest" name="guestOfHonour" data-i18n-ph="cel.ph.guest" placeholder="Whose big day is it?">
@@ -503,7 +535,7 @@
                     </div>
                     <div>
                       <label class="label" for="e-guests" data-i18n="cel.form.guests">Guests</label>
-                      <input class="input" id="e-guests" type="number" min="2" name="groupSize" data-i18n-ph="cel.ph.guests" placeholder="e.g. 30">
+                      <input class="input" id="e-guests" type="number" min="2" name="groupSize" inputmode="numeric" data-i18n-ph="cel.ph.guests" placeholder="e.g. 30">
                     </div>
                     <div>
                       <label class="label" for="e-city" data-i18n="form.city">City</label>
@@ -511,13 +543,18 @@
                         <option value="" data-i18n="form.cityph">Choose a city…</option><option>Valencia</option><option>Madrid</option><option data-lang-hide="es">Barcelona</option><option>Murcia</option><option>Santiago de Compostela</option><option data-i18n="cel.form.elsewhere">Elsewhere</option>
                       </select>
                     </div>
+                    <div>
+                      <label class="label" for="e-last" data-i18n="cel.form.last">Last name</label>
+                      <input class="input" id="e-last" name="lastName" autocomplete="family-name">
+                    </div>
                     <div class="full">
                       <label class="label" for="e-msg" data-i18n="form.else">Anything else?</label>
                       <textarea class="input" id="e-msg" name="message" data-i18n-ph="cel.ph.msg" placeholder="Who are we celebrating, and what should we absolutely ask about?"></textarea>
                     </div>
                     <div class="full">
-                      <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="cel.form.submit">Plan my event</span> <span class="arr">&rarr;</span></button>
-                      <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="form.note">We reply by email, usually same day. No spam, ever.</p>
+                      <button type="submit" class="btn btn--cta btn--lg btn--block"><span data-i18n="cel.form.senddetails">Send details</span> <span class="arr">&rarr;</span></button>
+                      <p style="margin:12px 0 0;text-align:center"><button type="button" class="form-skip" data-skip data-i18n="cel.form.skip">Skip, that's everything</button></p>
+                      <p class="form-note" style="margin:12px 0 0;text-align:center" data-i18n="cel.form.note">No commitment. No spam, ever.</p>
                     </div>
                   </div>
                 </div>
@@ -528,7 +565,7 @@
               <div style="text-align:center;padding:24px 8px">
                 <span class="stamp" style="background:var(--accent-deep);color:#fff"><b style="color:#fff">✓</b><span style="color:#fff" data-i18n="cel.form.sent">sent</span></span>
                 <h3 class="h2" style="margin-top:18px" data-i18n="cel.form.successh">Let's make it a good one.</h3>
-                <p class="lead" style="margin-top:10px" data-i18n="cel.form.successp">Thanks. We've got the details and you'll hear from a real person at QED, usually within the day.</p>
+                <p class="lead" style="margin-top:10px" data-i18n="cel.form.successp">Thanks. A real person on our team will call or WhatsApp you, usually the same working day (Mon to Fri, 10:00 to 19:00 Spanish time).</p>
               </div>
             </div>
           </form>
@@ -589,12 +626,12 @@
 <!-- WhatsApp the company line (replaced the Brevo chat launcher, Oct 2026). A plain link: no script, no cookies,
      so no consent needed. Rules in qed.css (.wa-float); clicks are `contact click`, placement "float". -->
 <a class="wa-float" href="https://wa.me/34643380980?text=Hi%21%20I%27d%20like%20info%20about%20a%20quiz%20party%20for%20a%20celebration." data-i18n-href="cel.direct.wa" data-contact="whatsapp" data-placement="float" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
-<script src="/shared/i18n-common.js"></script>
-<script src="/shared/i18n-celebrations.js?v=20261024"></script>
+<script src="/shared/i18n-common.js?v=20261102"></script>
+<script src="/shared/i18n-celebrations.js?v=20261102"></script>
 <script src="/shared/i18n.js"></script>
 <script src="/shared/walker.js"></script>
 <script src="/shared/consent.js"></script>
 <script src="/shared/phone-countries.js"></script>
-<script src="/shared/qed.js"></script>
+<script src="/shared/qed.js?v=20261102"></script>
 </body>
 </html>

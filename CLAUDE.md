@@ -61,6 +61,13 @@ node -e "$CHECK" corporate corporate
 one of those two. The check cannot see the keys `qed.js` hardcodes (`c.form.phoneReq`,
 `c.form.phoneErrES`, `form.phoneErr`, `form.emailErr`).
 
+**The return stat is about seats, not players.** Hub, `/corporate/` and `/partners/` show "74% of
+seats go to returning players" (`h.stat.seats`, `c.stat.seats`, `p.stat.seats`): check-ins by
+players who came to 2+ public nights, all time (Supabase, 1 Nov 2026: 74.4%). Only 30.8% of players
+ever come back, so the old "78% of players come back" was wrong; don't bring it back. Re-query
+before changing the number. The franchise case study is El Hachazo in Madrid only, from check-ins
+13 Mar to 26 Oct 2026 (the query is in the comment above it).
+
 The reverse, keys left orphaned after a section is rewritten, is a separate check. It judges the
 corporate dictionary against `corporate/index.html` (expect `[]`):
 
@@ -271,8 +278,9 @@ old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` sti
     is positioned against the header). It keeps its slot, so nothing shifts. `is-typing` is set by
     the sticky-bar block in `qed.js`, so removing the `#cx-sticky` markup also switches this off.
   - Sticky CTA bar, `#cx-sticky`: a fixed bottom bar, 58px high, repeating the hero CTA
-    (`c.cta.tell`, to `#quote`). Markup after `</footer>`, rules at the end of
-    `shared/corporate.css`, logic in `shared/qed.js` after `initEngagement()`, in a try/catch so it
+    (`c.cta.tell`, to `#quote`). Markup after `</footer>`, rules in `shared/qed.css` (moved from
+    `corporate.css` in Nov 2026, when `/partners/` got the same bar: `p.cta.apply`, to `#apply`), logic
+    in `shared/qed.js` after `initEngagement()`, in a try/catch so it
     cannot break the scripts after it. It is on once the hero CTA has scrolled off the top and none
     of these holds: `#quote` or the footer is on screen; a lead was sent on this page view
     (`qed:leadsent`); the cookie banner is open or due (consent undecided on a production host, so a
@@ -296,8 +304,12 @@ old links and ads keep working. `shared/cena-variant.js` and `shared/qed.js` sti
     `html:has(.cx-sticky.is-on)` sets `scroll-padding-bottom` (80px plus the safe-area inset) so
     keyboard focus is not parked behind it; `consent.js` sets the same property inline while its
     banner is open, and the bar is off then. `shared/cena-variant.js` swaps its label
-    (`#c-sticky-cta`) with the hero's. Kill switch: `display:none` on `.cx-sticky` after the phone
-    block at the end of `corporate.css` (the base rule is already `display:none`; the 560px block
+    (`#c-sticky-cta`) with the hero's. The bar's `<div>` names what it watches: `data-cta` (a
+    selector for the hero CTA) and `data-form` (the id of the form's section); without them it is
+    `.cx-hero__ctas .btn` and `quote`, so `/corporate/`'s markup carries neither and `/partners/`'
+    carries `.hero .btn--soft` and `apply`. `is-typing` follows any `form[data-action]` inside that
+    section. Kill switch: `display:none` on `.cx-sticky` after the phone block in `qed.css`, or on
+    one page in its own `<style>` (the base rule is already `display:none`; the 560px block
     turns it on). That leaves `is-typing` working; deleting the `<div>` also switches `is-typing`
     and `has-chat` off.
 
@@ -477,8 +489,8 @@ partners by city population tier: large ≥500k 250, medium 100k-500k 150, small
 Pixel/CAPI pair agrees; its fallback and `lead start` use the page default (partners 150).
 Corporate gets its value from the step-1 response instead (see Contact-first below).
 
-**Contact-first corporate form (Oct 2026).** `<form data-contact-first>` (`/corporate/`;
-celebrations keeps the classic flow) makes step 1 (event type, first name, phone, email; phone
+**Contact-first corporate form (Oct 2026).** `<form data-contact-first>` (`/corporate/`, and
+`/celebrations/` since Nov 2026, see below) makes step 1 (event type, first name, phone, email; phone
 required and checked by `isPhone()`, Spain = 9 digits starting 6-9) the whole lead. The event
 type is four one-tap radio cards in `fieldset#c-event`, not a dropdown: a tap moves focus to the
 first empty contact field, Enter or Space picks a card, and the error hint sits on the fieldset. `qed.js`
@@ -500,6 +512,18 @@ Consent replays map step 1 → `lead complete`, step 2 → `lead details`. A pos
 the portal decodes `eventType` by exact EN/ES label (an unknown one becomes null) and the server requires it, so don't "improve" them or
 drop a card. The step-2 format select keeps an empty first option, because `collect()` snapshots
 the whole form and without it step 1 posts the select's default for everyone.
+
+**Celebrations uses the same form (Nov 2026).** `/celebrations/`' `#plan` form is contact-first
+too: five cards in `fieldset#e-event` (birthday, hen & stag, wedding, anniversary and a full-width
+"something else"), posting the exact labels its old `<select>` posted (`cel.form.et1`-`et5`), then
+first name, phone/WhatsApp (required) and email; step 2 has guest of honour, date, guests, city,
+last name and message. The server path is the same: the Telegram alert reads `Celebración` /
+`Celebration`, the details reply includes the guest of honour, Brevo gets `LEAD_STAGE=contact`
+(template #8's celebrations branch has no call wording, which fits), lead value stays 30. The icons
+are a small sprite at the top of the page's `<body>` (`cx-i-cake`, `-rings`, `-heart`, plus copies
+of `/corporate/`'s `check`, `phone`, `cheers`, `party`). `c.form.phoneReq` and `c.form.phoneErrES`,
+which `qed.js` hardcodes, live in `i18n-common.js` too for this page. `#plan` shares `#quote`'s phone
+arrival rules in `corporate.css`.
 
 **One corporate page, two audiences (Oct 2026).** `/corporate/` sets `window.QED_SITE =
 "corporate"` and posts `page=corporate` for booker and organiser alike, so section, product,
@@ -629,12 +653,13 @@ mixed with yesterday's cached file (new HTML needing new JS, like the contact-fi
 `?v=YYYYMMDD` to that page's `/shared/` URLs, as corporate, the hub and privacy carry since
 `?v=20261008`.
 
-`/corporate/` carries `?v=20261101` on `qed.css` and `consent.js` (the WhatsApp button above the open
-consent banner; `/venues/` loads `consent.js` at `?v=20261101` too), `?v=20261023` on `corporate.css`,
-`i18n-common.js`, `i18n-corporate.js` and `qed.js` (the call / WhatsApp block and the WhatsApp button
-that replaced the Brevo chat), `?v=20261015` on `cena-variant.js` and `?v=20261010` on `i18n.js`.
-`/celebrations/` loads `corporate.css` and `i18n-celebrations.js` at `?v=20261023` too. The other pages
-load `qed.css` and `qed.js` under plain URLs, so for up to a day a returning visitor there can get the
+`/corporate/` carries `?v=20261102` on `qed.css`, `corporate.css`, `qed.js` and `i18n-common.js` (the
+sticky bar's CSS moved to `qed.css`), `?v=20261101` on `consent.js` and `i18n-corporate.js`,
+`?v=20261015` on `cena-variant.js` and `?v=20261010` on `i18n.js`. `/celebrations/` loads `qed.css`,
+`corporate.css`, `qed.js`, `i18n-common.js` and `i18n-celebrations.js` at `?v=20261102` (its
+contact-first form), `/partners/` loads `qed.css` and `qed.js` at `?v=20261102` (its sticky bar) and
+`i18n-partners.js` at `?v=20261101`, and `/venues/` loads `consent.js` at `?v=20261101`. The hub,
+privacy and terms load `qed.css` and `qed.js` under plain URLs, so for up to a day a returning visitor there can get the
 WhatsApp button unstyled (the SVG's own `width`/`height` keep it a 30px icon at the foot of the page)
 and clicks filed as `outbound click` instead of `contact click`. `walker.js` and `phone-countries.js`
 are plain URLs.
@@ -644,7 +669,8 @@ there to a value higher than any already on the page, and on `/celebrations/` to
 `corporate.css`; a plain URL gets its first `?v=` in the same change. `corporate.css` is the one
 that bites. It used to be inline, so a CSS fix was atomic with the HTML; as a `/shared/` file a CSS-only edit reaches
 returning visitors up to a day late, and yesterday's stylesheet against today's markup is the bad
-case: a `#cx-sticky` with no `.cx-sticky` rule is an unstyled link at the foot of the page, and the
+case: a `#cx-sticky` with no `.cx-sticky` rule is an unstyled link at the foot of the page (so a page
+with the bar must load `qed.css` under a `?v=` at least as new as the bar's rules), and the
 hero copy lands 14px under the nav, over the photo, with no clear window above it on a phone. The
 other six pages load `qed.css` and `qed.js` under plain URLs and pick the phone-pass changes up when
 their cached copies expire (up to a day): harmless, because the `qed.css` rules are scoped (see

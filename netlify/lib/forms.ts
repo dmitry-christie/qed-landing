@@ -286,7 +286,9 @@ export function callChatId(): string | undefined {
 export function callAlertText(d: Dict, page: string, now = new Date()): string {
   const es = isEs(d);
   const org = audienceOf(d, page) === "organiser";
-  const label = page === "corporate" ? (es ? (org ? "Equipo" : "Empresa") : (org ? "Team" : "Corporate")) : (PARTIAL_LABEL[page] || page);
+  const label = page === "corporate" ? (es ? (org ? "Equipo" : "Empresa") : (org ? "Team" : "Corporate"))
+    : page === "celebrations" ? (es ? "Celebración" : "Celebration")
+    : (PARTIAL_LABEL[page] || page);
   const mention = process.env[es ? "TELEGRAM_CALL_MENTION_ES" : "TELEGRAM_CALL_MENTION_EN"];
   return [
     `📞 ${es ? "LLAMAR" : "CALL"} [${brandTag()}] ${label} · ${d.eventType}`,
@@ -316,6 +318,7 @@ export function detailsText(d: Dict): string {
     ["👥", es ? "Personas" : "People", d.groupSize],
     ["📅", es ? "Fecha" : "Date", d.date],
     ["📍", es ? "Ciudad" : "City", d.city],
+    ["🎉", es ? "Homenajeado/a" : "Guest of honour", d.guestOfHonour],
     ["🍽", es ? "Restaurante" : "Restaurant", d.restaurant],
     ["🎭", es ? "Formato" : "Format", d.format],
     ["🏢", es ? "Empresa" : "Company", d.company],

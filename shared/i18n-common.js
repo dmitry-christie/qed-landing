@@ -37,6 +37,10 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "form.generr": "Algo ha fallado. Escríbenos a info@tardeodetrivia.com.",
   "form.phoneCC": "Prefijo del país",
   "form.phoneErr": "Introduce un número de teléfono válido.",
+  // The required-phone hints qed.js hardcodes (setPhoneError). Also in i18n-corporate.js; here so
+  // /celebrations/' contact-first form has them without loading the corporate dictionary.
+  "c.form.phoneReq": "Déjanos un teléfono para poder llamarte.",
+  "c.form.phoneErrES": "Los números españoles tienen 9 cifras y empiezan por 6, 7, 8 o 9.",
   /* inline hint created by qed.js when the email fails the server's shape check (e.g. juan@gmail) */
   "form.emailErr": "Revisa tu email (por ejemplo, nombre@gmail.com).",
   "form.hp": "Deja esto vacío",

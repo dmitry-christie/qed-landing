@@ -40,7 +40,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "c.proof.eyebrow": "En cifras",
   "c.proof.h2": "La gente repite. Por algo será.",
   "c.stat.players": "jugadores registrados",
-  "c.stat.repeat": "de los jugadores repite",
+  "c.stat.seats": "de las plazas, para jugadores que repiten",
   "c.stat.places": "localidades con tardeo semanal",
   "c.proof.tag": "Así es un tardeo",
   "c.proof.alt1": "Equipos en sus mesas durante un tardeo, con las hojas de respuestas",

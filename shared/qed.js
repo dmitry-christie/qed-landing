@@ -1387,10 +1387,12 @@
   }
   initEngagement();
 
-  /* ---------- sticky CTA bar (phones; /corporate/ and /team-events/) ----------
-     Markup: <div class="cx-sticky" id="cx-sticky"> at the end of <body>; CSS (corporate.css) shows it
-     below 561px only. It is on while the hero CTA is above the viewport and none of these holds:
-       - the form (#quote) or the footer is on screen (the bar would sit on top of what it points to);
+  /* ---------- sticky CTA bar (phones; /corporate/ and /partners/) ----------
+     Markup: <div class="cx-sticky" id="cx-sticky"> at the end of <body>; CSS (qed.css) shows it below
+     561px only. The bar names what it watches: data-cta (a selector for the hero CTA) and data-form (the
+     id of the section holding the form); without them it is /corporate/'s ".cx-hero__ctas .btn" and
+     "quote". It is on while the hero CTA is above the viewport and none of these holds:
+       - the form section or the footer is on screen (the bar would sit on top of what it points to);
        - a lead was sent on this page view (qed:leadsent): the visitor has converted, no second invite;
        - the cookie banner is open, or due: consent undecided on a production host. The banner owns the
          bottom edge until it is answered, so a first-time visitor sees the bar only after answering;
@@ -1399,14 +1401,15 @@
          down when the CTA leaves, and the bar would cover its lower edge and link for the next 40 to
          60 px of scroll. The bar waits until the card's lower edge has cleared it.
      Its taps are ordinary `cta click` events (placement = "cx-sticky", the nearest [id]).
-     The same block keeps two <html> classes for CSS: is-typing (a text field of #event-form has focus
-     AND the form is on screen: the header steps aside, see corporate.css) and has-chat (the WhatsApp
+     The same block keeps two <html> classes for CSS: is-typing (a text field of a lead form in that
+     section has focus AND the section is on screen: the header steps aside, see qed.css) and has-chat (the WhatsApp
      button, .wa-float, sits bottom right: the bar leaves room). */
   (function () {
     try {
       var bar = document.getElementById("cx-sticky");
-      var cta = document.querySelector(".cx-hero__ctas .btn");
-      var quote = document.getElementById("quote");
+      if (!bar) return;
+      var cta = document.querySelector(bar.getAttribute("data-cta") || ".cx-hero__ctas .btn");
+      var quote = document.getElementById(bar.getAttribute("data-form") || "quote");
       var foot = document.querySelector("footer");
       if (!bar || !cta || !quote || !foot || !("IntersectionObserver" in window)) return;
       var root = document.documentElement;
@@ -1426,7 +1429,7 @@
       };
       var upd = function () {
         var a = document.activeElement;
-        var typing = !!(formOn && a && a.matches && a.matches(TEXT) && a.closest("#event-form") && !document.querySelector(".nav__links.open"));
+        var typing = !!(formOn && a && a.matches && a.matches(TEXT) && a.closest("form[data-action]") && quote.contains(a) && !document.querySelector(".nav__links.open"));
         var asking = !!document.querySelector(".consent") || !!(window.__qedConsentActive && !window.__qedConsentCategories);
         root.classList.toggle("is-typing", typing);
         root.classList.toggle("has-chat", !!document.querySelector(".wa-float"));
