@@ -33,7 +33,7 @@ Object.assign(window.QED_ES = window.QED_ES || {}, {
   "pr.ck.dur": "Duración",
   "pr.ck.prov": "Proveedor",
   "pr.ck.first": "Propia",
-  "pr.ck.r1p": "Guarda tu elección de cookies para no volver a preguntar.",
+  "pr.ck.r1p": "Guarda tu elección de cookies para no volver a preguntar, aquí y en nuestra web de reservas.",
   "pr.ck.r1d": "1 año",
   "pr.ck.r2p": "Recuerda tu idioma entre páginas.",
   "pr.ck.r2d": "1 año",

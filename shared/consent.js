@@ -7,7 +7,8 @@
    walker browser source fires `page view` itself, gated on Analytics consent.
 
    Consent is granular (Necessary / Functional / Analytics / Marketing), stored as a JSON object
-   under "qed-consent". walkerOS destinations declare the category they need, so nothing fires
+   under "qed-consent", in a brand-domain cookie shared with the booking site and in
+   localStorage (see save() below). walkerOS destinations declare the category they need, so nothing fires
    before it's granted: Amplitude + measurement need Analytics; Meta Pixel/CAPI + Google Ads need
    Marketing. Marketing additionally gates the ad-match identity attached server-side (see
    netlify/lib/forms.ts): hashed em/ph/name, IP, click-ids. Necessary is always on and never sent.
@@ -30,8 +31,57 @@
     return /(^|\.)quizeatdrink\.com$/.test(h) || /(^|\.)tardeodetrivia\.com$/.test(h);
   }
 
-  function stored() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
-  function save(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+  // The choice is shared with the brand's other sites (the booking site at www.) through a
+  // first-party cookie on the brand domain, e.g. ".tardeodetrivia.com": localStorage is per
+  // origin, so landing. and www. can't see each other's. localStorage keeps a copy for i18n.js's
+  // ?qedc= hand-off between the two brands. The cookie wins when both exist: it holds the latest
+  // decision made on any of the brand's sites. Same name, format and lifetime the privacy page
+  // lists ("qed-consent", 1 year); the booking site (qed-final-version) reads and writes it too.
+  var COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
+
+  // Only on the production domains: *.netlify.app is a public suffix (no shared cookie there)
+  // and localhost needs none.
+  function cookieDomain() {
+    if (!analyticsEnabled()) return null;
+    var m = location.hostname.match(/(quizeatdrink|tardeodetrivia)\.com$/);
+    return m ? "." + m[0] : null;
+  }
+
+  function readCookie() {
+    try {
+      var parts = document.cookie.split(";");
+      for (var i = 0; i < parts.length; i++) {
+        var eq = parts[i].indexOf("=");
+        if (eq > -1 && parts[i].slice(0, eq).trim() === KEY) {
+          return decodeURIComponent(parts[i].slice(eq + 1).trim()) || null;
+        }
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function writeCookie(v) {
+    var domain = cookieDomain();
+    if (!domain) return;
+    try {
+      document.cookie = KEY + "=" + encodeURIComponent(v) + "; domain=" + domain +
+        "; path=/; max-age=" + COOKIE_MAX_AGE + "; SameSite=Lax; Secure";
+    } catch (e) {}
+  }
+
+  function readLocal() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function writeLocal(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+
+  function stored() { return readCookie() || readLocal(); }
+  function save(v) { writeLocal(v); writeCookie(v); }
+
+  // Bring both copies in line on load: a choice made only on this site before the cookie
+  // existed moves into the cookie, and one made on the booking site lands in localStorage.
+  (function syncStores() {
+    var c = readCookie(), l = readLocal();
+    if (c && c !== l) writeLocal(c);
+    else if (!c && l) writeCookie(l);
+  })();
 
   // { functional, analytics, marketing } | null (undecided). Migrates the legacy
   // 'granted'/'denied' string and the earlier {analytics,marketing} object (no functional).
